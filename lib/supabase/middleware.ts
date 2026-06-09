@@ -1,10 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-/**
- * Refreshes the user session on every request and handles route protection.
- * Must be called from the root middleware.ts.
- */
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
 
@@ -17,7 +13,6 @@ export async function updateSession(request: NextRequest) {
           return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
-          // Write updated cookies to both request and response
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
           )
@@ -30,16 +25,25 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
-  // Use getUser() instead of getSession() — verifies token server-side
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
-  // Public routes that don't require authentication
-  const publicPaths = ['/', '/login', '/register']
-  const isPublic = publicPaths.some((path) =>
-    request.nextUrl.pathname === path
-  )
+  const pathname = request.nextUrl.pathname
+
+  const authOnlyPaths = ['/login', '/register']
+  const isAuthPage = authOnlyPaths.includes(pathname)
+
+  const isPublic =
+    pathname === '/' ||
+    isAuthPage ||
+    pathname.startsWith('/api/auth/')
+
+  if (user && isAuthPage) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/dashboard'
+    return NextResponse.redirect(url)
+  }
 
   if (!user && !isPublic) {
     const url = request.nextUrl.clone()

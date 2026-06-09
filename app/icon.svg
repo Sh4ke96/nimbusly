@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#618764"/>
+      <stop offset="100%" stop-color="#2B5748"/>
+    </linearGradient>
+  </defs>
+  <!-- Background rounded square -->
+  <rect width="512" height="512" rx="128" fill="url(#g)"/>
+  <!-- House silhouette: roof + walls as single bold path -->
+  <path
+    d="M256 72 L432 228 L432 432 L80 432 L80 228 Z"
+    fill="#F6F8F2"
+  />
+  <!-- Door: rounded arch, deep green -->
+  <rect x="206" y="308" width="100" height="124" rx="50" fill="#2B5748"/>
+  <!-- Heart window: two circles + diamond merged -->
+  <path
+    d="M256 212
+       C256 212 228 186 210 198
+       C192 210 192 234 210 252
+       L256 296
+       L302 252
+       C320 234 320 210 302 198
+       C284 186 256 212 256 212 Z"
+    fill="#9CB080"
+  />
+</svg>

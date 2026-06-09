@@ -1,33 +1,38 @@
-'use client'
+"use client";
 
-import { useActionState } from 'react'
-import { register, type AuthState } from '../actions'
-import { Button } from '@/components/ui/button'
+import { useActionState } from "react";
+import { register, type AuthState } from "../actions";
+import { Button } from "@/components/ui/button";
+import { CheckCircle2 } from "lucide-react";
+import { useT } from "@/lib/lang-context";
 
-/** Shared Tailwind classes for text inputs */
 const inputClass =
-  'flex h-9 w-full rounded-lg border border-border bg-background px-3 text-sm outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-50'
+  "flex h-10 w-full rounded-xl border border-input bg-background px-4 text-sm outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-50 transition-colors";
 
 export function RegisterForm() {
+  const t = useT();
   const [state, action, pending] = useActionState<AuthState, FormData>(
     register,
     null
-  )
+  );
 
-  // Show success message instead of form after registration
-  if (state && 'success' in state) {
+  if (state && "success" in state) {
     return (
-      <div className="rounded-lg border border-border bg-muted/50 p-4 text-center text-sm text-muted-foreground">
-        {state.success}
+      <div className="rounded-xl border border-primary/30 bg-primary/10 p-4 text-center space-y-1">
+        <CheckCircle2 className="size-6 text-primary mx-auto" />
+        <p className="text-sm font-medium text-foreground">
+          {t.register.successTitle}
+        </p>
+        <p className="text-xs text-muted-foreground">{state.success}</p>
       </div>
-    )
+    );
   }
 
   return (
     <form action={action} className="space-y-4">
       <div className="space-y-1.5">
         <label htmlFor="email" className="text-sm font-medium">
-          Email
+          {t.register.emailLabel}
         </label>
         <input
           id="email"
@@ -35,14 +40,14 @@ export function RegisterForm() {
           type="email"
           required
           autoComplete="email"
-          placeholder="you@example.com"
+          placeholder={t.register.emailPlaceholder}
           className={inputClass}
         />
       </div>
 
       <div className="space-y-1.5">
         <label htmlFor="password" className="text-sm font-medium">
-          Password
+          {t.register.passwordLabel}
         </label>
         <input
           id="password"
@@ -50,14 +55,14 @@ export function RegisterForm() {
           type="password"
           required
           autoComplete="new-password"
-          placeholder="Min. 8 characters"
+          placeholder={t.register.passwordPlaceholder}
           className={inputClass}
         />
       </div>
 
       <div className="space-y-1.5">
         <label htmlFor="confirmPassword" className="text-sm font-medium">
-          Confirm password
+          {t.register.confirmLabel}
         </label>
         <input
           id="confirmPassword"
@@ -65,19 +70,20 @@ export function RegisterForm() {
           type="password"
           required
           autoComplete="new-password"
-          placeholder="••••••••"
+          placeholder={t.register.confirmPlaceholder}
           className={inputClass}
         />
       </div>
 
-      {/* Error message from Server Action */}
-      {state && 'error' in state && (
-        <p className="text-sm text-destructive">{state.error}</p>
+      {state && "error" in state && (
+        <p className="text-sm text-destructive rounded-lg bg-destructive/10 px-3 py-2">
+          {state.error}
+        </p>
       )}
 
       <Button type="submit" size="lg" className="w-full" disabled={pending}>
-        {pending ? 'Creating account…' : 'Create account'}
+        {pending ? t.register.submitting : t.register.submitBtn}
       </Button>
     </form>
-  )
+  );
 }

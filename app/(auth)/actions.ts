@@ -2,34 +2,38 @@
 
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { getServerT } from '@/lib/i18n/server'
 
 export type AuthState = { error: string } | { success: string } | null
 
-/**
- * Authenticates an existing user with email and password.
- * On success, redirects to the dashboard.
- */
 export async function login(
   _prevState: AuthState,
   formData: FormData
 ): Promise<AuthState> {
   const email = formData.get('email') as string
   const password = formData.get('password') as string
+  const t = await getServerT()
+
+  if (!email || !password) {
+    return { error: t.login.errorRequired }
+  }
 
   const supabase = await createClient()
   const { error } = await supabase.auth.signInWithPassword({ email, password })
 
   if (error) {
-    return { error: error.message }
+    if (error.message.toLowerCase().includes('invalid')) {
+      return { error: t.login.errorInvalid }
+    }
+    if (error.message.toLowerCase().includes('email not confirmed')) {
+      return { error: t.login.errorNotConfirmed }
+    }
+    return { error: t.login.errorGeneric }
   }
 
   redirect('/dashboard')
 }
 
-/**
- * Registers a new user with email and password.
- * Sends a confirmation email — user must verify before logging in.
- */
 export async function register(
   _prevState: AuthState,
   formData: FormData
@@ -37,13 +41,18 @@ export async function register(
   const email = formData.get('email') as string
   const password = formData.get('password') as string
   const confirmPassword = formData.get('confirmPassword') as string
+  const t = await getServerT()
 
-  if (password !== confirmPassword) {
-    return { error: 'Passwords do not match.' }
+  if (!email || !password) {
+    return { error: t.register.errorRequired }
   }
 
   if (password.length < 8) {
-    return { error: 'Password must be at least 8 characters.' }
+    return { error: t.register.errorPasswordLength }
+  }
+
+  if (password !== confirmPassword) {
+    return { error: t.register.errorPasswordMatch }
   }
 
   const supabase = await createClient()
@@ -56,8 +65,11 @@ export async function register(
   })
 
   if (error) {
-    return { error: error.message }
+    if (error.message.toLowerCase().includes('already registered')) {
+      return { error: t.register.errorEmailTaken }
+    }
+    return { error: t.register.errorGeneric }
   }
 
-  return { success: 'Check your email to confirm your account.' }
+  return { success: t.register.successMessage }
 }
