@@ -11,7 +11,6 @@ import {
   ListChecks,
   PawPrint,
   Scale,
-  ShoppingCart,
   TrendingDown,
   TrendingUp,
   User,
@@ -36,7 +35,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { DASHBOARD_OVERVIEW_CARD, type DashboardOverviewCardId } from "@/lib/constants/dashboard-overview";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import type { Lang } from "@/lib/constants/lang";
-import { SETTINGS_TAB } from "@/lib/constants/settings";
 import { SCHEDULE_ENTRY_EMOJI, type ScheduleEntryType } from "@/lib/constants/schedule";
 import { getScheduleTypeLabel } from "@/lib/schedule/types";
 import { formatMessage } from "@/lib/i18n/format";

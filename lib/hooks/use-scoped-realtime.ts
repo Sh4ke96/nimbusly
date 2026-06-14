@@ -14,7 +14,10 @@ export function useScopedRealtime<T extends Record<string, unknown>>(params: {
 }) {
   const { userId, familyId, channelKey, table, onChange } = params;
   const onChangeRef = useRef(onChange);
-  onChangeRef.current = onChange;
+
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
 
   useEffect(() => {
     if (!userId) return;

@@ -12,7 +12,6 @@ import {
 import { MedicineEntryForm } from "@/components/medicine-cabinet/medicine-entry-form";
 import {
   MEDICINE_AVAILABILITY,
-  MEDICINE_FORM_TYPE,
   type MedicineAvailability,
   type MedicineFormType,
 } from "@/lib/constants/medicine";

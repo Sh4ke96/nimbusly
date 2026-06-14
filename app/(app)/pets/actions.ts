@@ -14,7 +14,6 @@ import {
   isValidPetDateString,
   isValidPetName,
   isValidPetNotes,
-  isValidPetSpecies,
   isValidPetStockStatus,
   normalizePetName,
   parsePetCareItemFromForm,

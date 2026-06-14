@@ -1,7 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
-  CHORE_FILTER_ALL,
   CHORE_RECURRENCE,
   CHORE_STATUS,
 } from "@/lib/constants/chores";

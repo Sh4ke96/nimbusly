@@ -39,7 +39,7 @@ import {
   sanitizeCsvFilename,
 } from "@/lib/budget/export-csv";
 import type { Budget } from "@/lib/budget/types";
-import { BUDGET_ENTRY_TYPE, BUDGET_FILTER_ALL, type BudgetExpenseCategory, type BudgetIncomeCategory } from "@/lib/constants/budget";
+import { BUDGET_FILTER_ALL, type BudgetExpenseCategory, type BudgetIncomeCategory } from "@/lib/constants/budget";
 import { useLang, useT } from "@/lib/lang-context";
 import { getDisplayName } from "@/lib/profile";
 import { useProfileStore } from "@/lib/stores/profile-store";
@@ -135,25 +135,31 @@ export function BudgetView() {
     void fetchWatches();
   }, [fetchWatches]);
 
-  useEffect(() => {
+  const budgetIdsKey = budgets.map((b) => b.id).join("|");
+  const [prevBudgetIdsKey, setPrevBudgetIdsKey] = useState(budgetIdsKey);
+  const [prevActiveBudgetId, setPrevActiveBudgetId] = useState<string | null>(activeBudgetId);
+  const [prevTypeFilter, setPrevTypeFilter] = useState(typeFilter);
+
+  if (budgetIdsKey !== prevBudgetIdsKey) {
+    setPrevBudgetIdsKey(budgetIdsKey);
     if (budgets.length === 0) {
       setActiveBudgetId(null);
-      return;
-    }
-    if (!activeBudgetId || !budgets.some((b) => b.id === activeBudgetId)) {
+    } else if (!activeBudgetId || !budgets.some((b) => b.id === activeBudgetId)) {
       setActiveBudgetId(budgets[0]?.id ?? null);
     }
-  }, [budgets, activeBudgetId]);
+  }
 
-  useEffect(() => {
+  if (activeBudgetId !== prevActiveBudgetId) {
+    setPrevActiveBudgetId(activeBudgetId);
     setTypeFilter(BUDGET_FILTER_ALL);
     setCategoryFilter(BUDGET_FILTER_ALL);
     setSelectedMonthKey(getCurrentMonthKey());
-  }, [activeBudgetId]);
+  }
 
-  useEffect(() => {
+  if (typeFilter !== prevTypeFilter) {
+    setPrevTypeFilter(typeFilter);
     setCategoryFilter(BUDGET_FILTER_ALL);
-  }, [typeFilter]);
+  }
 
   const onDataChanged = useModuleRefresh(fetchBudgets);
 

@@ -27,7 +27,7 @@ import { NOTIFICATION_TYPE, type NotificationType } from "@/lib/constants/notifi
 import { getFamilyNotificationTitle } from "@/lib/notifications/family-notification";
 import { getDisplayName } from "@/lib/profile";
 import type { AccountActionState } from "@/app/(app)/account/actions";
-import { requireUser, getActorProfile, getProfileFamilyContext } from "@/lib/server-actions/require-user";
+import { requireUser, getActorProfile } from "@/lib/server-actions/require-user";
 import { notifyEntityWatchers } from "@/lib/server-actions/notify-watchers";
 import { notifyFamilyMembers } from "@/lib/server-actions/notify-family";
 import { executeCreateBudget } from "@/lib/budget/server/create-budget";

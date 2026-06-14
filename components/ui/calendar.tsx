@@ -121,6 +121,7 @@ function CalendarDayButton({
   modifiers,
   ...dayButtonProps
 }: React.ComponentProps<typeof DayButton>) {
+  void day;
   const defaultClassNames = getDefaultClassNames();
   const ref = React.useRef<HTMLButtonElement>(null);
 

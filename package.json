@@ -16,7 +16,7 @@
     "db:link": "dotenv -e .env.local -- supabase link --project-ref mxjbextvckzjfkzzpvin",
     "db:push": "dotenv -e .env.local -- supabase db push",
     "db:status": "dotenv -e .env.local -- supabase migration list",
-    "db:types": "dotenv -e .env.local -- supabase gen types typescript --project-id mxjbextvckzjfkzzpvin > lib/supabase/database.types.ts",
+    "db:types": "node scripts/gen-database-types.mjs",
     "db:reset": "dotenv -e .env.local -- supabase db reset"
   },
   "dependencies": {

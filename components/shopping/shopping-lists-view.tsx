@@ -54,15 +54,17 @@ export function ShoppingListsView() {
     void fetchWatches();
   }, [fetchWatches]);
 
-  useEffect(() => {
+  const listIdsKey = lists.map((list) => list.id).join("|");
+  const [prevListIdsKey, setPrevListIdsKey] = useState(listIdsKey);
+
+  if (listIdsKey !== prevListIdsKey) {
+    setPrevListIdsKey(listIdsKey);
     if (lists.length === 0) {
       setActiveListId(null);
-      return;
-    }
-    if (!activeListId || !lists.some((list) => list.id === activeListId)) {
+    } else if (!activeListId || !lists.some((list) => list.id === activeListId)) {
       setActiveListId(lists[0]?.id ?? null);
     }
-  }, [lists, activeListId]);
+  }
 
   useEffect(() => {
     if (activeListId) void fetchItems(activeListId);

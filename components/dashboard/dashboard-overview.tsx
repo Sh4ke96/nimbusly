@@ -269,14 +269,16 @@ export function DashboardOverview() {
       )
     : null;
 
+  const [prevProfileLayoutKey, setPrevProfileLayoutKey] = useState(profileLayoutKey);
+
   useEffect(() => {
     layoutRef.current = layout;
   }, [layout]);
 
-  useEffect(() => {
-    if (!profileLayoutKey) return;
+  if (profileLayoutKey && profileLayoutKey !== prevProfileLayoutKey) {
+    setPrevProfileLayoutKey(profileLayoutKey);
     setLayout(parseDashboardOverviewLayout(JSON.parse(profileLayoutKey)));
-  }, [profile?.id, profileLayoutKey]);
+  }
 
   const visibleCardIds = useMemo(
     () => getVisibleOverviewCardIds(layout),
@@ -325,7 +327,21 @@ export function DashboardOverview() {
     for (const cardId of visibleCardIds) {
       loaders[cardId]?.();
     }
-  }, [profile?.id, visibleCardKey]);
+  }, [
+    profile?.id,
+    visibleCardKey,
+    visibleCardIds,
+    fetchBudgets,
+    fetchLists,
+    fetchIdeas,
+    fetchMedicineItems,
+    fetchWatchlistItems,
+    fetchRestaurantPlaces,
+    fetchPets,
+    fetchChores,
+    fetchSchedule,
+    fetchBirthdays,
+  ]);
 
   const monthlyBudgetEntries = useMemo(() => {
     const all = budgets.flatMap((b) => expensesByBudgetId[b.id] ?? []);

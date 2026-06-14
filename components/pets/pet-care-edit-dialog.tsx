@@ -42,7 +42,7 @@ function PetCareEditForm({
   onClose: () => void;
 }) {
   const t = useT();
-  const [petId, setPetId] = useState(() => item.pet_id);
+  const petId = item.pet_id;
   const [name, setName] = useState(() => item.name);
   const [careType, setCareType] = useState<PetCareItem["care_type"] | null>(
     () => item.care_type

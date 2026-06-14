@@ -1,7 +1,7 @@
 "use client";
 
 import { BUDGET_FORM_FIELD } from "@/lib/budget/types";
-import { useActionState, useMemo, useState } from "react";
+import { useActionState, useMemo } from "react";
 import { Bell, BellOff } from "lucide-react";
 import { toggleBudgetWatch } from "@/app/(app)/budget/actions";
 import { Button } from "@/components/ui/button";

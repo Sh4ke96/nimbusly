@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { MemberAvatar } from "@/components/member-avatar";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
-import { GIFT_RECIPIENT_TYPE, type GiftRecipientType } from "@/lib/constants/gifts";
+import { GIFT_RECIPIENT_TYPE } from "@/lib/constants/gifts";
 import { useT } from "@/lib/lang-context";
 import { getDisplayName, type FamilyMember, type Profile } from "@/lib/profile";
 import { cn } from "@/lib/utils";

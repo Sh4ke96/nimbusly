@@ -10,7 +10,7 @@ import {
 } from "@/lib/form/values";
 import { parseGiftContentFromForm } from "@/lib/gifts/types";
 import { parseShoppingItemUpdateFromForm } from "@/lib/shopping-lists/types";
-import { parseSignInFromForm, parseSignUpFromForm } from "@/lib/auth/form";
+import { parseSignInFromForm } from "@/lib/auth/form";
 import { parseProfileNamesFromForm, parseOnboardingFromForm } from "@/lib/profile/form";
 import { parseFamilyInviteEmailFromForm } from "@/lib/family/form";
 import { excludeActorFromWatcherIds } from "@/lib/notifications/watches";

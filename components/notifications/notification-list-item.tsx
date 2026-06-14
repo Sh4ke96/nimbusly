@@ -2,7 +2,7 @@
 
 import { COMMON_FORM_FIELD } from "@/lib/form/common-fields";
 import Link from "next/link";
-import { useActionState } from "react";
+import { createElement, useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import type { AppNotification } from "@/lib/notifications/types";
 import { getNotificationModuleIcon } from "@/lib/notifications/module-icon";
@@ -38,7 +38,6 @@ export function NotificationListItem({
 }: NotificationListItemProps) {
   const t = useT();
   const [markState, markAction] = useActionState(markNotificationRead, null);
-  const ModuleIcon = getNotificationModuleIcon(item.type);
   const moduleId = getNotificationModuleId(item.type);
   const moduleHref = getNotificationModuleHref(item.type);
   const moduleLinkLabel = moduleId ? t.notifications[NOTIFICATION_MODULE_LINK_LABEL[moduleId]] : null;
@@ -55,7 +54,7 @@ export function NotificationListItem({
       )}
     >
       <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-none bg-primary/10 text-primary">
-        <ModuleIcon className="size-5" />
+        {createElement(getNotificationModuleIcon(item.type), { className: "size-5" })}
       </span>
       <div className="min-w-0 flex-1 space-y-1">
         <div className="flex items-start justify-between gap-3">

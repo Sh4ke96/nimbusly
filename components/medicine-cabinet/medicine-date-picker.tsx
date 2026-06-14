@@ -2,7 +2,6 @@
 
 import { MEDICINE_FORM_FIELD } from "@/lib/medicine/types";
 import { useT } from "@/lib/lang-context";
-import { formatMessage } from "@/lib/i18n/format";
 import { DatePickerField } from "@/components/ui/date-picker-field";
 import { dateToMedicineDateString } from "@/lib/medicine/types";
 

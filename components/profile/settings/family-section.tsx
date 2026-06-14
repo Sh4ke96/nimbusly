@@ -2,7 +2,7 @@
 
 import { PROFILE_FORM_FIELD } from "@/lib/profile/form";
 import { FAMILY_FORM_FIELD } from "@/lib/family/form";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -33,10 +33,11 @@ export function FamilySection() {
   const [inviteState, inviteAction, invitePending] = useActionState(sendFamilyInvitation, null);
   const [revokeState, revokeAction, revokePending] = useActionState(revokeFamilyInvitation, null);
   const [copied, setCopied] = useState<boolean>(false);
-  const [ensuringCode, setEnsuringCode] = useState<boolean>(false);
+  const ensuringCodeRef = useRef(false);
 
   const isOwner = family?.created_by === user?.id;
   const displayCode = family?.invite_code ? formatInviteCode(family.invite_code) : null;
+  const needsInviteCode = isOwner && !!family?.id && !family.invite_code;
 
   useActionFeedback(nameState, () => void refreshFamily());
   useActionFeedback(inviteState, () => void refreshFamily());
@@ -47,13 +48,15 @@ export function FamilySection() {
   }, [refreshFamily]);
 
   useEffect(() => {
-    if (!isOwner || !family?.id || family.invite_code || ensuringCode) return;
+    if (!needsInviteCode || ensuringCodeRef.current) return;
 
-    setEnsuringCode(true);
+    ensuringCodeRef.current = true;
     void ensureFamilyInviteCode()
       .then(() => refreshFamily())
-      .finally(() => setEnsuringCode(false));
-  }, [isOwner, family?.id, family?.invite_code, ensuringCode, refreshFamily]);
+      .finally(() => {
+        ensuringCodeRef.current = false;
+      });
+  }, [needsInviteCode, refreshFamily]);
 
   async function copyInviteCode() {
     if (!family?.invite_code) return;
@@ -106,7 +109,7 @@ export function FamilySection() {
           </div>
         ) : (
           <p className="text-sm text-muted-foreground">
-            {ensuringCode ? t.account.familyInviteLoading : t.account.familyInviteUnavailable}
+            {needsInviteCode ? t.account.familyInviteLoading : t.account.familyInviteUnavailable}
           </p>
         )}
 

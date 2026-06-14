@@ -8,7 +8,6 @@ import {
 } from "@/lib/medicine/changes";
 import { isMedicineExpiringSoon } from "@/lib/medicine/expiry";
 import {
-  isValidMedicineAvailability,
   isValidMedicineExpiryDate,
   isValidMedicineFormType,
   isValidMedicineLocation,

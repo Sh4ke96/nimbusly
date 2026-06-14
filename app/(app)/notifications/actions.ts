@@ -30,8 +30,9 @@ export async function markNotificationRead(
 }
 
 export async function markAllNotificationsRead(
-  _prev: AccountActionState
+  _previous: AccountActionState
 ): Promise<AccountActionState> {
+  void _previous;
   const t = await getServerT();
   const { supabase, user } = await requireUser();
 

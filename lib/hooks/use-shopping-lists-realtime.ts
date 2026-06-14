@@ -11,11 +11,11 @@ export function useShoppingListsRealtime(params: {
   userId: string | undefined;
   familyId: string | null;
 }) {
+  const { userId, familyId } = params;
   const applyListChange = useShoppingListsStore((s) => s.applyListChange);
   const applyItemChange = useShoppingListsStore((s) => s.applyItemChange);
 
   useEffect(() => {
-    const { userId, familyId } = params;
     if (!userId) return;
 
     const supabase = createClient();
@@ -60,5 +60,5 @@ export function useShoppingListsRealtime(params: {
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, [params.userId, params.familyId, applyListChange, applyItemChange]);
+  }, [userId, familyId, applyListChange, applyItemChange]);
 }
