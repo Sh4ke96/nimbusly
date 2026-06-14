@@ -1,0 +1,228 @@
+import { create } from "zustand";
+import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
+import { createClient } from "@/lib/supabase/client";
+import {
+  sortShoppingListItems,
+  type ShoppingList,
+  type ShoppingListItem,
+} from "@/lib/shopping-lists/types";
+import { dedupeAsync } from "@/lib/stores/dedupe-async";
+import { watchedListIdsFromRows } from "@/lib/shopping-lists/watches";
+
+export const EMPTY_SHOPPING_LIST_ITEMS: ShoppingListItem[] = [];
+
+export function selectShoppingListItems(
+  listId: string
+): (state: ShoppingListsStore) => ShoppingListItem[] {
+  return (state) => state.itemsByListId[listId] ?? EMPTY_SHOPPING_LIST_ITEMS;
+}
+
+export function selectIsListWatched(
+  listId: string
+): (state: ShoppingListsStore) => boolean {
+  return (state) => state.watchedListIds.includes(listId);
+}
+
+interface ShoppingListsStore {
+  lists: ShoppingList[];
+  itemsByListId: Record<string, ShoppingListItem[]>;
+  loaded: boolean;
+  loading: boolean;
+  itemsLoadingByListId: Record<string, boolean>;
+  watchedListIds: string[];
+  watchesLoaded: boolean;
+  fetchLists: (force?: boolean) => Promise<void>;
+  fetchWatches: (force?: boolean) => Promise<void>;
+  fetchItems: (listId: string, force?: boolean) => Promise<void>;
+  applyListChange: (
+    payload: RealtimePostgresChangesPayload<ShoppingList>
+  ) => void;
+  applyItemChange: (
+    listId: string,
+    payload: RealtimePostgresChangesPayload<ShoppingListItem>
+  ) => void;
+  setItemsForList: (listId: string, items: ShoppingListItem[]) => void;
+  reset: () => void;
+}
+
+const initialState = {
+  lists: [] as ShoppingList[],
+  itemsByListId: {} as Record<string, ShoppingListItem[]>,
+  watchedListIds: [] as string[],
+  loaded: false,
+  watchesLoaded: false,
+  loading: false,
+  itemsLoadingByListId: {} as Record<string, boolean>,
+};
+
+function sortLists(lists: ShoppingList[]): ShoppingList[] {
+  return [...lists].sort((a, b) => a.name.localeCompare(b.name, "pl"));
+}
+
+export const useShoppingListsStore = create<ShoppingListsStore>((set, get) => ({
+  ...initialState,
+
+  fetchLists: async (force = false) => {
+    if (!force && get().loaded && !get().loading) return;
+
+    return dedupeAsync("shopping-lists:list", async () => {
+      set({ loading: true });
+
+      const supabase = createClient();
+      const { data } = await supabase
+        .from("shopping_lists")
+        .select("*")
+        .order("updated_at", { ascending: false });
+
+      set({
+        lists: sortLists((data ?? []) as ShoppingList[]),
+        loaded: true,
+        loading: false,
+      });
+
+      const listIds = ((data ?? []) as ShoppingList[]).map((list) => list.id);
+      if (listIds.length === 0) return;
+
+      const { data: items } = await supabase
+        .from("shopping_list_items")
+        .select("*")
+        .in("list_id", listIds)
+        .order("sort_order", { ascending: true })
+        .order("created_at", { ascending: true });
+
+      const grouped: Record<string, ShoppingListItem[]> = {};
+      for (const item of (items ?? []) as ShoppingListItem[]) {
+        if (!grouped[item.list_id]) grouped[item.list_id] = [];
+        grouped[item.list_id].push(item);
+      }
+
+      set((state) => {
+        const nextItems = { ...state.itemsByListId };
+        const listIdSet = new Set(listIds);
+
+        for (const key of Object.keys(nextItems)) {
+          if (!listIdSet.has(key)) delete nextItems[key];
+        }
+
+        for (const listId of listIds) {
+          nextItems[listId] = sortShoppingListItems(grouped[listId] ?? []);
+        }
+
+        return { itemsByListId: nextItems };
+      });
+    });
+  },
+
+  fetchWatches: async (force = false) => {
+    if (!force && get().watchesLoaded) return;
+
+    return dedupeAsync("shopping-lists:watches", async () => {
+      const supabase = createClient();
+      const { data } = await supabase
+        .from("shopping_list_watches")
+        .select("list_id");
+
+      set({
+        watchedListIds: watchedListIdsFromRows(
+          (data ?? []) as { list_id: string }[]
+        ),
+        watchesLoaded: true,
+      });
+    });
+  },
+
+  fetchItems: async (listId, force = false) => {
+    const loading = get().itemsLoadingByListId[listId];
+    const hasItems = listId in get().itemsByListId;
+    if (!force && hasItems && !loading) return;
+
+    return dedupeAsync(`shopping-lists:items:${listId}`, async () => {
+      set((state) => ({
+        itemsLoadingByListId: { ...state.itemsLoadingByListId, [listId]: true },
+      }));
+
+      const supabase = createClient();
+      const { data } = await supabase
+        .from("shopping_list_items")
+        .select("*")
+        .eq("list_id", listId)
+        .order("sort_order", { ascending: true })
+        .order("created_at", { ascending: true });
+
+      set((state) => ({
+        itemsByListId: {
+          ...state.itemsByListId,
+          [listId]: sortShoppingListItems((data ?? []) as ShoppingListItem[]),
+        },
+        itemsLoadingByListId: {
+          ...state.itemsLoadingByListId,
+          [listId]: false,
+        },
+      }));
+    });
+  },
+
+  applyListChange: (payload) => {
+    set((state) => {
+      let lists = [...state.lists];
+
+      if (payload.eventType === "INSERT" && payload.new) {
+        if (!lists.some((list) => list.id === payload.new.id)) {
+          lists.push(payload.new);
+        }
+      } else if (payload.eventType === "UPDATE" && payload.new) {
+        lists = lists.map((list) =>
+          list.id === payload.new.id ? payload.new : list
+        );
+      } else if (payload.eventType === "DELETE" && payload.old?.id) {
+        const deletedId = payload.old.id;
+        lists = lists.filter((list) => list.id !== deletedId);
+        const restItems = { ...state.itemsByListId };
+        delete restItems[deletedId];
+        return {
+          lists: sortLists(lists),
+          itemsByListId: restItems,
+        };
+      }
+
+      return { lists: sortLists(lists) };
+    });
+  },
+
+  applyItemChange: (listId, payload) => {
+    set((state) => {
+      const current = state.itemsByListId[listId] ?? [];
+      let items = [...current];
+
+      if (payload.eventType === "INSERT" && payload.new) {
+        if (!items.some((item) => item.id === payload.new.id)) {
+          items.push(payload.new);
+        }
+      } else if (payload.eventType === "UPDATE" && payload.new) {
+        items = items.map((item) =>
+          item.id === payload.new.id ? payload.new : item
+        );
+      } else if (payload.eventType === "DELETE" && payload.old) {
+        items = items.filter((item) => item.id !== payload.old.id);
+      }
+
+      return {
+        itemsByListId: {
+          ...state.itemsByListId,
+          [listId]: sortShoppingListItems(items),
+        },
+      };
+    });
+  },
+
+  setItemsForList: (listId, items) => {
+    set((state) => ({
+      itemsByListId: {
+        ...state.itemsByListId,
+        [listId]: sortShoppingListItems(items),
+      },
+    }));
+  },
+
+  reset: () => set({ ...initialState }),
+}));

@@ -4,12 +4,16 @@ import { useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useNotificationsStore } from "@/lib/stores/notifications-store";
+import { useGiftsStore } from "@/lib/stores/gifts-store";
+import { useShoppingListsStore } from "@/lib/stores/shopping-lists-store";
 
 export function ProfileBootstrap({ children }: { children: React.ReactNode }) {
   const fetchSession = useProfileStore((s) => s.fetchSession);
   const resetProfile = useProfileStore((s) => s.reset);
   const fetchNotifications = useNotificationsStore((s) => s.fetchNotifications);
   const resetNotifications = useNotificationsStore((s) => s.reset);
+  const resetGifts = useGiftsStore((s) => s.reset);
+  const resetShoppingLists = useShoppingListsStore((s) => s.reset);
 
   useEffect(() => {
     void fetchSession().then(() => fetchNotifications());
@@ -23,6 +27,8 @@ export function ProfileBootstrap({ children }: { children: React.ReactNode }) {
       if (event === "SIGNED_OUT") {
         resetProfile();
         resetNotifications();
+        resetGifts();
+        resetShoppingLists();
         return;
       }
 
@@ -30,7 +36,7 @@ export function ProfileBootstrap({ children }: { children: React.ReactNode }) {
     });
 
     return () => subscription.unsubscribe();
-  }, [fetchSession, fetchNotifications, resetProfile, resetNotifications]);
+  }, [fetchSession, fetchNotifications, resetProfile, resetNotifications, resetGifts, resetShoppingLists]);
 
   return children;
 }

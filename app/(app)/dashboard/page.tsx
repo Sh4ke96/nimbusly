@@ -47,16 +47,16 @@ export default function DashboardPage() {
     {
       key: "shopping",
       label: t.dashboard.moduleLabels.shopping,
-      desc: t.dashboard.moduleComingSoon,
+      desc: t.dashboard.moduleDescs.shopping,
+      href: "/shopping",
       Icon: ShoppingCart,
-      disabled: true,
     },
     {
       key: "gifts",
       label: t.dashboard.moduleLabels.gifts,
-      desc: t.dashboard.moduleComingSoon,
+      desc: t.dashboard.moduleDescs.gifts,
+      href: "/gifts",
       Icon: Gift,
-      disabled: true,
     },
     {
       key: "birthdays",

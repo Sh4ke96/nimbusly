@@ -6,5 +6,7 @@ export * from "@/lib/constants/server-error";
 export * from "@/lib/constants/demo";
 export * from "@/lib/constants/family-invitation";
 export * from "@/lib/constants/schedule";
+export * from "@/lib/constants/gifts";
+export * from "@/lib/constants/shopping-lists";
 export * from "@/lib/constants/brand";
 export * from "@/lib/constants/test";

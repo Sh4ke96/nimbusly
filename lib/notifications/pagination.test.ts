@@ -4,7 +4,7 @@ import { getTotalPages, getVisiblePageNumbers } from "@/lib/notifications/pagina
 import { parseNotificationFilterTab } from "@/lib/notifications/filter-tabs";
 import { NOTIFICATION_FILTER_TAB, NOTIFICATION_TYPE } from "@/lib/constants/notifications";
 import { getNotificationModuleIcon } from "@/lib/notifications/module-icon";
-import { Cake, CalendarDays } from "lucide-react";
+import { Cake, CalendarDays, Gift, ShoppingCart } from "lucide-react";
 
 describe("getTotalPages", () => {
   it("returns at least one page", () => {
@@ -39,5 +39,10 @@ describe("getNotificationModuleIcon", () => {
   it("maps notification types to module icons", () => {
     assert.equal(getNotificationModuleIcon(NOTIFICATION_TYPE.BIRTHDAY_ADDED), Cake);
     assert.equal(getNotificationModuleIcon(NOTIFICATION_TYPE.SCHEDULE_UPDATED), CalendarDays);
+    assert.equal(getNotificationModuleIcon(NOTIFICATION_TYPE.GIFT_ADDED), Gift);
+    assert.equal(
+      getNotificationModuleIcon(NOTIFICATION_TYPE.SHOPPING_LIST_ADDED),
+      ShoppingCart
+    );
   });
 });
