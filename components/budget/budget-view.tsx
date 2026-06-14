@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
+import { useResolvedItemSelection } from "@/lib/hooks/use-resolved-item-selection";
 import { Printer, Scale, TrendingDown, TrendingUp, Download } from "lucide-react";
 import { AppHeader } from "@/components/app/app-header";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
@@ -66,10 +67,15 @@ export function BudgetView() {
   const fetchBudgets = useBudgetStore((s) => s.fetchBudgets);
   const fetchWatches = useBudgetStore((s) => s.fetchWatches);
 
-  const [activeBudgetId, setActiveBudgetId] = useState<string | null>(null);
+  const budgetIdsKey = useMemo(
+    () => budgets.map((budget) => budget.id).join("|"),
+    [budgets]
+  );
+  const [activeBudgetId, setSelectedBudgetId] = useResolvedItemSelection(budgetIdsKey);
   const [selectedMonthKey, setSelectedMonthKey] = useState(getCurrentMonthKey);
   const [typeFilter, setTypeFilter] = useState<string>(BUDGET_FILTER_ALL);
   const [categoryFilter, setCategoryFilter] = useState<string>(BUDGET_FILTER_ALL);
+  const [filtersBudgetId, setFiltersBudgetId] = useState<string | null>(null);
   const [editingBudget, setEditingBudget] = useState<Budget | null>(null);
   const [editOpen, setEditOpen] = useState(false);
 
@@ -135,29 +141,24 @@ export function BudgetView() {
     void fetchWatches();
   }, [fetchWatches]);
 
-  const budgetIdsKey = budgets.map((b) => b.id).join("|");
-  const [prevBudgetIdsKey, setPrevBudgetIdsKey] = useState(budgetIdsKey);
-  const [prevActiveBudgetId, setPrevActiveBudgetId] = useState<string | null>(activeBudgetId);
-  const [prevTypeFilter, setPrevTypeFilter] = useState(typeFilter);
-
-  if (budgetIdsKey !== prevBudgetIdsKey) {
-    setPrevBudgetIdsKey(budgetIdsKey);
-    if (budgets.length === 0) {
-      setActiveBudgetId(null);
-    } else if (!activeBudgetId || !budgets.some((b) => b.id === activeBudgetId)) {
-      setActiveBudgetId(budgets[0]?.id ?? null);
+  if (activeBudgetId !== filtersBudgetId) {
+    setFiltersBudgetId(activeBudgetId);
+    if (filtersBudgetId !== null) {
+      setTypeFilter(BUDGET_FILTER_ALL);
+      setCategoryFilter(BUDGET_FILTER_ALL);
+      setSelectedMonthKey(getCurrentMonthKey());
     }
   }
 
-  if (activeBudgetId !== prevActiveBudgetId) {
-    setPrevActiveBudgetId(activeBudgetId);
+  function selectBudget(id: string) {
+    setSelectedBudgetId(id);
     setTypeFilter(BUDGET_FILTER_ALL);
     setCategoryFilter(BUDGET_FILTER_ALL);
     setSelectedMonthKey(getCurrentMonthKey());
   }
 
-  if (typeFilter !== prevTypeFilter) {
-    setPrevTypeFilter(typeFilter);
+  function handleTypeFilterChange(value: string) {
+    setTypeFilter(value);
     setCategoryFilter(BUDGET_FILTER_ALL);
   }
 
@@ -273,7 +274,7 @@ export function BudgetView() {
                     budget={budget}
                     members={members}
                     selected={budget.id === activeBudgetId}
-                    onSelect={() => setActiveBudgetId(budget.id)}
+                    onSelect={() => selectBudget(budget.id)}
                     onEdit={() => openEdit(budget)}
                     onDeleted={onDataChanged}
                     onWatchChanged={onWatchChanged}
@@ -431,7 +432,7 @@ export function BudgetView() {
                     <BudgetTypeFilter
                       entries={monthlyEntries}
                       value={typeFilter}
-                      onChange={setTypeFilter}
+                      onChange={handleTypeFilterChange}
                     />
                     <BudgetCategoryFilter
                       entries={monthlyEntries}

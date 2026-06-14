@@ -252,11 +252,8 @@ export function DashboardOverview() {
   );
 
   const [editMode, setEditMode] = useState<boolean>(false);
-  const [layout, setLayout] = useState<DashboardOverviewLayout>(() =>
-    parseDashboardOverviewLayout(null)
-  );
   const [savingLayout, setSavingLayout] = useState<boolean>(false);
-  const layoutRef = useRef<DashboardOverviewLayout>(layout);
+  const layoutRef = useRef<DashboardOverviewLayout>(parseDashboardOverviewLayout(null));
 
   const monthKey = getCurrentMonthKey();
   const now = new Date();
@@ -269,16 +266,27 @@ export function DashboardOverview() {
       )
     : null;
 
-  const [prevProfileLayoutKey, setPrevProfileLayoutKey] = useState(profileLayoutKey);
+  const profileLayout = useMemo(
+    () =>
+      profileLayoutKey
+        ? parseDashboardOverviewLayout(JSON.parse(profileLayoutKey))
+        : parseDashboardOverviewLayout(null),
+    [profileLayoutKey]
+  );
+
+  const [layoutDraft, setLayoutDraft] = useState<DashboardOverviewLayout | null>(null);
+  const [layoutDraftSourceKey, setLayoutDraftSourceKey] = useState<string | null>(null);
+
+  if (profileLayoutKey !== layoutDraftSourceKey) {
+    setLayoutDraftSourceKey(profileLayoutKey);
+    setLayoutDraft(null);
+  }
+
+  const layout = layoutDraft ?? profileLayout;
 
   useEffect(() => {
     layoutRef.current = layout;
   }, [layout]);
-
-  if (profileLayoutKey && profileLayoutKey !== prevProfileLayoutKey) {
-    setPrevProfileLayoutKey(profileLayoutKey);
-    setLayout(parseDashboardOverviewLayout(JSON.parse(profileLayoutKey)));
-  }
 
   const visibleCardIds = useMemo(
     () => getVisibleOverviewCardIds(layout),
@@ -288,7 +296,7 @@ export function DashboardOverview() {
 
   const persistLayout = useCallback(
     async (nextLayout: DashboardOverviewLayout, previousLayout: DashboardOverviewLayout) => {
-      setLayout(nextLayout);
+      setLayoutDraft(nextLayout);
       setSavingLayout(true);
       patchDashboardOverviewLayout(nextLayout);
 
@@ -299,7 +307,7 @@ export function DashboardOverview() {
       setSavingLayout(false);
 
       if (result && "error" in result) {
-        setLayout(previousLayout);
+        setLayoutDraft(previousLayout);
         patchDashboardOverviewLayout(previousLayout);
         toast.error(result.error);
         return;
@@ -511,7 +519,7 @@ export function DashboardOverview() {
       [DASHBOARD_OVERVIEW_CARD.CHORES]: () => void fetchChores(true),
       [DASHBOARD_OVERVIEW_CARD.BIRTHDAYS]: () => void fetchBirthdays(true),
       [DASHBOARD_OVERVIEW_CARD.CALENDAR]: () => void fetchSchedule(true),
-      [DASHBOARD_OVERVIEW_CARD.FAMILY]: () => {},
+      [DASHBOARD_OVERVIEW_CARD.FAMILY]: () => { },
     }),
     [
       fetchBudgets,

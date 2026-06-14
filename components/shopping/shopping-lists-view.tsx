@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
+import { useResolvedItemSelection } from "@/lib/hooks/use-resolved-item-selection";
 import { AppHeader } from "@/components/app/app-header";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { ShoppingListCard } from "@/components/shopping/shopping-list-card";
@@ -39,7 +40,8 @@ export function ShoppingListsView() {
   const fetchWatches = useShoppingListsStore((s) => s.fetchWatches);
   const fetchItems = useShoppingListsStore((s) => s.fetchItems);
 
-  const [activeListId, setActiveListId] = useState<string | null>(null);
+  const listIdsKey = useMemo(() => lists.map((list) => list.id).join("|"), [lists]);
+  const [activeListId, setSelectedListId] = useResolvedItemSelection(listIdsKey);
   const [editingList, setEditingList] = useState<ShoppingList | null>(null);
   const [editOpen, setEditOpen] = useState(false);
 
@@ -53,18 +55,6 @@ export function ShoppingListsView() {
   useEffect(() => {
     void fetchWatches();
   }, [fetchWatches]);
-
-  const listIdsKey = lists.map((list) => list.id).join("|");
-  const [prevListIdsKey, setPrevListIdsKey] = useState(listIdsKey);
-
-  if (listIdsKey !== prevListIdsKey) {
-    setPrevListIdsKey(listIdsKey);
-    if (lists.length === 0) {
-      setActiveListId(null);
-    } else if (!activeListId || !lists.some((list) => list.id === activeListId)) {
-      setActiveListId(lists[0]?.id ?? null);
-    }
-  }
 
   useEffect(() => {
     if (activeListId) void fetchItems(activeListId);
@@ -164,7 +154,7 @@ export function ShoppingListsView() {
                     key={list.id}
                     list={list}
                     selected={list.id === activeListId}
-                    onSelect={() => setActiveListId(list.id)}
+                    onSelect={() => setSelectedListId(list.id)}
                     onEdit={() => openEdit(list)}
                     onDeleted={onListsChanged}
                     onWatchChanged={onWatchChanged}
