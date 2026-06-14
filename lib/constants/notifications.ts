@@ -30,6 +30,13 @@ export const NOTIFICATION_TYPE = {
   RESTAURANT_ADDED: "restaurant_added",
   RESTAURANT_UPDATED: "restaurant_updated",
   RESTAURANT_DELETED: "restaurant_deleted",
+  PET_ADDED: "pet_added",
+  PET_CARE_ADDED: "pet_care_added",
+  PET_CARE_UPDATED: "pet_care_updated",
+  PET_CARE_DELETED: "pet_care_deleted",
+  CHORE_ADDED: "chore_added",
+  CHORE_UPDATED: "chore_updated",
+  CHORE_DELETED: "chore_deleted",
 } as const;
 
 export type NotificationType = (typeof NOTIFICATION_TYPE)[keyof typeof NOTIFICATION_TYPE];
@@ -87,6 +94,19 @@ export const RESTAURANT_NOTIFICATION_TYPES: NotificationType[] = [
   NOTIFICATION_TYPE.RESTAURANT_ADDED,
   NOTIFICATION_TYPE.RESTAURANT_UPDATED,
   NOTIFICATION_TYPE.RESTAURANT_DELETED,
+];
+
+export const PET_NOTIFICATION_TYPES: NotificationType[] = [
+  NOTIFICATION_TYPE.PET_ADDED,
+  NOTIFICATION_TYPE.PET_CARE_ADDED,
+  NOTIFICATION_TYPE.PET_CARE_UPDATED,
+  NOTIFICATION_TYPE.PET_CARE_DELETED,
+];
+
+export const CHORE_NOTIFICATION_TYPES: NotificationType[] = [
+  NOTIFICATION_TYPE.CHORE_ADDED,
+  NOTIFICATION_TYPE.CHORE_UPDATED,
+  NOTIFICATION_TYPE.CHORE_DELETED,
 ];
 
 export const NOTIFICATION_FILTER_TAB = {

@@ -33,7 +33,17 @@ import {
 } from "@/lib/budget/aggregates";
 import { filterEntriesByMonth, getCurrentMonthKey } from "@/lib/budget/monthly";
 import { isMedicineExpiringSoon } from "@/lib/medicine/expiry";
-import { RESTAURANT_VISIT_STATUS } from "@/lib/constants/restaurants";
+import {
+  countPlannedRestaurants,
+  pickBestRecentRestaurants,
+} from "@/lib/restaurants/dashboard";
+import { countDuePetCareItems } from "@/lib/pets/filters";
+import { pickDuePetCarePreview } from "@/lib/pets/dashboard";
+import {
+  countActiveChores,
+  countOverdueChores,
+  pickActiveChorePreview,
+} from "@/lib/chores/dashboard";
 import { WATCHLIST_STATUS } from "@/lib/constants/watchlist";
 import { BRAND_COLOR } from "@/lib/constants/brand";
 import { BUDGET_EXPENSE_COLOR } from "@/lib/constants/budget";
@@ -55,6 +65,8 @@ import { useProfileStore } from "@/lib/stores/profile-store";
 import { useMedicineStore } from "@/lib/stores/medicine-store";
 import { useWatchlistStore } from "@/lib/stores/watchlist-store";
 import { useRestaurantsStore } from "@/lib/stores/restaurants-store";
+import { usePetsStore } from "@/lib/stores/pets-store";
+import { useChoresStore } from "@/lib/stores/chores-store";
 import { useScheduleStore } from "@/lib/stores/schedule-store";
 import { useShoppingListsStore } from "@/lib/stores/shopping-lists-store";
 import { createClient } from "@/lib/supabase/client";
@@ -100,6 +112,17 @@ export function DashboardOverview() {
   const restaurantsLoaded = useRestaurantsStore((s) => s.loaded);
   const restaurantsLoading = useRestaurantsStore((s) => s.loading);
   const fetchRestaurantPlaces = useRestaurantsStore((s) => s.fetchPlaces);
+
+  const pets = usePetsStore((s) => s.pets);
+  const careItems = usePetsStore((s) => s.careItems);
+  const petsLoaded = usePetsStore((s) => s.loaded);
+  const petsLoading = usePetsStore((s) => s.loading);
+  const fetchPets = usePetsStore((s) => s.fetchAll);
+
+  const choreTasks = useChoresStore((s) => s.tasks);
+  const choresLoaded = useChoresStore((s) => s.loaded);
+  const choresLoading = useChoresStore((s) => s.loading);
+  const fetchChores = useChoresStore((s) => s.fetchTasks);
 
   const scheduleEntries = useScheduleStore((s) => s.entries);
   const scheduleLoaded = useScheduleStore((s) => s.loaded);
@@ -170,6 +193,8 @@ export function DashboardOverview() {
     if (!medicineLoaded && !medicineLoading) void fetchMedicineItems();
     if (!watchlistLoaded && !watchlistLoading) void fetchWatchlistItems();
     if (!restaurantsLoaded && !restaurantsLoading) void fetchRestaurantPlaces();
+    if (!petsLoaded && !petsLoading) void fetchPets();
+    if (!choresLoaded && !choresLoading) void fetchChores();
     if (!scheduleLoaded && !scheduleLoading) void fetchSchedule();
     void loadBirthdays();
   }, [
@@ -191,6 +216,12 @@ export function DashboardOverview() {
     restaurantsLoaded,
     restaurantsLoading,
     fetchRestaurantPlaces,
+    petsLoaded,
+    petsLoading,
+    fetchPets,
+    choresLoaded,
+    choresLoading,
+    fetchChores,
     scheduleLoaded,
     scheduleLoading,
     fetchSchedule,
@@ -270,16 +301,33 @@ export function DashboardOverview() {
     () => activeWatchlistItems.slice(0, 3),
     [activeWatchlistItems]
   );
-  const plannedRestaurantPlaces = useMemo(
-    () =>
-      restaurantPlaces.filter(
-        (place) => place.visit_status === RESTAURANT_VISIT_STATUS.PLANNED
-      ),
+  const plannedRestaurantCount = useMemo(
+    () => countPlannedRestaurants(restaurantPlaces),
     [restaurantPlaces]
   );
   const previewRestaurantPlaces = useMemo(
-    () => plannedRestaurantPlaces.slice(0, 3),
-    [plannedRestaurantPlaces]
+    () => pickBestRecentRestaurants(restaurantPlaces, 3),
+    [restaurantPlaces]
+  );
+  const duePetCareCount = useMemo(
+    () => countDuePetCareItems(careItems),
+    [careItems]
+  );
+  const previewDuePetCare = useMemo(
+    () => pickDuePetCarePreview(careItems, pets, 3),
+    [careItems, pets]
+  );
+  const activeChoreCount = useMemo(
+    () => countActiveChores(choreTasks),
+    [choreTasks]
+  );
+  const overdueChoreCount = useMemo(
+    () => countOverdueChores(choreTasks),
+    [choreTasks]
+  );
+  const previewChoreTasks = useMemo(
+    () => pickActiveChorePreview(choreTasks, 3),
+    [choreTasks]
   );
 
   const visibleCardIds = useMemo(
@@ -310,7 +358,14 @@ export function DashboardOverview() {
       toWatchCount: activeWatchlistItems.length,
       restaurantPlaces,
       previewRestaurantPlaces,
-      plannedRestaurantCount: plannedRestaurantPlaces.length,
+      plannedRestaurantCount,
+      pets,
+      careItems,
+      duePetCareCount,
+      previewDuePetCare,
+      activeChoreCount,
+      overdueChoreCount,
+      previewChoreTasks,
       upcomingBirthdays,
       monthScheduleEntries,
       scheduleByType,
@@ -337,7 +392,14 @@ export function DashboardOverview() {
       activeWatchlistItems.length,
       restaurantPlaces,
       previewRestaurantPlaces,
-      plannedRestaurantPlaces.length,
+      plannedRestaurantCount,
+      pets,
+      careItems,
+      duePetCareCount,
+      previewDuePetCare,
+      activeChoreCount,
+      overdueChoreCount,
+      previewChoreTasks,
       upcomingBirthdays,
       monthScheduleEntries,
       scheduleByType,
@@ -383,6 +445,8 @@ export function DashboardOverview() {
     (medicineLoading && !medicineLoaded) ||
     (watchlistLoading && !watchlistLoaded) ||
     (restaurantsLoading && !restaurantsLoaded) ||
+    (petsLoading && !petsLoaded) ||
+    (choresLoading && !choresLoaded) ||
     (scheduleLoading && !scheduleLoaded) ||
     birthdaysLoading;
 
@@ -393,7 +457,7 @@ export function DashboardOverview() {
           {t.dashboard.overviewHeading}
         </h2>
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {Array.from({ length: 9 }).map((_, i) => (
+          {Array.from({ length: 11 }).map((_, i) => (
             <Skeleton key={i} className="h-52 w-full rounded-none" />
           ))}
         </div>

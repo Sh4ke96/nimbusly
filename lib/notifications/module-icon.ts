@@ -1,9 +1,11 @@
-import { Cake, CalendarDays, Clapperboard, Cross, Gift, ShoppingCart, UtensilsCrossed, Wallet, Bell, type LucideIcon } from "lucide-react";
+import { Cake, CalendarDays, Clapperboard, Cross, Gift, ListChecks, PawPrint, ShoppingCart, UtensilsCrossed, Wallet, Bell, type LucideIcon } from "lucide-react";
 import {
   BIRTHDAY_NOTIFICATION_TYPES,
   BUDGET_NOTIFICATION_TYPES,
+  CHORE_NOTIFICATION_TYPES,
   GIFT_NOTIFICATION_TYPES,
   MEDICINE_NOTIFICATION_TYPES,
+  PET_NOTIFICATION_TYPES,
   RESTAURANT_NOTIFICATION_TYPES,
   SCHEDULE_NOTIFICATION_TYPES,
   SHOPPING_LIST_NOTIFICATION_TYPES,
@@ -35,6 +37,12 @@ export function getNotificationModuleIcon(type: NotificationType): LucideIcon {
   }
   if ((RESTAURANT_NOTIFICATION_TYPES as string[]).includes(type)) {
     return UtensilsCrossed;
+  }
+  if ((PET_NOTIFICATION_TYPES as string[]).includes(type)) {
+    return PawPrint;
+  }
+  if ((CHORE_NOTIFICATION_TYPES as string[]).includes(type)) {
+    return ListChecks;
   }
   return Bell;
 }

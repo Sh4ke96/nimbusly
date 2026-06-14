@@ -9,6 +9,7 @@ import {
   UtensilsCrossed,
   Gift,
   ListChecks,
+  PawPrint,
   Scale,
   ShoppingCart,
   TrendingDown,
@@ -54,6 +55,10 @@ import type { MedicineItem } from "@/lib/medicine/types";
 import type { ShoppingList } from "@/lib/shopping-lists/types";
 import type { WatchlistItem } from "@/lib/watchlist/types";
 import type { RestaurantPlace } from "@/lib/restaurants/types";
+import type { Pet, PetCareItem } from "@/lib/pets/types";
+import type { PetCarePreviewRow } from "@/lib/pets/dashboard";
+import type { ChoreTask } from "@/lib/chores/types";
+import { formatPetDueCountdown } from "@/lib/pets/due";
 import type { ScheduleEntry } from "@/lib/schedule/types";
 import { cn } from "@/lib/utils";
 
@@ -182,6 +187,20 @@ export function getOverviewCardMeta(
         icon: UtensilsCrossed,
         accent: "amber",
       };
+    case DASHBOARD_OVERVIEW_CARD.PETS:
+      return {
+        href: "/pets",
+        title: t.moduleLabels.pets,
+        icon: PawPrint,
+        accent: "rose",
+      };
+    case DASHBOARD_OVERVIEW_CARD.CHORES:
+      return {
+        href: "/chores",
+        title: t.moduleLabels.chores,
+        icon: ListChecks,
+        accent: "orange",
+      };
     case DASHBOARD_OVERVIEW_CARD.BIRTHDAYS:
       return {
         href: "/birthdays",
@@ -233,6 +252,13 @@ export interface OverviewCardBodiesProps {
   restaurantPlaces: RestaurantPlace[];
   previewRestaurantPlaces: RestaurantPlace[];
   plannedRestaurantCount: number;
+  pets: Pet[];
+  careItems: PetCareItem[];
+  duePetCareCount: number;
+  previewDuePetCare: PetCarePreviewRow[];
+  activeChoreCount: number;
+  overdueChoreCount: number;
+  previewChoreTasks: ChoreTask[];
   upcomingBirthdays: BirthdayEntry[];
   monthScheduleEntries: ScheduleEntry[];
   scheduleByType: [string, number][];
@@ -262,6 +288,12 @@ export function OverviewCardBody({
   restaurantPlaces,
   previewRestaurantPlaces,
   plannedRestaurantCount,
+  pets,
+  duePetCareCount,
+  previewDuePetCare,
+  activeChoreCount,
+  overdueChoreCount,
+  previewChoreTasks,
   upcomingBirthdays,
   monthScheduleEntries,
   scheduleByType,
@@ -493,11 +525,16 @@ export function OverviewCardBody({
             accent="amber"
           />
           {plannedRestaurantCount > 0 && (
+            <p className="text-xs text-amber-800 dark:text-amber-300 font-medium">
+              {formatMessage(t.dashboard.restaurantsPlannedCount, {
+                count: String(plannedRestaurantCount),
+              })}
+            </p>
+          )}
+          {previewRestaurantPlaces.length > 0 ? (
             <>
-              <p className="text-xs text-amber-800 dark:text-amber-300 font-medium">
-                {formatMessage(t.dashboard.restaurantsPlannedCount, {
-                  count: String(plannedRestaurantCount),
-                })}
+              <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
+                {t.dashboard.restaurantsBestRecent}
               </p>
               <ul className="space-y-1.5">
                 {previewRestaurantPlaces.map((place) => (
@@ -507,17 +544,102 @@ export function OverviewCardBody({
                   >
                     <UtensilsCrossed className="size-3.5 shrink-0 text-amber-600 dark:text-amber-400" />
                     <span className="truncate font-medium flex-1 min-w-0">{place.name}</span>
-                    {place.rating !== null ? (
+                    {place.rating !== null && (
                       <RestaurantStarRating value={place.rating} size="sm" />
-                    ) : (
-                      <span className="shrink-0 text-[10px] font-medium text-muted-foreground uppercase">
-                        {t.restaurants.visitStatusLabels[place.visit_status]}
-                      </span>
                     )}
                   </li>
                 ))}
               </ul>
             </>
+          ) : (
+            plannedRestaurantCount === 0 && (
+              <EmptyHint icon={UtensilsCrossed} text={t.dashboard.restaurantsNoRatedYet} />
+            )
+          )}
+        </div>
+      );
+
+    case DASHBOARD_OVERVIEW_CARD.PETS:
+      return pets.length === 0 ? (
+        <EmptyHint icon={PawPrint} text={t.dashboard.petsEmpty} />
+      ) : (
+        <div className="space-y-3">
+          <BigStat
+            value={pets.length}
+            label={formatMessage(t.dashboard.petsCount, {
+              count: String(pets.length),
+            })}
+            accent="rose"
+          />
+          {duePetCareCount > 0 && (
+            <>
+              <p className="text-xs text-rose-800 dark:text-rose-300 font-medium">
+                {formatMessage(t.dashboard.petsDueCount, {
+                  count: String(duePetCareCount),
+                })}
+              </p>
+              <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
+                {t.dashboard.petsDueSoonHeading}
+              </p>
+              <ul className="space-y-1.5">
+                {previewDuePetCare.map(({ item, petName }) => {
+                  const whenLabel =
+                    formatPetDueCountdown(item.next_due_date, t.pets) ?? t.pets.dueSoon;
+                  return (
+                    <li
+                      key={item.id}
+                      className="flex items-center gap-2 text-sm border border-border bg-muted/20 px-2.5 py-2"
+                    >
+                      <PawPrint className="size-3.5 shrink-0 text-rose-600 dark:text-rose-400" />
+                      <span className="truncate font-medium flex-1 min-w-0">
+                        {petName ? `${petName}: ${item.name}` : item.name}
+                      </span>
+                      <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wide px-2 py-1 border rounded-none bg-rose-500/10 text-rose-800 dark:text-rose-300 border-rose-500/20">
+                        {whenLabel}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </>
+          )}
+        </div>
+      );
+
+    case DASHBOARD_OVERVIEW_CARD.CHORES:
+      return activeChoreCount === 0 ? (
+        <EmptyHint icon={ListChecks} text={t.dashboard.choresEmpty} />
+      ) : (
+        <div className="space-y-3">
+          <BigStat
+            value={activeChoreCount}
+            label={formatMessage(t.dashboard.choresCount, {
+              count: String(activeChoreCount),
+            })}
+            accent="orange"
+          />
+          {overdueChoreCount > 0 && (
+            <p className="text-xs text-destructive font-medium">
+              {formatMessage(t.dashboard.choresOverdueCount, {
+                count: String(overdueChoreCount),
+              })}
+            </p>
+          )}
+          {previewChoreTasks.length > 0 && (
+            <ul className="space-y-1.5">
+              {previewChoreTasks.map((task) => (
+                <li
+                  key={task.id}
+                  className="flex items-center gap-2 text-sm border border-border bg-muted/20 px-2.5 py-2"
+                >
+                  <ListChecks className="size-3.5 shrink-0 text-orange-600 dark:text-orange-400" />
+                  <span className="truncate font-medium flex-1 min-w-0">{task.title}</span>
+                  <span className="shrink-0 text-[10px] font-medium text-muted-foreground uppercase">
+                    {t.chores.statusLabels[task.status]}
+                  </span>
+                </li>
+              ))}
+            </ul>
           )}
         </div>
       );

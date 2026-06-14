@@ -15,6 +15,8 @@ function getOverviewCardLabel(
     medicineCabinet: string;
     watchlist: string;
     restaurants: string;
+    pets: string;
+    chores: string;
     birthdays: string;
     calendar: string;
     family: string;
@@ -33,6 +35,10 @@ function getOverviewCardLabel(
       return labels.watchlist;
     case DASHBOARD_OVERVIEW_CARD.RESTAURANTS:
       return labels.restaurants;
+    case DASHBOARD_OVERVIEW_CARD.PETS:
+      return labels.pets;
+    case DASHBOARD_OVERVIEW_CARD.CHORES:
+      return labels.chores;
     case DASHBOARD_OVERVIEW_CARD.BIRTHDAYS:
       return labels.birthdays;
     case DASHBOARD_OVERVIEW_CARD.CALENDAR:

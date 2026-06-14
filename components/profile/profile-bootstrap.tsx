@@ -8,6 +8,8 @@ import { useGiftsStore } from "@/lib/stores/gifts-store";
 import { useMedicineStore } from "@/lib/stores/medicine-store";
 import { useWatchlistStore } from "@/lib/stores/watchlist-store";
 import { useRestaurantsStore } from "@/lib/stores/restaurants-store";
+import { usePetsStore } from "@/lib/stores/pets-store";
+import { useChoresStore } from "@/lib/stores/chores-store";
 import { useShoppingListsStore } from "@/lib/stores/shopping-lists-store";
 import { useBudgetStore } from "@/lib/stores/budget-store";
 
@@ -20,6 +22,8 @@ export function ProfileBootstrap({ children }: { children: React.ReactNode }) {
   const resetMedicine = useMedicineStore((s) => s.reset);
   const resetWatchlist = useWatchlistStore((s) => s.reset);
   const resetRestaurants = useRestaurantsStore((s) => s.reset);
+  const resetPets = usePetsStore((s) => s.reset);
+  const resetChores = useChoresStore((s) => s.reset);
   const resetShoppingLists = useShoppingListsStore((s) => s.reset);
   const resetBudget = useBudgetStore((s) => s.reset);
 
@@ -39,6 +43,8 @@ export function ProfileBootstrap({ children }: { children: React.ReactNode }) {
         resetMedicine();
         resetWatchlist();
         resetRestaurants();
+        resetPets();
+        resetChores();
         resetShoppingLists();
         resetBudget();
         return;
@@ -48,7 +54,7 @@ export function ProfileBootstrap({ children }: { children: React.ReactNode }) {
     });
 
     return () => subscription.unsubscribe();
-  }, [fetchSession, fetchNotifications, resetProfile, resetNotifications, resetGifts, resetMedicine, resetWatchlist, resetRestaurants, resetShoppingLists, resetBudget]);
+  }, [fetchSession, fetchNotifications, resetProfile, resetNotifications, resetGifts, resetMedicine, resetWatchlist, resetRestaurants, resetPets, resetChores, resetShoppingLists, resetBudget]);
 
   return children;
 }

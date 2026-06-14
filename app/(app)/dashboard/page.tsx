@@ -17,6 +17,8 @@ import {
   Cross,
   Clapperboard,
   UtensilsCrossed,
+  PawPrint,
+  ListChecks,
   ArrowRight,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -96,6 +98,20 @@ export default function DashboardPage() {
       desc: t.dashboard.moduleDescs.restaurants,
       href: "/restaurants",
       Icon: UtensilsCrossed,
+    },
+    {
+      key: "pets",
+      label: t.dashboard.moduleLabels.pets,
+      desc: t.dashboard.moduleDescs.pets,
+      href: "/pets",
+      Icon: PawPrint,
+    },
+    {
+      key: "chores",
+      label: t.dashboard.moduleLabels.chores,
+      desc: t.dashboard.moduleDescs.chores,
+      href: "/chores",
+      Icon: ListChecks,
     },
     {
       key: "family",

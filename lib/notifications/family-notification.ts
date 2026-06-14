@@ -42,6 +42,13 @@ export function getFamilyNotificationTitle(
     [NOTIFICATION_TYPE.RESTAURANT_ADDED]: notifications.restaurantAddedTitle,
     [NOTIFICATION_TYPE.RESTAURANT_UPDATED]: notifications.restaurantUpdatedTitle,
     [NOTIFICATION_TYPE.RESTAURANT_DELETED]: notifications.restaurantDeletedTitle,
+    [NOTIFICATION_TYPE.PET_ADDED]: notifications.petAddedTitle,
+    [NOTIFICATION_TYPE.PET_CARE_ADDED]: notifications.petCareAddedTitle,
+    [NOTIFICATION_TYPE.PET_CARE_UPDATED]: notifications.petCareUpdatedTitle,
+    [NOTIFICATION_TYPE.PET_CARE_DELETED]: notifications.petCareDeletedTitle,
+    [NOTIFICATION_TYPE.CHORE_ADDED]: notifications.choreAddedTitle,
+    [NOTIFICATION_TYPE.CHORE_UPDATED]: notifications.choreUpdatedTitle,
+    [NOTIFICATION_TYPE.CHORE_DELETED]: notifications.choreDeletedTitle,
   };
 
   return formatMessage(templateByType[type], { actor: actorName });
