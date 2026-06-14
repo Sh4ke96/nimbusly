@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useT } from "@/lib/lang-context";
 import { cn } from "@/lib/utils";
+import { NOTIFICATION_FILTER_TAB } from "@/lib/constants/notifications";
 import { HEADER_CONTROL_HEIGHT } from "@/lib/ui/header-controls";
 import { useNotificationsStore } from "@/lib/stores/notifications-store";
 
@@ -35,7 +36,10 @@ export function NotificationsBell() {
         size="icon"
         className={cn(HEADER_CONTROL_HEIGHT, "relative rounded-none shrink-0")}
       >
-        <Link href="/notifications" aria-label={t.notifications.title}>
+        <Link
+          href={`/notifications?filter=${NOTIFICATION_FILTER_TAB.UNREAD}`}
+          aria-label={t.notifications.title}
+        >
           <Bell className="size-4" />
           <span className="absolute -top-1 -right-1 inline-flex min-w-4 h-4 items-center justify-center rounded-none bg-primary px-1 text-[10px] font-bold text-primary-foreground">
             {unreadCount > 9 ? "9+" : unreadCount}

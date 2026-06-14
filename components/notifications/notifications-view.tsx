@@ -1,68 +1,152 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
-import Link from "next/link";
+import { Fragment, useActionState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Bell, CheckCheck, Inbox, type LucideIcon } from "lucide-react";
 import { AppHeader } from "@/components/app/app-header";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
+import { NotificationListItem } from "@/components/notifications/notification-list-item";
+import { NotificationsPagination } from "@/components/notifications/notifications-pagination";
+import { SettingsTabHeader } from "@/components/profile/settings/settings-tab-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LOCALE_BY_LANG } from "@/lib/constants/lang";
-import { NOTIFICATION_TYPE } from "@/lib/constants/notifications";
+import {
+  NOTIFICATION_FILTER_TAB,
+  type NotificationFilterTab,
+} from "@/lib/constants/notifications";
 import { useLang, useT } from "@/lib/lang-context";
+import {
+  notificationFilterHref,
+  parseNotificationFilterTab,
+} from "@/lib/notifications/filter-tabs";
 import { useNotificationsStore } from "@/lib/stores/notifications-store";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
-import {
-  markAllNotificationsRead,
-  markNotificationRead,
-} from "@/app/(app)/notifications/actions";
+import { markAllNotificationsRead } from "@/app/(app)/notifications/actions";
 import { cn } from "@/lib/utils";
-import { Cake } from "lucide-react";
 
-function formatWhen(iso: string, locale: string) {
-  return new Intl.DateTimeFormat(locale, {
-    dateStyle: "medium",
-    timeStyle: "short",
-  }).format(new Date(iso));
+const FILTER_TAB_TRIGGER_CLASS = cn(
+  "w-full flex-none justify-start gap-3 rounded-none border border-transparent px-4 py-3.5",
+  "text-sm font-heading font-semibold text-muted-foreground",
+  "hover:bg-muted/60 hover:text-foreground",
+  "data-active:border-primary data-active:bg-primary/10 data-active:text-primary",
+  "after:hidden"
+);
+
+function parsePage(value: string | null): number {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed < 1) return 1;
+  return Math.floor(parsed);
+}
+
+function emptyMessageForFilter(
+  filter: NotificationFilterTab,
+  t: ReturnType<typeof useT>
+): string {
+  if (filter === NOTIFICATION_FILTER_TAB.UNREAD) {
+    return t.notifications.emptyUnread;
+  }
+  if (filter === NOTIFICATION_FILTER_TAB.READ) {
+    return t.notifications.emptyRead;
+  }
+  return t.notifications.empty;
 }
 
 export function NotificationsView() {
   const t = useT();
   const { lang } = useLang();
-  const items = useNotificationsStore((s) => s.items);
-  const loaded = useNotificationsStore((s) => s.loaded);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const filter = parseNotificationFilterTab(searchParams.get("filter"));
+  const page = parsePage(searchParams.get("page"));
+
+  const unreadCount = useNotificationsStore((s) => s.unreadCount);
+  const pageItems = useNotificationsStore((s) => s.pageItems);
+  const pageTotal = useNotificationsStore((s) => s.pageTotal);
+  const pageLoading = useNotificationsStore((s) => s.pageLoading);
   const fetchNotifications = useNotificationsStore((s) => s.fetchNotifications);
+  const fetchNotificationsPage = useNotificationsStore((s) => s.fetchNotificationsPage);
   const markReadLocally = useNotificationsStore((s) => s.markReadLocally);
   const markAllReadLocally = useNotificationsStore((s) => s.markAllReadLocally);
 
-  const [markState, markAction] = useActionState(markNotificationRead, null);
   const [markAllState, markAllAction] = useActionState(markAllNotificationsRead, null);
 
-  useEffect(() => {
-    if (!loaded) void fetchNotifications();
-  }, [loaded, fetchNotifications]);
+  const filterTabs: {
+    value: NotificationFilterTab;
+    icon: LucideIcon;
+    label: string;
+    badge?: number;
+  }[] = [
+    {
+      value: NOTIFICATION_FILTER_TAB.ALL,
+      icon: Inbox,
+      label: t.notifications.tabAll,
+    },
+    {
+      value: NOTIFICATION_FILTER_TAB.UNREAD,
+      icon: Bell,
+      label: t.notifications.tabUnread,
+      badge: unreadCount > 0 ? unreadCount : undefined,
+    },
+    {
+      value: NOTIFICATION_FILTER_TAB.READ,
+      icon: CheckCheck,
+      label: t.notifications.tabRead,
+    },
+  ];
 
-  useActionFeedback(markState, () => void fetchNotifications(true));
+  const activeFilter = filterTabs.find((tab) => tab.value === filter) ?? filterTabs[0];
+
+  useEffect(() => {
+    void fetchNotifications();
+  }, [fetchNotifications]);
+
+  useEffect(() => {
+    void fetchNotificationsPage({ filter, page });
+  }, [filter, page, fetchNotificationsPage]);
+
   useActionFeedback(markAllState, () => {
     markAllReadLocally();
     void fetchNotifications(true);
+    void fetchNotificationsPage({ filter, page });
   });
 
   const locale = LOCALE_BY_LANG[lang];
+
+  function handleFilterChange(nextFilter: string) {
+    router.replace(
+      notificationFilterHref(nextFilter as NotificationFilterTab, 1)
+    );
+  }
+
+  function handlePageChange(nextPage: number) {
+    router.replace(notificationFilterHref(filter, nextPage));
+  }
+
+  function handleItemMarkedRead() {
+    void fetchNotifications(true);
+    void fetchNotificationsPage({ filter, page });
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <AppHeader />
 
-      <main className="flex-1 mx-auto w-full max-w-3xl px-4 py-10 space-y-6">
+      <main className="flex-1 mx-auto w-full max-w-4xl px-4 py-10 space-y-6">
         <AccountBreadcrumbs current={t.notifications.title} />
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">
-            <h1 className="font-heading font-bold text-2xl tracking-tight">{t.notifications.title}</h1>
+            <h1 className="font-heading font-bold text-2xl tracking-tight">
+              {t.notifications.title}
+            </h1>
             <p className="text-sm text-muted-foreground">{t.notifications.subtitle}</p>
           </div>
-          {items.some((item) => !item.read_at) && (
+          {unreadCount > 0 && (
             <form action={markAllAction}>
               <Button type="submit" variant="outline">
                 {t.notifications.markAllRead}
@@ -71,65 +155,83 @@ export function NotificationsView() {
           )}
         </div>
 
-        <Card className="rounded-none py-0 shadow-sm">
+        <Card className="gap-0 rounded-none py-0 shadow-sm overflow-hidden">
           <CardContent className="p-0">
-            {!loaded ? (
-              <div className="space-y-2 p-4">
-                <Skeleton className="h-16 w-full rounded-none" />
-                <Skeleton className="h-16 w-full rounded-none" />
-              </div>
-            ) : items.length === 0 ? (
-              <p className="p-6 text-sm text-muted-foreground text-center">{t.notifications.empty}</p>
-            ) : (
-              <ul className="divide-y divide-border">
-                {items.map((item) => (
-                  <li
-                    key={item.id}
-                    className={cn(
-                      "flex gap-3 p-4",
-                      !item.read_at && "bg-primary/5"
-                    )}
+            <Tabs
+              orientation="vertical"
+              value={filter}
+              onValueChange={handleFilterChange}
+              className="w-full"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-[15rem_minmax(0,1fr)]">
+                <aside className="border-b border-border bg-muted/30 md:border-b-0 md:border-r">
+                  <TabsList
+                    variant="line"
+                    className="flex h-auto w-full flex-col items-stretch gap-0 rounded-none border-0 bg-transparent p-2"
                   >
-                    <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-none bg-primary/10 text-primary">
-                      <Cake className="size-4" />
-                    </span>
-                    <div className="min-w-0 flex-1 space-y-1">
-                      <div className="flex items-start justify-between gap-3">
-                        <p className="font-medium text-sm">{item.title}</p>
-                        <time className="shrink-0 text-xs text-muted-foreground">
-                          {formatWhen(item.created_at, locale)}
-                        </time>
-                      </div>
-                      <p className="text-sm text-muted-foreground">{item.body}</p>
-                      {(item.type === NOTIFICATION_TYPE.BIRTHDAY_ADDED ||
-                        item.type === NOTIFICATION_TYPE.BIRTHDAY_UPDATED) && (
-                        <Link
-                          href="/birthdays"
-                          className="text-xs font-medium text-primary hover:underline"
-                        >
-                          {t.notifications.openBirthdays}
-                        </Link>
-                      )}
+                    {filterTabs.map((tab, index) => (
+                      <Fragment key={tab.value}>
+                        {index > 0 && <Separator />}
+                        <TabsTrigger value={tab.value} className={FILTER_TAB_TRIGGER_CLASS}>
+                          <tab.icon className="size-5 shrink-0" />
+                          <span className="flex min-w-0 flex-1 items-center justify-between gap-2 text-left">
+                            <span>{tab.label}</span>
+                            {tab.badge !== undefined && (
+                              <span className="inline-flex min-w-4 h-4 shrink-0 items-center justify-center rounded-none bg-primary px-1 text-[10px] font-bold text-primary-foreground">
+                                {tab.badge > 9 ? "9+" : tab.badge}
+                              </span>
+                            )}
+                          </span>
+                        </TabsTrigger>
+                      </Fragment>
+                    ))}
+                  </TabsList>
+                </aside>
+
+                <div className="min-w-0 p-6 md:p-8">
+                  <SettingsTabHeader
+                    icon={activeFilter.icon}
+                    title={activeFilter.label}
+                  />
+
+                  {pageLoading ? (
+                    <div className="space-y-2">
+                      <Skeleton className="h-16 w-full rounded-none" />
+                      <Skeleton className="h-16 w-full rounded-none" />
                     </div>
-                    {!item.read_at && (
-                      <form
-                        action={markAction}
-                        onSubmit={() => markReadLocally(item.id)}
-                      >
-                        <input type="hidden" name="id" value={item.id} />
-                        <Button type="submit" variant="ghost" size="sm" className="shrink-0">
-                          {t.notifications.markRead}
-                        </Button>
-                      </form>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            )}
+                  ) : pageItems.length === 0 ? (
+                    <p className="text-sm text-muted-foreground text-center py-8">
+                      {emptyMessageForFilter(filter, t)}
+                    </p>
+                  ) : (
+                    <>
+                      <ul className="divide-y divide-border rounded-none border border-border">
+                        {pageItems.map((item) => (
+                          <NotificationListItem
+                            key={item.id}
+                            item={item}
+                            locale={locale}
+                            onMarkReadLocally={markReadLocally}
+                            onMarkedRead={handleItemMarkedRead}
+                          />
+                        ))}
+                      </ul>
+                      <NotificationsPagination
+                        page={page}
+                        totalItems={pageTotal}
+                        onPageChange={handlePageChange}
+                      />
+                    </>
+                  )}
+                </div>
+              </div>
+            </Tabs>
           </CardContent>
         </Card>
 
-        <p className="text-xs text-center text-muted-foreground">{t.notifications.emailComingSoon}</p>
+        <p className="text-xs text-center text-muted-foreground">
+          {t.notifications.emailComingSoon}
+        </p>
       </main>
     </div>
   );

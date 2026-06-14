@@ -1,0 +1,99 @@
+"use client";
+
+import { useActionState, useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { ScheduleEntryForm } from "@/components/schedule/schedule-entry-form";
+import { type ScheduleEntryType, SCHEDULE_MAX_ENTRIES_PER_DAY } from "@/lib/constants/schedule";
+import { useT } from "@/lib/lang-context";
+import { formatMessage } from "@/lib/i18n/format";
+import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
+import { createScheduleEntry } from "@/app/(app)/schedule/actions";
+import {
+  dateToEntryDateString,
+  isScheduleDayFull,
+  type ScheduleEntry,
+} from "@/lib/schedule/types";
+import { Plus } from "lucide-react";
+import { toast } from "sonner";
+
+interface ScheduleFormDialogProps {
+  entries: ScheduleEntry[];
+  onSuccess: () => void;
+}
+
+export function ScheduleFormDialog({ entries, onSuccess }: ScheduleFormDialogProps) {
+  const t = useT();
+  const [open, setOpen] = useState<boolean>(false);
+  const [date, setDate] = useState<Date | undefined>();
+  const [entryType, setEntryType] = useState<ScheduleEntryType | "">("");
+  const [description, setDescription] = useState<string>("");
+  const [state, action, pending] = useActionState(createScheduleEntry, null);
+
+  useActionFeedback(state, () => {
+    setOpen(false);
+    setDate(undefined);
+    setEntryType("");
+    setDescription("");
+    onSuccess();
+  });
+
+  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    if (!date) {
+      e.preventDefault();
+      toast.error(t.schedule.errorDateRequired);
+      return;
+    }
+    if (!entryType) {
+      e.preventDefault();
+      toast.error(t.schedule.errorInvalidType);
+      return;
+    }
+
+    const entryDate = dateToEntryDateString(date);
+    if (isScheduleDayFull(entries, entryDate)) {
+      e.preventDefault();
+      toast.error(
+        formatMessage(t.schedule.errorTooManyPerDay, {
+          max: String(SCHEDULE_MAX_ENTRIES_PER_DAY),
+        })
+      );
+      return;
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button>
+          <Plus className="size-4" />
+          {t.schedule.addBtn}
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="rounded-none sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle className="font-heading">{t.schedule.addTitle}</DialogTitle>
+        </DialogHeader>
+        <form action={action} className="space-y-4" onSubmit={onSubmit}>
+          <ScheduleEntryForm
+            date={date}
+            onDateChange={setDate}
+            entryType={entryType}
+            onEntryTypeChange={setEntryType}
+            description={description}
+            onDescriptionChange={setDescription}
+          />
+          <Button type="submit" className="w-full" disabled={pending}>
+            {pending ? t.schedule.saving : t.schedule.saveBtn}
+          </Button>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}

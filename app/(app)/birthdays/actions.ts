@@ -2,12 +2,12 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { getServerT } from "@/lib/i18n/server";
-import { formatMessage } from "@/lib/i18n/format";
 import { buildBirthdayChangeSummary } from "@/lib/birthdays/changes";
 import { isValidBirthDate } from "@/lib/birthdays/types";
 import { formatBirthdayLabel } from "@/lib/birthdays/types";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { NOTIFICATION_TYPE, type NotificationType } from "@/lib/constants/notifications";
+import { getFamilyNotificationTitle } from "@/lib/notifications/family-notification";
 import { getDisplayName } from "@/lib/profile";
 import type { AccountActionState } from "@/app/(app)/account/actions";
 
@@ -44,12 +44,7 @@ async function notifyFamilyAboutBirthdayEvent(
 
   if (recipientIds.length === 0) return;
 
-  const titleTemplate =
-    params.type === NOTIFICATION_TYPE.BIRTHDAY_ADDED
-      ? t.notifications.birthdayAddedTitle
-      : t.notifications.birthdayUpdatedTitle;
-
-  const title = formatMessage(titleTemplate, { actor: params.actorName });
+  const title = getFamilyNotificationTitle(params.type, t.notifications, params.actorName);
   const body = `${params.personName}${t.notifications.notificationBodySeparator}${params.bodyDetail}`;
 
   await supabase.rpc("create_family_notifications", {
@@ -233,6 +228,21 @@ export async function deleteBirthday(
   const id = formData.get("id") as string;
   if (!id) return { error: t.birthdays.errorGeneric };
 
+  const { data: existing } = await supabase
+    .from("birthday_entries")
+    .select("id, person_name, birth_month, birth_day, description, family_id, created_by")
+    .eq("id", id)
+    .eq("created_by", user.id)
+    .maybeSingle();
+
+  if (!existing) return { error: t.birthdays.errorNotOwner };
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("account_mode, family_id, first_name, last_name")
+    .eq("id", user.id)
+    .maybeSingle();
+
   const { error } = await supabase
     .from("birthday_entries")
     .delete()
@@ -240,6 +250,29 @@ export async function deleteBirthday(
     .eq("created_by", user.id);
 
   if (error) return { error: t.birthdays.errorGeneric };
+
+  const familyId = existing.family_id;
+  if (familyId && profile?.account_mode === ACCOUNT_MODE.FAMILY) {
+    const actorName = getDisplayName(profile);
+    const dateLabel = formatBirthdayLabel({
+      birth_month: existing.birth_month,
+      birth_day: existing.birth_day,
+    } as Parameters<typeof formatBirthdayLabel>[0]);
+
+    try {
+      await notifyFamilyAboutBirthdayEvent(supabase, {
+        type: NOTIFICATION_TYPE.BIRTHDAY_DELETED,
+        actorId: user.id,
+        actorName,
+        familyId,
+        birthdayId: id,
+        personName: existing.person_name,
+        bodyDetail: dateLabel,
+      });
+    } catch {
+      // Entry deleted; notifications are best-effort
+    }
+  }
 
   return { success: t.birthdays.deletedSuccess };
 }

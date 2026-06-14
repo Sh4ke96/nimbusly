@@ -29,7 +29,6 @@ export const t = {
   dashboard: {
     greeting: "Dzień dobry",
     modules: "Moduły",
-    comingSoon: "Moduły w budowie",
     logout: "Wyloguj",
     moduleLabels: ["Budżet", "Zakupy", "Prezenty", "Urodziny", "Grafik", "Rodzina"],
   },

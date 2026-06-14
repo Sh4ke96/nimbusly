@@ -37,10 +37,6 @@ describe("Dashboard", () => {
     });
   });
 
-  it("pokazuje sekcję „w budowie”", () => {
-    cy.contains(t.dashboard.comingSoon).should("be.visible");
-  });
-
   it("otwiera menu konta z linkami do ustawień", () => {
     cy.openAccountMenu();
     cy.contains(t.account.menuProfile).should("be.visible");

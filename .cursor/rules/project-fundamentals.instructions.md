@@ -199,6 +199,7 @@ Domain values belong in `lib/constants/` as `as const` objects with derived type
 | `NOTIFICATION_TYPE` | `lib/constants/notifications.ts` |
 | `FAMILY_ACCESS_ERROR` | `lib/constants/server-error.ts` |
 | `INVITATION_STATUS` | `lib/constants/family-invitation.ts` |
+| `SCHEDULE_ENTRY_TYPE` | `lib/constants/schedule.ts` |
 | `TEST_USER_SEED_KIND` | `lib/constants/test.ts` (Cypress seeds) |
 
 ```ts
