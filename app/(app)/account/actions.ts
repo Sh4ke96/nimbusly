@@ -2,10 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { getServerT } from "@/lib/i18n/server";
-import { getPasswordResetCallbackUrl } from "@/lib/supabase/auth-redirect";
-import { isAuthRateLimitError } from "@/lib/supabase/auth-errors";
 import { isAvatarColor } from "@/lib/avatar-colors";
-import { headers } from "next/headers";
 import type { AccountMode } from "@/lib/profile";
 
 export type AccountActionState = { error: string } | { success: string } | null;
@@ -156,36 +153,4 @@ export async function updateFamilyName(
   if (error) return { error: t.account.errorGeneric };
 
   return { success: t.account.familySaved };
-}
-
-export async function requestPasswordReset(
-  _prev: AccountActionState,
-  _formData: FormData
-): Promise<AccountActionState> {
-  const t = await getServerT();
-  const { supabase, user } = await requireUser();
-
-  if (!user?.email) {
-    return { error: t.account.errorUnauthorized };
-  }
-
-  const headerStore = await headers();
-  const origin =
-    headerStore.get("origin") ??
-    process.env.NEXT_PUBLIC_SITE_URL ??
-    "http://localhost:3000";
-
-  const { error } = await supabase.auth.resetPasswordForEmail(user.email, {
-    redirectTo: getPasswordResetCallbackUrl(origin),
-  });
-
-  if (error) {
-    return {
-      error: isAuthRateLimitError(error.message)
-        ? t.account.passwordResetRateLimit
-        : t.account.passwordResetError,
-    };
-  }
-
-  return { success: t.account.passwordResetSent };
 }

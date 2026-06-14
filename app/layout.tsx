@@ -60,7 +60,7 @@ export default async function RootLayout({
           <LangProvider initialLang={lang}>
             <TooltipProvider>
               {children}
-              <Toaster richColors closeButton position="top-right" />
+              <Toaster closeButton position="top-right" />
             </TooltipProvider>
           </LangProvider>
         </ThemeProvider>

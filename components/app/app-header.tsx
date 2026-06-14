@@ -2,6 +2,7 @@
 
 import { Logo } from "@/components/logo";
 import { AccountMenu } from "@/components/account/account-menu";
+import { NotificationsBell } from "@/components/notifications/notifications-bell";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageToggle } from "@/components/language-toggle";
 
@@ -12,6 +13,7 @@ export function AppHeader() {
       <div className="flex items-center gap-2">
         <LanguageToggle className="hidden sm:flex" />
         <ThemeToggle />
+        <NotificationsBell />
         <AccountMenu />
       </div>
     </header>

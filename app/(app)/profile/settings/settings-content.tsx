@@ -1,24 +1,36 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Palette, User, Users } from "lucide-react";
+import { KeyRound, Palette, User, Users, type LucideIcon } from "lucide-react";
 import { AppHeader } from "@/components/app/app-header";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProfileForm } from "@/components/profile/settings/profile-form";
 import { AccountTypeForm } from "@/components/profile/settings/account-type-form";
+import { JoinFamilyForm } from "@/components/profile/settings/join-family-form";
 import { FamilySection } from "@/components/profile/settings/family-section";
+import { PasswordSection } from "@/components/profile/settings/password-section";
+import { SettingsTabHeader } from "@/components/profile/settings/settings-tab-header";
 import { SettingsSkeleton } from "@/components/profile/settings/settings-skeleton";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useT } from "@/lib/lang-context";
-import { settingsTabHref, type SettingsTab } from "@/lib/profile/settings-tabs";
+import { cn } from "@/lib/utils";
+import {
+  parseSettingsTab,
+  settingsTabHref,
+  type SettingsTab,
+} from "@/lib/profile/settings-tabs";
 
-function parseTab(value: string | null): SettingsTab {
-  if (value === "account" || value === "family") return value;
-  return "profile";
-}
+const SIDEBAR_TRIGGER_CLASS = cn(
+  "w-full flex-none justify-start gap-3 rounded-none border border-transparent px-4 py-3.5",
+  "text-sm font-heading font-semibold text-muted-foreground",
+  "hover:bg-muted/60 hover:text-foreground",
+  "data-active:border-primary data-active:bg-primary/10 data-active:text-primary",
+  "after:hidden"
+);
 
 export default function ProfileSettingsPage() {
   const t = useT();
@@ -26,23 +38,42 @@ export default function ProfileSettingsPage() {
   const loaded = useProfileStore((s) => s.loaded);
   const profile = useProfileStore((s) => s.profile);
 
-  const urlTab = parseTab(searchParams.get("tab"));
+  const showFamily = profile?.account_mode === "family" && !!profile.family_id;
+  const showJoinFamily = profile?.account_mode === "solo" && !profile.family_id;
+
+  const urlTab = parseSettingsTab(searchParams.get("tab"));
   const [tab, setTab] = useState<SettingsTab>(urlTab);
 
-  const showFamily = profile?.account_mode === "family" && !!profile.family_id;
+  const navItems: { value: SettingsTab; icon: LucideIcon; label: string }[] = [
+    { value: "profile", icon: Palette, label: t.account.menuProfile },
+    { value: "account", icon: User, label: t.account.menuAccountType },
+    ...(showFamily
+      ? [{ value: "family" as const, icon: Users, label: t.account.menuFamily }]
+      : []),
+    { value: "password", icon: KeyRound, label: t.account.menuPassword },
+  ];
+
+  const activeNav = navItems.find((item) => item.value === tab) ?? navItems[0];
 
   useEffect(() => {
     setTab(urlTab);
   }, [urlTab]);
 
   useEffect(() => {
+    if (tab === "family" && !showFamily) {
+      setTab("profile");
+      window.history.replaceState(window.history.state, "", settingsTabHref("profile"));
+    }
+  }, [tab, showFamily]);
+
+  useEffect(() => {
     function onPopState() {
       const params = new URLSearchParams(window.location.search);
-      setTab(parseTab(params.get("tab")));
+      setTab(parseSettingsTab(params.get("tab")));
     }
 
     function onSettingsTab(event: Event) {
-      const next = parseTab((event as CustomEvent<string>).detail);
+      const next = parseSettingsTab((event as CustomEvent<string>).detail);
       setTab(next);
     }
 
@@ -55,7 +86,7 @@ export default function ProfileSettingsPage() {
   }, []);
 
   function onTabChange(value: string) {
-    const next = parseTab(value);
+    const next = parseSettingsTab(value);
     setTab(next);
     window.history.replaceState(window.history.state, "", settingsTabHref(next));
   }
@@ -68,7 +99,7 @@ export default function ProfileSettingsPage() {
     <div className="min-h-screen flex flex-col bg-background">
       <AppHeader />
 
-      <main className="flex-1 mx-auto w-full max-w-3xl px-4 py-10 space-y-6">
+      <main className="flex-1 mx-auto w-full max-w-7xl px-4 py-10 space-y-6">
         <AccountBreadcrumbs current={t.account.settingsTitle} />
 
         <div className="space-y-1">
@@ -78,51 +109,55 @@ export default function ProfileSettingsPage() {
           <p className="text-sm text-muted-foreground">{t.account.settingsSubtitle}</p>
         </div>
 
-        <Card className="rounded-none shadow-sm">
-          <CardContent className="pt-6">
-            <Tabs value={tab} onValueChange={onTabChange} className="gap-6">
-              <TabsList
-                variant="line"
-                className="w-full justify-start rounded-none border-b border-border pb-0 h-auto flex-wrap gap-0"
-              >
-                <TabsTrigger
-                  value="profile"
-                  className="rounded-none gap-1.5 px-4 py-2.5 data-active:after:opacity-100"
-                >
-                  <Palette className="size-4" />
-                  {t.account.menuProfile}
-                </TabsTrigger>
-                <TabsTrigger
-                  value="account"
-                  className="rounded-none gap-1.5 px-4 py-2.5 data-active:after:opacity-100"
-                >
-                  <User className="size-4" />
-                  {t.account.menuAccountType}
-                </TabsTrigger>
-                {showFamily && (
-                  <TabsTrigger
-                    value="family"
-                    className="rounded-none gap-1.5 px-4 py-2.5 data-active:after:opacity-100"
+        <Card className="gap-0 rounded-none py-0 shadow-sm overflow-hidden">
+          <CardContent className="p-0">
+            <Tabs
+              orientation="vertical"
+              value={tab}
+              onValueChange={onTabChange}
+              className="w-full"
+            >
+              <div className="grid grid-cols-1 md:grid-cols-[15rem_minmax(0,1fr)]">
+                <aside className="border-b border-border bg-muted/30 md:border-b-0 md:border-r">
+                  <TabsList
+                    variant="line"
+                    className="flex h-auto w-full flex-col items-stretch gap-0 rounded-none border-0 bg-transparent p-2"
                   >
-                    <Users className="size-4" />
-                    {t.account.menuFamily}
-                  </TabsTrigger>
-                )}
-              </TabsList>
+                    {navItems.map(({ value, icon: Icon, label }, index) => (
+                      <Fragment key={value}>
+                        {index > 0 && <Separator />}
+                        <TabsTrigger value={value} className={SIDEBAR_TRIGGER_CLASS}>
+                          <Icon className="size-5 shrink-0" />
+                          <span className="text-left">{label}</span>
+                        </TabsTrigger>
+                      </Fragment>
+                    ))}
+                  </TabsList>
+                </aside>
 
-              <TabsContent value="profile" className="pt-6">
-                <ProfileForm />
-              </TabsContent>
+                <div className="min-w-0 p-6 md:p-8">
+                  <SettingsTabHeader icon={activeNav.icon} title={activeNav.label} />
 
-              <TabsContent value="account" className="pt-6">
-                <AccountTypeForm />
-              </TabsContent>
+                  <TabsContent value="profile" className="mt-0 outline-none">
+                    <ProfileForm />
+                  </TabsContent>
 
-              {showFamily && (
-                <TabsContent value="family" className="pt-6">
-                  <FamilySection />
-                </TabsContent>
-              )}
+                  <TabsContent value="account" className="mt-0 outline-none space-y-8">
+                    <AccountTypeForm />
+                    {showJoinFamily && <JoinFamilyForm />}
+                  </TabsContent>
+
+                  {showFamily && (
+                    <TabsContent value="family" className="mt-0 outline-none">
+                      <FamilySection />
+                    </TabsContent>
+                  )}
+
+                  <TabsContent value="password" className="mt-0 outline-none">
+                    <PasswordSection />
+                  </TabsContent>
+                </div>
+              </div>
             </Tabs>
           </CardContent>
         </Card>

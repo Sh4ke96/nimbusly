@@ -1,38 +1,45 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
+import { useActionState, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MemberAvatar } from "@/components/member-avatar";
-import { AVATAR_COLORS } from "@/lib/avatar-colors";
+import { AVATAR_COLORS, resolveAvatarColor } from "@/lib/avatar-colors";
 import { getDisplayName } from "@/lib/profile";
 import { useT } from "@/lib/lang-context";
 import { cn } from "@/lib/utils";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
+import { SettingsFormFooter } from "@/components/profile/settings/settings-form-footer";
 import { updateProfile } from "@/app/(app)/account/actions";
 
 export function ProfileForm() {
   const t = useT();
   const profile = useProfileStore((s) => s.profile);
   const refreshProfile = useProfileStore((s) => s.refreshProfile);
-  const [avatarColor, setAvatarColor] = useState(profile?.avatar_color ?? "");
+  const [avatarColor, setAvatarColor] = useState(() =>
+    resolveAvatarColor(profile?.avatar_color)
+  );
+  const [syncedAvatarColor, setSyncedAvatarColor] = useState(profile?.avatar_color);
+
+  if (profile?.avatar_color && profile.avatar_color !== syncedAvatarColor) {
+    setSyncedAvatarColor(profile.avatar_color);
+    setAvatarColor(resolveAvatarColor(profile.avatar_color));
+  }
+
   const [state, action, pending] = useActionState(updateProfile, null);
 
-  useEffect(() => {
-    if (profile?.avatar_color) setAvatarColor(profile.avatar_color);
-  }, [profile?.avatar_color]);
-
   useActionFeedback(state, () => void refreshProfile());
+
+  const displayColor = resolveAvatarColor(avatarColor || profile?.avatar_color);
 
   if (!profile) {
     return (
       <div className="space-y-6 max-w-md">
         <Skeleton className="size-12 rounded-none" />
-        <div className="flex gap-3">
-          {Array.from({ length: 6 }).map((_, i) => (
+        <div className="grid grid-cols-7 gap-3">
+          {Array.from({ length: 14 }).map((_, i) => (
             <Skeleton key={i} className="size-9 rounded-none" />
           ))}
         </div>
@@ -46,12 +53,12 @@ export function ProfileForm() {
   return (
     <form action={action} className="space-y-6 max-w-md">
       <div className="flex justify-center sm:justify-start">
-        <MemberAvatar name={getDisplayName(profile)} color={avatarColor} size="lg" />
+        <MemberAvatar name={getDisplayName(profile)} color={displayColor} size="lg" />
       </div>
 
-      <input type="hidden" name="avatarColor" value={avatarColor} />
+      <input type="hidden" name="avatarColor" value={displayColor} />
 
-      <div className="flex flex-wrap gap-3">
+      <div className="grid grid-cols-7 gap-3">
         {AVATAR_COLORS.map((color) => (
           <button
             key={color.id}
@@ -59,7 +66,7 @@ export function ProfileForm() {
             onClick={() => setAvatarColor(color.value)}
             className={cn(
               "size-9 rounded-none transition-all hover:scale-110",
-              avatarColor === color.value &&
+              displayColor === color.value &&
                 "ring-2 ring-offset-2 ring-offset-background ring-primary scale-110"
             )}
             style={{ backgroundColor: color.value }}
@@ -88,9 +95,11 @@ export function ProfileForm() {
         </div>
       </div>
 
-      <Button type="submit" disabled={pending}>
-        {pending ? t.account.saving : t.account.save}
-      </Button>
+      <SettingsFormFooter
+        pending={pending}
+        savingLabel={t.account.saving}
+        saveLabel={t.account.save}
+      />
     </form>
   );
 }

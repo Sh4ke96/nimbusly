@@ -1,15 +1,44 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { getServerT } from "@/lib/i18n/server";
 import { isAvatarColor } from "@/lib/avatar-colors";
+import { INVITE_TOKEN_COOKIE, INVITE_CODE_COOKIE, parseFamilySetupIntent } from "@/lib/family/constants";
+import { isValidInviteCodeFormat, normalizeInviteCode } from "@/lib/family/invite";
 import type { AccountMode } from "@/lib/profile";
 
 export type OnboardingState = { error: string } | null;
 
+async function resolveFamilyFromInviteToken(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  userId: string,
+  token: string
+): Promise<string | null> {
+  const { data, error } = await supabase.rpc("accept_family_invitation", {
+    p_token: token,
+    p_user_id: userId,
+  });
+
+  if (error || !data) return null;
+  return data as string;
+}
+
+async function resolveFamilyFromInviteCode(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  code: string
+): Promise<string | null> {
+  const { data, error } = await supabase.rpc("lookup_family_by_invite_code", {
+    p_code: normalizeInviteCode(code),
+  });
+
+  if (error || !data?.length) return null;
+  return data[0].id as string;
+}
+
 export async function completeOnboarding(
-  _prevState: OnboardingState,
+  _prev: OnboardingState,
   formData: FormData
 ): Promise<OnboardingState> {
   const t = await getServerT();
@@ -35,8 +64,10 @@ export async function completeOnboarding(
   const firstName = (formData.get("firstName") as string)?.trim();
   const lastName = (formData.get("lastName") as string)?.trim();
   const avatarColor = formData.get("avatarColor") as string;
-  const accountMode = formData.get("accountMode") as AccountMode;
+  const familyIntent = parseFamilySetupIntent(formData.get("familyIntent"));
   const familyName = (formData.get("familyName") as string)?.trim();
+  const inviteCode = (formData.get("inviteCode") as string)?.trim();
+  const inviteToken = (formData.get("inviteToken") as string)?.trim();
 
   if (!firstName) {
     return { error: t.onboarding.errorFirstName };
@@ -50,17 +81,18 @@ export async function completeOnboarding(
     return { error: t.onboarding.errorGeneric };
   }
 
-  if (accountMode !== "family" && accountMode !== "solo") {
+  if (!familyIntent) {
     return { error: t.onboarding.errorGeneric };
   }
 
-  if (accountMode === "family" && !familyName) {
-    return { error: t.onboarding.errorFamilyName };
-  }
-
+  let accountMode: AccountMode = familyIntent === "solo" ? "solo" : "family";
   let familyId: string | null = existingProfile?.family_id ?? null;
 
-  if (accountMode === "family") {
+  if (familyIntent === "create") {
+    if (!familyName) {
+      return { error: t.onboarding.errorFamilyName };
+    }
+
     if (familyId) {
       const { error: familyError } = await supabase
         .from("families")
@@ -84,8 +116,35 @@ export async function completeOnboarding(
 
       familyId = family.id;
     }
+  } else if (familyIntent === "join") {
+    const cookieStore = await cookies();
+    const tokenFromCookie = cookieStore.get(INVITE_TOKEN_COOKIE)?.value ?? "";
+    const codeFromCookie = cookieStore.get(INVITE_CODE_COOKIE)?.value ?? "";
+    const token = inviteToken || tokenFromCookie;
+    const code = inviteCode || codeFromCookie;
+
+    if (token) {
+      const joinedFamilyId = await resolveFamilyFromInviteToken(supabase, user.id, token);
+      if (!joinedFamilyId) {
+        return { error: t.onboarding.errorInviteTokenInvalid };
+      }
+      familyId = joinedFamilyId;
+    } else {
+      if (!code || !isValidInviteCodeFormat(code)) {
+        return { error: t.onboarding.errorInviteCodeInvalid };
+      }
+
+      const joinedFamilyId = await resolveFamilyFromInviteCode(supabase, code);
+      if (!joinedFamilyId) {
+        return { error: t.onboarding.errorInviteCodeNotFound };
+      }
+      familyId = joinedFamilyId;
+    }
+
+    accountMode = "family";
   } else {
     familyId = null;
+    accountMode = "solo";
   }
 
   const profilePayload = {
@@ -114,6 +173,12 @@ export async function completeOnboarding(
 
   if (profileError) {
     return { error: t.onboarding.errorGeneric };
+  }
+
+  if (familyIntent === "join") {
+    const cookieStore = await cookies();
+    cookieStore.delete(INVITE_TOKEN_COOKIE);
+    cookieStore.delete(INVITE_CODE_COOKIE);
   }
 
   redirect("/dashboard");

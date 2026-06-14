@@ -2,27 +2,24 @@
 
 import { useTheme } from "next-themes";
 import { Moon, Sun } from "lucide-react";
-import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { HEADER_CONTROL_HEIGHT } from "@/lib/ui/header-controls";
 import { cn } from "@/lib/utils";
 
 export function ThemeToggle({ className }: { className?: string }) {
-  const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+  const { setTheme } = useTheme();
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const isDark = mounted ? theme === "dark" : true;
+  function toggleTheme() {
+    const isDark = document.documentElement.classList.contains("dark");
+    setTheme(isDark ? "light" : "dark");
+  }
 
   return (
     <Button
       type="button"
       variant="outline"
       size="icon-sm"
-      onClick={() => setTheme(isDark ? "light" : "dark")}
+      onClick={toggleTheme}
       aria-label="Toggle theme"
       className={cn(
         HEADER_CONTROL_HEIGHT,
@@ -31,22 +28,8 @@ export function ThemeToggle({ className }: { className?: string }) {
         className
       )}
     >
-      <Sun
-        className={cn(
-          "absolute size-3.5 transition-all duration-300",
-          isDark
-            ? "rotate-0 scale-100 opacity-100 group-hover:rotate-45"
-            : "-rotate-90 scale-0 opacity-0"
-        )}
-      />
-      <Moon
-        className={cn(
-          "absolute size-3.5 transition-all duration-300",
-          !isDark
-            ? "rotate-0 scale-100 opacity-100 group-hover:-rotate-12"
-            : "rotate-90 scale-0 opacity-0"
-        )}
-      />
+      <Sun className="absolute size-3.5 scale-100 rotate-0 opacity-100 transition-all duration-300 group-hover:rotate-45 dark:scale-0 dark:-rotate-90 dark:opacity-0" />
+      <Moon className="absolute size-3.5 scale-0 rotate-90 opacity-0 transition-all duration-300 group-hover:-rotate-12 dark:scale-100 dark:rotate-0 dark:opacity-100" />
     </Button>
   );
 }

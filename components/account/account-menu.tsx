@@ -25,10 +25,12 @@ import { navigateSettingsTab, settingsTabHref } from "@/lib/profile/settings-tab
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { logout } from "@/app/(app)/actions";
 import {
+  Bell,
   ChevronDown,
   KeyRound,
   LogOut,
   Palette,
+  Ticket,
   User,
   Users,
 } from "lucide-react";
@@ -55,7 +57,7 @@ export function AccountMenu() {
               type="button"
               className={cn(
                 HEADER_CONTROL_HEIGHT,
-                "inline-flex w-8 shrink-0 items-center justify-center rounded-none border transition-colors",
+                "inline-flex w-8 shrink-0 cursor-pointer items-center justify-center rounded-none border transition-colors",
                 isFamily
                   ? "border-primary/30 bg-primary/10 text-primary"
                   : "border-border bg-muted/50 text-muted-foreground"
@@ -96,6 +98,15 @@ export function AccountMenu() {
 
           <DropdownMenuSeparator />
 
+          <DropdownMenuSeparator />
+
+          <DropdownMenuItem asChild>
+            <Link href="/notifications" className="flex items-center gap-2">
+              <Bell className="size-4 text-primary" />
+              {t.notifications.menu}
+            </Link>
+          </DropdownMenuItem>
+
           <DropdownMenuItem asChild>
             <Link
               href={settingsTabHref("profile")}
@@ -116,6 +127,20 @@ export function AccountMenu() {
               {t.account.menuAccountType}
             </Link>
           </DropdownMenuItem>
+          {profile?.account_mode === "solo" && !profile.family_id && (
+            <DropdownMenuItem asChild>
+              <Link
+                href={`${settingsTabHref("account")}#join-family`}
+                onClick={(e) =>
+                  navigateSettingsTab("account", pathname, "#join-family") && e.preventDefault()
+                }
+                className="flex items-center gap-2"
+              >
+                <Ticket className="size-4 text-primary" />
+                {t.account.joinFamilyTitle}
+              </Link>
+            </DropdownMenuItem>
+          )}
           {profile?.account_mode === "family" && profile.family_id && (
             <DropdownMenuItem asChild>
               <Link
@@ -129,7 +154,11 @@ export function AccountMenu() {
             </DropdownMenuItem>
           )}
           <DropdownMenuItem asChild>
-            <Link href="/change-password" className="flex items-center gap-2">
+            <Link
+              href={settingsTabHref("password")}
+              onClick={(e) => navigateSettingsTab("password", pathname) && e.preventDefault()}
+              className="flex items-center gap-2"
+            >
               <KeyRound className="size-4 text-primary" />
               {t.account.menuPassword}
             </Link>

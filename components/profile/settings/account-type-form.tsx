@@ -1,16 +1,39 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
+import { SettingsFormFooter } from "@/components/profile/settings/settings-form-footer";
 import { useT } from "@/lib/lang-context";
+import { cn } from "@/lib/utils";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import type { AccountMode } from "@/lib/profile";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
 import { updateAccountMode } from "@/app/(app)/account/actions";
 import { Heart, User } from "lucide-react";
+
+function AccountModeBadge({
+  selected,
+  children,
+}: {
+  selected: boolean;
+  children: ReactNode;
+}) {
+  return (
+    <span
+      className={cn(
+        "inline-flex size-12 shrink-0 items-center justify-center rounded-none [&_svg]:size-6",
+        selected
+          ? "bg-primary-foreground/15 text-primary-foreground"
+          : "bg-primary/10 text-primary"
+      )}
+    >
+      {children}
+    </span>
+  );
+}
 
 export function AccountTypeForm() {
   const t = useT();
@@ -19,11 +42,13 @@ export function AccountTypeForm() {
   const [accountMode, setAccountMode] = useState<AccountMode>(
     profile?.account_mode ?? "solo"
   );
+  const [syncedAccountMode, setSyncedAccountMode] = useState(profile?.account_mode);
   const [state, action, pending] = useActionState(updateAccountMode, null);
 
-  useEffect(() => {
-    if (profile?.account_mode) setAccountMode(profile.account_mode);
-  }, [profile?.account_mode]);
+  if (profile?.account_mode && profile.account_mode !== syncedAccountMode) {
+    setSyncedAccountMode(profile.account_mode);
+    setAccountMode(profile.account_mode);
+  }
 
   useActionFeedback(state, () => void refreshProfile());
 
@@ -51,8 +76,10 @@ export function AccountTypeForm() {
           className="h-auto w-full justify-start rounded-none p-4 text-left"
           onClick={() => setAccountMode("family")}
         >
-          <div className="flex items-start gap-3">
-            <Heart className="size-5 mt-0.5" />
+          <div className="flex items-center gap-4">
+            <AccountModeBadge selected={accountMode === "family"}>
+              <Heart />
+            </AccountModeBadge>
             <div>
               <p className="font-heading font-semibold text-sm">{t.onboarding.familyTitle}</p>
               <p className="text-xs font-normal opacity-80">{t.onboarding.familyDesc}</p>
@@ -66,8 +93,10 @@ export function AccountTypeForm() {
           className="h-auto w-full justify-start rounded-none p-4 text-left"
           onClick={() => setAccountMode("solo")}
         >
-          <div className="flex items-start gap-3">
-            <User className="size-5 mt-0.5" />
+          <div className="flex items-center gap-4">
+            <AccountModeBadge selected={accountMode === "solo"}>
+              <User />
+            </AccountModeBadge>
             <div>
               <p className="font-heading font-semibold text-sm">{t.onboarding.soloTitle}</p>
               <p className="text-xs font-normal opacity-80">{t.onboarding.soloDesc}</p>
@@ -93,9 +122,11 @@ export function AccountTypeForm() {
         </p>
       )}
 
-      <Button type="submit" disabled={pending}>
-        {pending ? t.account.saving : t.account.save}
-      </Button>
+      <SettingsFormFooter
+        pending={pending}
+        savingLabel={t.account.saving}
+        saveLabel={t.account.save}
+      />
     </form>
   );
 }

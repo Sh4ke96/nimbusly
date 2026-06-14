@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { DEFAULT_AVATAR_COLOR, resolveAvatarColor } from "@/lib/avatar-colors";
 
 type Member = "mama" | "tata" | "corka" | "syn";
 
@@ -45,8 +46,7 @@ export function MemberAvatar({
   ring = false,
   className,
 }: MemberAvatarProps) {
-  const bg =
-    color ?? (member ? memberColors[member] : memberColors.tata);
+  const bg = resolveAvatarColor(color ?? (member ? memberColors[member] : DEFAULT_AVATAR_COLOR));
   const textColor = getContrastColor(bg);
   const initials = name
     .split(" ")

@@ -2,8 +2,12 @@ import { cookies } from "next/headers";
 import { dict } from ".";
 import type { Lang } from "./types";
 
-export async function getServerT() {
+export async function getServerLang(): Promise<Lang> {
   const store = await cookies();
-  const lang = (store.get("nimbusly-lang")?.value ?? "pl") as Lang;
+  return (store.get("nimbusly-lang")?.value ?? "pl") as Lang;
+}
+
+export async function getServerT() {
+  const lang = await getServerLang();
   return dict[lang];
 }

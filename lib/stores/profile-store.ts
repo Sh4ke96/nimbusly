@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { createClient } from "@/lib/supabase/client";
-import type { Family, FamilyMember, Profile } from "@/lib/profile";
+import type { Family, FamilyInvitation, FamilyMember, Profile } from "@/lib/profile";
 import type { User } from "@supabase/supabase-js";
 
 interface ProfileStore {
@@ -8,6 +8,7 @@ interface ProfileStore {
   profile: Profile | null;
   family: Family | null;
   members: FamilyMember[];
+  invitations: FamilyInvitation[];
   loaded: boolean;
   loading: boolean;
   fetchSession: () => Promise<void>;
@@ -21,22 +22,40 @@ const initialState = {
   profile: null,
   family: null,
   members: [] as FamilyMember[],
+  invitations: [] as FamilyInvitation[],
   loaded: false,
   loading: false,
 };
 
-async function loadFamilyData(familyId: string) {
+async function loadFamilyData(familyId: string, userId: string, isOwner: boolean) {
   const supabase = createClient();
 
-  const [{ data: family }, { data: members }] = await Promise.all([
-    supabase.from("families").select("*").eq("id", familyId).maybeSingle(),
+  const queries = [
+    supabase
+      .from("families")
+      .select("id, name, created_by, invite_code")
+      .eq("id", familyId)
+      .maybeSingle(),
     supabase
       .from("profiles")
       .select("id, first_name, last_name, avatar_color")
       .eq("family_id", familyId),
-  ]);
+  ] as const;
 
-  return { family: family ?? null, members: members ?? [] };
+  const [{ data: family }, { data: members }] = await Promise.all(queries);
+
+  let invitations: FamilyInvitation[] = [];
+  if (isOwner && family?.created_by === userId) {
+    const { data } = await supabase
+      .from("family_invitations")
+      .select("id, family_id, email, status, created_at, expires_at")
+      .eq("family_id", familyId)
+      .eq("status", "pending")
+      .order("created_at", { ascending: false });
+    invitations = (data ?? []) as FamilyInvitation[];
+  }
+
+  return { family: family ?? null, members: members ?? [], invitations };
 }
 
 export const useProfileStore = create<ProfileStore>((set, get) => ({
@@ -63,11 +82,18 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
 
     let family: Family | null = null;
     let members: FamilyMember[] = [];
+    let invitations: FamilyInvitation[] = [];
 
     if (profile?.family_id) {
-      const familyData = await loadFamilyData(profile.family_id);
+      const isOwnerCandidate = profile.account_mode === "family";
+      const familyData = await loadFamilyData(
+        profile.family_id,
+        user.id,
+        isOwnerCandidate
+      );
       family = familyData.family;
       members = familyData.members;
+      invitations = familyData.invitations;
     }
 
     set({
@@ -75,6 +101,7 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
       profile,
       family,
       members,
+      invitations,
       loaded: true,
       loading: false,
     });
@@ -96,19 +123,23 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
     if (profile?.family_id) {
       await get().refreshFamily();
     } else {
-      set({ family: null, members: [] });
+      set({ family: null, members: [], invitations: [] });
     }
   },
 
   refreshFamily: async () => {
-    const { profile } = get();
-    if (!profile?.family_id) {
-      set({ family: null, members: [] });
+    const { profile, user } = get();
+    if (!profile?.family_id || !user) {
+      set({ family: null, members: [], invitations: [] });
       return;
     }
 
-    const { family, members } = await loadFamilyData(profile.family_id);
-    set({ family, members });
+    const { family, members, invitations } = await loadFamilyData(
+      profile.family_id,
+      user.id,
+      profile.account_mode === "family"
+    );
+    set({ family, members, invitations });
   },
 
   reset: () => set({ ...initialState, loaded: true }),

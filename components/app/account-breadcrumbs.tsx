@@ -28,7 +28,7 @@ export function AccountBreadcrumbs({ current }: AccountBreadcrumbsProps) {
         </BreadcrumbItem>
         <BreadcrumbSeparator />
         <BreadcrumbItem>
-          <BreadcrumbPage>{current}</BreadcrumbPage>
+          <BreadcrumbPage className="font-medium text-primary">{current}</BreadcrumbPage>
         </BreadcrumbItem>
       </BreadcrumbList>
     </Breadcrumb>

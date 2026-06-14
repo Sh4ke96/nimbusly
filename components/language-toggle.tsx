@@ -15,9 +15,10 @@ export function LanguageToggle({ className }: { className?: string }) {
       onValueChange={(value) => value && setLang(value as "pl" | "en")}
       variant="outline"
       size="sm"
+      spacing={0}
       className={cn(
         HEADER_CONTROL_HEIGHT,
-        "items-stretch rounded-none border border-border bg-muted/50 p-0 font-heading text-xs font-semibold",
+        "items-stretch rounded-none border border-border border-l-0 bg-muted/50 p-0 font-heading text-xs font-semibold",
         "hover:border-primary/40",
         className
       )}

@@ -1,0 +1,57 @@
+/** Domyślne (PL) teksty UI używane w asercjach E2E. */
+export const t = {
+  login: {
+    title: "Witaj z powrotem",
+    submit: "Zaloguj się",
+    errorInvalid: "Nieprawidłowy email lub hasło.",
+    passwordChangedTitle: "Hasło zostało zmienione",
+  },
+  register: {
+    title: "Załóż rodzinne konto",
+    submit: "Zarejestruj się bezpłatnie",
+    successTitle: "Sprawdź swoją skrzynkę!",
+    errorPasswordMatch: "Hasła nie są identyczne.",
+    errorPasswordLength: "Hasło musi mieć co najmniej 8 znaków.",
+  },
+  onboarding: {
+    title: "Stwórz swój profil",
+    colorTitle: "Wybierz kolor avatara",
+    nameTitle: "Jak masz na imię?",
+    accountTitle: "Jak chcesz korzystać z Nimbusly?",
+    joinFamilyTitle: "Dołącz do rodziny",
+    familyTitle: "Stwórz rodzinę",
+    inviteCodeLabel: "Kod zaproszenia",
+    soloTitle: "Konto solo",
+    next: "Dalej",
+    back: "Wstecz",
+    finish: "Wejdź do panelu",
+  },
+  dashboard: {
+    greeting: "Dzień dobry",
+    modules: "Moduły",
+    comingSoon: "Moduły w budowie",
+    logout: "Wyloguj",
+    moduleLabels: ["Budżet", "Zakupy", "Prezenty", "Urodziny", "Grafik", "Rodzina"],
+  },
+  account: {
+    menuProfile: "Profil i avatar",
+    menuAccountType: "Typ konta",
+    menuFamily: "Zarządzaj rodziną",
+    familyInviteCode: "Kod zaproszenia",
+    familyInviteSend: "Wyślij zaproszenie",
+    familyInviteEmailLabel: "Zaproś na email",
+    menuPassword: "Zmień hasło",
+    settingsTitle: "Ustawienia konta",
+    save: "Zapisz",
+    profileSaved: "Profil został zaktualizowany.",
+    changePasswordBtn: "Wyślij link na email",
+    changePasswordSuccessTitle: "Sprawdź swoją skrzynkę!",
+    changePasswordSuccessMessage:
+      "Wysłaliśmy link do zmiany hasła. Kliknij go w mailu, aby ustawić nowe hasło.",
+    breadcrumbDashboard: "Panel",
+  },
+  nav: {
+    login: "Zaloguj się",
+    getStarted: "Zacznij za darmo",
+  },
+} as const;

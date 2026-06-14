@@ -6,15 +6,25 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MemberAvatar } from "@/components/member-avatar";
 import { AVATAR_COLORS, DEFAULT_AVATAR_COLOR, type AvatarColor } from "@/lib/avatar-colors";
+import { INVITE_TOKEN_COOKIE } from "@/lib/family/constants";
+import { formatInviteCode, readInviteCodeFromCookie } from "@/lib/family/invite";
 import { useT } from "@/lib/lang-context";
 import { cn } from "@/lib/utils";
+import type { FamilySetupIntent } from "@/lib/profile";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
 import { completeOnboarding, type OnboardingState } from "./actions";
-import { Check, ChevronLeft, ChevronRight, Heart, User } from "lucide-react";
-import type { AccountMode } from "@/lib/profile";
+import { Check, ChevronLeft, ChevronRight, Heart, Ticket, User } from "lucide-react";
 
 const STEPS = ["color", "name", "account"] as const;
 type Step = (typeof STEPS)[number];
+
+function readInviteTokenCookie(): string {
+  if (typeof document === "undefined") return "";
+  const match = document.cookie
+    .split("; ")
+    .find((row) => row.startsWith(`${INVITE_TOKEN_COOKIE}=`));
+  return match ? decodeURIComponent(match.split("=")[1] ?? "") : "";
+}
 
 export function OnboardingWizard() {
   const t = useT();
@@ -22,8 +32,14 @@ export function OnboardingWizard() {
   const [avatarColor, setAvatarColor] = useState<AvatarColor>(DEFAULT_AVATAR_COLOR);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [accountMode, setAccountMode] = useState<AccountMode>("family");
+  const [familyIntent, setFamilyIntent] = useState<FamilySetupIntent>(() => {
+    if (readInviteTokenCookie() || readInviteCodeFromCookie()) return "join";
+    return "create";
+  });
   const [familyName, setFamilyName] = useState("");
+  const [inviteCode, setInviteCode] = useState(() => readInviteCodeFromCookie());
+  const [inviteToken] = useState(() => readInviteTokenCookie());
+  const inviteCodeFromRegistration = inviteCode.length > 0 && !inviteToken;
   const [state, action, pending] = useActionState<OnboardingState, FormData>(
     completeOnboarding,
     null
@@ -49,7 +65,10 @@ export function OnboardingWizard() {
 
   function canContinue() {
     if (step === "name") return firstName.trim().length > 0 && lastName.trim().length > 0;
-    if (step === "account" && accountMode === "family") return familyName.trim().length > 0;
+    if (step === "account" && familyIntent === "create") return familyName.trim().length > 0;
+    if (step === "account" && familyIntent === "join") {
+      return inviteToken.length > 0 || inviteCode.trim().length > 0;
+    }
     return true;
   }
 
@@ -58,8 +77,10 @@ export function OnboardingWizard() {
       <input type="hidden" name="avatarColor" value={avatarColor} />
       <input type="hidden" name="firstName" value={firstName} />
       <input type="hidden" name="lastName" value={lastName} />
-      <input type="hidden" name="accountMode" value={accountMode} />
+      <input type="hidden" name="familyIntent" value={familyIntent} />
       <input type="hidden" name="familyName" value={familyName} />
+      <input type="hidden" name="inviteCode" value={inviteCode} />
+      <input type="hidden" name="inviteToken" value={inviteToken} />
 
       <div className="flex items-center justify-center gap-2">
         {STEPS.map((s, i) => (
@@ -101,7 +122,7 @@ export function OnboardingWizard() {
 
           <MemberAvatar name={previewName} color={avatarColor} size="lg" className="mx-auto" />
 
-          <div className="flex flex-wrap items-center justify-center gap-3">
+          <div className="mx-auto grid w-fit grid-cols-7 gap-3">
             {AVATAR_COLORS.map((color) => (
               <button
                 key={color.id}
@@ -170,9 +191,9 @@ export function OnboardingWizard() {
           <div className="grid gap-3">
             <Button
               type="button"
-              variant={accountMode === "family" ? "default" : "outline"}
+              variant={familyIntent === "create" ? "default" : "outline"}
               className="h-auto w-full justify-start rounded-none p-4 text-left"
-              onClick={() => setAccountMode("family")}
+              onClick={() => setFamilyIntent("create")}
             >
               <div className="flex items-start gap-3">
                 <span className="inline-flex size-10 items-center justify-center rounded-none bg-primary/10 text-primary">
@@ -187,9 +208,26 @@ export function OnboardingWizard() {
 
             <Button
               type="button"
-              variant={accountMode === "solo" ? "default" : "outline"}
+              variant={familyIntent === "join" ? "default" : "outline"}
               className="h-auto w-full justify-start rounded-none p-4 text-left"
-              onClick={() => setAccountMode("solo")}
+              onClick={() => setFamilyIntent("join")}
+            >
+              <div className="flex items-start gap-3">
+                <span className="inline-flex size-10 items-center justify-center rounded-none bg-primary/10 text-primary">
+                  <Ticket className="size-5" />
+                </span>
+                <div className="space-y-1">
+                  <p className="font-heading font-semibold">{t.onboarding.joinFamilyTitle}</p>
+                  <p className="text-sm font-normal opacity-80">{t.onboarding.joinFamilyDesc}</p>
+                </div>
+              </div>
+            </Button>
+
+            <Button
+              type="button"
+              variant={familyIntent === "solo" ? "default" : "outline"}
+              className="h-auto w-full justify-start rounded-none p-4 text-left"
+              onClick={() => setFamilyIntent("solo")}
             >
               <div className="flex items-start gap-3">
                 <span className="inline-flex size-10 items-center justify-center rounded-none bg-primary/10 text-primary">
@@ -203,7 +241,7 @@ export function OnboardingWizard() {
             </Button>
           </div>
 
-          {accountMode === "family" && (
+          {familyIntent === "create" && (
             <div className="space-y-1.5 animate-rise">
               <Label htmlFor="familyName">{t.onboarding.familyNameLabel}</Label>
               <Input
@@ -211,6 +249,32 @@ export function OnboardingWizard() {
                 value={familyName}
                 onChange={(e) => setFamilyName(e.target.value)}
                 placeholder={t.onboarding.familyNamePlaceholder}
+              />
+            </div>
+          )}
+
+          {familyIntent === "join" && inviteToken && (
+            <p className="text-sm text-muted-foreground rounded-none border border-primary/30 bg-primary/10 px-3 py-2">
+              {t.onboarding.inviteEmailPending}
+            </p>
+          )}
+
+          {familyIntent === "join" && inviteCodeFromRegistration && (
+            <p className="text-sm text-muted-foreground rounded-none border border-primary/30 bg-primary/10 px-3 py-2">
+              {t.onboarding.inviteCodeFromRegistration}
+            </p>
+          )}
+
+          {familyIntent === "join" && !inviteToken && (
+            <div className="space-y-1.5 animate-rise">
+              <Label htmlFor="inviteCode">{t.onboarding.inviteCodeLabel}</Label>
+              <Input
+                id="inviteCode"
+                value={inviteCode}
+                onChange={(e) => setInviteCode(formatInviteCode(e.target.value))}
+                placeholder={t.onboarding.inviteCodePlaceholder}
+                className="font-mono uppercase tracking-widest"
+                maxLength={9}
               />
             </div>
           )}

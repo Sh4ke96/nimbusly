@@ -1,15 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { SettingsFormFooter } from "@/components/profile/settings/settings-form-footer";
 import { createClient } from "@/lib/supabase/client";
 import { getPasswordResetCallbackUrl } from "@/lib/supabase/auth-redirect";
 import { isAuthRateLimitError } from "@/lib/supabase/auth-errors";
 import { useT } from "@/lib/lang-context";
 import { toast } from "sonner";
 
-export function ChangePasswordForm() {
+export function PasswordSection() {
   const t = useT();
   const [pending, setPending] = useState(false);
   const [sent, setSent] = useState(false);
@@ -55,22 +55,24 @@ export function ChangePasswordForm() {
 
   if (sent) {
     return (
-      <div className="space-y-4 text-center">
+      <div className="space-y-4 max-w-lg">
         <p className="text-sm text-muted-foreground">{t.account.changePasswordSuccessMessage}</p>
-        <Button asChild variant="outline" className="w-full">
-          <Link href="/dashboard">{t.account.changePasswordBack}</Link>
+        <Button type="button" variant="outline" onClick={() => setSent(false)}>
+          {t.account.changePasswordBtn}
         </Button>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-6 max-w-lg">
       <p className="text-sm text-muted-foreground">{t.account.changePasswordDesc}</p>
 
-      <Button type="submit" className="w-full" disabled={pending}>
-        {pending ? t.account.changePasswordSubmitting : t.account.changePasswordBtn}
-      </Button>
+      <SettingsFormFooter
+        pending={pending}
+        savingLabel={t.account.changePasswordSubmitting}
+        saveLabel={t.account.changePasswordBtn}
+      />
     </form>
   );
 }

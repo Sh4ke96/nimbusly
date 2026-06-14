@@ -67,9 +67,7 @@ export async function updateSession(request: NextRequest) {
 
     if (
       !onboardingComplete &&
-      (pathname === "/dashboard" ||
-        pathname.startsWith("/profile") ||
-        pathname === "/change-password")
+      (pathname === "/dashboard" || pathname.startsWith("/profile"))
     ) {
       const url = request.nextUrl.clone()
       url.pathname = '/onboarding'

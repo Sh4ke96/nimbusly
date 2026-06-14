@@ -26,19 +26,24 @@ export default function DashboardPage() {
     : user?.email?.split("@")[0] ?? "…";
 
   const modules = [
-    { key: "budget", label: t.dashboard.moduleLabels.budget, desc: t.dashboard.moduleDescs.budget },
-    { key: "shopping", label: t.dashboard.moduleLabels.shopping, desc: t.dashboard.moduleDescs.shopping },
-    { key: "gifts", label: t.dashboard.moduleLabels.gifts, desc: t.dashboard.moduleDescs.gifts },
-    { key: "birthdays", label: t.dashboard.moduleLabels.birthdays, desc: t.dashboard.moduleDescs.birthdays },
-    { key: "calendar", label: t.dashboard.moduleLabels.calendar, desc: t.dashboard.moduleDescs.calendar },
-    { key: "family", label: t.dashboard.moduleLabels.family, desc: t.dashboard.moduleDescs.family },
+    { key: "budget", label: t.dashboard.moduleLabels.budget, desc: t.dashboard.moduleDescs.budget, href: "#" },
+    { key: "shopping", label: t.dashboard.moduleLabels.shopping, desc: t.dashboard.moduleDescs.shopping, href: "#" },
+    { key: "gifts", label: t.dashboard.moduleLabels.gifts, desc: t.dashboard.moduleDescs.gifts, href: "#" },
+    { key: "birthdays", label: t.dashboard.moduleLabels.birthdays, desc: t.dashboard.moduleDescs.birthdays, href: "/birthdays" },
+    { key: "calendar", label: t.dashboard.moduleLabels.calendar, desc: t.dashboard.moduleDescs.calendar, href: "#" },
+    {
+      key: "family",
+      label: t.dashboard.moduleLabels.family,
+      desc: t.dashboard.moduleDescs.family,
+      href: profile?.account_mode === "family" && profile.family_id ? "/profile/settings?tab=family" : "#",
+    },
   ];
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <AppHeader />
 
-      <main className="flex-1 mx-auto w-full max-w-5xl px-4 py-10 space-y-10">
+      <main className="flex-1 mx-auto w-full max-w-7xl px-4 py-10 space-y-10">
         <div className="space-y-1">
           <h1 className="font-heading font-bold text-3xl tracking-tight">
             {t.dashboard.greeting}, {displayName} 👋
@@ -55,7 +60,7 @@ export default function DashboardPage() {
               return (
                 <a
                   key={m.key}
-                  href="#"
+                  href={m.href}
                   className="group flex items-center gap-4 rounded-none border border-border bg-card p-5 shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all duration-200"
                 >
                   <span className="inline-flex size-11 items-center justify-center rounded-none bg-primary/10 text-primary group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-200">
@@ -75,6 +80,11 @@ export default function DashboardPage() {
         <div className="rounded-none border border-dashed border-border bg-muted/30 p-8 text-center space-y-2">
           <p className="font-heading font-semibold text-base">{t.dashboard.comingSoon}</p>
           <p className="text-sm text-muted-foreground">{t.dashboard.comingSoonDesc}</p>
+          <p className="text-sm">
+            <a href="/birthdays" className="text-primary font-medium hover:underline">
+              {t.dashboard.moduleLabels.birthdays} →
+            </a>
+          </p>
         </div>
       </main>
     </div>
