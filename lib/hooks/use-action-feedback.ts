@@ -7,16 +7,27 @@ type ActionFeedbackState = { error: string } | { success: string } | null;
 
 export function useActionFeedback(
   state: ActionFeedbackState,
-  onSuccess?: () => void
+  onSuccess?: () => void,
+  isPending?: boolean
 ) {
-  const handled = useRef<string | null>(null);
+  const lastHandledState = useRef<ActionFeedbackState>(undefined);
 
   useEffect(() => {
-    if (!state) return;
+    if (isPending) {
+      lastHandledState.current = undefined;
+    }
+  }, [isPending]);
 
-    const key = "error" in state ? `e:${state.error}` : `s:${state.success}`;
-    if (handled.current === key) return;
-    handled.current = key;
+  useEffect(() => {
+    if (!state) {
+      lastHandledState.current = undefined;
+      return;
+    }
+
+    // Deduplicate per action result object — not by message text, so repeated
+    // successes (e.g. adding two medicines) still refresh the UI.
+    if (lastHandledState.current === state) return;
+    lastHandledState.current = state;
 
     if ("error" in state) {
       toast.error(state.error);

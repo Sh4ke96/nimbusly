@@ -15,6 +15,7 @@ import {
   CalendarDays,
   Users,
   Cross,
+  Clapperboard,
   ArrowRight,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -80,6 +81,13 @@ export default function DashboardPage() {
       desc: t.dashboard.moduleDescs.medicineCabinet,
       href: "/medicine-cabinet",
       Icon: Cross,
+    },
+    {
+      key: "watchlist",
+      label: t.dashboard.moduleLabels.watchlist,
+      desc: t.dashboard.moduleDescs.watchlist,
+      href: "/watchlist",
+      Icon: Clapperboard,
     },
     {
       key: "family",

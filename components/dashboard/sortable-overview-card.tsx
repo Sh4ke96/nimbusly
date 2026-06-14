@@ -14,6 +14,7 @@ export type OverviewAccent =
   | "primary"
   | "orange"
   | "violet"
+  | "indigo"
   | "rose"
   | "sky"
   | "slate"
@@ -37,6 +38,11 @@ export const overviewAccentStyles: Record<
     icon: "bg-violet-500/12 text-violet-700 dark:text-violet-400",
     badge: "bg-violet-500/8 text-violet-800 dark:text-violet-300 border-violet-500/20",
     ring: "hover:border-violet-500/30",
+  },
+  indigo: {
+    icon: "bg-indigo-500/12 text-indigo-700 dark:text-indigo-400",
+    badge: "bg-indigo-500/8 text-indigo-800 dark:text-indigo-300 border-indigo-500/20",
+    ring: "hover:border-indigo-500/30",
   },
   rose: {
     icon: "bg-rose-500/12 text-rose-700 dark:text-rose-400",

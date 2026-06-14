@@ -3,6 +3,7 @@ import { describe, it } from "node:test";
 import { MEDICINE_EXPIRY_STATUS } from "@/lib/constants/medicine";
 import {
   daysUntilExpiry,
+  formatMedicineExpiryCountdown,
   getMedicineExpiryStatus,
   isMedicineExpiringSoon,
   sortMedicineByExpiry,
@@ -56,5 +57,29 @@ describe("sortMedicineByExpiry", () => {
       sorted.map((i) => i.name),
       ["Aaa", "Bbb", "Zzz"]
     );
+  });
+});
+
+describe("formatMedicineExpiryCountdown", () => {
+  const labels = {
+    expiryExpired: "Po terminie",
+    expiryToday: "dziś",
+    expiryInDays: "za {count} dni",
+  };
+
+  it("formats countdown labels", () => {
+    assert.equal(
+      formatMedicineExpiryCountdown("2026-06-01", labels, today),
+      "Po terminie"
+    );
+    assert.equal(
+      formatMedicineExpiryCountdown("2026-06-14", labels, today),
+      "dziś"
+    );
+    assert.equal(
+      formatMedicineExpiryCountdown("2026-06-20", labels, today),
+      "za 6 dni"
+    );
+    assert.equal(formatMedicineExpiryCountdown(null, labels, today), null);
   });
 });

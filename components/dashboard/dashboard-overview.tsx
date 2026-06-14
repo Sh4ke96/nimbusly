@@ -33,6 +33,7 @@ import {
 } from "@/lib/budget/aggregates";
 import { filterEntriesByMonth, getCurrentMonthKey } from "@/lib/budget/monthly";
 import { isMedicineExpiringSoon } from "@/lib/medicine/expiry";
+import { WATCHLIST_STATUS } from "@/lib/constants/watchlist";
 import { BRAND_COLOR } from "@/lib/constants/brand";
 import { BUDGET_EXPENSE_COLOR } from "@/lib/constants/budget";
 import type { DashboardOverviewCardId } from "@/lib/constants/dashboard-overview";
@@ -51,6 +52,7 @@ import { useBudgetStore } from "@/lib/stores/budget-store";
 import { useGiftsStore } from "@/lib/stores/gifts-store";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useMedicineStore } from "@/lib/stores/medicine-store";
+import { useWatchlistStore } from "@/lib/stores/watchlist-store";
 import { useScheduleStore } from "@/lib/stores/schedule-store";
 import { useShoppingListsStore } from "@/lib/stores/shopping-lists-store";
 import { createClient } from "@/lib/supabase/client";
@@ -86,6 +88,11 @@ export function DashboardOverview() {
   const medicineLoaded = useMedicineStore((s) => s.loaded);
   const medicineLoading = useMedicineStore((s) => s.loading);
   const fetchMedicineItems = useMedicineStore((s) => s.fetchItems);
+
+  const watchlistItems = useWatchlistStore((s) => s.items);
+  const watchlistLoaded = useWatchlistStore((s) => s.loaded);
+  const watchlistLoading = useWatchlistStore((s) => s.loading);
+  const fetchWatchlistItems = useWatchlistStore((s) => s.fetchItems);
 
   const scheduleEntries = useScheduleStore((s) => s.entries);
   const scheduleLoaded = useScheduleStore((s) => s.loaded);
@@ -154,6 +161,7 @@ export function DashboardOverview() {
     if (!listsLoaded && !listsLoading) void fetchLists();
     if (!giftsLoaded && !giftsLoading) void fetchIdeas();
     if (!medicineLoaded && !medicineLoading) void fetchMedicineItems();
+    if (!watchlistLoaded && !watchlistLoading) void fetchWatchlistItems();
     if (!scheduleLoaded && !scheduleLoading) void fetchSchedule();
     void loadBirthdays();
   }, [
@@ -169,6 +177,9 @@ export function DashboardOverview() {
     medicineLoaded,
     medicineLoading,
     fetchMedicineItems,
+    watchlistLoaded,
+    watchlistLoading,
+    fetchWatchlistItems,
     scheduleLoaded,
     scheduleLoading,
     fetchSchedule,
@@ -235,6 +246,19 @@ export function DashboardOverview() {
     () => expiringMedicines.slice(0, 3),
     [expiringMedicines]
   );
+  const activeWatchlistItems = useMemo(
+    () =>
+      watchlistItems.filter(
+        (item) =>
+          item.status === WATCHLIST_STATUS.TO_WATCH ||
+          item.status === WATCHLIST_STATUS.WATCHING
+      ),
+    [watchlistItems]
+  );
+  const previewWatchlistItems = useMemo(
+    () => activeWatchlistItems.slice(0, 3),
+    [activeWatchlistItems]
+  );
 
   const visibleCardIds = useMemo(
     () => getVisibleOverviewCardIds(layout),
@@ -259,6 +283,9 @@ export function DashboardOverview() {
       medicineItems,
       previewMedicines,
       expiringMedicinesCount: expiringMedicines.length,
+      watchlistItems,
+      previewWatchlistItems,
+      toWatchCount: activeWatchlistItems.length,
       upcomingBirthdays,
       monthScheduleEntries,
       scheduleByType,
@@ -280,6 +307,9 @@ export function DashboardOverview() {
       medicineItems,
       previewMedicines,
       expiringMedicines.length,
+      watchlistItems,
+      previewWatchlistItems,
+      activeWatchlistItems.length,
       upcomingBirthdays,
       monthScheduleEntries,
       scheduleByType,
@@ -323,6 +353,7 @@ export function DashboardOverview() {
     (listsLoading && !listsLoaded) ||
     (giftsLoading && !giftsLoaded) ||
     (medicineLoading && !medicineLoaded) ||
+    (watchlistLoading && !watchlistLoaded) ||
     (scheduleLoading && !scheduleLoaded) ||
     birthdaysLoading;
 
@@ -333,7 +364,7 @@ export function DashboardOverview() {
           {t.dashboard.overviewHeading}
         </h2>
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {Array.from({ length: 7 }).map((_, i) => (
+          {Array.from({ length: 8 }).map((_, i) => (
             <Skeleton key={i} className="h-52 w-full rounded-none" />
           ))}
         </div>

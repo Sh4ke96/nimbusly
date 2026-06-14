@@ -2,8 +2,7 @@
 
 import { AlertTriangle, Clock } from "lucide-react";
 import { MEDICINE_EXPIRY_STATUS } from "@/lib/constants/medicine";
-import { daysUntilExpiry, getMedicineExpiryStatus } from "@/lib/medicine/expiry";
-import { formatMessage } from "@/lib/i18n/format";
+import { formatMedicineExpiryCountdown, getMedicineExpiryStatus } from "@/lib/medicine/expiry";
 import { useT } from "@/lib/lang-context";
 import { cn } from "@/lib/utils";
 
@@ -14,18 +13,15 @@ interface MedicineExpiryBadgeProps {
 export function MedicineExpiryBadge({ expiryDate }: MedicineExpiryBadgeProps) {
   const t = useT();
   const status = getMedicineExpiryStatus(expiryDate);
-  const days = daysUntilExpiry(expiryDate);
 
   if (status === MEDICINE_EXPIRY_STATUS.NONE || status === MEDICINE_EXPIRY_STATUS.OK) {
     return null;
   }
 
   const isExpired = status === MEDICINE_EXPIRY_STATUS.EXPIRED;
-  const label = isExpired
-    ? t.medicineCabinet.expiryExpired
-    : days !== null
-      ? formatMessage(t.medicineCabinet.expiryInDays, { count: String(days) })
-      : t.medicineCabinet.expirySoon;
+  const label =
+    formatMedicineExpiryCountdown(expiryDate, t.medicineCabinet) ??
+    t.medicineCabinet.expirySoon;
 
   return (
     <span

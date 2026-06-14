@@ -10,6 +10,7 @@ import {
   MEDICINE_NOTIFICATION_TYPES,
   SCHEDULE_NOTIFICATION_TYPES,
   SHOPPING_LIST_NOTIFICATION_TYPES,
+  WATCHLIST_NOTIFICATION_TYPES,
 } from "@/lib/constants/notifications";
 import type { AppNotification } from "@/lib/notifications/types";
 import { getNotificationModuleIcon } from "@/lib/notifications/module-icon";
@@ -110,6 +111,14 @@ export function NotificationListItem({
             className="text-xs font-medium text-primary hover:underline"
           >
             {t.notifications.openMedicineCabinet}
+          </Link>
+        )}
+        {(WATCHLIST_NOTIFICATION_TYPES as string[]).includes(item.type) && (
+          <Link
+            href="/watchlist"
+            className="text-xs font-medium text-primary hover:underline"
+          >
+            {t.notifications.openWatchlist}
           </Link>
         )}
       </div>

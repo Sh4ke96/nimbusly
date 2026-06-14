@@ -4,6 +4,7 @@ import {
   BarChart3,
   Cake,
   CalendarDays,
+  Clapperboard,
   Cross,
   Gift,
   ListChecks,
@@ -29,9 +30,15 @@ import { MemberAvatar } from "@/components/member-avatar";
 import { overviewAccentStyles, type OverviewAccent } from "@/components/dashboard/sortable-overview-card";
 import { formatBirthdayLabel, type BirthdayEntry } from "@/lib/birthdays/types";
 import { daysUntilBirthday } from "@/lib/dashboard/birthdays";
+import {
+  daysUntilExpiry,
+  formatMedicineExpiryCountdown,
+  getMedicineExpiryStatus,
+} from "@/lib/medicine/expiry";
 import { formatBudgetAmount } from "@/lib/budget/aggregates";
 import { BRAND_COLOR } from "@/lib/constants/brand";
 import { BUDGET_EXPENSE_COLOR } from "@/lib/constants/budget";
+import { MEDICINE_EXPIRY_STATUS } from "@/lib/constants/medicine";
 import { DASHBOARD_OVERVIEW_CARD, type DashboardOverviewCardId } from "@/lib/constants/dashboard-overview";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { SETTINGS_TAB } from "@/lib/constants/settings";
@@ -43,6 +50,7 @@ import { getDisplayName, type Family, type FamilyMember, type Profile } from "@/
 import type { GiftIdea } from "@/lib/gifts/types";
 import type { MedicineItem } from "@/lib/medicine/types";
 import type { ShoppingList } from "@/lib/shopping-lists/types";
+import type { WatchlistItem } from "@/lib/watchlist/types";
 import type { ScheduleEntry } from "@/lib/schedule/types";
 import { cn } from "@/lib/utils";
 
@@ -157,6 +165,13 @@ export function getOverviewCardMeta(
         icon: Cross,
         accent: "emerald",
       };
+    case DASHBOARD_OVERVIEW_CARD.WATCHLIST:
+      return {
+        href: "/watchlist",
+        title: t.moduleLabels.watchlist,
+        icon: Clapperboard,
+        accent: "indigo",
+      };
     case DASHBOARD_OVERVIEW_CARD.BIRTHDAYS:
       return {
         href: "/birthdays",
@@ -202,6 +217,9 @@ export interface OverviewCardBodiesProps {
   medicineItems: MedicineItem[];
   previewMedicines: MedicineItem[];
   expiringMedicinesCount: number;
+  watchlistItems: WatchlistItem[];
+  previewWatchlistItems: WatchlistItem[];
+  toWatchCount: number;
   upcomingBirthdays: BirthdayEntry[];
   monthScheduleEntries: ScheduleEntry[];
   scheduleByType: [string, number][];
@@ -225,6 +243,9 @@ export function OverviewCardBody({
   medicineItems,
   previewMedicines,
   expiringMedicinesCount,
+  watchlistItems,
+  previewWatchlistItems,
+  toWatchCount,
   upcomingBirthdays,
   monthScheduleEntries,
   scheduleByType,
@@ -355,18 +376,91 @@ export function OverviewCardBody({
                 })}
               </p>
               <ul className="space-y-1.5">
-                {previewMedicines.map((item) => (
+                {previewMedicines.map((item) => {
+                  if (!item.expiry_date) {
+                    return (
+                      <li
+                        key={item.id}
+                        className="flex items-center gap-2 text-sm border border-border bg-muted/20 px-2.5 py-2"
+                      >
+                        <Cross className="size-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                        <span className="truncate font-medium">{item.name}</span>
+                      </li>
+                    );
+                  }
+
+                  const days = daysUntilExpiry(item.expiry_date);
+                  const status = getMedicineExpiryStatus(item.expiry_date);
+                  const whenLabel = formatMedicineExpiryCountdown(
+                    item.expiry_date,
+                    t.medicineCabinet
+                  );
+
+                  return (
+                    <li
+                      key={item.id}
+                      className="flex items-center gap-2 text-sm border border-border bg-muted/20 px-2.5 py-2"
+                    >
+                      <Cross className="size-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                      <span className="truncate font-medium flex-1 min-w-0">{item.name}</span>
+                      {whenLabel && (
+                        <span
+                          className={cn(
+                            "shrink-0 text-[10px] font-semibold uppercase tracking-wide px-2 py-1 border rounded-none",
+                            status === MEDICINE_EXPIRY_STATUS.EXPIRED
+                              ? "bg-destructive/10 text-destructive border-destructive/20"
+                              : days === 0
+                                ? "bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-500/25"
+                                : "bg-amber-500/10 text-amber-800 dark:text-amber-300 border-amber-500/20"
+                          )}
+                        >
+                          {whenLabel}
+                        </span>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </>
+          ) : null}
+        </div>
+      );
+
+    case DASHBOARD_OVERVIEW_CARD.WATCHLIST:
+      return watchlistItems.length === 0 ? (
+        <EmptyHint icon={Clapperboard} text={t.dashboard.watchlistItemsEmpty} />
+      ) : (
+        <div className="space-y-3">
+          <BigStat
+            value={watchlistItems.length}
+            label={formatMessage(t.dashboard.watchlistItemsCount, {
+              count: String(watchlistItems.length),
+            })}
+            accent="indigo"
+          />
+          {toWatchCount > 0 && (
+            <>
+              <p className="text-xs text-indigo-800 dark:text-indigo-300 font-medium">
+                {formatMessage(t.dashboard.watchlistToWatchCount, {
+                  count: String(toWatchCount),
+                })}
+              </p>
+              <ul className="space-y-1.5">
+                {previewWatchlistItems.map((item) => (
                   <li
                     key={item.id}
                     className="flex items-center gap-2 text-sm border border-border bg-muted/20 px-2.5 py-2"
                   >
-                    <Cross className="size-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
-                    <span className="truncate font-medium">{item.name}</span>
+                    <Clapperboard className="size-3.5 shrink-0 text-indigo-600 dark:text-indigo-400" />
+                    <span className="truncate font-medium flex-1 min-w-0">{item.title}</span>
+                    <span className="shrink-0 text-[10px] font-medium text-muted-foreground uppercase">
+                      {t.watchlist.statusLabels[item.status]}
+                    </span>
                   </li>
                 ))}
               </ul>
             </>
-          ) : null}
+          )}
         </div>
       );
 

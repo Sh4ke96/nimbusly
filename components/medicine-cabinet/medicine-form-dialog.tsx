@@ -55,7 +55,7 @@ export function MedicineFormDialog({ onSuccess }: MedicineFormDialogProps) {
     setLocation("");
     setNotes("");
     onSuccess();
-  });
+  }, pending);
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     if (!isValidMedicineName(name)) {

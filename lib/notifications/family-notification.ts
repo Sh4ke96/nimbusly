@@ -36,6 +36,9 @@ export function getFamilyNotificationTitle(
     [NOTIFICATION_TYPE.MEDICINE_UPDATED]: notifications.medicineUpdatedTitle,
     [NOTIFICATION_TYPE.MEDICINE_DELETED]: notifications.medicineDeletedTitle,
     [NOTIFICATION_TYPE.MEDICINE_EXPIRING]: notifications.medicineExpiringTitle,
+    [NOTIFICATION_TYPE.WATCHLIST_ADDED]: notifications.watchlistAddedTitle,
+    [NOTIFICATION_TYPE.WATCHLIST_UPDATED]: notifications.watchlistUpdatedTitle,
+    [NOTIFICATION_TYPE.WATCHLIST_DELETED]: notifications.watchlistDeletedTitle,
   };
 
   return formatMessage(templateByType[type], { actor: actorName });

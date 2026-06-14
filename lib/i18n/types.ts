@@ -258,6 +258,7 @@ export type Dict = {
       calendar: string;
       family: string;
       medicineCabinet: string;
+      watchlist: string;
     };
     moduleDescs: {
       budget: string;
@@ -267,6 +268,7 @@ export type Dict = {
       calendar: string;
       family: string;
       medicineCabinet: string;
+      watchlist: string;
     };
     overviewHeading: string;
     viewModule: string;
@@ -286,6 +288,9 @@ export type Dict = {
     medicineItemsCount: string;
     medicineItemsEmpty: string;
     medicineExpiringCount: string;
+    watchlistItemsCount: string;
+    watchlistItemsEmpty: string;
+    watchlistToWatchCount: string;
     customizeOverviewBtn: string;
     customizeOverviewDoneBtn: string;
     customizeOverviewHint: string;
@@ -450,6 +455,7 @@ export type Dict = {
     expiryDisplay: string;
     expirySoon: string;
     expiryExpired: string;
+    expiryToday: string;
     expiryInDays: string;
     availabilityLabel: string;
     availabilityHint: string;
@@ -485,6 +491,52 @@ export type Dict = {
     changeSummaryExpiry: string;
     changeSummaryAvailability: string;
     changeSummaryLocation: string;
+    changeSummaryNotes: string;
+    changeSummaryEmpty: string;
+    changeSummarySeparator: string;
+    notificationDetailSeparator: string;
+  };
+  watchlist: {
+    title: string;
+    subtitle: string;
+    addBtn: string;
+    addTitle: string;
+    editTitle: string;
+    editBtn: string;
+    titleLabel: string;
+    titleHint: string;
+    titlePlaceholder: string;
+    mediaTypeLabel: string;
+    mediaTypeLabels: {
+      movie: string;
+      series: string;
+    };
+    statusLabel: string;
+    statusHint: string;
+    statusLabels: {
+      to_watch: string;
+      watching: string;
+      watched: string;
+    };
+    notesLabel: string;
+    notesPlaceholder: string;
+    filterAll: string;
+    saveBtn: string;
+    saving: string;
+    empty: string;
+    emptyFiltered: string;
+    addedBy: string;
+    createdSuccess: string;
+    updatedSuccess: string;
+    deletedSuccess: string;
+    errorTitleRequired: string;
+    errorMediaTypeRequired: string;
+    errorStatusRequired: string;
+    errorNotOwner: string;
+    errorGeneric: string;
+    changeSummaryTitle: string;
+    changeSummaryMediaType: string;
+    changeSummaryStatus: string;
     changeSummaryNotes: string;
     changeSummaryEmpty: string;
     changeSummarySeparator: string;
@@ -704,9 +756,13 @@ export type Dict = {
     medicineUpdatedTitle: string;
     medicineDeletedTitle: string;
     medicineExpiringTitle: string;
+    watchlistAddedTitle: string;
+    watchlistUpdatedTitle: string;
+    watchlistDeletedTitle: string;
     openBudget: string;
     openShoppingLists: string;
     openMedicineCabinet: string;
+    openWatchlist: string;
     notificationBodySeparator: string;
   };
 };

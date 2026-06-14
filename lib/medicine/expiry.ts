@@ -3,6 +3,8 @@ import {
   MEDICINE_EXPIRY_WARNING_DAYS,
   type MedicineExpiryStatus,
 } from "@/lib/constants/medicine";
+import { formatMessage } from "@/lib/i18n/format";
+import type { Dict } from "@/lib/i18n/types";
 import { parseMedicineDateString } from "@/lib/medicine/types";
 
 function startOfDay(date: Date): Date {
@@ -56,4 +58,21 @@ export function sortMedicineByExpiry<
     if (daysA !== daysB) return daysA - daysB;
     return a.name.localeCompare(b.name, "pl");
   });
+}
+
+type MedicineExpiryCountdownLabels = Pick<
+  Dict["medicineCabinet"],
+  "expiryExpired" | "expiryInDays" | "expiryToday"
+>;
+
+export function formatMedicineExpiryCountdown(
+  expiryDate: string | null,
+  labels: MedicineExpiryCountdownLabels,
+  today: Date = new Date()
+): string | null {
+  const days = daysUntilExpiry(expiryDate, today);
+  if (days === null) return null;
+  if (days < 0) return labels.expiryExpired;
+  if (days === 0) return labels.expiryToday;
+  return formatMessage(labels.expiryInDays, { count: String(days) });
 }
