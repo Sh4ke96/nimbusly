@@ -8,6 +8,7 @@ import { MemberAvatar } from "@/components/member-avatar";
 import { AVATAR_COLORS, DEFAULT_AVATAR_COLOR, type AvatarColor } from "@/lib/avatar-colors";
 import { useT } from "@/lib/lang-context";
 import { cn } from "@/lib/utils";
+import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
 import { completeOnboarding, type OnboardingState } from "./actions";
 import { Check, ChevronLeft, ChevronRight, Heart, User } from "lucide-react";
 import type { AccountMode } from "@/lib/profile";
@@ -27,6 +28,8 @@ export function OnboardingWizard() {
     completeOnboarding,
     null
   );
+
+  useActionFeedback(state);
 
   const stepIndex = STEPS.indexOf(step);
   const previewName =
@@ -212,12 +215,6 @@ export function OnboardingWizard() {
             </div>
           )}
         </div>
-      )}
-
-      {state?.error && (
-        <p className="text-sm text-destructive rounded-none bg-destructive/10 px-3 py-2">
-          {state.error}
-        </p>
       )}
 
       <div className="flex items-center justify-between gap-3 pt-2">

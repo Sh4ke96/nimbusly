@@ -1,31 +1,18 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
 import { MemberAvatar } from "@/components/member-avatar";
 import { AVATAR_COLORS } from "@/lib/avatar-colors";
 import { getDisplayName } from "@/lib/profile";
 import { useT } from "@/lib/lang-context";
 import { cn } from "@/lib/utils";
 import { useProfileStore } from "@/lib/stores/profile-store";
-import { updateProfile, type AccountActionState } from "@/app/(app)/account/actions";
-import { ActionMessage } from "@/components/profile/action-message";
-
-function useFormSuccess(state: AccountActionState, onSuccess: () => void) {
-  const handled = useRef(false);
-
-  useEffect(() => {
-    handled.current = false;
-  }, []);
-
-  useEffect(() => {
-    if (!state || !("success" in state) || handled.current) return;
-    handled.current = true;
-    onSuccess();
-  }, [state, onSuccess]);
-}
+import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
+import { updateProfile } from "@/app/(app)/account/actions";
 
 export function ProfileForm() {
   const t = useT();
@@ -38,9 +25,23 @@ export function ProfileForm() {
     if (profile?.avatar_color) setAvatarColor(profile.avatar_color);
   }, [profile?.avatar_color]);
 
-  useFormSuccess(state, () => void refreshProfile());
+  useActionFeedback(state, () => void refreshProfile());
 
-  if (!profile) return null;
+  if (!profile) {
+    return (
+      <div className="space-y-6 max-w-md">
+        <Skeleton className="size-12 rounded-none" />
+        <div className="flex gap-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Skeleton key={i} className="size-9 rounded-none" />
+          ))}
+        </div>
+        <Skeleton className="h-10 w-full rounded-none" />
+        <Skeleton className="h-10 w-full rounded-none" />
+        <Skeleton className="h-9 w-24 rounded-none" />
+      </div>
+    );
+  }
 
   return (
     <form action={action} className="space-y-6 max-w-md">
@@ -86,8 +87,6 @@ export function ProfileForm() {
           />
         </div>
       </div>
-
-      <ActionMessage state={state} />
 
       <Button type="submit" disabled={pending}>
         {pending ? t.account.saving : t.account.save}

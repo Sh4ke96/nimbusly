@@ -4,6 +4,7 @@ import { ThemeProvider } from "next-themes";
 import { cookies } from "next/headers";
 import { LangProvider } from "@/lib/lang-context";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "@/components/ui/sonner";
 import type { Lang } from "@/lib/i18n";
 import "./globals.css";
 
@@ -57,7 +58,10 @@ export default async function RootLayout({
           disableTransitionOnChange
         >
           <LangProvider initialLang={lang}>
-            <TooltipProvider>{children}</TooltipProvider>
+            <TooltipProvider>
+              {children}
+              <Toaster richColors closeButton position="top-right" />
+            </TooltipProvider>
           </LangProvider>
         </ThemeProvider>
       </body>

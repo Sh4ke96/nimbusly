@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -19,6 +20,8 @@ import { MemberAvatar } from "@/components/member-avatar";
 import { getDisplayName } from "@/lib/profile";
 import { useT } from "@/lib/lang-context";
 import { cn } from "@/lib/utils";
+import { HEADER_CONTROL_HEIGHT } from "@/lib/ui/header-controls";
+import { navigateSettingsTab, settingsTabHref } from "@/lib/profile/settings-tabs";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { logout } from "@/app/(app)/actions";
 import {
@@ -32,6 +35,7 @@ import {
 
 export function AccountMenu() {
   const t = useT();
+  const pathname = usePathname();
   const user = useProfileStore((s) => s.user);
   const profile = useProfileStore((s) => s.profile);
 
@@ -50,13 +54,14 @@ export function AccountMenu() {
             <button
               type="button"
               className={cn(
-                "inline-flex size-9 shrink-0 items-center justify-center rounded-none border transition-colors",
+                HEADER_CONTROL_HEIGHT,
+                "inline-flex w-8 shrink-0 items-center justify-center rounded-none border transition-colors",
                 isFamily
                   ? "border-primary/30 bg-primary/10 text-primary"
                   : "border-border bg-muted/50 text-muted-foreground"
               )}
             >
-              {isFamily ? <Users className="size-4" /> : <User className="size-4" />}
+              {isFamily ? <Users className="size-3.5" /> : <User className="size-3.5" />}
             </button>
           </TooltipTrigger>
           <TooltipContent side="bottom">{modeLabel}</TooltipContent>
@@ -67,13 +72,17 @@ export function AccountMenu() {
         <DropdownMenuTrigger asChild>
           <Button
             variant="outline"
-            className="h-auto rounded-none py-1 pl-1 pr-3 gap-2 hover:border-primary/40 hover:bg-primary/5"
+            size="sm"
+            className={cn(
+              HEADER_CONTROL_HEIGHT,
+              "rounded-none py-0 pl-1 pr-2 gap-1.5 hover:border-primary/40 hover:bg-primary/5"
+            )}
           >
-            <MemberAvatar name={displayName} color={profile?.avatar_color} size="sm" />
-            <span className="hidden sm:block text-sm font-medium max-w-[120px] truncate">
+            <MemberAvatar name={displayName} color={profile?.avatar_color} size="xs" />
+            <span className="hidden sm:block text-xs font-medium max-w-[120px] truncate">
               {displayName}
             </span>
-            <ChevronDown className="size-4 text-muted-foreground" />
+            <ChevronDown className="size-3.5 text-muted-foreground" />
           </Button>
         </DropdownMenuTrigger>
 
@@ -88,20 +97,32 @@ export function AccountMenu() {
           <DropdownMenuSeparator />
 
           <DropdownMenuItem asChild>
-            <Link href="/profile/settings?tab=profile" className="flex items-center gap-2">
+            <Link
+              href={settingsTabHref("profile")}
+              onClick={(e) => navigateSettingsTab("profile", pathname) && e.preventDefault()}
+              className="flex items-center gap-2"
+            >
               <Palette className="size-4 text-primary" />
               {t.account.menuProfile}
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link href="/profile/settings?tab=account" className="flex items-center gap-2">
+            <Link
+              href={settingsTabHref("account")}
+              onClick={(e) => navigateSettingsTab("account", pathname) && e.preventDefault()}
+              className="flex items-center gap-2"
+            >
               <User className="size-4 text-primary" />
               {t.account.menuAccountType}
             </Link>
           </DropdownMenuItem>
           {profile?.account_mode === "family" && profile.family_id && (
             <DropdownMenuItem asChild>
-              <Link href="/profile/settings?tab=family" className="flex items-center gap-2">
+              <Link
+                href={settingsTabHref("family")}
+                onClick={(e) => navigateSettingsTab("family", pathname) && e.preventDefault()}
+                className="flex items-center gap-2"
+              >
                 <Users className="size-4 text-primary" />
                 {t.account.menuFamily}
               </Link>

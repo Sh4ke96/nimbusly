@@ -2,6 +2,7 @@
 
 import { useLang } from "@/lib/lang-context";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { HEADER_CONTROL_HEIGHT } from "@/lib/ui/header-controls";
 import { cn } from "@/lib/utils";
 
 export function LanguageToggle({ className }: { className?: string }) {
@@ -15,7 +16,8 @@ export function LanguageToggle({ className }: { className?: string }) {
       variant="outline"
       size="sm"
       className={cn(
-        "rounded-none border border-border bg-muted/50 p-0.5 font-heading text-xs font-semibold",
+        HEADER_CONTROL_HEIGHT,
+        "items-stretch rounded-none border border-border bg-muted/50 p-0 font-heading text-xs font-semibold",
         "hover:border-primary/40",
         className
       )}
@@ -24,7 +26,7 @@ export function LanguageToggle({ className }: { className?: string }) {
         <ToggleGroupItem
           key={l}
           value={l}
-          className="rounded-none px-2.5 py-1 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
+          className="h-full min-h-0 rounded-none border-0 px-2.5 py-0 shadow-none data-[state=on]:bg-primary data-[state=on]:text-primary-foreground"
         >
           {l.toUpperCase()}
         </ToggleGroupItem>

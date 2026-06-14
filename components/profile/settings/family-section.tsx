@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useRef } from "react";
+import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -8,22 +8,8 @@ import { MemberAvatar } from "@/components/member-avatar";
 import { getDisplayName } from "@/lib/profile";
 import { useT } from "@/lib/lang-context";
 import { useProfileStore } from "@/lib/stores/profile-store";
-import { updateFamilyName, type AccountActionState } from "@/app/(app)/account/actions";
-import { ActionMessage } from "@/components/profile/action-message";
-
-function useFormSuccess(state: AccountActionState, onSuccess: () => void) {
-  const handled = useRef(false);
-
-  useEffect(() => {
-    handled.current = false;
-  }, []);
-
-  useEffect(() => {
-    if (!state || !("success" in state) || handled.current) return;
-    handled.current = true;
-    onSuccess();
-  }, [state, onSuccess]);
-}
+import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
+import { updateFamilyName } from "@/app/(app)/account/actions";
 
 export function FamilySection() {
   const t = useT();
@@ -35,7 +21,7 @@ export function FamilySection() {
 
   const isOwner = family?.created_by === user?.id;
 
-  useFormSuccess(state, () => void refreshFamily());
+  useActionFeedback(state, () => void refreshFamily());
 
   return (
     <div className="space-y-6 max-w-lg">
@@ -50,7 +36,6 @@ export function FamilySection() {
               key={family?.name}
             />
           </div>
-          <ActionMessage state={state} />
           <Button type="submit" disabled={pending}>
             {pending ? t.account.saving : t.account.save}
           </Button>

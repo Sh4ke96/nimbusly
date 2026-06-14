@@ -170,6 +170,7 @@ export const en: Dict = {
     settingsTitle: "Account settings",
     settingsSubtitle: "Manage your profile, account type, and family.",
     settingsBack: "Back to dashboard",
+    breadcrumbDashboard: "Dashboard",
     errorUnauthorized: "You must be signed in.",
     errorFirstName: "Please enter your first name.",
     errorLastName: "Please enter your last name.",

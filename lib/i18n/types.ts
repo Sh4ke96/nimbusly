@@ -158,6 +158,7 @@ export type Dict = {
     settingsTitle: string;
     settingsSubtitle: string;
     settingsBack: string;
+    breadcrumbDashboard: string;
     errorUnauthorized: string;
     errorFirstName: string;
     errorLastName: string;

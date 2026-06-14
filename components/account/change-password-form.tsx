@@ -2,22 +2,20 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { getPasswordResetCallbackUrl } from "@/lib/supabase/auth-redirect";
 import { isAuthRateLimitError } from "@/lib/supabase/auth-errors";
 import { useT } from "@/lib/lang-context";
+import { toast } from "sonner";
 
 export function ChangePasswordForm() {
   const t = useT();
   const [pending, setPending] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const [sent, setSent] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setError(null);
     setPending(true);
 
     const supabase = createClient();
@@ -26,7 +24,7 @@ export function ChangePasswordForm() {
     } = await supabase.auth.getUser();
 
     if (!user?.email) {
-      setError(t.account.errorUnauthorized);
+      toast.error(t.account.errorUnauthorized);
       setPending(false);
       return;
     }
@@ -41,7 +39,7 @@ export function ChangePasswordForm() {
     setPending(false);
 
     if (resetError) {
-      setError(
+      toast.error(
         isAuthRateLimitError(resetError.message)
           ? t.account.passwordResetRateLimit
           : t.account.passwordResetError
@@ -49,19 +47,16 @@ export function ChangePasswordForm() {
       return;
     }
 
-    setSuccess(true);
+    toast.success(t.account.changePasswordSuccessTitle, {
+      description: t.account.changePasswordSuccessMessage,
+    });
+    setSent(true);
   }
 
-  if (success) {
+  if (sent) {
     return (
       <div className="space-y-4 text-center">
-        <CheckCircle2 className="size-6 text-primary mx-auto" />
-        <p className="text-sm font-medium text-foreground">
-          {t.account.changePasswordSuccessTitle}
-        </p>
-        <p className="text-xs text-muted-foreground">
-          {t.account.changePasswordSuccessMessage}
-        </p>
+        <p className="text-sm text-muted-foreground">{t.account.changePasswordSuccessMessage}</p>
         <Button asChild variant="outline" className="w-full">
           <Link href="/dashboard">{t.account.changePasswordBack}</Link>
         </Button>
@@ -72,12 +67,6 @@ export function ChangePasswordForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <p className="text-sm text-muted-foreground">{t.account.changePasswordDesc}</p>
-
-      {error && (
-        <p className="text-sm text-destructive rounded-none bg-destructive/10 px-3 py-2">
-          {error}
-        </p>
-      )}
 
       <Button type="submit" className="w-full" disabled={pending}>
         {pending ? t.account.changePasswordSubmitting : t.account.changePasswordBtn}

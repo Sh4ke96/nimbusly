@@ -1,29 +1,16 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useT } from "@/lib/lang-context";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import type { AccountMode } from "@/lib/profile";
-import { updateAccountMode, type AccountActionState } from "@/app/(app)/account/actions";
-import { ActionMessage } from "@/components/profile/action-message";
+import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
+import { updateAccountMode } from "@/app/(app)/account/actions";
 import { Heart, User } from "lucide-react";
-
-function useFormSuccess(state: AccountActionState, onSuccess: () => void) {
-  const handled = useRef(false);
-
-  useEffect(() => {
-    handled.current = false;
-  }, []);
-
-  useEffect(() => {
-    if (!state || !("success" in state) || handled.current) return;
-    handled.current = true;
-    onSuccess();
-  }, [state, onSuccess]);
-}
 
 export function AccountTypeForm() {
   const t = useT();
@@ -38,9 +25,18 @@ export function AccountTypeForm() {
     if (profile?.account_mode) setAccountMode(profile.account_mode);
   }, [profile?.account_mode]);
 
-  useFormSuccess(state, () => void refreshProfile());
+  useActionFeedback(state, () => void refreshProfile());
 
-  if (!profile) return null;
+  if (!profile) {
+    return (
+      <div className="space-y-6 max-w-lg">
+        <Skeleton className="h-4 w-full max-w-sm rounded-none" />
+        <Skeleton className="h-20 w-full rounded-none" />
+        <Skeleton className="h-20 w-full rounded-none" />
+        <Skeleton className="h-9 w-24 rounded-none" />
+      </div>
+    );
+  }
 
   return (
     <form action={action} className="space-y-6 max-w-lg">
@@ -96,8 +92,6 @@ export function AccountTypeForm() {
           {t.account.soloWarning}
         </p>
       )}
-
-      <ActionMessage state={state} />
 
       <Button type="submit" disabled={pending}>
         {pending ? t.account.saving : t.account.save}
