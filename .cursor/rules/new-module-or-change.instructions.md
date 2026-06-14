@@ -301,7 +301,17 @@ Reference: `lib/family/invite.test.ts`.
 | Profile / settings | `/profile/settings` | `profile-store` | `app/(app)/account/actions.ts` |
 | Family invites | settings tab `family` | `profile-store` | `family-invite-actions.ts` |
 | Permissions | settings tab `permissions` | `profile-store` | `family-permissions-actions.ts` |
-| Birthdays | `/birthdays` | — (local state + Supabase read) | `birthdays/actions.ts` |
+| Dashboard | `/dashboard` | multiple (overview cards) | — |
+| Budget | `/budget` | `budget-store` | `budget/actions.ts` |
+| Shopping lists | `/shopping` | `shopping-lists-store` | `shopping/actions.ts` |
+| Gifts | `/gifts` | `gifts-store` | `gifts/actions.ts` |
+| Birthdays | `/birthdays` | `birthdays-store` | `birthdays/actions.ts` |
+| Work schedule | `/schedule` | `schedule-store` | `schedule/actions.ts` |
+| Medicine cabinet | `/medicine-cabinet` | `medicine-store` | `medicine-cabinet/actions.ts` |
+| Watchlist | `/watchlist` | `watchlist-store` | `watchlist/actions.ts` |
+| Restaurants | `/restaurants` | `restaurants-store` | `restaurants/actions.ts` |
+| Pets | `/pets` | `pets-store` | `pets/actions.ts` |
+| Chores | `/chores` | `chores-store` | `chores/actions.ts` |
 | Notifications | `/notifications` | `notifications-store` | `notifications/actions.ts` |
 
 When adding a module, mirror the closest row above.

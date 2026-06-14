@@ -65,10 +65,11 @@ export async function updateSession(request: NextRequest) {
       return NextResponse.redirect(url)
     }
 
-    if (
-      !onboardingComplete &&
-      (pathname === "/dashboard" || pathname.startsWith("/profile"))
-    ) {
+    const isOnboardingRoute = pathname === '/onboarding'
+    const requiresOnboarding =
+      !onboardingComplete && !isPublic && !isOnboardingRoute
+
+    if (requiresOnboarding) {
       const url = request.nextUrl.clone()
       url.pathname = '/onboarding'
       return NextResponse.redirect(url)

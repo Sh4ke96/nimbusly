@@ -24,8 +24,10 @@ import {
 } from "@/components/dashboard/dashboard-overview-card-bodies";
 import { SortableOverviewCard } from "@/components/dashboard/sortable-overview-card";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { BirthdayEntry } from "@/lib/birthdays/types";
 import { sortBirthdaysByUpcoming } from "@/lib/dashboard/birthdays";
+import { buildAttentionItems } from "@/lib/dashboard/attention";
+import { formatMessage } from "@/lib/i18n/format";
+import { DashboardAttentionBanner } from "@/components/dashboard/dashboard-attention-banner";
 import {
   netBalance,
   sumExpensesOnly,
@@ -50,13 +52,13 @@ import { BUDGET_EXPENSE_COLOR } from "@/lib/constants/budget";
 import type { DashboardOverviewCardId } from "@/lib/constants/dashboard-overview";
 import { parseEntryDateParts } from "@/lib/schedule/types";
 import {
-  getVisibleOverviewCardIds,
-  normalizeDashboardOverviewLayout,
   parseDashboardOverviewLayout,
-  reorderOverviewCards,
   serializeDashboardOverviewLayout,
+  reorderOverviewCards,
   setOverviewCardHidden,
   type DashboardOverviewLayout,
+  getVisibleOverviewCardIds,
+  normalizeDashboardOverviewLayout,
 } from "@/lib/dashboard/overview-layout";
 import { useLang, useT } from "@/lib/lang-context";
 import { useBudgetStore } from "@/lib/stores/budget-store";
@@ -68,8 +70,8 @@ import { useRestaurantsStore } from "@/lib/stores/restaurants-store";
 import { usePetsStore } from "@/lib/stores/pets-store";
 import { useChoresStore } from "@/lib/stores/chores-store";
 import { useScheduleStore } from "@/lib/stores/schedule-store";
+import { useBirthdaysStore } from "@/lib/stores/birthdays-store";
 import { useShoppingListsStore } from "@/lib/stores/shopping-lists-store";
-import { createClient } from "@/lib/supabase/client";
 import { updateDashboardOverviewLayout } from "@/app/(app)/dashboard/actions";
 
 export function DashboardOverview() {
@@ -129,8 +131,11 @@ export function DashboardOverview() {
   const scheduleLoading = useScheduleStore((s) => s.loading);
   const fetchSchedule = useScheduleStore((s) => s.fetchEntries);
 
-  const [birthdays, setBirthdays] = useState<BirthdayEntry[]>([]);
-  const [birthdaysLoading, setBirthdaysLoading] = useState<boolean>(true);
+  const birthdays = useBirthdaysStore((s) => s.entries);
+  const birthdaysLoaded = useBirthdaysStore((s) => s.loaded);
+  const birthdaysLoading = useBirthdaysStore((s) => s.loading);
+  const fetchBirthdays = useBirthdaysStore((s) => s.fetchEntries);
+
   const [editMode, setEditMode] = useState<boolean>(false);
   const [layout, setLayout] = useState<DashboardOverviewLayout>(() =>
     parseDashboardOverviewLayout(null)
@@ -143,14 +148,20 @@ export function DashboardOverview() {
   const scheduleYear = now.getFullYear();
   const scheduleMonth = now.getMonth() + 1;
 
+  const profileLayoutKey = profile
+    ? serializeDashboardOverviewLayout(
+        parseDashboardOverviewLayout(profile.dashboard_overview_layout)
+      )
+    : null;
+
   useEffect(() => {
     layoutRef.current = layout;
   }, [layout]);
 
   useEffect(() => {
-    if (!profile) return;
-    setLayout(parseDashboardOverviewLayout(profile.dashboard_overview_layout));
-  }, [profile?.id, profile?.dashboard_overview_layout]);
+    if (!profileLayoutKey) return;
+    setLayout(parseDashboardOverviewLayout(JSON.parse(profileLayoutKey)));
+  }, [profile?.id, profileLayoutKey]);
 
   const persistLayout = useCallback(
     async (nextLayout: DashboardOverviewLayout, previousLayout: DashboardOverviewLayout) => {
@@ -174,59 +185,21 @@ export function DashboardOverview() {
     [patchDashboardOverviewLayout]
   );
 
-  const loadBirthdays = useCallback(async () => {
-    setBirthdaysLoading(true);
-    const supabase = createClient();
-    const { data } = await supabase
-      .from("birthday_entries")
-      .select("*")
-      .order("birth_month")
-      .order("birth_day");
-    setBirthdays((data ?? []) as BirthdayEntry[]);
-    setBirthdaysLoading(false);
-  }, []);
-
   useEffect(() => {
-    if (!budgetLoaded && !budgetLoading) void fetchBudgets();
-    if (!listsLoaded && !listsLoading) void fetchLists();
-    if (!giftsLoaded && !giftsLoading) void fetchIdeas();
-    if (!medicineLoaded && !medicineLoading) void fetchMedicineItems();
-    if (!watchlistLoaded && !watchlistLoading) void fetchWatchlistItems();
-    if (!restaurantsLoaded && !restaurantsLoading) void fetchRestaurantPlaces();
-    if (!petsLoaded && !petsLoading) void fetchPets();
-    if (!choresLoaded && !choresLoading) void fetchChores();
-    if (!scheduleLoaded && !scheduleLoading) void fetchSchedule();
-    void loadBirthdays();
-  }, [
-    budgetLoaded,
-    budgetLoading,
-    fetchBudgets,
-    listsLoaded,
-    listsLoading,
-    fetchLists,
-    giftsLoaded,
-    giftsLoading,
-    fetchIdeas,
-    medicineLoaded,
-    medicineLoading,
-    fetchMedicineItems,
-    watchlistLoaded,
-    watchlistLoading,
-    fetchWatchlistItems,
-    restaurantsLoaded,
-    restaurantsLoading,
-    fetchRestaurantPlaces,
-    petsLoaded,
-    petsLoading,
-    fetchPets,
-    choresLoaded,
-    choresLoading,
-    fetchChores,
-    scheduleLoaded,
-    scheduleLoading,
-    fetchSchedule,
-    loadBirthdays,
-  ]);
+    if (!profile?.id) return;
+
+    void fetchBudgets();
+    void fetchLists();
+    void fetchIdeas();
+    void fetchMedicineItems();
+    void fetchWatchlistItems();
+    void fetchRestaurantPlaces();
+    void fetchPets();
+    void fetchChores();
+    void fetchSchedule();
+    void fetchBirthdays();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile?.id]);
 
   const monthlyBudgetEntries = useMemo(() => {
     const all = budgets.flatMap((b) => expensesByBudgetId[b.id] ?? []);
@@ -328,6 +301,31 @@ export function DashboardOverview() {
   const previewChoreTasks = useMemo(
     () => pickActiveChorePreview(choreTasks, 3),
     [choreTasks]
+  );
+
+  const attentionItems = useMemo(
+    () =>
+      buildAttentionItems({
+        choreTasks,
+        medicineItems,
+        careItems,
+        pets,
+        birthdays,
+        labels: {
+          choreOverdue: (title) =>
+            formatMessage(t.dashboard.attentionChoreOverdue, { title }),
+          medicineExpiring: (name) =>
+            formatMessage(t.dashboard.attentionMedicineExpiring, { name }),
+          petCareDue: (pet, item) =>
+            formatMessage(t.dashboard.attentionPetCareDue, { pet, item }),
+          birthdaySoon: (name, when) =>
+            formatMessage(t.dashboard.attentionBirthdaySoon, { name, when }),
+          birthdayToday: t.dashboard.birthdayToday,
+          birthdayInDays: (count) =>
+            formatMessage(t.dashboard.birthdayInDays, { count }),
+        },
+      }),
+    [choreTasks, medicineItems, careItems, pets, birthdays, t.dashboard]
   );
 
   const visibleCardIds = useMemo(
@@ -448,7 +446,7 @@ export function DashboardOverview() {
     (petsLoading && !petsLoaded) ||
     (choresLoading && !choresLoaded) ||
     (scheduleLoading && !scheduleLoaded) ||
-    birthdaysLoading;
+    (birthdaysLoading && !birthdaysLoaded);
 
   if (loading) {
     return (
@@ -474,6 +472,8 @@ export function DashboardOverview() {
         onShowCard={(cardId) => void handleShowCard(cardId)}
         saving={savingLayout}
       />
+
+      <DashboardAttentionBanner items={attentionItems} />
 
       {visibleCardIds.length === 0 ? (
         <div className="flex flex-col items-center justify-center gap-3 py-16 border border-dashed border-border bg-muted/20 text-center">

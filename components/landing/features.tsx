@@ -1,9 +1,33 @@
 "use client";
 
 import { useT } from "@/lib/lang-context";
-import { Wallet, ShoppingCart, Gift, Cake, CalendarDays, Users } from "lucide-react";
+import {
+  Cake,
+  CalendarDays,
+  Clapperboard,
+  Cross,
+  Gift,
+  ListChecks,
+  PawPrint,
+  ShoppingCart,
+  UtensilsCrossed,
+  Users,
+  Wallet,
+} from "lucide-react";
 
-const featureIcons = [Wallet, ShoppingCart, Gift, Cake, CalendarDays, Users];
+const featureIcons = [
+  Wallet,
+  ShoppingCart,
+  Gift,
+  Cake,
+  CalendarDays,
+  Cross,
+  Clapperboard,
+  UtensilsCrossed,
+  PawPrint,
+  ListChecks,
+  Users,
+];
 
 export function FeaturesSection() {
   const t = useT();
@@ -22,7 +46,7 @@ export function FeaturesSection() {
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {t.features.items.map((f, i) => {
-            const Icon = featureIcons[i];
+            const Icon = featureIcons[i] ?? Wallet;
             return (
               <div
                 key={f.title}

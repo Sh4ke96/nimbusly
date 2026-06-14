@@ -17,6 +17,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { MemberAvatar } from "@/components/member-avatar";
+import { AppModuleNav } from "@/components/app/app-module-nav";
 import { getDisplayName } from "@/lib/profile";
 import { useT } from "@/lib/lang-context";
 import { cn } from "@/lib/utils";
@@ -71,6 +72,8 @@ export function AccountMenu() {
           <TooltipContent side="bottom">{modeLabel}</TooltipContent>
         </Tooltip>
       )}
+
+      <AppModuleNav />
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>

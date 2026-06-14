@@ -12,49 +12,54 @@ import { usePetsStore } from "@/lib/stores/pets-store";
 import { useChoresStore } from "@/lib/stores/chores-store";
 import { useShoppingListsStore } from "@/lib/stores/shopping-lists-store";
 import { useBudgetStore } from "@/lib/stores/budget-store";
+import { useScheduleStore } from "@/lib/stores/schedule-store";
+import { useBirthdaysStore } from "@/lib/stores/birthdays-store";
+
+function deferAuthSideEffect(fn: () => void) {
+  window.setTimeout(fn, 0);
+}
 
 export function ProfileBootstrap({ children }: { children: React.ReactNode }) {
-  const fetchSession = useProfileStore((s) => s.fetchSession);
-  const resetProfile = useProfileStore((s) => s.reset);
-  const fetchNotifications = useNotificationsStore((s) => s.fetchNotifications);
-  const resetNotifications = useNotificationsStore((s) => s.reset);
-  const resetGifts = useGiftsStore((s) => s.reset);
-  const resetMedicine = useMedicineStore((s) => s.reset);
-  const resetWatchlist = useWatchlistStore((s) => s.reset);
-  const resetRestaurants = useRestaurantsStore((s) => s.reset);
-  const resetPets = usePetsStore((s) => s.reset);
-  const resetChores = useChoresStore((s) => s.reset);
-  const resetShoppingLists = useShoppingListsStore((s) => s.reset);
-  const resetBudget = useBudgetStore((s) => s.reset);
-
   useEffect(() => {
+    const fetchSession = useProfileStore.getState().fetchSession;
+    const fetchNotifications = useNotificationsStore.getState().fetchNotifications;
+
     void fetchSession().then(() => fetchNotifications());
 
     const supabase = createClient();
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "INITIAL_SESSION") return;
+      if (event === "INITIAL_SESSION" || event === "TOKEN_REFRESHED") return;
 
       if (event === "SIGNED_OUT") {
-        resetProfile();
-        resetNotifications();
-        resetGifts();
-        resetMedicine();
-        resetWatchlist();
-        resetRestaurants();
-        resetPets();
-        resetChores();
-        resetShoppingLists();
-        resetBudget();
+        useProfileStore.getState().reset();
+        useNotificationsStore.getState().reset();
+        useGiftsStore.getState().reset();
+        useMedicineStore.getState().reset();
+        useWatchlistStore.getState().reset();
+        useRestaurantsStore.getState().reset();
+        usePetsStore.getState().reset();
+        useChoresStore.getState().reset();
+        useShoppingListsStore.getState().reset();
+        useBudgetStore.getState().reset();
+        useScheduleStore.getState().reset();
+        useBirthdaysStore.getState().reset();
         return;
       }
 
-      void fetchSession(true).then(() => fetchNotifications(true));
+      if (event === "SIGNED_IN" || event === "USER_UPDATED") {
+        deferAuthSideEffect(() => {
+          void useProfileStore
+            .getState()
+            .fetchSession(true)
+            .then(() => useNotificationsStore.getState().fetchNotifications(true));
+        });
+      }
     });
 
     return () => subscription.unsubscribe();
-  }, [fetchSession, fetchNotifications, resetProfile, resetNotifications, resetGifts, resetMedicine, resetWatchlist, resetRestaurants, resetPets, resetChores, resetShoppingLists, resetBudget]);
+  }, []);
 
   return children;
 }

@@ -310,6 +310,12 @@ export type Dict = {
     choresEmpty: string;
     choresActiveCount: string;
     choresOverdueCount: string;
+    attentionHeading: string;
+    attentionCount: string;
+    attentionChoreOverdue: string;
+    attentionMedicineExpiring: string;
+    attentionPetCareDue: string;
+    attentionBirthdaySoon: string;
     customizeOverviewBtn: string;
     customizeOverviewDoneBtn: string;
     customizeOverviewHint: string;
@@ -977,6 +983,11 @@ export type Dict = {
     pageNumberLabel: string;
     openBirthdays: string;
     emailComingSoon: string;
+    reminderEmailSubject: string;
+    reminderEmailHeading: string;
+    reminderEmailIntro: string;
+    reminderEmailCta: string;
+    reminderEmailFooter: string;
     errorGeneric: string;
     menu: string;
     birthdayAddedTitle: string;

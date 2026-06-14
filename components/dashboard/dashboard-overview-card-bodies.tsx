@@ -23,11 +23,11 @@ import {
   Bar,
   BarChart,
   Cell,
-  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
+import { BudgetResponsiveChart } from "@/components/budget/budget-responsive-chart";
 import { MemberAvatar } from "@/components/member-avatar";
 import { RestaurantStarRating } from "@/components/restaurants/restaurant-star-rating";
 import { overviewAccentStyles, type OverviewAccent } from "@/components/dashboard/sortable-overview-card";
@@ -39,11 +39,13 @@ import {
   getMedicineExpiryStatus,
 } from "@/lib/medicine/expiry";
 import { formatBudgetAmount } from "@/lib/budget/aggregates";
+import { budgetChartTooltipFormatter } from "@/lib/budget/chart-tooltip";
 import { BRAND_COLOR } from "@/lib/constants/brand";
 import { BUDGET_EXPENSE_COLOR } from "@/lib/constants/budget";
 import { MEDICINE_EXPIRY_STATUS } from "@/lib/constants/medicine";
 import { DASHBOARD_OVERVIEW_CARD, type DashboardOverviewCardId } from "@/lib/constants/dashboard-overview";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
+import type { Lang } from "@/lib/constants/lang";
 import { SETTINGS_TAB } from "@/lib/constants/settings";
 import { SCHEDULE_ENTRY_EMOJI, type ScheduleEntryType } from "@/lib/constants/schedule";
 import { getScheduleTypeLabel } from "@/lib/schedule/types";
@@ -98,7 +100,7 @@ function EmptyHint({ icon: Icon, text }: { icon: LucideIcon; text: string }) {
       <span className="inline-flex size-9 items-center justify-center rounded-none bg-muted text-muted-foreground">
         <Icon className="size-4" />
       </span>
-      <p className="text-xs text-muted-foreground max-w-[14rem]">{text}</p>
+      <p className="text-xs text-muted-foreground max-w-56">{text}</p>
     </div>
   );
 }
@@ -231,7 +233,7 @@ export function getOverviewCardMeta(
 export interface OverviewCardBodiesProps {
   cardId: DashboardOverviewCardId;
   t: Dict;
-  lang: string;
+  lang: Lang;
   profile: Profile | null;
   members: FamilyMember[];
   family: Family | null;
@@ -326,8 +328,8 @@ export function OverviewCardBody({
             />
           </div>
           {budgetChartData.length > 0 ? (
-            <div className="h-28 border border-border bg-muted/20 p-2">
-              <ResponsiveContainer width="100%" height="100%">
+            <div className="box-border flex h-28 min-h-28 w-full min-w-0 flex-col border border-border bg-muted/20 p-2">
+              <BudgetResponsiveChart className="min-h-0 flex-1">
                 <BarChart
                   data={budgetChartData}
                   margin={{ top: 4, right: 4, left: 0, bottom: 0 }}
@@ -336,16 +338,16 @@ export function OverviewCardBody({
                   <YAxis hide />
                   <Tooltip
                     formatter={(value) =>
-                      formatBudgetAmount(Number(value ?? 0), lang)
+                      budgetChartTooltipFormatter(value, lang, t.budget.totalLabel)
                     }
                   />
-                  <Bar dataKey="total" radius={0}>
+                  <Bar dataKey="total" name={t.budget.totalLabel} radius={0}>
                     {budgetChartData.map((row) => (
                       <Cell key={row.key} fill={row.fill} />
                     ))}
                   </Bar>
                 </BarChart>
-              </ResponsiveContainer>
+              </BudgetResponsiveChart>
             </div>
           ) : (
             <EmptyHint icon={Wallet} text={t.dashboard.noData} />
@@ -655,8 +657,8 @@ export function OverviewCardBody({
               days === 0
                 ? t.dashboard.birthdayToday
                 : formatMessage(t.dashboard.birthdayInDays, {
-                    count: String(days),
-                  });
+                  count: String(days),
+                });
 
             return (
               <li

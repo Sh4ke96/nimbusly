@@ -1,4 +1,4 @@
-import { RESTAURANT_FILTER_ALL } from "@/lib/constants/restaurants";
+import { RESTAURANT_FILTER_ALL, RESTAURANT_VISIT_STATUS } from "@/lib/constants/restaurants";
 import type { RestaurantVenueType, RestaurantVisitStatus } from "@/lib/constants/restaurants";
 import type { RestaurantPlace } from "@/lib/restaurants/types";
 
@@ -53,8 +53,8 @@ export function countRestaurantsByVenueType(
 export function sortRestaurantsByVisitedAt(items: RestaurantPlace[]): RestaurantPlace[] {
   return [...items].sort((a, b) => {
     if (a.visit_status !== b.visit_status) {
-      if (a.visit_status === "planned") return -1;
-      if (b.visit_status === "planned") return 1;
+      if (a.visit_status === RESTAURANT_VISIT_STATUS.PLANNED) return -1;
+      if (b.visit_status === RESTAURANT_VISIT_STATUS.PLANNED) return 1;
     }
     if (a.visited_at && b.visited_at) {
       return b.visited_at.localeCompare(a.visited_at);

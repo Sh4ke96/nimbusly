@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useCallback, useEffect, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { AppHeader } from "@/components/app/app-header";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { BirthdayCalendar } from "@/components/birthdays/birthday-calendar";
@@ -12,7 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useT } from "@/lib/lang-context";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useNotificationsStore } from "@/lib/stores/notifications-store";
-import { createClient } from "@/lib/supabase/client";
+import { useBirthdaysStore } from "@/lib/stores/birthdays-store";
 import { formatBirthdayLabel, type BirthdayEntry } from "@/lib/birthdays/types";
 import { cn } from "@/lib/utils";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
@@ -24,55 +24,31 @@ export function BirthdaysView() {
   const user = useProfileStore((s) => s.user);
   const profile = useProfileStore((s) => s.profile);
   const members = useProfileStore((s) => s.members);
+  const entries = useBirthdaysStore((s) => s.entries);
+  const loaded = useBirthdaysStore((s) => s.loaded);
+  const loading = useBirthdaysStore((s) => s.loading);
+  const fetchEntries = useBirthdaysStore((s) => s.fetchEntries);
   const fetchNotifications = useNotificationsStore((s) => s.fetchNotifications);
 
   const now = new Date();
   const [year, setYear] = useState<number>(now.getFullYear());
   const [month, setMonth] = useState<number>(now.getMonth() + 1);
-  const [entries, setEntries] = useState<BirthdayEntry[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
   const [focusedDay, setFocusedDay] = useState<number | null>(null);
   const [focusedEntryId, setFocusedEntryId] = useState<string | null>(null);
   const [editingEntry, setEditingEntry] = useState<BirthdayEntry | null>(null);
   const [editOpen, setEditOpen] = useState<boolean>(false);
   const [deleteState, deleteAction, deletePending] = useActionState(deleteBirthday, null);
 
-  const fetchBirthdayEntries = useCallback(async () => {
-    const supabase = createClient();
-    const { data } = await supabase
-      .from("birthday_entries")
-      .select("*")
-      .order("birth_month")
-      .order("birth_day");
-
-    return (data ?? []) as BirthdayEntry[];
-  }, []);
-
-  const loadEntries = useCallback(async () => {
-    setLoading(true);
-    const data = await fetchBirthdayEntries();
-    setEntries(data);
-    setLoading(false);
-  }, [fetchBirthdayEntries]);
-
   useEffect(() => {
-    let cancelled = false;
+    if (!loaded) void fetchEntries();
+  }, [loaded, fetchEntries]);
 
-    void fetchBirthdayEntries().then((data) => {
-      if (cancelled) return;
-      setEntries(data);
-      setLoading(false);
-    });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [fetchBirthdayEntries]);
-
-  useActionFeedback(deleteState, () => void loadEntries());
+  useActionFeedback(deleteState, () => {
+    void fetchEntries(true);
+  }, deletePending);
 
   const onBirthdayChanged = () => {
-    void loadEntries();
+    void fetchEntries(true);
     void fetchNotifications(true);
   };
 
@@ -112,7 +88,7 @@ export function BirthdaysView() {
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
           <Card id="birthday-calendar" className="rounded-none py-0 shadow-sm scroll-mt-24">
             <CardContent className="p-4 md:p-6">
-              {loading ? (
+              {loading && !loaded ? (
                 <Skeleton className="h-112 w-full rounded-none" />
               ) : (
                 <BirthdayCalendar
@@ -141,7 +117,7 @@ export function BirthdaysView() {
               <CardTitle className="font-heading text-base">{t.birthdays.listTitle}</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              {loading ? (
+              {loading && !loaded ? (
                 <div className="space-y-2 p-4">
                   <Skeleton className="h-10 w-full rounded-none" />
                   <Skeleton className="h-10 w-full rounded-none" />

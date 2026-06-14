@@ -24,7 +24,7 @@ This document is the single source of truth for coding standards, conventions, a
 
 ## Project Overview
 
-Nimbusly is a **family hub** web app: shared budget, shopping, gifts, birthdays, calendar, and family account management. Each family member has their own profile; family data is shared in real time.
+Nimbusly is a **family hub** web app: shared budget, shopping, gifts, birthdays, work schedule, medicine cabinet, watchlist, restaurants, pets, household chores, and family account management. Each family member has their own profile; family data is shared in real time.
 
 - **Languages:** Polish (default) and English
 - **Auth & data:** Supabase (Auth + PostgreSQL + RLS)
@@ -132,7 +132,7 @@ lib/
 ├── constants/           # domain enums (ACCOUNT_MODE, FAMILY_ROLE, SETTINGS_TAB, LANG, …)
 ├── i18n/                # pl.ts, en.ts, types.ts, server.ts, format.ts
 ├── supabase/            # client, server, middleware helpers
-├── stores/              # Zustand (profile-store, notifications-store)
+├── stores/              # Zustand (profile, notifications, birthdays, schedule, pets, chores, …)
 ├── hooks/               # shared React hooks
 ├── profile/             # domain helpers (settings-tabs, family-roles)
 ├── family/              # invite codes, email stubs

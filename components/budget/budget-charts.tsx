@@ -6,7 +6,6 @@ import {
   Cell,
   Pie,
   PieChart,
-  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
@@ -25,10 +24,11 @@ import {
 import {
   aggregateExpensesByCategory,
   aggregateIncomeByCategory,
-  formatBudgetAmount,
   sumExpensesOnly,
   sumIncomeOnly,
 } from "@/lib/budget/aggregates";
+import { budgetChartTooltipFormatter } from "@/lib/budget/chart-tooltip";
+import { BudgetResponsiveChart } from "@/components/budget/budget-responsive-chart";
 import type { BudgetExpense } from "@/lib/budget/types";
 import { useLang, useT } from "@/lib/lang-context";
 
@@ -80,21 +80,23 @@ export function BudgetCharts({
         <CardHeader className="border-b border-border pt-4 pb-3">
           <CardTitle className="font-heading text-sm">{compareTitle}</CardTitle>
         </CardHeader>
-        <CardContent className="p-4 h-64">
-          <ResponsiveContainer width="100%" height="100%">
+        <CardContent className="flex h-64 flex-col p-4">
+          <BudgetResponsiveChart className="min-h-0 flex-1">
             <BarChart data={comparisonData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
               <XAxis dataKey="name" tick={{ fontSize: 12 }} />
               <YAxis tick={{ fontSize: 11 }} width={56} />
               <Tooltip
-                formatter={(value) => formatBudgetAmount(Number(value ?? 0), lang)}
+                formatter={(value) =>
+                  budgetChartTooltipFormatter(value, lang, t.budget.totalLabel)
+                }
               />
-              <Bar dataKey="total" radius={0}>
+              <Bar dataKey="total" name={t.budget.totalLabel} radius={0}>
                 {comparisonData.map((entry) => (
                   <Cell key={entry.key} fill={entry.fill} />
                 ))}
               </Bar>
             </BarChart>
-          </ResponsiveContainer>
+          </BudgetResponsiveChart>
         </CardContent>
       </Card>
     );
@@ -138,8 +140,8 @@ export function BudgetCharts({
             {isIncomeView ? t.budget.chartIncomePieTitle : t.budget.chartPieTitle}
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-4 h-64">
-          <ResponsiveContainer width="100%" height="100%">
+        <CardContent className="flex h-64 flex-col p-4">
+          <BudgetResponsiveChart className="min-h-0 flex-1">
             <PieChart>
               <Pie
                 data={chartData}
@@ -157,10 +159,12 @@ export function BudgetCharts({
                 ))}
               </Pie>
               <Tooltip
-                formatter={(value) => formatBudgetAmount(Number(value ?? 0), lang)}
+                formatter={(value) =>
+                  budgetChartTooltipFormatter(value, lang, t.budget.totalLabel)
+                }
               />
             </PieChart>
-          </ResponsiveContainer>
+          </BudgetResponsiveChart>
         </CardContent>
       </Card>
 
@@ -170,8 +174,8 @@ export function BudgetCharts({
             {isIncomeView ? t.budget.chartIncomeBarTitle : t.budget.chartBarTitle}
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-4 h-64">
-          <ResponsiveContainer width="100%" height="100%">
+        <CardContent className="flex h-64 flex-col p-4">
+          <BudgetResponsiveChart className="min-h-0 flex-1">
             <BarChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
               <XAxis
                 dataKey="name"
@@ -183,15 +187,17 @@ export function BudgetCharts({
               />
               <YAxis tick={{ fontSize: 11 }} width={56} />
               <Tooltip
-                formatter={(value) => formatBudgetAmount(Number(value ?? 0), lang)}
+                formatter={(value) =>
+                  budgetChartTooltipFormatter(value, lang, t.budget.totalLabel)
+                }
               />
-              <Bar dataKey="total" radius={0}>
+              <Bar dataKey="total" name={t.budget.totalLabel} radius={0}>
                 {chartData.map((entry) => (
                   <Cell key={entry.category} fill={entry.fill} />
                 ))}
               </Bar>
             </BarChart>
-          </ResponsiveContainer>
+          </BudgetResponsiveChart>
         </CardContent>
       </Card>
       </div>
