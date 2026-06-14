@@ -13,6 +13,7 @@ import {
   parseFamilyInviteEmailFromForm,
 } from "@/lib/family/form";
 import { sendFamilyInviteEmail } from "@/lib/family/send-invite-email";
+import { executeValidateInviteCode } from "@/lib/family/server/validate-invite-code";
 import type { AccountActionState } from "@/app/(app)/account/actions";
 
 async function requireFamilyOwner() {
@@ -145,21 +146,8 @@ export async function validateInviteCode(code: string): Promise<
   | { ok: false; error: string }
 > {
   const t = await getServerT();
-
-  if (!isValidInviteCodeFormat(code)) {
-    return { ok: false, error: t.onboarding.errorInviteCodeInvalid };
-  }
-
   const supabase = await createClient();
-  const { data, error } = await supabase.rpc("lookup_family_by_invite_code", {
-    p_code: normalizeInviteCode(code),
-  });
-
-  if (error || !data?.length) {
-    return { ok: false, error: t.onboarding.errorInviteCodeNotFound };
-  }
-
-  return { ok: true, familyName: data[0].name as string };
+  return executeValidateInviteCode({ t, supabase }, code);
 }
 
 /** Ensures the current user's family has an invite code (owner only). */

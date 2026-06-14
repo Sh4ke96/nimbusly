@@ -19,8 +19,9 @@ import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { NOTIFICATION_TYPE } from "@/lib/constants/notifications";
 import { getDisplayName } from "@/lib/profile";
 import type { AccountActionState } from "@/app/(app)/account/actions";
-import { requireUser } from "@/lib/server-actions/require-user";
+import { requireUser, getProfileFamilyContext } from "@/lib/server-actions/require-user";
 import { notifyFamilyMembers } from "@/lib/server-actions/notify-family";
+import { watchlistItemFromRow } from "@/lib/supabase/app-rows";
 
 function validateWatchlistFields(
   parsed: ReturnType<typeof parseWatchlistItemFromForm>
@@ -49,16 +50,7 @@ export async function createWatchlistItem(
   if (validationError === "status") return { error: t.watchlist.errorStatusRequired };
   if (validationError) return { error: t.watchlist.errorGeneric };
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("account_mode, family_id, first_name, last_name")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  const familyId =
-    profile?.account_mode === ACCOUNT_MODE.FAMILY && profile.family_id
-      ? profile.family_id
-      : null;
+  const { profile, familyId } = await getProfileFamilyContext(supabase, user.id);
 
   const mediaType = parsed.mediaType!;
   const status = parsed.status!;
@@ -158,17 +150,13 @@ export async function updateWatchlistItem(
 
   if (error) return { error: t.watchlist.errorGeneric };
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("account_mode, family_id, first_name, last_name")
-    .eq("id", user.id)
-    .maybeSingle();
+  const { profile } = await getProfileFamilyContext(supabase, user.id);
 
   const familyId = existing.family_id;
   if (familyId && profile?.account_mode === ACCOUNT_MODE.FAMILY) {
     const actorName = getDisplayName(profile);
     const changeSummary = buildWatchlistChangeSummary(
-      existing,
+      watchlistItemFromRow(existing),
       { title, media_type: mediaType, status, notes: parsed.notes },
       t.watchlist
     );
@@ -235,18 +223,15 @@ export async function setWatchlistItemStatus(
 
   if (error) return { error: t.watchlist.errorGeneric };
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("account_mode, family_id, first_name, last_name")
-    .eq("id", user.id)
-    .maybeSingle();
+  const { profile } = await getProfileFamilyContext(supabase, user.id);
 
   const familyId = existing.family_id;
   if (familyId && profile?.account_mode === ACCOUNT_MODE.FAMILY) {
     const actorName = getDisplayName(profile);
+    const item = watchlistItemFromRow(existing);
     const changeSummary = buildWatchlistChangeSummary(
-      existing,
-      { ...existing, status: statusRaw },
+      item,
+      { ...item, status: statusRaw },
       t.watchlist
     );
 
@@ -295,11 +280,7 @@ export async function deleteWatchlistItem(
 
   if (!existing) return { error: t.watchlist.errorNotOwner };
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("account_mode, family_id, first_name, last_name")
-    .eq("id", user.id)
-    .maybeSingle();
+  const { profile } = await getProfileFamilyContext(supabase, user.id);
 
   const { error } = await supabase
     .from("watchlist_items")

@@ -27,6 +27,7 @@ import { getDisplayName, type Profile } from "@/lib/profile";
 import type { AccountActionState } from "@/app/(app)/account/actions";
 import { getProfileFamilyContext, requireUser } from "@/lib/server-actions/require-user";
 import { notifyFamilyMembers } from "@/lib/server-actions/notify-family";
+import { choreTaskFromRow } from "@/lib/supabase/app-rows";
 
 async function validateAssignee(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -201,8 +202,8 @@ export async function updateChoreTask(
       .eq("family_id", familyId);
 
     const changeSummary = buildChoreChangeSummary(
-      existing,
-      { ...existing, ...payload },
+      choreTaskFromRow(existing),
+      { ...choreTaskFromRow(existing), ...payload },
       t.chores,
       (assigneeId) =>
         resolveAssigneeLabel(assigneeId, profile, members ?? [], t.chores.assigneeUnassigned)
@@ -292,9 +293,10 @@ export async function setChoreTaskStatus(
       .select("id, first_name, last_name")
       .eq("family_id", familyId);
 
-    const after = { ...existing, status: nextStatus, due_date: dueDate };
+    const chore = choreTaskFromRow(existing);
+    const after = { ...chore, status: nextStatus, due_date: dueDate };
     const changeSummary = buildChoreChangeSummary(
-      existing,
+      chore,
       after,
       t.chores,
       (assigneeId) =>

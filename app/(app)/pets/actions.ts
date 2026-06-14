@@ -27,6 +27,7 @@ import { getDisplayName } from "@/lib/profile";
 import type { AccountActionState } from "@/app/(app)/account/actions";
 import { getProfileFamilyContext, requireUser } from "@/lib/server-actions/require-user";
 import { notifyFamilyMembers } from "@/lib/server-actions/notify-family";
+import { petCareItemFromRow } from "@/lib/supabase/app-rows";
 
 export async function createPet(
   _prev: AccountActionState,
@@ -285,7 +286,8 @@ export async function updatePetCareItem(
       .eq("id", payload.pet_id)
       .maybeSingle();
 
-    const changeSummary = buildPetCareChangeSummary(existing, payload, t.pets);
+    const changeSummary = buildPetCareChangeSummary(
+      petCareItemFromRow(existing), payload, t.pets);
     try {
       await notifyFamilyMembers(supabase, {
         type: NOTIFICATION_TYPE.PET_CARE_UPDATED,

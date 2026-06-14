@@ -135,7 +135,7 @@ export function ShoppingListsView() {
 
         {familyId && (
           <p className="text-xs text-muted-foreground border border-border bg-muted/30 px-3 py-2">
-            {t.shoppingLists.realtimeHint}
+            {t.common.familyRealtimeHint}
           </p>
         )}
 

@@ -6,6 +6,13 @@ export const pl: Dict = {
     description:
       "Jeden hub dla całej rodziny: budżet, zakupy, prezenty, grafik, apteczka, filmy, restauracje, zwierzęta, obowiązki i więcej. Wspólny dashboard, powiadomienia i synchronizacja na żywo.",
   },
+  common: {
+    familyRealtimeHint:
+      "Zmiany są widoczne na żywo u wszystkich członków rodziny.",
+    close: "Zamknij",
+    paginationAriaLabel: "Paginacja",
+    paginationMorePages: "Więcej stron",
+  },
   nav: {
     features: "Funkcje",
     featuresSlug: "funkcje",
@@ -928,7 +935,6 @@ export const pl: Dict = {
     noItemsYet: "Brak produktów",
     itemsProgress: "{unchecked} z {total} do kupienia",
     updatedAt: "Ostatnia zmiana",
-    realtimeHint: "Zmiany są widoczne na żywo u wszystkich członków rodziny.",
     createdSuccess: "Lista zakupów została utworzona.",
     updatedSuccess: "Lista zakupów została zaktualizowana.",
     deletedSuccess: "Lista zakupów została usunięta.",

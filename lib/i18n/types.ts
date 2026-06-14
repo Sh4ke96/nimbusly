@@ -7,6 +7,12 @@ export type Dict = {
     title: string;
     description: string;
   };
+  common: {
+    familyRealtimeHint: string;
+    close: string;
+    paginationAriaLabel: string;
+    paginationMorePages: string;
+  };
   nav: {
     features: string;
     featuresSlug: string;
@@ -822,7 +828,6 @@ export type Dict = {
     noItemsYet: string;
     itemsProgress: string;
     updatedAt: string;
-    realtimeHint: string;
     createdSuccess: string;
     updatedSuccess: string;
     deletedSuccess: string;

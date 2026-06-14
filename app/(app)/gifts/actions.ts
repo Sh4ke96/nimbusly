@@ -17,7 +17,7 @@ import { GIFT_RECIPIENT_TYPE } from "@/lib/constants/gifts";
 import { NOTIFICATION_TYPE } from "@/lib/constants/notifications";
 import { getDisplayName } from "@/lib/profile";
 import type { AccountActionState } from "@/app/(app)/account/actions";
-import { requireUser } from "@/lib/server-actions/require-user";
+import { requireUser, getProfileFamilyContext } from "@/lib/server-actions/require-user";
 import { notifyFamilyMembers } from "@/lib/server-actions/notify-family";
 
 async function resolveRecipientForInsert(
@@ -73,16 +73,7 @@ export async function createGiftIdea(
   if (!parsed.recipientType) return { error: t.gifts.errorInvalidRecipient };
   if (!isValidGiftContent(content)) return { error: t.gifts.errorContentRequired };
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("account_mode, family_id, first_name, last_name")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  const familyId =
-    profile?.account_mode === ACCOUNT_MODE.FAMILY && profile.family_id
-      ? profile.family_id
-      : null;
+  const { profile, familyId } = await getProfileFamilyContext(supabase, user.id);
 
   const recipient = await resolveRecipientForInsert(supabase, {
     recipientType: parsed.recipientType,
@@ -170,11 +161,7 @@ export async function updateGiftIdea(
 
   if (!existing) return { error: t.gifts.errorNotOwner };
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("account_mode, family_id, first_name, last_name")
-    .eq("id", user.id)
-    .maybeSingle();
+  const { profile } = await getProfileFamilyContext(supabase, user.id);
 
   const recipient = await resolveRecipientForInsert(supabase, {
     recipientType: parsed.recipientType,
@@ -256,11 +243,7 @@ export async function deleteGiftIdea(
 
   if (!existing) return { error: t.gifts.errorNotOwner };
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("account_mode, family_id, first_name, last_name")
-    .eq("id", user.id)
-    .maybeSingle();
+  const { profile } = await getProfileFamilyContext(supabase, user.id);
 
   const { error } = await supabase
     .from("gift_ideas")

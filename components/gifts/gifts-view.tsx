@@ -81,6 +81,12 @@ export function GiftsView() {
           <GiftFormDialog onSuccess={onGiftsChanged} />
         </div>
 
+        {familyId && (
+          <p className="text-xs text-muted-foreground border border-border bg-muted/30 px-3 py-2">
+            {t.common.familyRealtimeHint}
+          </p>
+        )}
+
         {!loading && ideas.length > 0 && (
           <GiftRecipientFilter
             ideas={ideas}

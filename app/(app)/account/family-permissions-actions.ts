@@ -32,7 +32,11 @@ async function requireFamilyAdmin() {
     .eq("id", profile.family_id)
     .maybeSingle();
 
-  if (!family || !isFamilyAdmin(profile, family, user.id)) {
+  if (!family || !isFamilyAdmin(
+    { family_role: profile.family_role as FamilyRole | null },
+    family,
+    user.id
+  )) {
     return { error: FAMILY_ACCESS_ERROR.NOT_ADMIN };
   }
 

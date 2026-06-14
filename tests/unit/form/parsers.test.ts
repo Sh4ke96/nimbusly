@@ -10,6 +10,12 @@ import {
 } from "@/lib/form/values";
 import { parseGiftContentFromForm } from "@/lib/gifts/types";
 import { parseShoppingItemUpdateFromForm } from "@/lib/shopping-lists/types";
+import { parseSignInFromForm, parseSignUpFromForm } from "@/lib/auth/form";
+import { parseProfileNamesFromForm, parseOnboardingFromForm } from "@/lib/profile/form";
+import { parseFamilyInviteEmailFromForm } from "@/lib/family/form";
+import { excludeActorFromWatcherIds } from "@/lib/notifications/watches";
+import { FAMILY_SETUP_INTENT } from "@/lib/family/constants";
+import { PROFILE_FORM_FIELD } from "@/lib/profile/form";
 
 describe("form value helpers", () => {
   it("reads trimmed strings and booleans", () => {
@@ -70,5 +76,55 @@ describe("parseShoppingItemUpdateFromForm", () => {
     assert.equal(parsed.listId, "list-1");
     assert.equal(parsed.content, null);
     assert.equal(parsed.checked, true);
+  });
+});
+
+describe("parseSignInFromForm", () => {
+  it("reads email and password", () => {
+    const formData = new FormData();
+    formData.set("email", "a@b.c");
+    formData.set("password", "secret");
+    assert.deepEqual(parseSignInFromForm(formData), {
+      email: "a@b.c",
+      password: "secret",
+    });
+  });
+});
+
+describe("parseProfileNamesFromForm", () => {
+  it("trims profile names", () => {
+    const formData = new FormData();
+    formData.set(PROFILE_FORM_FIELD.FIRST_NAME, "  Jan  ");
+    formData.set(PROFILE_FORM_FIELD.LAST_NAME, " Kowalski ");
+    formData.set(PROFILE_FORM_FIELD.AVATAR_COLOR, "blue");
+    const parsed = parseProfileNamesFromForm(formData);
+    assert.equal(parsed.firstName, "Jan");
+    assert.equal(parsed.lastName, "Kowalski");
+    assert.equal(parsed.avatarColor, "blue");
+  });
+});
+
+describe("parseOnboardingFromForm", () => {
+  it("parses onboarding fields", () => {
+    const formData = new FormData();
+    formData.set(PROFILE_FORM_FIELD.FAMILY_INTENT, FAMILY_SETUP_INTENT.SOLO);
+    formData.set(PROFILE_FORM_FIELD.INVITE_CODE, "  abcd  ");
+    const parsed = parseOnboardingFromForm(formData);
+    assert.equal(parsed.familyIntent, FAMILY_SETUP_INTENT.SOLO);
+    assert.equal(parsed.inviteCode, "abcd");
+  });
+});
+
+describe("parseFamilyInviteEmailFromForm", () => {
+  it("lowercases invite email", () => {
+    const formData = new FormData();
+    formData.set("email", "  Anna@Example.COM ");
+    assert.equal(parseFamilyInviteEmailFromForm(formData).email, "anna@example.com");
+  });
+});
+
+describe("excludeActorFromWatcherIds", () => {
+  it("removes actor from watcher list", () => {
+    assert.deepEqual(excludeActorFromWatcherIds(["a", "b", "c"], "b"), ["a", "c"]);
   });
 });

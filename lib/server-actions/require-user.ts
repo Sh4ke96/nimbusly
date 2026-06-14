@@ -35,3 +35,12 @@ export async function getProfileFamilyContext(
 
   return { profile: typedProfile, familyId };
 }
+
+/** @deprecated Use getProfileFamilyContext — returns profile fields only. */
+export async function getActorProfile(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  userId: string
+) {
+  const { profile } = await getProfileFamilyContext(supabase, userId);
+  return profile;
+}

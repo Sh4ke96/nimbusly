@@ -58,3 +58,5 @@ create policy "Creators can update chores"
 create policy "Creators can delete chores"
   on public.chore_tasks for delete
   using (created_by = auth.uid());
+
+alter publication supabase_realtime add table public.chore_tasks;

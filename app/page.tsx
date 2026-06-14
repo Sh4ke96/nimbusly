@@ -1,30 +1,5 @@
-"use client";
-
-import { SiteNavbar } from "@/components/landing/navbar";
-import { HeroSection } from "@/components/landing/hero";
-import { HighlightsSection } from "@/components/landing/highlights";
-import { FeaturesSection } from "@/components/landing/features";
-import { StepsSection } from "@/components/landing/steps";
-import { CtaSection } from "@/components/landing/cta";
-import { SiteFooter } from "@/components/landing/site-footer";
-import { AmbientBackground } from "@/components/ui/ambient-background";
+import { HomePage } from "@/components/landing/home-page";
 
 export default function Home() {
-  return (
-    <div className="relative min-h-screen flex flex-col text-foreground">
-      <AmbientBackground variant="landing" />
-
-      <div className="relative z-10 flex min-h-screen flex-col">
-        <SiteNavbar />
-        <main className="flex-1">
-          <HeroSection />
-          <HighlightsSection />
-          <FeaturesSection />
-          <StepsSection />
-          <CtaSection />
-        </main>
-        <SiteFooter />
-      </div>
-    </div>
-  );
+  return <HomePage />;
 }

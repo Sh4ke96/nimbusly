@@ -7,7 +7,6 @@ import {
   formatShoppingListItemNotificationDetail,
   formatShoppingListNotificationDetail,
 } from "@/lib/shopping-lists/changes";
-import { excludeActorFromWatcherIds } from "@/lib/shopping-lists/watches";
 import {
   isValidShoppingItemContent,
   isValidShoppingListName,
@@ -28,8 +27,11 @@ import { NOTIFICATION_TYPE, type NotificationType } from "@/lib/constants/notifi
 import { getFamilyNotificationTitle } from "@/lib/notifications/family-notification";
 import { getDisplayName } from "@/lib/profile";
 import type { AccountActionState } from "@/app/(app)/account/actions";
-import { requireUser } from "@/lib/server-actions/require-user";
+import { requireUser, getActorProfile, getProfileFamilyContext } from "@/lib/server-actions/require-user";
+import { notifyEntityWatchers } from "@/lib/server-actions/notify-watchers";
 import { notifyFamilyMembers } from "@/lib/server-actions/notify-family";
+import type { ShoppingListItemUpdate } from "@/lib/supabase/app-rows";
+import { executeCreateShoppingList } from "@/lib/shopping-lists/server/create-shopping-list";
 
 async function notifyWatchersAboutListItemEvent(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -45,27 +47,18 @@ async function notifyWatchersAboutListItemEvent(
   }
 ) {
   const t = await getServerT();
-  const { data: watches } = await supabase
-    .from("shopping_list_watches")
-    .select("user_id")
-    .eq("list_id", params.listId);
-
-  const recipientIds = excludeActorFromWatcherIds(
-    (watches ?? []).map((watch) => watch.user_id as string),
-    params.actorId
-  );
-
-  if (recipientIds.length === 0) return;
-
   const title = getFamilyNotificationTitle(params.type, t.notifications, params.actorName);
   const body = `${params.listName}${t.notifications.notificationBodySeparator}${params.bodyDetail}`;
 
-  await supabase.rpc("create_family_notifications", {
-    p_recipient_ids: recipientIds,
-    p_type: params.type,
-    p_title: title,
-    p_body: body,
-    p_payload: {
+  await notifyEntityWatchers(supabase, {
+    watchTable: "shopping_list_watches",
+    entityColumn: "list_id",
+    entityId: params.listId,
+    actorId: params.actorId,
+    type: params.type,
+    title,
+    body,
+    payload: {
       shopping_list_id: params.listId,
       list_name: params.listName,
       item_content: params.itemContent,
@@ -74,19 +67,6 @@ async function notifyWatchersAboutListItemEvent(
       updated_at: new Date().toISOString(),
     },
   });
-}
-
-async function getActorProfile(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  userId: string
-) {
-  const { data } = await supabase
-    .from("profiles")
-    .select("account_mode, family_id, first_name, last_name")
-    .eq("id", userId)
-    .maybeSingle();
-
-  return data;
 }
 
 async function getAccessibleList(
@@ -108,67 +88,10 @@ export async function createShoppingList(
 ): Promise<AccountActionState> {
   const t = await getServerT();
   const { supabase, user } = await requireUser();
-
-  if (!user) return { error: t.account.errorUnauthorized };
-
-  const name = normalizeShoppingListName(parseShoppingListNameFromForm(formData).name);
-  if (!isValidShoppingListName(name)) {
-    return { error: t.shoppingLists.errorNameRequired };
-  }
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("account_mode, family_id, first_name, last_name")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  const familyId =
-    profile?.account_mode === ACCOUNT_MODE.FAMILY && profile.family_id
-      ? profile.family_id
-      : null;
-
-  const { data: list, error } = await supabase
-    .from("shopping_lists")
-    .insert({
-      family_id: familyId,
-      name,
-      created_by: user.id,
-    })
-    .select("id")
-    .single();
-
-  if (error || !list) return { error: t.shoppingLists.errorGeneric };
-
-  if (familyId && profile) {
-    const actorName = getDisplayName(profile);
-    const bodyDetail = formatShoppingListNotificationDetail(
-      name,
-      0,
-      t.shoppingLists
-    );
-
-    try {
-      await notifyFamilyMembers(supabase, {
-        type: NOTIFICATION_TYPE.SHOPPING_LIST_ADDED,
-        actorId: user.id,
-        actorName,
-        familyId,
-        body: `${name}${t.notifications.notificationBodySeparator}${bodyDetail}`,
-        payload: {
-          shopping_list_id: list.id,
-          list_name: name,
-          actor_id: user.id,
-          family_id: familyId,
-          change_summary: null,
-          updated_at: new Date().toISOString(),
-        },
-      });
-    } catch {
-      // Saved; notifications are best-effort
-    }
-  }
-
-  return { success: t.shoppingLists.createdSuccess };
+  return executeCreateShoppingList(
+    { t, user, supabase, notifyFamilyMembers },
+    formData
+  );
 }
 
 export async function updateShoppingList(
@@ -191,11 +114,7 @@ export async function updateShoppingList(
   const existing = await getAccessibleList(supabase, id);
   if (!existing) return { error: t.shoppingLists.errorNotFound };
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("account_mode, family_id, first_name, last_name")
-    .eq("id", user.id)
-    .maybeSingle();
+  const { profile } = await getProfileFamilyContext(supabase, user.id);
 
   const { error } = await supabase
     .from("shopping_lists")
@@ -251,11 +170,7 @@ export async function deleteShoppingList(
   const existing = await getAccessibleList(supabase, id);
   if (!existing) return { error: t.shoppingLists.errorNotFound };
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("account_mode, family_id, first_name, last_name")
-    .eq("id", user.id)
-    .maybeSingle();
+  const { profile } = await getProfileFamilyContext(supabase, user.id);
 
   const { count } = await supabase
     .from("shopping_list_items")
@@ -422,7 +337,7 @@ export async function updateShoppingListItem(
   const list = await getAccessibleList(supabase, listId);
   if (!list) return { error: t.shoppingLists.errorNotFound };
 
-  const updates: Record<string, unknown> = {
+  const updates: ShoppingListItemUpdate = {
     updated_at: new Date().toISOString(),
   };
 

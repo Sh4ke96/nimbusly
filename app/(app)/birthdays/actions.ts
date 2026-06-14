@@ -9,7 +9,7 @@ import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { NOTIFICATION_TYPE } from "@/lib/constants/notifications";
 import { getDisplayName } from "@/lib/profile";
 import type { AccountActionState } from "@/app/(app)/account/actions";
-import { requireUser } from "@/lib/server-actions/require-user";
+import { requireUser, getProfileFamilyContext } from "@/lib/server-actions/require-user";
 import { notifyFamilyMembers } from "@/lib/server-actions/notify-family";
 
 export async function createBirthday(
@@ -52,11 +52,7 @@ export async function updateBirthday(
 
   if (!existing) return { error: t.birthdays.errorNotOwner };
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("account_mode, family_id, first_name, last_name")
-    .eq("id", user.id)
-    .maybeSingle();
+  const { profile } = await getProfileFamilyContext(supabase, user.id);
 
   const { error } = await supabase
     .from("birthday_entries")
@@ -132,11 +128,7 @@ export async function deleteBirthday(
 
   if (!existing) return { error: t.birthdays.errorNotOwner };
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("account_mode, family_id, first_name, last_name")
-    .eq("id", user.id)
-    .maybeSingle();
+  const { profile } = await getProfileFamilyContext(supabase, user.id);
 
   const { error } = await supabase
     .from("birthday_entries")

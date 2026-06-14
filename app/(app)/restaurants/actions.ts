@@ -24,8 +24,9 @@ import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { NOTIFICATION_TYPE } from "@/lib/constants/notifications";
 import { getDisplayName } from "@/lib/profile";
 import type { AccountActionState } from "@/app/(app)/account/actions";
-import { requireUser } from "@/lib/server-actions/require-user";
+import { requireUser, getProfileFamilyContext } from "@/lib/server-actions/require-user";
 import { notifyFamilyMembers } from "@/lib/server-actions/notify-family";
+import { restaurantPlaceFromRow } from "@/lib/supabase/app-rows";
 
 function validateRestaurantFields(
   parsed: ReturnType<typeof parseRestaurantPlaceFromForm>
@@ -87,16 +88,7 @@ export async function createRestaurantPlace(
   if (validationError === "visitedAt") return { error: t.restaurants.errorVisitedAtRequired };
   if (validationError) return { error: t.restaurants.errorGeneric };
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("account_mode, family_id, first_name, last_name")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  const familyId =
-    profile?.account_mode === ACCOUNT_MODE.FAMILY && profile.family_id
-      ? profile.family_id
-      : null;
+  const { profile, familyId } = await getProfileFamilyContext(supabase, user.id);
 
   const payload = toDbPayload(parsed);
 
@@ -191,16 +183,13 @@ export async function updateRestaurantPlace(
 
   if (error) return { error: t.restaurants.errorGeneric };
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("account_mode, family_id, first_name, last_name")
-    .eq("id", user.id)
-    .maybeSingle();
+  const { profile } = await getProfileFamilyContext(supabase, user.id);
 
   const familyId = existing.family_id;
   if (familyId && profile?.account_mode === ACCOUNT_MODE.FAMILY) {
     const actorName = getDisplayName(profile);
-    const changeSummary = buildRestaurantChangeSummary(existing, payload, t.restaurants);
+    const changeSummary = buildRestaurantChangeSummary(
+      restaurantPlaceFromRow(existing), payload, t.restaurants);
 
     try {
       await notifyFamilyMembers(supabase, {
@@ -247,11 +236,7 @@ export async function deleteRestaurantPlace(
 
   if (!existing) return { error: t.restaurants.errorNotOwner };
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("account_mode, family_id, first_name, last_name")
-    .eq("id", user.id)
-    .maybeSingle();
+  const { profile } = await getProfileFamilyContext(supabase, user.id);
 
   const { error } = await supabase
     .from("restaurant_places")

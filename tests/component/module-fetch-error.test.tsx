@@ -1,4 +1,4 @@
-import "./setup.js";
+import "./setup.ts";
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { render, screen } from "@testing-library/react";

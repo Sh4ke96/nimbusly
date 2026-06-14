@@ -93,42 +93,6 @@ export const useShoppingListsStore = create<ShoppingListsStore>((set, get) => ({
           loading: false,
           error: false,
         });
-
-        const listIds = lists.map((list) => list.id);
-        if (listIds.length === 0) return;
-
-        const { data: items, error: itemsError } = await supabase
-          .from("shopping_list_items")
-          .select("*")
-          .in("list_id", listIds)
-          .order("sort_order", { ascending: true })
-          .order("created_at", { ascending: true });
-
-        if (itemsError) {
-          set({ loading: false, loaded: true, error: true });
-          return;
-        }
-
-        const grouped: Record<string, ShoppingListItem[]> = {};
-        for (const item of (items ?? []) as ShoppingListItem[]) {
-          if (!grouped[item.list_id]) grouped[item.list_id] = [];
-          grouped[item.list_id].push(item);
-        }
-
-        set((state) => {
-          const nextItems = { ...state.itemsByListId };
-          const listIdSet = new Set(listIds);
-
-          for (const key of Object.keys(nextItems)) {
-            if (!listIdSet.has(key)) delete nextItems[key];
-          }
-
-          for (const listId of listIds) {
-            nextItems[listId] = sortShoppingListItems(grouped[listId] ?? []);
-          }
-
-          return { itemsByListId: nextItems };
-        });
       } catch {
         set({ loading: false, loaded: true, error: true });
       }

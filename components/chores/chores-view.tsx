@@ -94,6 +94,12 @@ export function ChoresView() {
           <ChoreFormDialog onSuccess={onTasksChanged} />
         </div>
 
+        {familyId && (
+          <p className="text-xs text-muted-foreground border border-border bg-muted/30 px-3 py-2">
+            {t.common.familyRealtimeHint}
+          </p>
+        )}
+
         {!loading && tasks.length > 0 && (
           <div className="space-y-3">
             <ChoreStatusFilter

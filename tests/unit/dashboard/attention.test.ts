@@ -39,7 +39,7 @@ describe("buildAttentionItems", () => {
           id: "m1",
           family_id: null,
           name: "Apap",
-          form: "tablets",
+          form_type: "tablets",
           quantity: "",
           expiry_date: "2026-06-20",
           availability: MEDICINE_AVAILABILITY.IN_STOCK,

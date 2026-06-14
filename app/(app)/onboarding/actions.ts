@@ -8,6 +8,7 @@ import { isAvatarColor } from "@/lib/avatar-colors";
 import { INVITE_TOKEN_COOKIE, INVITE_CODE_COOKIE } from "@/lib/family/constants";
 import { isValidInviteCodeFormat, normalizeInviteCode } from "@/lib/family/invite";
 import { parseOnboardingFromForm } from "@/lib/profile/form";
+import { familyInsertPayload } from "@/lib/supabase/row-mappers";
 import {
   ACCOUNT_MODE,
   FAMILY_ROLE,
@@ -100,7 +101,7 @@ export async function completeOnboarding(
   let familyRole: FamilyRole | null =
     familyIntent === FAMILY_SETUP_INTENT.SOLO
       ? null
-      : (existingProfile?.family_role ?? null);
+      : ((existingProfile?.family_role ?? null) as FamilyRole | null);
 
   if (familyIntent === FAMILY_SETUP_INTENT.CREATE) {
     if (!familyName) {
@@ -120,7 +121,7 @@ export async function completeOnboarding(
     } else {
       const { data: family, error: familyError } = await supabase
         .from("families")
-        .insert({ name: familyName, created_by: user.id })
+        .insert(familyInsertPayload({ name: familyName, created_by: user.id }))
         .select("id")
         .single();
 

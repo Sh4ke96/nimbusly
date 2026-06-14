@@ -2,28 +2,12 @@
 
 import { DASHBOARD_FORM_FIELD } from "@/lib/dashboard/form";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  DndContext,
-  KeyboardSensor,
-  PointerSensor,
-  closestCenter,
-  useSensor,
-  useSensors,
-  type DragEndEvent,
-} from "@dnd-kit/core";
-import {
-  SortableContext,
-  rectSortingStrategy,
-  sortableKeyboardCoordinates,
-} from "@dnd-kit/sortable";
+import dynamic from "next/dynamic";
+import { useShallow } from "zustand/react/shallow";
+import type { DragEndEvent } from "@dnd-kit/core";
 import { LayoutGrid } from "lucide-react";
 import { toast } from "sonner";
 import { DashboardOverviewControls } from "@/components/dashboard/dashboard-overview-controls";
-import {
-  OverviewCardBody,
-  getOverviewCardMeta,
-} from "@/components/dashboard/dashboard-overview-card-bodies";
-import { SortableOverviewCard } from "@/components/dashboard/sortable-overview-card";
 import { sortBirthdaysByUpcoming } from "@/lib/dashboard/birthdays";
 import { buildAttentionItems } from "@/lib/dashboard/attention";
 import { formatMessage } from "@/lib/i18n/format";
@@ -74,6 +58,24 @@ import { useScheduleStore } from "@/lib/stores/schedule-store";
 import { useBirthdaysStore } from "@/lib/stores/birthdays-store";
 import { useShoppingListsStore } from "@/lib/stores/shopping-lists-store";
 import { updateDashboardOverviewLayout } from "@/app/(app)/dashboard/actions";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const DashboardOverviewCardGrid = dynamic(
+  () =>
+    import("@/components/dashboard/dashboard-overview-card-grid").then(
+      (m) => m.DashboardOverviewCardGrid
+    ),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <Skeleton className="h-48 w-full rounded-none" />
+        <Skeleton className="h-48 w-full rounded-none" />
+        <Skeleton className="h-48 w-full rounded-none" />
+      </div>
+    ),
+  }
+);
 
 export function DashboardOverview() {
   const t = useT();
@@ -85,67 +87,169 @@ export function DashboardOverview() {
     (s) => s.patchDashboardOverviewLayout
   );
 
-  const budgets = useBudgetStore((s) => s.budgets);
-  const expensesByBudgetId = useBudgetStore((s) => s.expensesByBudgetId);
-  const budgetLoaded = useBudgetStore((s) => s.loaded);
-  const budgetLoading = useBudgetStore((s) => s.loading);
-  const budgetError = useBudgetStore((s) => s.error);
-  const fetchBudgets = useBudgetStore((s) => s.fetchBudgets);
+  const {
+    budgets,
+    expensesByBudgetId,
+    loaded: budgetLoaded,
+    loading: budgetLoading,
+    error: budgetError,
+    fetchBudgets,
+  } = useBudgetStore(
+    useShallow((s) => ({
+      budgets: s.budgets,
+      expensesByBudgetId: s.expensesByBudgetId,
+      loaded: s.loaded,
+      loading: s.loading,
+      error: s.error,
+      fetchBudgets: s.fetchBudgets,
+    }))
+  );
 
-  const lists = useShoppingListsStore((s) => s.lists);
-  const listsLoaded = useShoppingListsStore((s) => s.loaded);
-  const listsLoading = useShoppingListsStore((s) => s.loading);
-  const listsError = useShoppingListsStore((s) => s.error);
-  const fetchLists = useShoppingListsStore((s) => s.fetchLists);
+  const {
+    lists,
+    loaded: listsLoaded,
+    loading: listsLoading,
+    error: listsError,
+    fetchLists,
+  } = useShoppingListsStore(
+    useShallow((s) => ({
+      lists: s.lists,
+      loaded: s.loaded,
+      loading: s.loading,
+      error: s.error,
+      fetchLists: s.fetchLists,
+    }))
+  );
 
-  const gifts = useGiftsStore((s) => s.ideas);
-  const giftsLoaded = useGiftsStore((s) => s.loaded);
-  const giftsLoading = useGiftsStore((s) => s.loading);
-  const giftsError = useGiftsStore((s) => s.error);
-  const fetchIdeas = useGiftsStore((s) => s.fetchIdeas);
+  const {
+    ideas: gifts,
+    loaded: giftsLoaded,
+    loading: giftsLoading,
+    error: giftsError,
+    fetchIdeas,
+  } = useGiftsStore(
+    useShallow((s) => ({
+      ideas: s.ideas,
+      loaded: s.loaded,
+      loading: s.loading,
+      error: s.error,
+      fetchIdeas: s.fetchIdeas,
+    }))
+  );
 
-  const medicineItems = useMedicineStore((s) => s.items);
-  const medicineLoaded = useMedicineStore((s) => s.loaded);
-  const medicineLoading = useMedicineStore((s) => s.loading);
-  const medicineError = useMedicineStore((s) => s.error);
-  const fetchMedicineItems = useMedicineStore((s) => s.fetchItems);
+  const {
+    items: medicineItems,
+    loaded: medicineLoaded,
+    loading: medicineLoading,
+    error: medicineError,
+    fetchItems: fetchMedicineItems,
+  } = useMedicineStore(
+    useShallow((s) => ({
+      items: s.items,
+      loaded: s.loaded,
+      loading: s.loading,
+      error: s.error,
+      fetchItems: s.fetchItems,
+    }))
+  );
 
-  const watchlistItems = useWatchlistStore((s) => s.items);
-  const watchlistLoaded = useWatchlistStore((s) => s.loaded);
-  const watchlistLoading = useWatchlistStore((s) => s.loading);
-  const watchlistError = useWatchlistStore((s) => s.error);
-  const fetchWatchlistItems = useWatchlistStore((s) => s.fetchItems);
+  const {
+    items: watchlistItems,
+    loaded: watchlistLoaded,
+    loading: watchlistLoading,
+    error: watchlistError,
+    fetchItems: fetchWatchlistItems,
+  } = useWatchlistStore(
+    useShallow((s) => ({
+      items: s.items,
+      loaded: s.loaded,
+      loading: s.loading,
+      error: s.error,
+      fetchItems: s.fetchItems,
+    }))
+  );
 
-  const restaurantPlaces = useRestaurantsStore((s) => s.places);
-  const restaurantsLoaded = useRestaurantsStore((s) => s.loaded);
-  const restaurantsLoading = useRestaurantsStore((s) => s.loading);
-  const restaurantsError = useRestaurantsStore((s) => s.error);
-  const fetchRestaurantPlaces = useRestaurantsStore((s) => s.fetchPlaces);
+  const {
+    places: restaurantPlaces,
+    loaded: restaurantsLoaded,
+    loading: restaurantsLoading,
+    error: restaurantsError,
+    fetchPlaces: fetchRestaurantPlaces,
+  } = useRestaurantsStore(
+    useShallow((s) => ({
+      places: s.places,
+      loaded: s.loaded,
+      loading: s.loading,
+      error: s.error,
+      fetchPlaces: s.fetchPlaces,
+    }))
+  );
 
-  const pets = usePetsStore((s) => s.pets);
-  const careItems = usePetsStore((s) => s.careItems);
-  const petsLoaded = usePetsStore((s) => s.loaded);
-  const petsLoading = usePetsStore((s) => s.loading);
-  const petsError = usePetsStore((s) => s.error);
-  const fetchPets = usePetsStore((s) => s.fetchAll);
+  const {
+    pets,
+    careItems,
+    loaded: petsLoaded,
+    loading: petsLoading,
+    error: petsError,
+    fetchAll: fetchPets,
+  } = usePetsStore(
+    useShallow((s) => ({
+      pets: s.pets,
+      careItems: s.careItems,
+      loaded: s.loaded,
+      loading: s.loading,
+      error: s.error,
+      fetchAll: s.fetchAll,
+    }))
+  );
 
-  const choreTasks = useChoresStore((s) => s.tasks);
-  const choresLoaded = useChoresStore((s) => s.loaded);
-  const choresLoading = useChoresStore((s) => s.loading);
-  const choresError = useChoresStore((s) => s.error);
-  const fetchChores = useChoresStore((s) => s.fetchTasks);
+  const {
+    tasks: choreTasks,
+    loaded: choresLoaded,
+    loading: choresLoading,
+    error: choresError,
+    fetchTasks: fetchChores,
+  } = useChoresStore(
+    useShallow((s) => ({
+      tasks: s.tasks,
+      loaded: s.loaded,
+      loading: s.loading,
+      error: s.error,
+      fetchTasks: s.fetchTasks,
+    }))
+  );
 
-  const scheduleEntries = useScheduleStore((s) => s.entries);
-  const scheduleLoaded = useScheduleStore((s) => s.loaded);
-  const scheduleLoading = useScheduleStore((s) => s.loading);
-  const scheduleError = useScheduleStore((s) => s.error);
-  const fetchSchedule = useScheduleStore((s) => s.fetchEntries);
+  const {
+    entries: scheduleEntries,
+    loaded: scheduleLoaded,
+    loading: scheduleLoading,
+    error: scheduleError,
+    fetchEntries: fetchSchedule,
+  } = useScheduleStore(
+    useShallow((s) => ({
+      entries: s.entries,
+      loaded: s.loaded,
+      loading: s.loading,
+      error: s.error,
+      fetchEntries: s.fetchEntries,
+    }))
+  );
 
-  const birthdays = useBirthdaysStore((s) => s.entries);
-  const birthdaysLoaded = useBirthdaysStore((s) => s.loaded);
-  const birthdaysLoading = useBirthdaysStore((s) => s.loading);
-  const birthdaysError = useBirthdaysStore((s) => s.error);
-  const fetchBirthdays = useBirthdaysStore((s) => s.fetchEntries);
+  const {
+    entries: birthdays,
+    loaded: birthdaysLoaded,
+    loading: birthdaysLoading,
+    error: birthdaysError,
+    fetchEntries: fetchBirthdays,
+  } = useBirthdaysStore(
+    useShallow((s) => ({
+      entries: s.entries,
+      loaded: s.loaded,
+      loading: s.loading,
+      error: s.error,
+      fetchEntries: s.fetchEntries,
+    }))
+  );
 
   const [editMode, setEditMode] = useState<boolean>(false);
   const [layout, setLayout] = useState<DashboardOverviewLayout>(() =>
@@ -174,6 +278,12 @@ export function DashboardOverview() {
     setLayout(parseDashboardOverviewLayout(JSON.parse(profileLayoutKey)));
   }, [profile?.id, profileLayoutKey]);
 
+  const visibleCardIds = useMemo(
+    () => getVisibleOverviewCardIds(layout),
+    [layout]
+  );
+  const visibleCardKey = visibleCardIds.join("|");
+
   const persistLayout = useCallback(
     async (nextLayout: DashboardOverviewLayout, previousLayout: DashboardOverviewLayout) => {
       setLayout(nextLayout);
@@ -199,18 +309,23 @@ export function DashboardOverview() {
   useEffect(() => {
     if (!profile?.id) return;
 
-    void fetchBudgets();
-    void fetchLists();
-    void fetchIdeas();
-    void fetchMedicineItems();
-    void fetchWatchlistItems();
-    void fetchRestaurantPlaces();
-    void fetchPets();
-    void fetchChores();
-    void fetchSchedule();
-    void fetchBirthdays();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [profile?.id]);
+    const loaders: Partial<Record<DashboardOverviewCardId, () => void>> = {
+      [DASHBOARD_OVERVIEW_CARD.BUDGET]: () => void fetchBudgets(),
+      [DASHBOARD_OVERVIEW_CARD.SHOPPING]: () => void fetchLists(),
+      [DASHBOARD_OVERVIEW_CARD.GIFTS]: () => void fetchIdeas(),
+      [DASHBOARD_OVERVIEW_CARD.MEDICINE_CABINET]: () => void fetchMedicineItems(),
+      [DASHBOARD_OVERVIEW_CARD.WATCHLIST]: () => void fetchWatchlistItems(),
+      [DASHBOARD_OVERVIEW_CARD.RESTAURANTS]: () => void fetchRestaurantPlaces(),
+      [DASHBOARD_OVERVIEW_CARD.PETS]: () => void fetchPets(),
+      [DASHBOARD_OVERVIEW_CARD.CHORES]: () => void fetchChores(),
+      [DASHBOARD_OVERVIEW_CARD.CALENDAR]: () => void fetchSchedule(),
+      [DASHBOARD_OVERVIEW_CARD.BIRTHDAYS]: () => void fetchBirthdays(),
+    };
+
+    for (const cardId of visibleCardIds) {
+      loaders[cardId]?.();
+    }
+  }, [profile?.id, visibleCardKey]);
 
   const monthlyBudgetEntries = useMemo(() => {
     const all = budgets.flatMap((b) => expensesByBudgetId[b.id] ?? []);
@@ -434,11 +549,6 @@ export function DashboardOverview() {
     ]
   );
 
-  const visibleCardIds = useMemo(
-    () => getVisibleOverviewCardIds(layout),
-    [layout]
-  );
-
   const cardBodiesProps = useMemo(
     () => ({
       t,
@@ -510,13 +620,6 @@ export function DashboardOverview() {
     ]
   );
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
-
   async function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
@@ -578,40 +681,17 @@ export function DashboardOverview() {
           )}
         </div>
       ) : (
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
+        <DashboardOverviewCardGrid
+          visibleCardIds={visibleCardIds}
+          editMode={editMode}
+          profile={profile}
+          cardLoadingById={cardLoadingById}
+          cardErrorById={cardErrorById}
+          cardRetryById={cardRetryById}
+          cardBodiesProps={cardBodiesProps}
           onDragEnd={(event) => void handleDragEnd(event)}
-        >
-          <SortableContext items={visibleCardIds} strategy={rectSortingStrategy}>
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-              {visibleCardIds.map((cardId) => {
-                const meta = getOverviewCardMeta(cardId, t.dashboard, profile);
-                return (
-                  <SortableOverviewCard
-                    key={cardId}
-                    cardId={cardId}
-                    href={meta.href}
-                    title={meta.title}
-                    icon={meta.icon}
-                    accent={meta.accent}
-                    className={meta.className}
-                    editMode={editMode}
-                    onHide={() => void handleHideCard(cardId)}
-                  >
-                    <OverviewCardBody
-                      cardId={cardId}
-                      cardLoading={cardLoadingById[cardId]}
-                      cardError={cardErrorById[cardId]}
-                      onCardRetry={cardRetryById[cardId]}
-                      {...cardBodiesProps}
-                    />
-                  </SortableOverviewCard>
-                );
-              })}
-            </div>
-          </SortableContext>
-        </DndContext>
+          onHideCard={(cardId) => void handleHideCard(cardId)}
+        />
       )}
     </section>
   );

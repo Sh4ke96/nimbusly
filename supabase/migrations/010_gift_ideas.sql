@@ -65,3 +65,5 @@ create policy "Creators can update gift ideas"
 create policy "Creators can delete gift ideas"
   on public.gift_ideas for delete
   using (created_by = auth.uid());
+
+alter publication supabase_realtime add table public.gift_ideas;

@@ -8,7 +8,7 @@ import { AppHeader } from "@/components/app/app-header";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { BudgetCard } from "@/components/budget/budget-card";
 import { BudgetCategoryFilter } from "@/components/budget/budget-category-filter";
-import { BudgetCharts } from "@/components/budget/budget-charts";
+import { BudgetChartsLazy } from "@/components/budget/budget-charts-lazy";
 import { BudgetEditDialog } from "@/components/budget/budget-edit-dialog";
 import { BudgetExpenseFormDialog } from "@/components/budget/budget-expense-form-dialog";
 import { BudgetExpensesList } from "@/components/budget/budget-expenses-list";
@@ -344,8 +344,8 @@ export function BudgetView() {
                 </div>
 
                 {activeBudgetId && (
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="flex flex-wrap gap-2">
+                  <div className="space-y-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <BudgetExpenseFormDialog
                         budgetId={activeBudgetId}
                         onSuccess={onDataChanged}
@@ -355,12 +355,12 @@ export function BudgetView() {
                         onSuccess={onDataChanged}
                       />
                     </div>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex items-center gap-2 overflow-x-auto">
                       <BudgetWatchButton budgetId={activeBudgetId} onChanged={onWatchChanged} />
                       <Button
                         type="button"
                         variant="outline"
-                        className="cursor-pointer"
+                        className="cursor-pointer shrink-0"
                         onClick={handleExportCsv}
                       >
                         <Download className="size-4" />
@@ -369,7 +369,7 @@ export function BudgetView() {
                       <Button
                         type="button"
                         variant="outline"
-                        className="cursor-pointer"
+                        className="cursor-pointer shrink-0"
                         onClick={handlePrint}
                       >
                         <Printer className="size-4" />
@@ -412,7 +412,7 @@ export function BudgetView() {
               )}
 
               <div className="no-print space-y-3">
-                <BudgetCharts
+                <BudgetChartsLazy
                   entries={monthlyEntries}
                   typeFilter={typeFilter}
                   heading={t.budget.monthlyChartsHeading}

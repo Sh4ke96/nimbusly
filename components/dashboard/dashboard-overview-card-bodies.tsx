@@ -18,15 +18,7 @@ import {
   Users,
   Wallet,
 } from "lucide-react";
-import {
-  Bar,
-  BarChart,
-  Cell,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
-import { BudgetResponsiveChart } from "@/components/budget/budget-responsive-chart";
+import dynamic from "next/dynamic";
 import { MemberAvatar } from "@/components/member-avatar";
 import { RestaurantStarRating } from "@/components/restaurants/restaurant-star-rating";
 import { BigStat, EmptyHint, StatTile } from "@/components/dashboard/overview-cards/primitives";
@@ -38,9 +30,6 @@ import {
   getMedicineExpiryStatus,
 } from "@/lib/medicine/expiry";
 import { formatBudgetAmount } from "@/lib/budget/aggregates";
-import { budgetChartTooltipFormatter } from "@/lib/budget/chart-tooltip";
-import { BRAND_COLOR } from "@/lib/constants/brand";
-import { BUDGET_EXPENSE_COLOR } from "@/lib/constants/budget";
 import { MEDICINE_EXPIRY_STATUS } from "@/lib/constants/medicine";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -64,6 +53,17 @@ import type { ChoreTask } from "@/lib/chores/types";
 import { formatPetDueCountdown } from "@/lib/pets/due";
 import type { ScheduleEntry } from "@/lib/schedule/types";
 import { cn } from "@/lib/utils";
+
+const BudgetOverviewMiniChart = dynamic(
+  () =>
+    import("@/components/dashboard/budget-overview-mini-chart").then(
+      (m) => m.BudgetOverviewMiniChart
+    ),
+  {
+    ssr: false,
+    loading: () => <Skeleton className="h-28 w-full rounded-none" />,
+  }
+);
 
 export {
   getOverviewCardMeta,
@@ -191,27 +191,7 @@ export function OverviewCardBody({
             />
           </div>
           {budgetChartData.length > 0 ? (
-            <div className="box-border flex h-28 min-h-28 w-full min-w-0 flex-col border border-border bg-muted/20 p-2">
-              <BudgetResponsiveChart className="min-h-0 flex-1">
-                <BarChart
-                  data={budgetChartData}
-                  margin={{ top: 4, right: 4, left: 0, bottom: 0 }}
-                >
-                  <XAxis dataKey="name" tick={{ fontSize: 10 }} />
-                  <YAxis hide />
-                  <Tooltip
-                    formatter={(value) =>
-                      budgetChartTooltipFormatter(value, lang, t.budget.totalLabel)
-                    }
-                  />
-                  <Bar dataKey="total" name={t.budget.totalLabel} radius={0}>
-                    {budgetChartData.map((row) => (
-                      <Cell key={row.key} fill={row.fill} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </BudgetResponsiveChart>
-            </div>
+            <BudgetOverviewMiniChart data={budgetChartData} lang={lang} t={t} />
           ) : (
             <EmptyHint icon={Wallet} text={t.dashboard.noData} />
           )}

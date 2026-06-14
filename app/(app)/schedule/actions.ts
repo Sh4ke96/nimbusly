@@ -16,8 +16,9 @@ import { SCHEDULE_MAX_ENTRIES_PER_DAY } from "@/lib/constants/schedule";
 import type { ScheduleEntryType } from "@/lib/constants/schedule";
 import { getDisplayName } from "@/lib/profile";
 import type { AccountActionState } from "@/app/(app)/account/actions";
-import { requireUser } from "@/lib/server-actions/require-user";
+import { requireUser, getProfileFamilyContext } from "@/lib/server-actions/require-user";
 import { notifyFamilyMembers } from "@/lib/server-actions/notify-family";
+import { scheduleEntryFromRow } from "@/lib/supabase/app-rows";
 
 async function countScheduleEntriesOnDate(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -67,16 +68,7 @@ export async function createScheduleEntry(
     return { error: t.schedule.errorInvalidType };
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("account_mode, family_id, first_name, last_name")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  const familyId =
-    profile?.account_mode === ACCOUNT_MODE.FAMILY && profile.family_id
-      ? profile.family_id
-      : null;
+  const { profile, familyId } = await getProfileFamilyContext(supabase, user.id);
 
   const entriesOnDate = await countScheduleEntriesOnDate(supabase, {
     entryDate,
@@ -182,11 +174,7 @@ export async function updateScheduleEntry(
     };
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("account_mode, family_id, first_name, last_name")
-    .eq("id", user.id)
-    .maybeSingle();
+  const { profile } = await getProfileFamilyContext(supabase, user.id);
 
   const { error } = await supabase
     .from("schedule_entries")
@@ -202,7 +190,7 @@ export async function updateScheduleEntry(
   if (error) return { error: t.schedule.errorGeneric };
 
   const changeSummary = buildScheduleChangeSummary(
-    existing,
+    scheduleEntryFromRow(existing),
     {
       entry_date: entryDate,
       entry_type: entryType as ScheduleEntryType,
@@ -258,11 +246,7 @@ export async function deleteScheduleEntry(
 
   if (!existing) return { error: t.schedule.errorNotOwner };
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("account_mode, family_id, first_name, last_name")
-    .eq("id", user.id)
-    .maybeSingle();
+  const { profile } = await getProfileFamilyContext(supabase, user.id);
 
   const { error } = await supabase
     .from("schedule_entries")

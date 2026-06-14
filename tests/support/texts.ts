@@ -72,4 +72,16 @@ export const t = {
     addBtn: "Dodaj pomysł",
     addTitle: "Nowy pomysł na prezent",
   },
+  modules: {
+    budget: "Budżet",
+    shopping: "Listy zakupów",
+    gifts: "Prezenty",
+    birthdays: "Urodziny",
+    schedule: "Grafik pracy",
+    medicineCabinet: "Domowa apteczka",
+    watchlist: "Filmy i seriale",
+    restaurants: "Restauracje i puby",
+    pets: "Zwierzęta",
+    chores: "Obowiązki domowe",
+  },
 } as const;

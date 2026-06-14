@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { createClient } from "@/lib/supabase/client";
 import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
@@ -13,6 +13,8 @@ export function useScopedRealtime<T extends Record<string, unknown>>(params: {
   onChange: (payload: RealtimePostgresChangesPayload<T>) => void;
 }) {
   const { userId, familyId, channelKey, table, onChange } = params;
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
 
   useEffect(() => {
     if (!userId) return;
@@ -27,12 +29,13 @@ export function useScopedRealtime<T extends Record<string, unknown>>(params: {
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table, filter },
-        (payload) => onChange(payload as RealtimePostgresChangesPayload<T>)
+        (payload) =>
+          onChangeRef.current(payload as RealtimePostgresChangesPayload<T>)
       )
       .subscribe();
 
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, [userId, familyId, channelKey, table, onChange]);
+  }, [userId, familyId, channelKey, table]);
 }

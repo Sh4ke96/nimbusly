@@ -4,6 +4,7 @@ import { getServerT } from "@/lib/i18n/server";
 import type { NotificationType } from "@/lib/constants/notifications";
 import { getFamilyNotificationTitle } from "@/lib/notifications/family-notification";
 import { createClient } from "@/lib/supabase/server";
+import type { Json } from "@/lib/supabase/database.types";
 
 export async function notifyFamilyMembers(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -23,7 +24,7 @@ export async function notifyFamilyMembers(
     .eq("family_id", params.familyId);
 
   const recipientIds = (members ?? [])
-    .map((m) => m.id as string)
+    .map((m) => m.id)
     .filter((id) => id !== params.actorId);
 
   if (recipientIds.length === 0) return;
@@ -33,6 +34,6 @@ export async function notifyFamilyMembers(
     p_type: params.type,
     p_title: getFamilyNotificationTitle(params.type, t.notifications, params.actorName),
     p_body: params.body,
-    p_payload: params.payload,
+    p_payload: params.payload as Json,
   });
 }

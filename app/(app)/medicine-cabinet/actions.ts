@@ -23,8 +23,9 @@ import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { NOTIFICATION_TYPE } from "@/lib/constants/notifications";
 import { getDisplayName } from "@/lib/profile";
 import type { AccountActionState } from "@/app/(app)/account/actions";
-import { requireUser } from "@/lib/server-actions/require-user";
+import { requireUser, getProfileFamilyContext } from "@/lib/server-actions/require-user";
 import { notifyFamilyMembers } from "@/lib/server-actions/notify-family";
+import { medicineItemFromRow } from "@/lib/supabase/app-rows";
 
 function validateMedicineFields(parsed: ReturnType<typeof parseMedicineItemFromForm>): string | null {
   if (!isValidMedicineName(parsed.name)) return "name";
@@ -98,16 +99,7 @@ export async function createMedicineItem(
   if (validationError === "availability") return { error: t.medicineCabinet.errorAvailabilityRequired };
   if (validationError) return { error: t.medicineCabinet.errorGeneric };
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("account_mode, family_id, first_name, last_name")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  const familyId =
-    profile?.account_mode === ACCOUNT_MODE.FAMILY && profile.family_id
-      ? profile.family_id
-      : null;
+  const { profile, familyId } = await getProfileFamilyContext(supabase, user.id);
 
   const formType = parsed.formType!;
   const availability = parsed.availability!;
@@ -216,18 +208,14 @@ export async function updateMedicineItem(
 
   if (error) return { error: t.medicineCabinet.errorGeneric };
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("account_mode, family_id, first_name, last_name")
-    .eq("id", user.id)
-    .maybeSingle();
+  const { profile } = await getProfileFamilyContext(supabase, user.id);
 
   const familyId = existing.family_id;
   if (familyId && profile?.account_mode === ACCOUNT_MODE.FAMILY) {
     const actorName = getDisplayName(profile);
     const formLabel = t.medicineCabinet.formLabels[formType];
     const changeSummary = buildMedicineChangeSummary(
-      existing,
+      medicineItemFromRow(existing),
       {
         name,
         form_type: formType,
@@ -299,11 +287,7 @@ export async function deleteMedicineItem(
 
   if (!existing) return { error: t.medicineCabinet.errorNotOwner };
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("account_mode, family_id, first_name, last_name")
-    .eq("id", user.id)
-    .maybeSingle();
+  const { profile } = await getProfileFamilyContext(supabase, user.id);
 
   const { error } = await supabase
     .from("medicine_items")

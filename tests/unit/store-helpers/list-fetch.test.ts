@@ -27,7 +27,7 @@ describe("runListFetch", () => {
       set,
       query: async () => ({ data: null, error: null }),
       apply: (data) => {
-        applied = data as string[];
+        applied = data as unknown as string[];
       },
     });
 

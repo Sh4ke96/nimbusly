@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import {
-  excludeActorFromWatcherIds,
   watchedBudgetIdsFromRows,
 } from "@/lib/budget/watches";
+import { excludeActorFromWatcherIds } from "@/lib/notifications/watches";
 
 describe("excludeActorFromWatcherIds", () => {
   it("removes actor from watcher list", () => {

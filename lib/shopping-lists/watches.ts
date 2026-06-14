@@ -21,9 +21,4 @@ export function watchedListIdsFromRows(
   return rows.map((row) => row.list_id);
 }
 
-export function excludeActorFromWatcherIds(
-  watcherIds: string[],
-  actorId: string
-): string[] {
-  return watcherIds.filter((id) => id !== actorId);
-}
+export { excludeActorFromWatcherIds } from "@/lib/notifications/watches";

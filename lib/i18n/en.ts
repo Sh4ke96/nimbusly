@@ -6,6 +6,13 @@ export const en: Dict = {
     description:
       "One hub for your whole family: budget, shopping, gifts, schedule, medicine cabinet, watchlist, restaurants, pets, chores, and more. Shared dashboard, notifications, and live sync.",
   },
+  common: {
+    familyRealtimeHint:
+      "Changes appear live for everyone in your family.",
+    close: "Close",
+    paginationAriaLabel: "Pagination",
+    paginationMorePages: "More pages",
+  },
   nav: {
     features: "Features",
     featuresSlug: "features",
@@ -928,7 +935,6 @@ export const en: Dict = {
     noItemsYet: "No items yet",
     itemsProgress: "{unchecked} of {total} left to buy",
     updatedAt: "Last updated",
-    realtimeHint: "Changes appear live for everyone in your family.",
     createdSuccess: "Shopping list created.",
     updatedSuccess: "Shopping list updated.",
     deletedSuccess: "Shopping list deleted.",

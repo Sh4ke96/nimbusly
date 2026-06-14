@@ -1,8 +1,7 @@
 import { formatBirthdayLabel, isValidBirthDate, parseBirthdayFromForm } from "@/lib/birthdays/types";
-import { ACCOUNT_MODE } from "@/lib/constants/account";
-import type { NotificationType } from "@/lib/constants/notifications";
-import { NOTIFICATION_TYPE } from "@/lib/constants/notifications";
+import { NOTIFICATION_TYPE, type NotificationType } from "@/lib/constants/notifications";
 import { getDisplayName } from "@/lib/profile";
+import { getProfileFamilyContext } from "@/lib/server-actions/require-user";
 import type { AccountActionState } from "@/app/(app)/account/actions";
 import type { Dict } from "@/lib/i18n/types";
 import type { createClient } from "@/lib/supabase/server";
@@ -42,14 +41,7 @@ export async function executeCreateBirthday(
     return { error: t.birthdays.errorInvalidDate };
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("account_mode, family_id, first_name, last_name")
-    .eq("id", user.id)
-    .maybeSingle();
-
-  const familyId =
-    profile?.account_mode === ACCOUNT_MODE.FAMILY && profile.family_id ? profile.family_id : null;
+  const { profile, familyId } = await getProfileFamilyContext(supabase, user.id);
 
   const { data: birthday, error } = await supabase
     .from("birthday_entries")

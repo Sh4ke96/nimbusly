@@ -6,8 +6,8 @@ import { createClient } from '@/lib/supabase/server'
 import { getServerT } from '@/lib/i18n/server'
 import { getPostAuthRedirectPath } from '@/lib/profile/server'
 import { INVITE_CODE_COOKIE, INVITE_MAX_AGE_SEC } from '@/lib/family/constants'
-import { isValidInviteCodeFormat, normalizeInviteCode } from '@/lib/family/invite'
-import { parseSignInFromForm, parseSignUpFromForm } from '@/lib/auth/form'
+import { executeSignIn } from '@/lib/auth/server/sign-in'
+import { executeSignUp } from '@/lib/auth/server/sign-up'
 
 export type AuthState = { error: string } | { success: string } | null
 
@@ -15,97 +15,41 @@ export async function login(
   _prevState: AuthState,
   formData: FormData
 ): Promise<AuthState> {
-  const { email, password } = parseSignInFromForm(formData)
   const t = await getServerT()
-
-  if (!email || !password) {
-    return { error: t.login.errorRequired }
-  }
-
   const supabase = await createClient()
-  const { error } = await supabase.auth.signInWithPassword({ email, password })
+  const result = await executeSignIn(
+    { t, supabase, getPostAuthRedirectPath },
+    formData
+  )
 
-  if (error) {
-    if (error.message.toLowerCase().includes('invalid')) {
-      return { error: t.login.errorInvalid }
-    }
-    if (error.message.toLowerCase().includes('email not confirmed')) {
-      return { error: t.login.errorNotConfirmed }
-    }
-    return { error: t.login.errorGeneric }
+  if (!result.ok) {
+    return { error: result.error }
   }
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (user) {
-    redirect(await getPostAuthRedirectPath(user.id))
-  }
-
-  redirect('/onboarding')
+  redirect(result.redirectTo)
 }
 
 export async function register(
   _prevState: AuthState,
   formData: FormData
 ): Promise<AuthState> {
-  const { email, password, confirmPassword, inviteCode } = parseSignUpFromForm(formData)
   const t = await getServerT()
-
-  if (!email || !password) {
-    return { error: t.register.errorRequired }
-  }
-
-  if (inviteCode && !isValidInviteCodeFormat(inviteCode)) {
-    return { error: t.register.errorInviteCodeInvalid }
-  }
-
-  if (password.length < 8) {
-    return { error: t.register.errorPasswordLength }
-  }
-
-  if (password !== confirmPassword) {
-    return { error: t.register.errorPasswordMatch }
-  }
-
   const supabase = await createClient()
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
-  const { error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      emailRedirectTo: `${siteUrl}/api/auth/callback`,
-    },
-  })
+  const result = await executeSignUp({ t, supabase, siteUrl }, formData)
 
-  if (error) {
-    const message = error.message.toLowerCase()
-    if (
-      message.includes('already registered') ||
-      message.includes('already been registered') ||
-      error.code === 'user_already_exists'
-    ) {
-      return { error: t.register.errorEmailTaken }
-    }
-    if (
-      message.includes('rate limit') ||
-      error.code === 'over_email_send_rate_limit'
-    ) {
-      return { error: t.register.errorEmailRateLimit }
-    }
-    console.error('[register] signUp failed:', error.message, error.code)
-    return { error: t.register.errorGeneric }
+  if (!result.ok) {
+    return { error: result.error }
   }
 
-  if (inviteCode) {
+  if (result.inviteCode) {
     const cookieStore = await cookies()
-    cookieStore.set(INVITE_CODE_COOKIE, normalizeInviteCode(inviteCode), {
+    cookieStore.set(INVITE_CODE_COOKIE, result.inviteCode, {
       path: '/',
       maxAge: INVITE_MAX_AGE_SEC,
       sameSite: 'lax',
     })
   }
 
-  return { success: t.register.successMessage }
+  return { success: result.success }
 }

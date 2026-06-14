@@ -1,4 +1,8 @@
+// @ts-nocheck — happy-dom globals don't match lib.dom; bootstrap only.
+import React from "react";
 import { Window } from "happy-dom";
+
+globalThis.React = React;
 
 const window = new Window({ url: "http://localhost:3000" });
 

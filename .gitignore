@@ -20,6 +20,7 @@ cypress/videos
 cypress/downloads
 
 # next.js
+.next
 /.next/
 /out/
 

@@ -12,9 +12,11 @@
     "e2e": "start-server-and-test dev http://localhost:3000 cy:run",
     "e2e:open": "start-server-and-test dev http://localhost:3000 cy:open",
     "test": "node scripts/run-unit-tests.mjs",
+    "test:types": "tsc -p tsconfig.test.json",
     "db:link": "dotenv -e .env.local -- supabase link --project-ref mxjbextvckzjfkzzpvin",
     "db:push": "dotenv -e .env.local -- supabase db push",
     "db:status": "dotenv -e .env.local -- supabase migration list",
+    "db:types": "dotenv -e .env.local -- supabase gen types typescript --project-id mxjbextvckzjfkzzpvin > lib/supabase/database.types.ts",
     "db:reset": "dotenv -e .env.local -- supabase db reset"
   },
   "dependencies": {

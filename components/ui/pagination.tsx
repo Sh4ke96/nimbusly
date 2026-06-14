@@ -1,14 +1,23 @@
+"use client";
+
 import * as React from "react";
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
+import { useT } from "@/lib/lang-context";
 
-function Pagination({ className, ...props }: React.ComponentProps<"nav">) {
+function Pagination({
+  className,
+  ariaLabel,
+  ...props
+}: React.ComponentProps<"nav"> & { ariaLabel?: string }) {
+  const t = useT();
+
   return (
     <nav
       role="navigation"
-      aria-label="pagination"
+      aria-label={ariaLabel ?? t.common.paginationAriaLabel}
       data-slot="pagination"
       className={cn("mx-auto flex w-full justify-center", className)}
       {...props}
@@ -100,7 +109,13 @@ function PaginationNext({
   );
 }
 
-function PaginationEllipsis({ className, ...props }: React.ComponentProps<"span">) {
+function PaginationEllipsis({
+  className,
+  morePagesLabel,
+  ...props
+}: React.ComponentProps<"span"> & { morePagesLabel?: string }) {
+  const t = useT();
+
   return (
     <span
       aria-hidden
@@ -109,7 +124,7 @@ function PaginationEllipsis({ className, ...props }: React.ComponentProps<"span"
       {...props}
     >
       <MoreHorizontal className="size-4" />
-      <span className="sr-only">More pages</span>
+      <span className="sr-only">{morePagesLabel ?? t.common.paginationMorePages}</span>
     </span>
   );
 }

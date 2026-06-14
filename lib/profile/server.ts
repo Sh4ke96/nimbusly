@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import type { Profile } from "@/lib/profile";
+import { mapProfileRow } from "@/lib/supabase/row-mappers";
 import type { User } from "@supabase/supabase-js";
 
 export async function getProfile(userId: string): Promise<Profile | null> {
@@ -14,7 +15,7 @@ export async function getProfile(userId: string): Promise<Profile | null> {
     return null;
   }
 
-  return data;
+  return data ? mapProfileRow(data) : null;
 }
 
 export async function getAuthProfile(): Promise<{
@@ -40,7 +41,7 @@ export async function getAuthProfile(): Promise<{
     return { user, profile: null };
   }
 
-  return { user, profile };
+  return { user, profile: profile ? mapProfileRow(profile) : null };
 }
 
 export async function isOnboardingComplete(userId: string): Promise<boolean> {

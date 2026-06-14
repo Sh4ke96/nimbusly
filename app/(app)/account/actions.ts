@@ -3,6 +3,7 @@
 import { getServerT } from "@/lib/i18n/server";
 import { isAvatarColor } from "@/lib/avatar-colors";
 import { ACCOUNT_MODE, FAMILY_ROLE, type FamilyRole } from "@/lib/constants/account";
+import { familyInsertPayload } from "@/lib/supabase/row-mappers";
 import {
   parseAccountModeSetupFromForm,
   parseFamilyRenameFromForm,
@@ -77,11 +78,11 @@ export async function updateAccountMode(
 
     if (existingProfile?.family_id) {
       familyId = existingProfile.family_id;
-      familyRole = existingProfile.family_role;
+      familyRole = existingProfile.family_role as FamilyRole | null;
     } else {
       const { data: family, error: familyError } = await supabase
         .from("families")
-        .insert({ name: familyName, created_by: user.id })
+        .insert(familyInsertPayload({ name: familyName, created_by: user.id }))
         .select("id")
         .single();
 

@@ -3,6 +3,7 @@ import { INVITATION_STATUS } from "@/lib/constants/family-invitation";
 import { create } from "zustand";
 import { createClient } from "@/lib/supabase/client";
 import type { Family, FamilyInvitation, FamilyMember, Profile } from "@/lib/profile";
+import { mapFamilyMemberRow, mapProfileRow } from "@/lib/supabase/row-mappers";
 import type { User } from "@supabase/supabase-js";
 import { dedupeAsync } from "@/lib/stores/dedupe-async";
 
@@ -61,7 +62,11 @@ async function loadFamilyData(familyId: string, userId: string, isOwner: boolean
     invitations = (data ?? []) as FamilyInvitation[];
   }
 
-  return { family: family ?? null, members: members ?? [], invitations };
+  return {
+    family: family ?? null,
+    members: (members ?? []).map(mapFamilyMemberRow),
+    invitations,
+  };
 }
 
 export const useProfileStore = create<ProfileStore>((set, get) => ({
@@ -127,7 +132,7 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
 
         set({
           user,
-          profile,
+          profile: profile ? mapProfileRow(profile) : null,
           family,
           members,
           invitations,
@@ -158,7 +163,7 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
         return;
       }
 
-      set({ profile, error: false });
+      set({ profile: profile ? mapProfileRow(profile) : null, error: false });
 
       if (profile?.family_id) {
         await get().refreshFamily();
