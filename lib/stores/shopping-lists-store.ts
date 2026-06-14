@@ -7,7 +7,6 @@ import {
   type ShoppingListItem,
 } from "@/lib/shopping-lists/types";
 import { dedupeAsync } from "@/lib/stores/dedupe-async";
-import { listFetchInitial } from "@/lib/stores/list-fetch";
 import { compareNamesByProfileLang } from "@/lib/stores/sort-lang";
 import { watchedListIdsFromRows } from "@/lib/shopping-lists/watches";
 
@@ -31,8 +30,10 @@ interface ShoppingListsStore {
   loaded: boolean;
   loading: boolean;
   itemsLoadingByListId: Record<string, boolean>;
+  itemsErrorByListId: Record<string, boolean>;
   watchedListIds: string[];
   watchesLoaded: boolean;
+  watchesError: boolean;
   error: boolean;
   fetchLists: (force?: boolean) => Promise<void>;
   fetchWatches: (force?: boolean) => Promise<void>;
@@ -56,7 +57,9 @@ const initialState = {
   watchesLoaded: false,
   loading: false,
   itemsLoadingByListId: {} as Record<string, boolean>,
+  itemsErrorByListId: {} as Record<string, boolean>,
   error: false,
+  watchesError: false,
 };
 
 function sortLists(lists: ShoppingList[]): ShoppingList[] {
@@ -137,15 +140,25 @@ export const useShoppingListsStore = create<ShoppingListsStore>((set, get) => ({
 
     return dedupeAsync("shopping-lists:watches", async () => {
       const supabase = createClient();
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("shopping_list_watches")
         .select("list_id");
+
+      if (error) {
+        set({
+          watchedListIds: [],
+          watchesLoaded: true,
+          watchesError: true,
+        });
+        return;
+      }
 
       set({
         watchedListIds: watchedListIdsFromRows(
           (data ?? []) as { list_id: string }[]
         ),
         watchesLoaded: true,
+        watchesError: false,
       });
     });
   },
@@ -153,31 +166,52 @@ export const useShoppingListsStore = create<ShoppingListsStore>((set, get) => ({
   fetchItems: async (listId, force = false) => {
     const loading = get().itemsLoadingByListId[listId];
     const hasItems = listId in get().itemsByListId;
-    if (!force && hasItems && !loading) return;
+    const hasError = get().itemsErrorByListId[listId];
+    if (!force && hasItems && !loading && !hasError) return;
 
     return dedupeAsync(`shopping-lists:items:${listId}`, async () => {
       set((state) => ({
         itemsLoadingByListId: { ...state.itemsLoadingByListId, [listId]: true },
+        itemsErrorByListId: { ...state.itemsErrorByListId, [listId]: false },
       }));
 
-      const supabase = createClient();
-      const { data } = await supabase
-        .from("shopping_list_items")
-        .select("*")
-        .eq("list_id", listId)
-        .order("sort_order", { ascending: true })
-        .order("created_at", { ascending: true });
+      try {
+        const supabase = createClient();
+        const { data, error } = await supabase
+          .from("shopping_list_items")
+          .select("*")
+          .eq("list_id", listId)
+          .order("sort_order", { ascending: true })
+          .order("created_at", { ascending: true });
 
-      set((state) => ({
-        itemsByListId: {
-          ...state.itemsByListId,
-          [listId]: sortShoppingListItems((data ?? []) as ShoppingListItem[]),
-        },
-        itemsLoadingByListId: {
-          ...state.itemsLoadingByListId,
-          [listId]: false,
-        },
-      }));
+        if (error) {
+          set((state) => ({
+            itemsLoadingByListId: { ...state.itemsLoadingByListId, [listId]: false },
+            itemsErrorByListId: { ...state.itemsErrorByListId, [listId]: true },
+          }));
+          return;
+        }
+
+        set((state) => ({
+          itemsByListId: {
+            ...state.itemsByListId,
+            [listId]: sortShoppingListItems((data ?? []) as ShoppingListItem[]),
+          },
+          itemsLoadingByListId: {
+            ...state.itemsLoadingByListId,
+            [listId]: false,
+          },
+          itemsErrorByListId: {
+            ...state.itemsErrorByListId,
+            [listId]: false,
+          },
+        }));
+      } catch {
+        set((state) => ({
+          itemsLoadingByListId: { ...state.itemsLoadingByListId, [listId]: false },
+          itemsErrorByListId: { ...state.itemsErrorByListId, [listId]: true },
+        }));
+      }
     });
   },
 

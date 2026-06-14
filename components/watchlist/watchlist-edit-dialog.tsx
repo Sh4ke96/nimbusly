@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -27,29 +27,26 @@ interface WatchlistEditDialogProps {
   onSuccess: () => void;
 }
 
-export function WatchlistEditDialog({
+function WatchlistEditForm({
   item,
-  open,
-  onOpenChange,
   onSuccess,
-}: WatchlistEditDialogProps) {
+  onClose,
+}: {
+  item: WatchlistItem;
+  onSuccess: () => void;
+  onClose: () => void;
+}) {
   const t = useT();
-  const [title, setTitle] = useState<string>("");
-  const [mediaType, setMediaType] = useState<WatchlistItem["media_type"] | null>(null);
-  const [status, setStatus] = useState<WatchlistItem["status"] | null>(null);
-  const [notes, setNotes] = useState<string>("");
+  const [title, setTitle] = useState(() => item.title);
+  const [mediaType, setMediaType] = useState<WatchlistItem["media_type"] | null>(
+    () => item.media_type
+  );
+  const [status, setStatus] = useState<WatchlistItem["status"] | null>(() => item.status);
+  const [notes, setNotes] = useState(() => item.notes);
   const [state, action, pending] = useActionState(updateWatchlistItem, null);
 
-  useEffect(() => {
-    if (!item) return;
-    setTitle(item.title);
-    setMediaType(item.media_type);
-    setStatus(item.status);
-    setNotes(item.notes);
-  }, [item]);
-
   useActionFeedback(state, () => {
-    onOpenChange(false);
+    onClose();
     onSuccess();
   });
 
@@ -70,7 +67,33 @@ export function WatchlistEditDialog({
     }
   }
 
-  if (!item) return null;
+  return (
+    <form action={action} className="space-y-4" onSubmit={onSubmit}>
+      <input type="hidden" name="id" value={item.id} />
+      <WatchlistEntryForm
+        title={title}
+        onTitleChange={setTitle}
+        mediaType={mediaType}
+        onMediaTypeChange={setMediaType}
+        status={status}
+        onStatusChange={setStatus}
+        notes={notes}
+        onNotesChange={setNotes}
+      />
+      <Button type="submit" className="w-full" disabled={pending}>
+        {pending ? t.watchlist.saving : t.watchlist.saveBtn}
+      </Button>
+    </form>
+  );
+}
+
+export function WatchlistEditDialog({
+  item,
+  open,
+  onOpenChange,
+  onSuccess,
+}: WatchlistEditDialogProps) {
+  const t = useT();
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -78,22 +101,14 @@ export function WatchlistEditDialog({
         <DialogHeader>
           <DialogTitle className="font-heading">{t.watchlist.editTitle}</DialogTitle>
         </DialogHeader>
-        <form action={action} className="space-y-4" onSubmit={onSubmit}>
-          <input type="hidden" name="id" value={item.id} />
-          <WatchlistEntryForm
-            title={title}
-            onTitleChange={setTitle}
-            mediaType={mediaType}
-            onMediaTypeChange={setMediaType}
-            status={status}
-            onStatusChange={setStatus}
-            notes={notes}
-            onNotesChange={setNotes}
+        {item && (
+          <WatchlistEditForm
+            key={item.id}
+            item={item}
+            onSuccess={onSuccess}
+            onClose={() => onOpenChange(false)}
           />
-          <Button type="submit" className="w-full" disabled={pending}>
-            {pending ? t.watchlist.saving : t.watchlist.saveBtn}
-          </Button>
-        </form>
+        )}
       </DialogContent>
     </Dialog>
   );

@@ -34,6 +34,7 @@ interface BudgetStore {
   watchedBudgetIds: string[];
   loaded: boolean;
   watchesLoaded: boolean;
+  watchesError: boolean;
   loading: boolean;
   error: boolean;
   fetchBudgets: (force?: boolean) => Promise<void>;
@@ -48,6 +49,7 @@ const initialState = {
   watchedBudgetIds: [] as string[],
   loaded: false,
   watchesLoaded: false,
+  watchesError: false,
   loading: false,
   error: false,
 };
@@ -168,15 +170,25 @@ export const useBudgetStore = create<BudgetStore>((set, get) => ({
 
     return dedupeAsync("budget:watches", async () => {
       const supabase = createClient();
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("budget_watches")
         .select("budget_id");
+
+      if (error) {
+        set({
+          watchedBudgetIds: [],
+          watchesLoaded: true,
+          watchesError: true,
+        });
+        return;
+      }
 
       set({
         watchedBudgetIds: watchedBudgetIdsFromRows(
           (data ?? []) as { budget_id: string }[]
         ),
         watchesLoaded: true,
+        watchesError: false,
       });
     });
   },

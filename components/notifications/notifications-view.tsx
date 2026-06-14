@@ -160,6 +160,11 @@ export function NotificationsView() {
 
         <Card className="gap-0 rounded-none py-0 shadow-sm overflow-hidden">
           <CardContent className="p-0">
+            {error ? (
+              <div className="p-6 md:p-8">
+                <ModuleFetchError onRetry={() => void fetchNotifications(true)} />
+              </div>
+            ) : (
             <Tabs
               orientation="vertical"
               value={filter}
@@ -233,6 +238,7 @@ export function NotificationsView() {
                 </div>
               </div>
             </Tabs>
+            )}
           </CardContent>
         </Card>
 

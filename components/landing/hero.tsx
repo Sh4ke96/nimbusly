@@ -3,10 +3,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { MemberAvatar } from "@/components/member-avatar";
 import { HeroModulePills } from "@/components/landing/hero-module-pills";
 import { useT } from "@/lib/lang-context";
-import { ArrowRight, Star, Sparkles } from "lucide-react";
+import { ArrowRight, CheckCircle2, Sparkles } from "lucide-react";
 
 export function HeroSection() {
   const t = useT();
@@ -53,27 +52,14 @@ export function HeroSection() {
               </Button>
             </div>
 
-            <div className="flex items-center gap-3">
-              <div className="flex -space-x-2">
-                {t.hero.demoAvatars.map((a) => (
-                  <MemberAvatar key={a.name} name={a.name} member={a.member} size="sm" ring />
-                ))}
-              </div>
-              <div className="text-sm">
-                <span className="font-bold font-heading text-foreground">
-                  {t.hero.socialProofCount}
-                </span>{" "}
-                <span className="text-muted-foreground">{t.hero.socialProofLabel}</span>
-                <div className="flex items-center gap-1 text-muted-foreground mt-0.5">
-                  <div className="flex">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star key={i} className="size-3 fill-primary text-primary" />
-                    ))}
-                  </div>
-                  <span className="text-xs">{t.hero.rating}</span>
-                </div>
-              </div>
-            </div>
+            <ul className="flex flex-col gap-2 text-sm text-muted-foreground">
+              {t.hero.trustItems.map((item) => (
+                <li key={item} className="inline-flex items-center gap-2">
+                  <CheckCircle2 className="size-4 shrink-0 text-primary" />
+                  {item}
+                </li>
+              ))}
+            </ul>
           </div>
 
           <div className="relative animate-pop">

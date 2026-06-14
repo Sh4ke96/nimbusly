@@ -24,16 +24,12 @@ export const pl: Dict = {
     desc: "Budżet, listy zakupów, urodziny, grafik, apteczka, obowiązki, zwierzęta i więcej. Wspólny dashboard pokazuje, co wymaga uwagi, a powiadomienia informują rodzinę o zmianach — na żywo, po polsku lub angielsku.",
     ctaPrimary: "Załóż rodzinne konto",
     ctaSecondary: "Zobacz moduły",
-    socialProofCount: "12 000+",
-    socialProofLabel: "rodzin korzysta",
-    rating: "4.9/5 ocena w sklepie",
-    imageAlt: "Nimbusly — ilustracja domu rodzinnego",
-    demoAvatars: [
-      { name: "Anna K.", member: "mama" },
-      { name: "Piotr K.", member: "tata" },
-      { name: "Zosia K.", member: "corka" },
-      { name: "Jakub K.", member: "syn" },
+    trustItems: [
+      "Bezpłatnie — bez karty kredytowej",
+      "11 modułów w jednym hubie",
+      "Polski i angielski interfejs",
     ],
+    imageAlt: "Nimbusly — ilustracja domu rodzinnego",
   },
   highlights: {
     items: [
@@ -1150,5 +1146,11 @@ export const pl: Dict = {
     fetchError: "Nie udało się załadować danych. Sprawdź połączenie i spróbuj ponownie.",
     retry: "Spróbuj ponownie",
     exportCsv: "Eksport CSV",
+  },
+  search: {
+    triggerLabel: "Szukaj w hubie…",
+    title: "Szukaj w Nimbusly",
+    placeholder: "Moduły, listy, prezenty, obowiązki…",
+    empty: "Brak wyników dla tego zapytania",
   },
 };

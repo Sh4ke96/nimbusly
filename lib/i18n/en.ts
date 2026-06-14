@@ -24,16 +24,12 @@ export const en: Dict = {
     desc: "Budget, shopping lists, birthdays, schedule, medicine cabinet, chores, pets, and more. A shared dashboard shows what needs attention; notifications keep everyone in the loop — live, in Polish or English.",
     ctaPrimary: "Create family account",
     ctaSecondary: "See modules",
-    socialProofCount: "12,000+",
-    socialProofLabel: "families use it",
-    rating: "4.9/5 app store rating",
-    imageAlt: "Nimbusly — family home illustration",
-    demoAvatars: [
-      { name: "Anna K.", member: "mama" },
-      { name: "Piotr K.", member: "tata" },
-      { name: "Zosia K.", member: "corka" },
-      { name: "Jakub K.", member: "syn" },
+    trustItems: [
+      "Free — no credit card required",
+      "11 modules in one hub",
+      "Polish and English interface",
     ],
+    imageAlt: "Nimbusly — family home illustration",
   },
   highlights: {
     items: [
@@ -1150,5 +1146,11 @@ export const en: Dict = {
     fetchError: "Could not load data. Check your connection and try again.",
     retry: "Try again",
     exportCsv: "Export CSV",
+  },
+  search: {
+    triggerLabel: "Search hub…",
+    title: "Search Nimbusly",
+    placeholder: "Modules, lists, gifts, chores…",
+    empty: "No results for this query",
   },
 };

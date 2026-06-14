@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -28,35 +28,33 @@ interface MedicineEditDialogProps {
   onSuccess: () => void;
 }
 
-export function MedicineEditDialog({
+function MedicineEditForm({
   item,
-  open,
-  onOpenChange,
   onSuccess,
-}: MedicineEditDialogProps) {
+  onClose,
+}: {
+  item: MedicineItem;
+  onSuccess: () => void;
+  onClose: () => void;
+}) {
   const t = useT();
-  const [name, setName] = useState<string>("");
-  const [formType, setFormType] = useState<MedicineItem["form_type"] | null>(null);
-  const [quantity, setQuantity] = useState<string>("");
-  const [expiryDate, setExpiryDate] = useState<Date | undefined>();
-  const [availability, setAvailability] = useState<MedicineItem["availability"] | null>(null);
-  const [location, setLocation] = useState<string>("");
-  const [notes, setNotes] = useState<string>("");
+  const [name, setName] = useState(() => item.name);
+  const [formType, setFormType] = useState<MedicineItem["form_type"] | null>(
+    () => item.form_type
+  );
+  const [quantity, setQuantity] = useState(() => item.quantity);
+  const [expiryDate, setExpiryDate] = useState<Date | undefined>(() =>
+    parseMedicineDateString(item.expiry_date)
+  );
+  const [availability, setAvailability] = useState<MedicineItem["availability"] | null>(
+    () => item.availability
+  );
+  const [location, setLocation] = useState(() => item.location);
+  const [notes, setNotes] = useState(() => item.notes);
   const [state, action, pending] = useActionState(updateMedicineItem, null);
 
-  useEffect(() => {
-    if (!item) return;
-    setName(item.name);
-    setFormType(item.form_type);
-    setQuantity(item.quantity);
-    setExpiryDate(parseMedicineDateString(item.expiry_date));
-    setAvailability(item.availability);
-    setLocation(item.location);
-    setNotes(item.notes);
-  }, [item]);
-
   useActionFeedback(state, () => {
-    onOpenChange(false);
+    onClose();
     onSuccess();
   });
 
@@ -77,7 +75,39 @@ export function MedicineEditDialog({
     }
   }
 
-  if (!item) return null;
+  return (
+    <form action={action} className="space-y-4" onSubmit={onSubmit}>
+      <input type="hidden" name="id" value={item.id} />
+      <MedicineEntryForm
+        name={name}
+        onNameChange={setName}
+        formType={formType}
+        onFormTypeChange={setFormType}
+        quantity={quantity}
+        onQuantityChange={setQuantity}
+        expiryDate={expiryDate}
+        onExpiryDateChange={setExpiryDate}
+        availability={availability}
+        onAvailabilityChange={setAvailability}
+        location={location}
+        onLocationChange={setLocation}
+        notes={notes}
+        onNotesChange={setNotes}
+      />
+      <Button type="submit" className="w-full" disabled={pending}>
+        {pending ? t.medicineCabinet.saving : t.medicineCabinet.saveBtn}
+      </Button>
+    </form>
+  );
+}
+
+export function MedicineEditDialog({
+  item,
+  open,
+  onOpenChange,
+  onSuccess,
+}: MedicineEditDialogProps) {
+  const t = useT();
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -85,28 +115,14 @@ export function MedicineEditDialog({
         <DialogHeader>
           <DialogTitle className="font-heading">{t.medicineCabinet.editTitle}</DialogTitle>
         </DialogHeader>
-        <form action={action} className="space-y-4" onSubmit={onSubmit}>
-          <input type="hidden" name="id" value={item.id} />
-          <MedicineEntryForm
-            name={name}
-            onNameChange={setName}
-            formType={formType}
-            onFormTypeChange={setFormType}
-            quantity={quantity}
-            onQuantityChange={setQuantity}
-            expiryDate={expiryDate}
-            onExpiryDateChange={setExpiryDate}
-            availability={availability}
-            onAvailabilityChange={setAvailability}
-            location={location}
-            onLocationChange={setLocation}
-            notes={notes}
-            onNotesChange={setNotes}
+        {item && (
+          <MedicineEditForm
+            key={item.id}
+            item={item}
+            onSuccess={onSuccess}
+            onClose={() => onOpenChange(false)}
           />
-          <Button type="submit" className="w-full" disabled={pending}>
-            {pending ? t.medicineCabinet.saving : t.medicineCabinet.saveBtn}
-          </Button>
-        </form>
+        )}
       </DialogContent>
     </Dialog>
   );

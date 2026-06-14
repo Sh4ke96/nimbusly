@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { reorderShoppingListItems } from "@/app/(app)/shopping/actions";
 import { ShoppingListAddItem } from "@/components/shopping/shopping-list-add-item";
 import { ShoppingListItemRow } from "@/components/shopping/shopping-list-item-row";
+import { ModuleFetchError } from "@/components/ui/module-fetch-error";
 import { Skeleton } from "@/components/ui/skeleton";
 import { applyItemOrder } from "@/lib/shopping-lists/types";
 import { useT } from "@/lib/lang-context";
@@ -43,6 +44,10 @@ export function ShoppingListItemsPanel({
   const itemsLoading = useShoppingListsStore(
     (s) => s.itemsLoadingByListId[listId] ?? false
   );
+  const itemsError = useShoppingListsStore(
+    (s) => s.itemsErrorByListId[listId] ?? false
+  );
+  const fetchItems = useShoppingListsStore((s) => s.fetchItems);
   const setItemsForList = useShoppingListsStore((s) => s.setItemsForList);
 
   const itemIds = useMemo(() => items.map((item) => item.id), [items]);
@@ -75,6 +80,12 @@ export function ShoppingListItemsPanel({
       setItemsForList(listId, previous);
       toast.error(result.error);
     }
+  }
+
+  if (itemsError) {
+    return (
+      <ModuleFetchError onRetry={() => void fetchItems(listId, true)} />
+    );
   }
 
   if (itemsLoading && items.length === 0) {

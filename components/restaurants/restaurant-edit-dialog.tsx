@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -31,37 +31,34 @@ interface RestaurantEditDialogProps {
   onSuccess: () => void;
 }
 
-export function RestaurantEditDialog({
+function RestaurantEditForm({
   place,
-  open,
-  onOpenChange,
   onSuccess,
-}: RestaurantEditDialogProps) {
+  onClose,
+}: {
+  place: RestaurantPlace;
+  onSuccess: () => void;
+  onClose: () => void;
+}) {
   const t = useT();
-  const [name, setName] = useState<string>("");
-  const [venueType, setVenueType] = useState<RestaurantPlace["venue_type"] | null>(null);
-  const [visitStatus, setVisitStatus] = useState<RestaurantPlace["visit_status"] | null>(null);
-  const [rating, setRating] = useState<number | null>(null);
-  const [comment, setComment] = useState<string>("");
-  const [notes, setNotes] = useState<string>("");
-  const [address, setAddress] = useState<string>("");
-  const [visitedAt, setVisitedAt] = useState<Date | undefined>();
+  const [name, setName] = useState(() => place.name);
+  const [venueType, setVenueType] = useState<RestaurantPlace["venue_type"] | null>(
+    () => place.venue_type
+  );
+  const [visitStatus, setVisitStatus] = useState<RestaurantPlace["visit_status"] | null>(
+    () => place.visit_status
+  );
+  const [rating, setRating] = useState<number | null>(() => place.rating);
+  const [comment, setComment] = useState(() => place.comment);
+  const [notes, setNotes] = useState(() => place.notes);
+  const [address, setAddress] = useState(() => place.address);
+  const [visitedAt, setVisitedAt] = useState<Date | undefined>(() =>
+    parseRestaurantDateString(place.visited_at)
+  );
   const [state, action, pending] = useActionState(updateRestaurantPlace, null);
 
-  useEffect(() => {
-    if (!place) return;
-    setName(place.name);
-    setVenueType(place.venue_type);
-    setVisitStatus(place.visit_status);
-    setRating(place.rating);
-    setComment(place.comment);
-    setNotes(place.notes);
-    setAddress(place.address);
-    setVisitedAt(parseRestaurantDateString(place.visited_at));
-  }, [place]);
-
   useActionFeedback(state, () => {
-    onOpenChange(false);
+    onClose();
     onSuccess();
   }, pending);
 
@@ -99,7 +96,41 @@ export function RestaurantEditDialog({
     }
   }
 
-  if (!place) return null;
+  return (
+    <form action={action} className="space-y-4" onSubmit={onSubmit}>
+      <input type="hidden" name="id" value={place.id} />
+      <RestaurantEntryForm
+        name={name}
+        onNameChange={setName}
+        venueType={venueType}
+        onVenueTypeChange={setVenueType}
+        visitStatus={visitStatus}
+        onVisitStatusChange={setVisitStatus}
+        rating={rating}
+        onRatingChange={setRating}
+        comment={comment}
+        onCommentChange={setComment}
+        notes={notes}
+        onNotesChange={setNotes}
+        address={address}
+        onAddressChange={setAddress}
+        visitedAt={visitedAt}
+        onVisitedAtChange={setVisitedAt}
+      />
+      <Button type="submit" className="w-full" disabled={pending}>
+        {pending ? t.restaurants.saving : t.restaurants.saveBtn}
+      </Button>
+    </form>
+  );
+}
+
+export function RestaurantEditDialog({
+  place,
+  open,
+  onOpenChange,
+  onSuccess,
+}: RestaurantEditDialogProps) {
+  const t = useT();
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -107,30 +138,14 @@ export function RestaurantEditDialog({
         <DialogHeader>
           <DialogTitle className="font-heading">{t.restaurants.editTitle}</DialogTitle>
         </DialogHeader>
-        <form action={action} className="space-y-4" onSubmit={onSubmit}>
-          <input type="hidden" name="id" value={place.id} />
-          <RestaurantEntryForm
-            name={name}
-            onNameChange={setName}
-            venueType={venueType}
-            onVenueTypeChange={setVenueType}
-            visitStatus={visitStatus}
-            onVisitStatusChange={setVisitStatus}
-            rating={rating}
-            onRatingChange={setRating}
-            comment={comment}
-            onCommentChange={setComment}
-            notes={notes}
-            onNotesChange={setNotes}
-            address={address}
-            onAddressChange={setAddress}
-            visitedAt={visitedAt}
-            onVisitedAtChange={setVisitedAt}
+        {place && (
+          <RestaurantEditForm
+            key={place.id}
+            place={place}
+            onSuccess={onSuccess}
+            onClose={() => onOpenChange(false)}
           />
-          <Button type="submit" className="w-full" disabled={pending}>
-            {pending ? t.restaurants.saving : t.restaurants.saveBtn}
-          </Button>
-        </form>
+        )}
       </DialogContent>
     </Dialog>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useState } from "react";
 import { updateShoppingList } from "@/app/(app)/shopping/actions";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,6 +23,46 @@ interface ShoppingListEditDialogProps {
   onSuccess?: () => void;
 }
 
+function ShoppingListEditForm({
+  list,
+  onSuccess,
+  onClose,
+}: {
+  list: ShoppingList;
+  onSuccess?: () => void;
+  onClose: () => void;
+}) {
+  const t = useT();
+  const [name, setName] = useState(() => list.name);
+  const [state, action, pending] = useActionState(updateShoppingList, null);
+
+  useActionFeedback(state, () => {
+    onClose();
+    onSuccess?.();
+  });
+
+  return (
+    <form action={action} className="space-y-4">
+      <input type="hidden" name="id" value={list.id} />
+      <div className="space-y-2">
+        <Label htmlFor="shopping-list-edit-name">{t.shoppingLists.nameLabel}</Label>
+        <Input
+          id="shopping-list-edit-name"
+          name="name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+          maxLength={SHOPPING_LIST_NAME_MAX_LENGTH}
+          className="rounded-none"
+        />
+      </div>
+      <Button type="submit" disabled={pending} className="w-full cursor-pointer">
+        {pending ? t.shoppingLists.saving : t.shoppingLists.saveBtn}
+      </Button>
+    </form>
+  );
+}
+
 export function ShoppingListEditDialog({
   list,
   open,
@@ -30,17 +70,6 @@ export function ShoppingListEditDialog({
   onSuccess,
 }: ShoppingListEditDialogProps) {
   const t = useT();
-  const [name, setName] = useState("");
-  const [state, action, pending] = useActionState(updateShoppingList, null);
-
-  useEffect(() => {
-    if (list) setName(list.name);
-  }, [list]);
-
-  useActionFeedback(state, () => {
-    onOpenChange(false);
-    onSuccess?.();
-  });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -49,24 +78,12 @@ export function ShoppingListEditDialog({
           <DialogTitle className="font-heading">{t.shoppingLists.editTitle}</DialogTitle>
         </DialogHeader>
         {list && (
-          <form action={action} className="space-y-4">
-            <input type="hidden" name="id" value={list.id} />
-            <div className="space-y-2">
-              <Label htmlFor="shopping-list-edit-name">{t.shoppingLists.nameLabel}</Label>
-              <Input
-                id="shopping-list-edit-name"
-                name="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                maxLength={SHOPPING_LIST_NAME_MAX_LENGTH}
-                className="rounded-none"
-              />
-            </div>
-            <Button type="submit" disabled={pending} className="w-full cursor-pointer">
-              {pending ? t.shoppingLists.saving : t.shoppingLists.saveBtn}
-            </Button>
-          </form>
+          <ShoppingListEditForm
+            key={list.id}
+            list={list}
+            onSuccess={onSuccess}
+            onClose={() => onOpenChange(false)}
+          />
         )}
       </DialogContent>
     </Dialog>

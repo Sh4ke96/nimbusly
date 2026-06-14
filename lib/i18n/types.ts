@@ -1,4 +1,3 @@
-import type { DemoMemberRole } from "@/lib/constants/demo";
 import type { Lang } from "@/lib/constants/lang";
 
 export type { Lang };
@@ -26,11 +25,8 @@ export type Dict = {
     desc: string;
     ctaPrimary: string;
     ctaSecondary: string;
-    socialProofCount: string;
-    socialProofLabel: string;
-    rating: string;
+    trustItems: string[];
     imageAlt: string;
-    demoAvatars: { name: string; member: DemoMemberRole }[];
   };
   highlights: {
     items: { title: string; desc: string }[];
@@ -1044,5 +1040,11 @@ export type Dict = {
     fetchError: string;
     retry: string;
     exportCsv: string;
+  };
+  search: {
+    triggerLabel: string;
+    title: string;
+    placeholder: string;
+    empty: string;
   };
 };

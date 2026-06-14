@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -31,37 +31,36 @@ interface PetCareEditDialogProps {
   onSuccess: () => void;
 }
 
-export function PetCareEditDialog({
+function PetCareEditForm({
   item,
-  open,
-  onOpenChange,
   onSuccess,
-}: PetCareEditDialogProps) {
+  onClose,
+}: {
+  item: PetCareItem;
+  onSuccess: () => void;
+  onClose: () => void;
+}) {
   const t = useT();
-  const [petId, setPetId] = useState<string>("");
-  const [name, setName] = useState<string>("");
-  const [careType, setCareType] = useState<PetCareItem["care_type"] | null>(null);
-  const [lastDoneAt, setLastDoneAt] = useState<Date | undefined>();
-  const [nextDueDate, setNextDueDate] = useState<Date | undefined>();
-  const [stockStatus, setStockStatus] = useState<PetCareItem["stock_status"]>(null);
-  const [quantity, setQuantity] = useState<string>("");
-  const [notes, setNotes] = useState<string>("");
+  const [petId, setPetId] = useState(() => item.pet_id);
+  const [name, setName] = useState(() => item.name);
+  const [careType, setCareType] = useState<PetCareItem["care_type"] | null>(
+    () => item.care_type
+  );
+  const [lastDoneAt, setLastDoneAt] = useState<Date | undefined>(() =>
+    parsePetDateString(item.last_done_at)
+  );
+  const [nextDueDate, setNextDueDate] = useState<Date | undefined>(() =>
+    parsePetDateString(item.next_due_date)
+  );
+  const [stockStatus, setStockStatus] = useState<PetCareItem["stock_status"]>(
+    () => item.stock_status
+  );
+  const [quantity, setQuantity] = useState(() => item.quantity);
+  const [notes, setNotes] = useState(() => item.notes);
   const [state, action, pending] = useActionState(updatePetCareItem, null);
 
-  useEffect(() => {
-    if (!item) return;
-    setPetId(item.pet_id);
-    setName(item.name);
-    setCareType(item.care_type);
-    setLastDoneAt(parsePetDateString(item.last_done_at));
-    setNextDueDate(parsePetDateString(item.next_due_date));
-    setStockStatus(item.stock_status);
-    setQuantity(item.quantity);
-    setNotes(item.notes);
-  }, [item]);
-
   useActionFeedback(state, () => {
-    onOpenChange(false);
+    onClose();
     onSuccess();
   }, pending);
 
@@ -97,7 +96,40 @@ export function PetCareEditDialog({
     }
   }
 
-  if (!item) return null;
+  return (
+    <form action={action} className="space-y-4" onSubmit={onSubmit}>
+      <input type="hidden" name="id" value={item.id} />
+      <PetCareEntryForm
+        petId={petId}
+        name={name}
+        onNameChange={setName}
+        careType={careType}
+        onCareTypeChange={setCareType}
+        lastDoneAt={lastDoneAt}
+        onLastDoneAtChange={setLastDoneAt}
+        nextDueDate={nextDueDate}
+        onNextDueDateChange={setNextDueDate}
+        stockStatus={stockStatus}
+        onStockStatusChange={setStockStatus}
+        quantity={quantity}
+        onQuantityChange={setQuantity}
+        notes={notes}
+        onNotesChange={setNotes}
+      />
+      <Button type="submit" className="w-full" disabled={pending}>
+        {pending ? t.pets.saving : t.pets.saveBtn}
+      </Button>
+    </form>
+  );
+}
+
+export function PetCareEditDialog({
+  item,
+  open,
+  onOpenChange,
+  onSuccess,
+}: PetCareEditDialogProps) {
+  const t = useT();
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -105,29 +137,14 @@ export function PetCareEditDialog({
         <DialogHeader>
           <DialogTitle className="font-heading">{t.pets.editCareTitle}</DialogTitle>
         </DialogHeader>
-        <form action={action} className="space-y-4" onSubmit={onSubmit}>
-          <input type="hidden" name="id" value={item.id} />
-          <PetCareEntryForm
-            petId={petId}
-            name={name}
-            onNameChange={setName}
-            careType={careType}
-            onCareTypeChange={setCareType}
-            lastDoneAt={lastDoneAt}
-            onLastDoneAtChange={setLastDoneAt}
-            nextDueDate={nextDueDate}
-            onNextDueDateChange={setNextDueDate}
-            stockStatus={stockStatus}
-            onStockStatusChange={setStockStatus}
-            quantity={quantity}
-            onQuantityChange={setQuantity}
-            notes={notes}
-            onNotesChange={setNotes}
+        {item && (
+          <PetCareEditForm
+            key={item.id}
+            item={item}
+            onSuccess={onSuccess}
+            onClose={() => onOpenChange(false)}
           />
-          <Button type="submit" className="w-full" disabled={pending}>
-            {pending ? t.pets.saving : t.pets.saveBtn}
-          </Button>
-        </form>
+        )}
       </DialogContent>
     </Dialog>
   );

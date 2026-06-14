@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -23,27 +23,23 @@ interface PetEditDialogProps {
   onSuccess: () => void;
 }
 
-export function PetEditDialog({
+function PetEditForm({
   pet,
-  open,
-  onOpenChange,
   onSuccess,
-}: PetEditDialogProps) {
+  onClose,
+}: {
+  pet: Pet;
+  onSuccess: () => void;
+  onClose: () => void;
+}) {
   const t = useT();
-  const [name, setName] = useState<string>("");
-  const [species, setSpecies] = useState<Pet["species"] | null>(null);
-  const [notes, setNotes] = useState<string>("");
+  const [name, setName] = useState(() => pet.name);
+  const [species, setSpecies] = useState<Pet["species"] | null>(() => pet.species);
+  const [notes, setNotes] = useState(() => pet.notes);
   const [state, action, pending] = useActionState(updatePet, null);
 
-  useEffect(() => {
-    if (!pet) return;
-    setName(pet.name);
-    setSpecies(pet.species);
-    setNotes(pet.notes);
-  }, [pet]);
-
   useActionFeedback(state, () => {
-    onOpenChange(false);
+    onClose();
     onSuccess();
   }, pending);
 
@@ -59,7 +55,31 @@ export function PetEditDialog({
     }
   }
 
-  if (!pet) return null;
+  return (
+    <form action={action} className="space-y-4" onSubmit={onSubmit}>
+      <input type="hidden" name="id" value={pet.id} />
+      <PetEntryForm
+        name={name}
+        onNameChange={setName}
+        species={species}
+        onSpeciesChange={setSpecies}
+        notes={notes}
+        onNotesChange={setNotes}
+      />
+      <Button type="submit" className="w-full" disabled={pending}>
+        {pending ? t.pets.saving : t.pets.saveBtn}
+      </Button>
+    </form>
+  );
+}
+
+export function PetEditDialog({
+  pet,
+  open,
+  onOpenChange,
+  onSuccess,
+}: PetEditDialogProps) {
+  const t = useT();
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -67,20 +87,14 @@ export function PetEditDialog({
         <DialogHeader>
           <DialogTitle className="font-heading">{t.pets.editTitle}</DialogTitle>
         </DialogHeader>
-        <form action={action} className="space-y-4" onSubmit={onSubmit}>
-          <input type="hidden" name="id" value={pet.id} />
-          <PetEntryForm
-            name={name}
-            onNameChange={setName}
-            species={species}
-            onSpeciesChange={setSpecies}
-            notes={notes}
-            onNotesChange={setNotes}
+        {pet && (
+          <PetEditForm
+            key={pet.id}
+            pet={pet}
+            onSuccess={onSuccess}
+            onClose={() => onOpenChange(false)}
           />
-          <Button type="submit" className="w-full" disabled={pending}>
-            {pending ? t.pets.saving : t.pets.saveBtn}
-          </Button>
-        </form>
+        )}
       </DialogContent>
     </Dialog>
   );

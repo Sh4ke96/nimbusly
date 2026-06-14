@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -22,27 +22,25 @@ interface BirthdayEditDialogProps {
   onSuccess: () => void;
 }
 
-export function BirthdayEditDialog({
+function BirthdayEditForm({
   entry,
-  open,
-  onOpenChange,
   onSuccess,
-}: BirthdayEditDialogProps) {
+  onClose,
+}: {
+  entry: BirthdayEntry;
+  onSuccess: () => void;
+  onClose: () => void;
+}) {
   const t = useT();
-  const [personName, setPersonName] = useState<string>("");
-  const [date, setDate] = useState<Date | undefined>();
-  const [description, setDescription] = useState<string>("");
+  const [personName, setPersonName] = useState(() => entry.person_name);
+  const [date, setDate] = useState<Date | undefined>(
+    () => new Date(2000, entry.birth_month - 1, entry.birth_day)
+  );
+  const [description, setDescription] = useState(() => entry.description);
   const [state, action, pending] = useActionState(updateBirthday, null);
 
-  useEffect(() => {
-    if (!entry || !open) return;
-    setPersonName(entry.person_name);
-    setDate(new Date(2000, entry.birth_month - 1, entry.birth_day));
-    setDescription(entry.description);
-  }, [entry, open]);
-
   useActionFeedback(state, () => {
-    onOpenChange(false);
+    onClose();
     onSuccess();
   });
 
@@ -54,26 +52,44 @@ export function BirthdayEditDialog({
   }
 
   return (
+    <form action={action} className="space-y-4" onSubmit={onSubmit}>
+      <BirthdayEntryForm
+        id={entry.id}
+        personName={personName}
+        onPersonNameChange={setPersonName}
+        date={date}
+        onDateChange={setDate}
+        description={description}
+        onDescriptionChange={setDescription}
+      />
+      <Button type="submit" className="w-full" disabled={pending}>
+        {pending ? t.birthdays.saving : t.birthdays.saveBtn}
+      </Button>
+    </form>
+  );
+}
+
+export function BirthdayEditDialog({
+  entry,
+  open,
+  onOpenChange,
+  onSuccess,
+}: BirthdayEditDialogProps) {
+  const t = useT();
+
+  return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="rounded-none sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="font-heading">{t.birthdays.editTitle}</DialogTitle>
         </DialogHeader>
         {entry && (
-          <form action={action} className="space-y-4" onSubmit={onSubmit}>
-            <BirthdayEntryForm
-              id={entry.id}
-              personName={personName}
-              onPersonNameChange={setPersonName}
-              date={date}
-              onDateChange={setDate}
-              description={description}
-              onDescriptionChange={setDescription}
-            />
-            <Button type="submit" className="w-full" disabled={pending}>
-              {pending ? t.birthdays.saving : t.birthdays.saveBtn}
-            </Button>
-          </form>
+          <BirthdayEditForm
+            key={entry.id}
+            entry={entry}
+            onSuccess={onSuccess}
+            onClose={() => onOpenChange(false)}
+          />
         )}
       </DialogContent>
     </Dialog>

@@ -14,6 +14,7 @@ interface ProfileStore {
   invitations: FamilyInvitation[];
   loaded: boolean;
   loading: boolean;
+  error: boolean;
   fetchSession: (force?: boolean) => Promise<void>;
   refreshProfile: () => Promise<void>;
   refreshFamily: () => Promise<void>;
@@ -29,6 +30,7 @@ const initialState = {
   invitations: [] as FamilyInvitation[],
   loaded: false,
   loading: false,
+  error: false,
 };
 
 async function loadFamilyData(familyId: string, userId: string, isOwner: boolean) {
@@ -66,51 +68,76 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
   ...initialState,
 
   fetchSession: async (force = false) => {
-    if (!force && get().loaded && !get().loading) return;
+    if (!force && get().loaded && !get().loading && !get().error) return;
 
     return dedupeAsync("profile:session", async () => {
-      set({ loading: true });
+      set({ loading: true, error: false });
 
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      try {
+        const supabase = createClient();
+        const {
+          data: { user },
+          error: authError,
+        } = await supabase.auth.getUser();
 
-      if (!user) {
-        set({ ...initialState, loaded: true, loading: false });
-        return;
+        if (authError) {
+          set({ ...initialState, loaded: true, loading: false, error: true });
+          return;
+        }
+
+        if (!user) {
+          set({ ...initialState, loaded: true, loading: false });
+          return;
+        }
+
+        const { data: profile, error: profileError } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", user.id)
+          .maybeSingle();
+
+        if (profileError) {
+          set({
+            user,
+            profile: null,
+            family: null,
+            members: [],
+            invitations: [],
+            loaded: true,
+            loading: false,
+            error: true,
+          });
+          return;
+        }
+
+        let family: Family | null = null;
+        let members: FamilyMember[] = [];
+        let invitations: FamilyInvitation[] = [];
+
+        if (profile?.family_id) {
+          const familyData = await loadFamilyData(
+            profile.family_id,
+            user.id,
+            profile.account_mode === ACCOUNT_MODE.FAMILY
+          );
+          family = familyData.family;
+          members = familyData.members;
+          invitations = familyData.invitations;
+        }
+
+        set({
+          user,
+          profile,
+          family,
+          members,
+          invitations,
+          loaded: true,
+          loading: false,
+          error: false,
+        });
+      } catch {
+        set({ ...initialState, loaded: true, loading: false, error: true });
       }
-
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .maybeSingle();
-
-      let family: Family | null = null;
-      let members: FamilyMember[] = [];
-      let invitations: FamilyInvitation[] = [];
-
-      if (profile?.family_id) {
-        const familyData = await loadFamilyData(
-          profile.family_id,
-          user.id,
-          profile.account_mode === ACCOUNT_MODE.FAMILY
-        );
-        family = familyData.family;
-        members = familyData.members;
-        invitations = familyData.invitations;
-      }
-
-      set({
-        user,
-        profile,
-        family,
-        members,
-        invitations,
-        loaded: true,
-        loading: false,
-      });
     });
   },
 
@@ -120,13 +147,18 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
       if (!user) return;
 
       const supabase = createClient();
-      const { data: profile } = await supabase
+      const { data: profile, error } = await supabase
         .from("profiles")
         .select("*")
         .eq("id", user.id)
         .maybeSingle();
 
-      set({ profile });
+      if (error) {
+        set({ error: true });
+        return;
+      }
+
+      set({ profile, error: false });
 
       if (profile?.family_id) {
         await get().refreshFamily();
