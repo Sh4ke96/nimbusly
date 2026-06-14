@@ -7,6 +7,7 @@ import {
   BarChart3,
   Cake,
   CalendarDays,
+  Cross,
   Gift,
   ListChecks,
   Scale,
@@ -39,6 +40,7 @@ import {
   sumIncomeOnly,
 } from "@/lib/budget/aggregates";
 import { filterEntriesByMonth, getCurrentMonthKey } from "@/lib/budget/monthly";
+import { isMedicineExpiringSoon } from "@/lib/medicine/expiry";
 import { BRAND_COLOR } from "@/lib/constants/brand";
 import { BUDGET_EXPENSE_COLOR } from "@/lib/constants/budget";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
@@ -51,12 +53,13 @@ import { getDisplayName } from "@/lib/profile";
 import { useBudgetStore } from "@/lib/stores/budget-store";
 import { useGiftsStore } from "@/lib/stores/gifts-store";
 import { useProfileStore } from "@/lib/stores/profile-store";
+import { useMedicineStore } from "@/lib/stores/medicine-store";
 import { useScheduleStore } from "@/lib/stores/schedule-store";
 import { useShoppingListsStore } from "@/lib/stores/shopping-lists-store";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
-type Accent = "primary" | "orange" | "violet" | "rose" | "sky" | "slate";
+type Accent = "primary" | "orange" | "violet" | "rose" | "sky" | "slate" | "emerald";
 
 const accentStyles: Record<
   Accent,
@@ -91,6 +94,11 @@ const accentStyles: Record<
     icon: "bg-muted text-muted-foreground",
     badge: "bg-muted/80 text-foreground border-border",
     ring: "hover:border-border",
+  },
+  emerald: {
+    icon: "bg-emerald-500/12 text-emerald-700 dark:text-emerald-400",
+    badge: "bg-emerald-500/8 text-emerald-800 dark:text-emerald-300 border-emerald-500/20",
+    ring: "hover:border-emerald-500/30",
   },
 };
 
@@ -241,6 +249,11 @@ export function DashboardOverview() {
   const giftsLoading = useGiftsStore((s) => s.loading);
   const fetchIdeas = useGiftsStore((s) => s.fetchIdeas);
 
+  const medicineItems = useMedicineStore((s) => s.items);
+  const medicineLoaded = useMedicineStore((s) => s.loaded);
+  const medicineLoading = useMedicineStore((s) => s.loading);
+  const fetchMedicineItems = useMedicineStore((s) => s.fetchItems);
+
   const scheduleEntries = useScheduleStore((s) => s.entries);
   const scheduleLoaded = useScheduleStore((s) => s.loaded);
   const scheduleLoading = useScheduleStore((s) => s.loading);
@@ -270,6 +283,7 @@ export function DashboardOverview() {
     if (!budgetLoaded && !budgetLoading) void fetchBudgets();
     if (!listsLoaded && !listsLoading) void fetchLists();
     if (!giftsLoaded && !giftsLoading) void fetchIdeas();
+    if (!medicineLoaded && !medicineLoading) void fetchMedicineItems();
     if (!scheduleLoaded && !scheduleLoading) void fetchSchedule();
     void loadBirthdays();
   }, [
@@ -282,6 +296,9 @@ export function DashboardOverview() {
     giftsLoaded,
     giftsLoading,
     fetchIdeas,
+    medicineLoaded,
+    medicineLoading,
+    fetchMedicineItems,
     scheduleLoaded,
     scheduleLoading,
     fetchSchedule,
@@ -340,11 +357,20 @@ export function DashboardOverview() {
 
   const previewLists = useMemo(() => lists.slice(0, 3), [lists]);
   const previewGifts = useMemo(() => gifts.slice(0, 2), [gifts]);
+  const expiringMedicines = useMemo(
+    () => medicineItems.filter((item) => isMedicineExpiringSoon(item.expiry_date)),
+    [medicineItems]
+  );
+  const previewMedicines = useMemo(
+    () => expiringMedicines.slice(0, 3),
+    [expiringMedicines]
+  );
 
   const loading =
     (budgetLoading && !budgetLoaded) ||
     (listsLoading && !listsLoaded) ||
     (giftsLoading && !giftsLoaded) ||
+    (medicineLoading && !medicineLoaded) ||
     (scheduleLoading && !scheduleLoaded) ||
     birthdaysLoading;
 
@@ -355,7 +381,7 @@ export function DashboardOverview() {
           {t.dashboard.overviewHeading}
         </h2>
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => (
+          {Array.from({ length: 7 }).map((_, i) => (
             <Skeleton key={i} className="h-52 w-full rounded-none" />
           ))}
         </div>
@@ -487,6 +513,47 @@ export function DashboardOverview() {
                   </li>
                 ))}
               </ul>
+            </div>
+          )}
+        </OverviewCard>
+
+        <OverviewCard
+          href="/medicine-cabinet"
+          title={t.dashboard.moduleLabels.medicineCabinet}
+          icon={Cross}
+          accent="emerald"
+        >
+          {medicineItems.length === 0 ? (
+            <EmptyHint icon={Cross} text={t.dashboard.medicineItemsEmpty} />
+          ) : (
+            <div className="space-y-3">
+              <BigStat
+                value={medicineItems.length}
+                label={formatMessage(t.dashboard.medicineItemsCount, {
+                  count: String(medicineItems.length),
+                })}
+                accent="emerald"
+              />
+              {expiringMedicines.length > 0 ? (
+                <>
+                  <p className="text-xs text-emerald-800 dark:text-emerald-300 font-medium">
+                    {formatMessage(t.dashboard.medicineExpiringCount, {
+                      count: String(expiringMedicines.length),
+                    })}
+                  </p>
+                  <ul className="space-y-1.5">
+                    {previewMedicines.map((item) => (
+                      <li
+                        key={item.id}
+                        className="flex items-center gap-2 text-sm border border-border bg-muted/20 px-2.5 py-2"
+                      >
+                        <Cross className="size-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                        <span className="truncate font-medium">{item.name}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              ) : null}
             </div>
           )}
         </OverviewCard>

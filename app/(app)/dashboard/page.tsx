@@ -14,6 +14,7 @@ import {
   Cake,
   CalendarDays,
   Users,
+  Cross,
   ArrowRight,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -72,6 +73,13 @@ export default function DashboardPage() {
       desc: t.dashboard.moduleDescs.calendar,
       href: "/schedule",
       Icon: CalendarDays,
+    },
+    {
+      key: "medicine-cabinet",
+      label: t.dashboard.moduleLabels.medicineCabinet,
+      desc: t.dashboard.moduleDescs.medicineCabinet,
+      href: "/medicine-cabinet",
+      Icon: Cross,
     },
     {
       key: "family",

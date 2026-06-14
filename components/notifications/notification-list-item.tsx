@@ -7,6 +7,7 @@ import {
   BIRTHDAY_NOTIFICATION_TYPES,
   BUDGET_NOTIFICATION_TYPES,
   GIFT_NOTIFICATION_TYPES,
+  MEDICINE_NOTIFICATION_TYPES,
   SCHEDULE_NOTIFICATION_TYPES,
   SHOPPING_LIST_NOTIFICATION_TYPES,
 } from "@/lib/constants/notifications";
@@ -101,6 +102,14 @@ export function NotificationListItem({
             className="text-xs font-medium text-primary hover:underline"
           >
             {t.notifications.openShoppingLists}
+          </Link>
+        )}
+        {(MEDICINE_NOTIFICATION_TYPES as string[]).includes(item.type) && (
+          <Link
+            href="/medicine-cabinet"
+            className="text-xs font-medium text-primary hover:underline"
+          >
+            {t.notifications.openMedicineCabinet}
           </Link>
         )}
       </div>

@@ -32,6 +32,10 @@ export function getFamilyNotificationTitle(
     [NOTIFICATION_TYPE.BUDGET_EXPENSE_REMOVED]: notifications.budgetExpenseRemovedTitle,
     [NOTIFICATION_TYPE.BUDGET_INCOME_ADDED]: notifications.budgetIncomeAddedTitle,
     [NOTIFICATION_TYPE.BUDGET_INCOME_REMOVED]: notifications.budgetIncomeRemovedTitle,
+    [NOTIFICATION_TYPE.MEDICINE_ADDED]: notifications.medicineAddedTitle,
+    [NOTIFICATION_TYPE.MEDICINE_UPDATED]: notifications.medicineUpdatedTitle,
+    [NOTIFICATION_TYPE.MEDICINE_DELETED]: notifications.medicineDeletedTitle,
+    [NOTIFICATION_TYPE.MEDICINE_EXPIRING]: notifications.medicineExpiringTitle,
   };
 
   return formatMessage(templateByType[type], { actor: actorName });

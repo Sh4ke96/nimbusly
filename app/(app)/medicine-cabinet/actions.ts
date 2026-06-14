@@ -1,0 +1,379 @@
+"use server";
+
+import { createClient } from "@/lib/supabase/server";
+import { getServerT } from "@/lib/i18n/server";
+import {
+  buildMedicineChangeSummary,
+  formatMedicineNotificationDetail,
+} from "@/lib/medicine/changes";
+import { isMedicineExpiringSoon } from "@/lib/medicine/expiry";
+import {
+  isValidMedicineAvailability,
+  isValidMedicineExpiryDate,
+  isValidMedicineFormType,
+  isValidMedicineLocation,
+  isValidMedicineName,
+  isValidMedicineNotes,
+  isValidMedicineQuantity,
+  normalizeMedicineName,
+  parseMedicineItemFromForm,
+} from "@/lib/medicine/types";
+import { ACCOUNT_MODE } from "@/lib/constants/account";
+import { NOTIFICATION_TYPE, type NotificationType } from "@/lib/constants/notifications";
+import { getFamilyNotificationTitle } from "@/lib/notifications/family-notification";
+import { getDisplayName } from "@/lib/profile";
+import type { AccountActionState } from "@/app/(app)/account/actions";
+
+async function requireUser() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  return { supabase, user };
+}
+
+async function notifyFamilyAboutMedicineEvent(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  params: {
+    type: NotificationType;
+    actorId: string;
+    actorName: string;
+    familyId: string;
+    itemId: string;
+    itemName: string;
+    bodyDetail: string;
+    changeSummary?: string;
+    expiryDate?: string | null;
+  }
+) {
+  const t = await getServerT();
+  const { data: members } = await supabase
+    .from("profiles")
+    .select("id")
+    .eq("family_id", params.familyId);
+
+  const recipientIds = (members ?? [])
+    .map((m) => m.id as string)
+    .filter((id) => id !== params.actorId);
+
+  if (recipientIds.length === 0) return;
+
+  const title = getFamilyNotificationTitle(params.type, t.notifications, params.actorName);
+  const body = `${params.itemName}${t.notifications.notificationBodySeparator}${params.bodyDetail}`;
+
+  await supabase.rpc("create_family_notifications", {
+    p_recipient_ids: recipientIds,
+    p_type: params.type,
+    p_title: title,
+    p_body: body,
+    p_payload: {
+      medicine_item_id: params.itemId,
+      medicine_name: params.itemName,
+      actor_id: params.actorId,
+      family_id: params.familyId,
+      change_summary: params.changeSummary ?? null,
+      expiry_date: params.expiryDate ?? null,
+      updated_at: new Date().toISOString(),
+    },
+  });
+}
+
+function validateMedicineFields(parsed: ReturnType<typeof parseMedicineItemFromForm>): string | null {
+  if (!isValidMedicineName(parsed.name)) return "name";
+  if (!parsed.formType) return "form";
+  if (!isValidMedicineQuantity(parsed.quantity)) return "quantity";
+  if (!isValidMedicineExpiryDate(parsed.expiryDate)) return "expiry";
+  if (!parsed.availability) return "availability";
+  if (!isValidMedicineLocation(parsed.location)) return "location";
+  if (!isValidMedicineNotes(parsed.notes)) return "notes";
+  return null;
+}
+
+async function maybeNotifyExpiring(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  params: {
+    actorId: string;
+    actorName: string;
+    familyId: string;
+    itemId: string;
+    itemName: string;
+    formLabel: string;
+    expiryDate: string | null;
+  }
+) {
+  if (!params.expiryDate || !isMedicineExpiringSoon(params.expiryDate)) return;
+
+  const t = await getServerT();
+  const bodyDetail = formatMedicineNotificationDetail(
+    params.itemName,
+    params.formLabel,
+    t.medicineCabinet
+  );
+
+  try {
+    await notifyFamilyAboutMedicineEvent(supabase, {
+      type: NOTIFICATION_TYPE.MEDICINE_EXPIRING,
+      actorId: params.actorId,
+      actorName: params.actorName,
+      familyId: params.familyId,
+      itemId: params.itemId,
+      itemName: params.itemName,
+      bodyDetail,
+      expiryDate: params.expiryDate,
+    });
+  } catch {
+    // Best-effort
+  }
+}
+
+export async function createMedicineItem(
+  _prev: AccountActionState,
+  formData: FormData
+): Promise<AccountActionState> {
+  const t = await getServerT();
+  const { supabase, user } = await requireUser();
+
+  if (!user) return { error: t.account.errorUnauthorized };
+
+  const parsed = parseMedicineItemFromForm(formData);
+  const validationError = validateMedicineFields(parsed);
+
+  if (validationError === "name") return { error: t.medicineCabinet.errorNameRequired };
+  if (validationError === "form") return { error: t.medicineCabinet.errorFormRequired };
+  if (validationError === "expiry") return { error: t.medicineCabinet.errorInvalidExpiry };
+  if (validationError === "availability") return { error: t.medicineCabinet.errorAvailabilityRequired };
+  if (validationError) return { error: t.medicineCabinet.errorGeneric };
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("account_mode, family_id, first_name, last_name")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  const familyId =
+    profile?.account_mode === ACCOUNT_MODE.FAMILY && profile.family_id
+      ? profile.family_id
+      : null;
+
+  const formType = parsed.formType!;
+  const availability = parsed.availability!;
+
+  const { data: item, error } = await supabase
+    .from("medicine_items")
+    .insert({
+      family_id: familyId,
+      name: normalizeMedicineName(parsed.name),
+      form_type: formType,
+      quantity: parsed.quantity,
+      expiry_date: parsed.expiryDate,
+      availability,
+      location: parsed.location,
+      notes: parsed.notes,
+      created_by: user.id,
+    })
+    .select("id")
+    .single();
+
+  if (error || !item) return { error: t.medicineCabinet.errorGeneric };
+
+  if (familyId && profile) {
+    const actorName = getDisplayName(profile);
+    const formLabel = t.medicineCabinet.formLabels[formType];
+    const bodyDetail = formatMedicineNotificationDetail(
+      parsed.name,
+      formLabel,
+      t.medicineCabinet
+    );
+
+    try {
+      await notifyFamilyAboutMedicineEvent(supabase, {
+        type: NOTIFICATION_TYPE.MEDICINE_ADDED,
+        actorId: user.id,
+        actorName,
+        familyId,
+        itemId: item.id,
+        itemName: normalizeMedicineName(parsed.name),
+        bodyDetail,
+        expiryDate: parsed.expiryDate,
+      });
+    } catch {
+      // Saved; notifications are best-effort
+    }
+  }
+
+  return { success: t.medicineCabinet.createdSuccess };
+}
+
+export async function updateMedicineItem(
+  _prev: AccountActionState,
+  formData: FormData
+): Promise<AccountActionState> {
+  const t = await getServerT();
+  const { supabase, user } = await requireUser();
+
+  if (!user) return { error: t.account.errorUnauthorized };
+
+  const id = formData.get("id") as string;
+  const parsed = parseMedicineItemFromForm(formData);
+  const validationError = validateMedicineFields(parsed);
+
+  if (!id) return { error: t.medicineCabinet.errorGeneric };
+  if (validationError === "name") return { error: t.medicineCabinet.errorNameRequired };
+  if (validationError === "form") return { error: t.medicineCabinet.errorFormRequired };
+  if (validationError === "expiry") return { error: t.medicineCabinet.errorInvalidExpiry };
+  if (validationError === "availability") return { error: t.medicineCabinet.errorAvailabilityRequired };
+  if (validationError) return { error: t.medicineCabinet.errorGeneric };
+
+  const { data: existing } = await supabase
+    .from("medicine_items")
+    .select(
+      "id, name, form_type, quantity, expiry_date, availability, location, notes, family_id, created_by"
+    )
+    .eq("id", id)
+    .eq("created_by", user.id)
+    .maybeSingle();
+
+  if (!existing) return { error: t.medicineCabinet.errorNotOwner };
+
+  const formType = parsed.formType!;
+  const availability = parsed.availability!;
+  const name = normalizeMedicineName(parsed.name);
+
+  const { error } = await supabase
+    .from("medicine_items")
+    .update({
+      name,
+      form_type: formType,
+      quantity: parsed.quantity,
+      expiry_date: parsed.expiryDate,
+      availability,
+      location: parsed.location,
+      notes: parsed.notes,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", id)
+    .eq("created_by", user.id);
+
+  if (error) return { error: t.medicineCabinet.errorGeneric };
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("account_mode, family_id, first_name, last_name")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  const familyId = existing.family_id;
+  if (familyId && profile?.account_mode === ACCOUNT_MODE.FAMILY) {
+    const actorName = getDisplayName(profile);
+    const formLabel = t.medicineCabinet.formLabels[formType];
+    const changeSummary = buildMedicineChangeSummary(
+      existing,
+      {
+        name,
+        form_type: formType,
+        quantity: parsed.quantity,
+        expiry_date: parsed.expiryDate,
+        availability,
+        location: parsed.location,
+        notes: parsed.notes,
+      },
+      t.medicineCabinet
+    );
+
+    try {
+      await notifyFamilyAboutMedicineEvent(supabase, {
+        type: NOTIFICATION_TYPE.MEDICINE_UPDATED,
+        actorId: user.id,
+        actorName,
+        familyId,
+        itemId: id,
+        itemName: name,
+        bodyDetail: changeSummary,
+        changeSummary,
+        expiryDate: parsed.expiryDate,
+      });
+    } catch {
+      // Updated; notifications are best-effort
+    }
+
+    const expiryChanged = existing.expiry_date !== parsed.expiryDate;
+    if (expiryChanged || isMedicineExpiringSoon(parsed.expiryDate)) {
+      await maybeNotifyExpiring(supabase, {
+        actorId: user.id,
+        actorName,
+        familyId,
+        itemId: id,
+        itemName: name,
+        formLabel,
+        expiryDate: parsed.expiryDate,
+      });
+    }
+  }
+
+  return { success: t.medicineCabinet.updatedSuccess };
+}
+
+export async function deleteMedicineItem(
+  _prev: AccountActionState,
+  formData: FormData
+): Promise<AccountActionState> {
+  const t = await getServerT();
+  const { supabase, user } = await requireUser();
+
+  if (!user) return { error: t.account.errorUnauthorized };
+
+  const id = formData.get("id") as string;
+  if (!id) return { error: t.medicineCabinet.errorGeneric };
+
+  const { data: existing } = await supabase
+    .from("medicine_items")
+    .select("id, name, form_type, family_id, created_by")
+    .eq("id", id)
+    .eq("created_by", user.id)
+    .maybeSingle();
+
+  if (!existing) return { error: t.medicineCabinet.errorNotOwner };
+
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("account_mode, family_id, first_name, last_name")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  const { error } = await supabase
+    .from("medicine_items")
+    .delete()
+    .eq("id", id)
+    .eq("created_by", user.id);
+
+  if (error) return { error: t.medicineCabinet.errorGeneric };
+
+  const familyId = existing.family_id;
+  if (familyId && profile?.account_mode === ACCOUNT_MODE.FAMILY) {
+    const actorName = getDisplayName(profile);
+    const formLabel = isValidMedicineFormType(existing.form_type)
+      ? t.medicineCabinet.formLabels[existing.form_type]
+      : existing.form_type;
+    const bodyDetail = formatMedicineNotificationDetail(
+      existing.name,
+      formLabel,
+      t.medicineCabinet
+    );
+
+    try {
+      await notifyFamilyAboutMedicineEvent(supabase, {
+        type: NOTIFICATION_TYPE.MEDICINE_DELETED,
+        actorId: user.id,
+        actorName,
+        familyId,
+        itemId: id,
+        itemName: existing.name,
+        bodyDetail,
+      });
+    } catch {
+      // Deleted; notifications are best-effort
+    }
+  }
+
+  return { success: t.medicineCabinet.deletedSuccess };
+}

@@ -20,6 +20,10 @@ export const NOTIFICATION_TYPE = {
   BUDGET_EXPENSE_REMOVED: "budget_expense_removed",
   BUDGET_INCOME_ADDED: "budget_income_added",
   BUDGET_INCOME_REMOVED: "budget_income_removed",
+  MEDICINE_ADDED: "medicine_added",
+  MEDICINE_UPDATED: "medicine_updated",
+  MEDICINE_DELETED: "medicine_deleted",
+  MEDICINE_EXPIRING: "medicine_expiring",
 } as const;
 
 export type NotificationType = (typeof NOTIFICATION_TYPE)[keyof typeof NOTIFICATION_TYPE];
@@ -58,6 +62,13 @@ export const BUDGET_NOTIFICATION_TYPES: NotificationType[] = [
   NOTIFICATION_TYPE.BUDGET_EXPENSE_REMOVED,
   NOTIFICATION_TYPE.BUDGET_INCOME_ADDED,
   NOTIFICATION_TYPE.BUDGET_INCOME_REMOVED,
+];
+
+export const MEDICINE_NOTIFICATION_TYPES: NotificationType[] = [
+  NOTIFICATION_TYPE.MEDICINE_ADDED,
+  NOTIFICATION_TYPE.MEDICINE_UPDATED,
+  NOTIFICATION_TYPE.MEDICINE_DELETED,
+  NOTIFICATION_TYPE.MEDICINE_EXPIRING,
 ];
 
 export const NOTIFICATION_FILTER_TAB = {

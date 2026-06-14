@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useNotificationsStore } from "@/lib/stores/notifications-store";
 import { useGiftsStore } from "@/lib/stores/gifts-store";
+import { useMedicineStore } from "@/lib/stores/medicine-store";
 import { useShoppingListsStore } from "@/lib/stores/shopping-lists-store";
 import { useBudgetStore } from "@/lib/stores/budget-store";
 
@@ -14,6 +15,7 @@ export function ProfileBootstrap({ children }: { children: React.ReactNode }) {
   const fetchNotifications = useNotificationsStore((s) => s.fetchNotifications);
   const resetNotifications = useNotificationsStore((s) => s.reset);
   const resetGifts = useGiftsStore((s) => s.reset);
+  const resetMedicine = useMedicineStore((s) => s.reset);
   const resetShoppingLists = useShoppingListsStore((s) => s.reset);
   const resetBudget = useBudgetStore((s) => s.reset);
 
@@ -30,6 +32,7 @@ export function ProfileBootstrap({ children }: { children: React.ReactNode }) {
         resetProfile();
         resetNotifications();
         resetGifts();
+        resetMedicine();
         resetShoppingLists();
         resetBudget();
         return;
@@ -39,7 +42,7 @@ export function ProfileBootstrap({ children }: { children: React.ReactNode }) {
     });
 
     return () => subscription.unsubscribe();
-  }, [fetchSession, fetchNotifications, resetProfile, resetNotifications, resetGifts, resetShoppingLists, resetBudget]);
+  }, [fetchSession, fetchNotifications, resetProfile, resetNotifications, resetGifts, resetMedicine, resetShoppingLists, resetBudget]);
 
   return children;
 }
