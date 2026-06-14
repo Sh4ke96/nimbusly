@@ -1,6 +1,7 @@
 "use client";
 
 import { AppHeader } from "@/components/app/app-header";
+import { DashboardOverview } from "@/components/dashboard/dashboard-overview";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useT } from "@/lib/lang-context";
 import { getDisplayName } from "@/lib/profile";
@@ -94,6 +95,8 @@ export default function DashboardPage() {
             {t.dashboard.greeting}, {displayName} 👋
           </h1>
         </div>
+
+        <DashboardOverview />
 
         <section>
           <h2 className="font-heading font-semibold text-xs mb-4 text-muted-foreground uppercase tracking-wider">

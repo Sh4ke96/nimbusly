@@ -2,6 +2,7 @@ import { buildMonthGrid } from "@/lib/birthdays/calendar";
 import { BRAND_COLOR } from "@/lib/constants/brand";
 import { SCHEDULE_ENTRY_EMOJI, SCHEDULE_ENTRY_TYPES } from "@/lib/constants/schedule";
 import type { ScheduleEntryType } from "@/lib/constants/schedule";
+import { openPrintWindow } from "@/lib/print/open-print-window";
 import type { ScheduleEntry } from "@/lib/schedule/types";
 import { getScheduleTypeLabel, parseEntryDateParts } from "@/lib/schedule/types";
 
@@ -241,62 +242,6 @@ export function buildSchedulePrintHtml({
 </html>`;
 }
 
-function printViaIframe(html: string): boolean {
-  const iframe = document.createElement("iframe");
-  iframe.setAttribute("title", "schedule-print");
-  iframe.style.cssText =
-    "position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden";
-  document.body.appendChild(iframe);
-
-  const frameWindow = iframe.contentWindow;
-  const doc = frameWindow?.document;
-  if (!frameWindow || !doc) {
-    iframe.remove();
-    return false;
-  }
-
-  let cleaned = false;
-  const cleanup = () => {
-    if (cleaned) return;
-    cleaned = true;
-    iframe.remove();
-  };
-
-  doc.open();
-  doc.write(html);
-  doc.close();
-
-  window.setTimeout(() => {
-    frameWindow.focus();
-    frameWindow.addEventListener("afterprint", cleanup, { once: true });
-    frameWindow.print();
-    window.setTimeout(cleanup, 60_000);
-  }, 150);
-
-  return true;
-}
-
 export function openSchedulePrintWindow(html: string): boolean {
-  const printWindow = window.open("about:blank", "_blank");
-  if (!printWindow) {
-    return printViaIframe(html);
-  }
-
-  printWindow.document.open();
-  printWindow.document.write(html);
-  printWindow.document.close();
-
-  window.setTimeout(() => {
-    printWindow.focus();
-    printWindow.addEventListener(
-      "afterprint",
-      () => {
-        printWindow.close();
-      },
-      { once: true }
-    );
-    printWindow.print();
-  }, 200);
-
-  return true;
+  return openPrintWindow(html);
 }

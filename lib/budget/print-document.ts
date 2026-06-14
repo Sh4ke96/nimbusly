@@ -15,7 +15,7 @@ import {
   sumIncomeOnly,
 } from "@/lib/budget/aggregates";
 import { isIncomeEntry, type BudgetExpense } from "@/lib/budget/types";
-import { openSchedulePrintWindow } from "@/lib/schedule/print-document";
+import { openPrintWindow } from "@/lib/print/open-print-window";
 
 function escapeHtml(value: string): string {
   return value
@@ -44,6 +44,7 @@ export type BudgetPrintLabels = {
   memberLabel: string;
   membersValue: string;
   noEntries: string;
+  entriesHeading: string;
 };
 
 function resolveCategoryLabel(
@@ -124,11 +125,23 @@ export function buildBudgetPrintHtml({
 <html lang="${escapeHtml(lang)}">
 <head>
   <meta charset="utf-8" />
-  <title>${escapeHtml(labels.title)}</title>
+  <title>&#8203;</title>
   <style>
-    @page { margin: 14mm; size: A4 portrait; }
+    @page { size: A4 portrait; margin: 0; }
     * { box-sizing: border-box; }
-    body { font-family: system-ui, sans-serif; color: ${BRAND_COLOR.FOREGROUND}; margin: 0; padding: 0; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: #fff;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    body {
+      padding: 14mm;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      color: ${BRAND_COLOR.FOREGROUND};
+    }
+    .page { max-width: 182mm; margin: 0 auto; }
     h1 { font-size: 20px; margin: 0 0 4px; color: ${BRAND_COLOR.PRIMARY_DARK}; }
     .subtitle { font-size: 13px; color: ${BRAND_COLOR.MUTED_FG}; margin-bottom: 16px; }
     .meta { font-size: 12px; margin-bottom: 20px; }
@@ -144,6 +157,7 @@ export function buildBudgetPrintHtml({
   </style>
 </head>
 <body>
+  <div class="page">
   <h1>${escapeHtml(budgetName)}</h1>
   <p class="subtitle">${escapeHtml(labels.subtitle)}</p>
   <div class="meta">
@@ -169,7 +183,7 @@ export function buildBudgetPrintHtml({
     <tbody>${categoryRows || `<tr><td colspan="4" class="empty">${escapeHtml(labels.noEntries)}</td></tr>`}</tbody>
   </table>
 
-  <h2>${escapeHtml(labels.title)}</h2>
+  <h2>${escapeHtml(labels.entriesHeading)}</h2>
   <table>
     <thead>
       <tr>
@@ -182,12 +196,13 @@ export function buildBudgetPrintHtml({
     </thead>
     <tbody>${entryRows}</tbody>
   </table>
+  </div>
 </body>
 </html>`;
 }
 
 export function openBudgetPrintWindow(html: string): boolean {
-  return openSchedulePrintWindow(html);
+  return openPrintWindow(html);
 }
 
 export function getCategoryLabel(

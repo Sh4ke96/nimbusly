@@ -266,6 +266,21 @@ export type Dict = {
       calendar: string;
       family: string;
     };
+    overviewHeading: string;
+    viewModule: string;
+    budgetThisMonth: string;
+    noData: string;
+    shoppingListsCount: string;
+    shoppingListsEmpty: string;
+    giftsCount: string;
+    giftsEmpty: string;
+    birthdaysEmpty: string;
+    scheduleThisMonth: string;
+    scheduleEmpty: string;
+    familyMembers: string;
+    familySolo: string;
+    birthdayInDays: string;
+    birthdayToday: string;
   };
   birthdays: {
     title: string;
@@ -496,6 +511,7 @@ export type Dict = {
     entryTypeLabel: string;
     printBtn: string;
     printTitle: string;
+    printEntriesHeading: string;
     printSubtitle: string;
     printGeneratedAt: string;
     chartPieTitle: string;

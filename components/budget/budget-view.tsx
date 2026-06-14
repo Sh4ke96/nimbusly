@@ -194,6 +194,7 @@ export function BudgetView() {
           income: t.budget.filterIncome,
           expense: t.budget.filterExpenses,
         },
+        entriesHeading: t.budget.printEntriesHeading,
       },
     });
     openBudgetPrintWindow(html);
