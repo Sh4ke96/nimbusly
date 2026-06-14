@@ -40,9 +40,9 @@ export default function DashboardPage() {
     {
       key: "budget",
       label: t.dashboard.moduleLabels.budget,
-      desc: t.dashboard.moduleComingSoon,
+      desc: t.dashboard.moduleDescs.budget,
+      href: "/budget",
       Icon: Wallet,
-      disabled: true,
     },
     {
       key: "shopping",

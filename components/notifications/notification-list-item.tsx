@@ -5,6 +5,7 @@ import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   BIRTHDAY_NOTIFICATION_TYPES,
+  BUDGET_NOTIFICATION_TYPES,
   GIFT_NOTIFICATION_TYPES,
   SCHEDULE_NOTIFICATION_TYPES,
   SHOPPING_LIST_NOTIFICATION_TYPES,
@@ -84,6 +85,14 @@ export function NotificationListItem({
             className="text-xs font-medium text-primary hover:underline"
           >
             {t.notifications.openGifts}
+          </Link>
+        )}
+        {(BUDGET_NOTIFICATION_TYPES as string[]).includes(item.type) && (
+          <Link
+            href="/budget"
+            className="text-xs font-medium text-primary hover:underline"
+          >
+            {t.notifications.openBudget}
           </Link>
         )}
         {(SHOPPING_LIST_NOTIFICATION_TYPES as string[]).includes(item.type) && (

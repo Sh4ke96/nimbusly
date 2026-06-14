@@ -25,6 +25,13 @@ export function getFamilyNotificationTitle(
     [NOTIFICATION_TYPE.SHOPPING_LIST_DELETED]: notifications.shoppingListDeletedTitle,
     [NOTIFICATION_TYPE.SHOPPING_LIST_ITEM_ADDED]: notifications.shoppingListItemAddedTitle,
     [NOTIFICATION_TYPE.SHOPPING_LIST_ITEM_REMOVED]: notifications.shoppingListItemRemovedTitle,
+    [NOTIFICATION_TYPE.BUDGET_ADDED]: notifications.budgetAddedTitle,
+    [NOTIFICATION_TYPE.BUDGET_UPDATED]: notifications.budgetUpdatedTitle,
+    [NOTIFICATION_TYPE.BUDGET_DELETED]: notifications.budgetDeletedTitle,
+    [NOTIFICATION_TYPE.BUDGET_EXPENSE_ADDED]: notifications.budgetExpenseAddedTitle,
+    [NOTIFICATION_TYPE.BUDGET_EXPENSE_REMOVED]: notifications.budgetExpenseRemovedTitle,
+    [NOTIFICATION_TYPE.BUDGET_INCOME_ADDED]: notifications.budgetIncomeAddedTitle,
+    [NOTIFICATION_TYPE.BUDGET_INCOME_REMOVED]: notifications.budgetIncomeRemovedTitle,
   };
 
   return formatMessage(templateByType[type], { actor: actorName });

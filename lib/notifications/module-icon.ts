@@ -1,6 +1,7 @@
-import { Cake, CalendarDays, Gift, ShoppingCart, Bell, type LucideIcon } from "lucide-react";
+import { Cake, CalendarDays, Gift, ShoppingCart, Wallet, Bell, type LucideIcon } from "lucide-react";
 import {
   BIRTHDAY_NOTIFICATION_TYPES,
+  BUDGET_NOTIFICATION_TYPES,
   GIFT_NOTIFICATION_TYPES,
   SCHEDULE_NOTIFICATION_TYPES,
   SHOPPING_LIST_NOTIFICATION_TYPES,
@@ -16,6 +17,9 @@ export function getNotificationModuleIcon(type: NotificationType): LucideIcon {
   }
   if ((GIFT_NOTIFICATION_TYPES as string[]).includes(type)) {
     return Gift;
+  }
+  if ((BUDGET_NOTIFICATION_TYPES as string[]).includes(type)) {
+    return Wallet;
   }
   if ((SHOPPING_LIST_NOTIFICATION_TYPES as string[]).includes(type)) {
     return ShoppingCart;

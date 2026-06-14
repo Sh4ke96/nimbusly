@@ -6,6 +6,7 @@ import { useProfileStore } from "@/lib/stores/profile-store";
 import { useNotificationsStore } from "@/lib/stores/notifications-store";
 import { useGiftsStore } from "@/lib/stores/gifts-store";
 import { useShoppingListsStore } from "@/lib/stores/shopping-lists-store";
+import { useBudgetStore } from "@/lib/stores/budget-store";
 
 export function ProfileBootstrap({ children }: { children: React.ReactNode }) {
   const fetchSession = useProfileStore((s) => s.fetchSession);
@@ -14,6 +15,7 @@ export function ProfileBootstrap({ children }: { children: React.ReactNode }) {
   const resetNotifications = useNotificationsStore((s) => s.reset);
   const resetGifts = useGiftsStore((s) => s.reset);
   const resetShoppingLists = useShoppingListsStore((s) => s.reset);
+  const resetBudget = useBudgetStore((s) => s.reset);
 
   useEffect(() => {
     void fetchSession().then(() => fetchNotifications());
@@ -29,6 +31,7 @@ export function ProfileBootstrap({ children }: { children: React.ReactNode }) {
         resetNotifications();
         resetGifts();
         resetShoppingLists();
+        resetBudget();
         return;
       }
 
@@ -36,7 +39,7 @@ export function ProfileBootstrap({ children }: { children: React.ReactNode }) {
     });
 
     return () => subscription.unsubscribe();
-  }, [fetchSession, fetchNotifications, resetProfile, resetNotifications, resetGifts, resetShoppingLists]);
+  }, [fetchSession, fetchNotifications, resetProfile, resetNotifications, resetGifts, resetShoppingLists, resetBudget]);
 
   return children;
 }
