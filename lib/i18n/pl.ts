@@ -1,6 +1,11 @@
 import type { Dict } from "./types";
 
 export const pl: Dict = {
+  meta: {
+    title: "Nimbusly — Wspólna przestrzeń dla całej rodziny",
+    description:
+      "Zarządzaj budżetem, planuj zakupy, pamiętaj o urodzinach i dziel się pomysłami. Połącz się z bliskimi i widzcie te same dane — każdy wie, kto co dodał.",
+  },
   nav: {
     features: "Funkcje",
     featuresSlug: "funkcje",
@@ -22,6 +27,13 @@ export const pl: Dict = {
     socialProofCount: "12 000+",
     socialProofLabel: "rodzin korzysta",
     rating: "4.9/5 ocena w sklepie",
+    imageAlt: "Nimbusly — ilustracja domu rodzinnego",
+    demoAvatars: [
+      { name: "Anna K.", member: "mama" },
+      { name: "Piotr K.", member: "tata" },
+      { name: "Zosia K.", member: "corka" },
+      { name: "Jakub K.", member: "syn" },
+    ],
   },
   chips: {
     budget: "Budżet",
@@ -153,6 +165,7 @@ export const pl: Dict = {
     modeFamily: "Konto rodzinne",
     modeSolo: "Konto solo",
     menuFamily: "Zarządzaj rodziną",
+    menuPermissions: "Uprawnienia",
     menuPassword: "Zmień hasło",
     profileTitle: "Twój profil",
     accountTypeTitle: "Typ konta",
@@ -182,7 +195,32 @@ export const pl: Dict = {
     familyInviteAlreadyPending: "To zaproszenie jest już wysłane i oczekuje.",
     familyInviteEmailInvalid: "Podaj prawidłowy adres email.",
     familyInviteError: "Nie udało się wysłać zaproszenia.",
+    familyInviteEmailSubject: "Zaproszenie do rodziny „{family}” — Nimbusly",
+    familyInviteEmailHeading: "Dołącz do rodziny w Nimbusly",
+    familyInviteEmailBody: "{inviter} zaprasza Cię do rodziny „{family}” w Nimbusly.",
+    familyInviteEmailCta: "Załóż konto i dołącz",
+    familyInviteEmailFooter:
+      "Link jest ważny 14 dni. Jeśli to nie Ty prosiłeś o zaproszenie, zignoruj tę wiadomość.",
     errorNotFamilyOwner: "Tylko założyciel rodziny może wysyłać zaproszenia.",
+    errorNotFamilyAdmin: "Tylko administrator rodziny może zmieniać uprawnienia.",
+    errorCannotDemoteFounder: "Nie można odebrać uprawnień założycielowi rodziny.",
+    errorCannotDemoteSelf: "Nie możesz odebrać sobie roli administratora.",
+    permissionsDesc:
+      "Administratorzy mogą nadawać uprawnienia członkom rodziny. Założyciel rodziny zawsze pozostaje administratorem.",
+    permissionsMembersTitle: "Członkowie i role",
+    permissionsYou: "Ty",
+    permissionsFounder: "Założyciel",
+    permissionsRoleAdmin: "Administrator",
+    permissionsRoleMember: "Członek",
+    permissionsMakeAdmin: "Nadaj admina",
+    permissionsMakeMember: "Odbierz admina",
+    permissionsMemberHint:
+      "Tylko administratorzy mogą zmieniać role. Skontaktuj się z założycielem lub administratorem rodziny.",
+    permissionsMoreTitle: "Więcej opcji wkrótce",
+    permissionsMoreDesc:
+      "W kolejnych wersjach pojawią się dodatkowe ustawienia uprawnień dla członków rodziny.",
+    permissionsPromotedSuccess: "Nadano uprawnienia administratora.",
+    permissionsDemotedSuccess: "Odebrano uprawnienia administratora.",
     soloWarning: "Przejście na konto solo odłączy Cię od rodziny. Inni członkowie pozostaną w grupie.",
     joinFamilyTitle: "Dołącz do rodziny",
     joinFamilyDesc: "Masz kod zaproszenia? Wpisz go tutaj, aby dołączyć do istniejącej rodziny.",
@@ -280,6 +318,29 @@ export const pl: Dict = {
     errorInvalidDate: "Nieprawidłowa data urodzin.",
     errorNotOwner: "Możesz edytować tylko urodziny, które sam dodałeś.",
     errorGeneric: "Nie udało się zapisać urodzin.",
+    changeSummaryName: "imię: {from} → {to}",
+    changeSummaryDate: "data: {from} → {to}",
+    changeSummaryDescription: "zaktualizowano opis",
+    changeSummaryEmpty: "brak zmian",
+    changeSummarySeparator: "; ",
+    calendarMonths: [
+      "Styczeń",
+      "Luty",
+      "Marzec",
+      "Kwiecień",
+      "Maj",
+      "Czerwiec",
+      "Lipiec",
+      "Sierpień",
+      "Wrzesień",
+      "Październik",
+      "Listopad",
+      "Grudzień",
+    ],
+    calendarWeekdays: ["Pn", "Wt", "Śr", "Cz", "Pt", "So", "Nd"],
+  },
+  theme: {
+    toggleLabel: "Przełącz motyw",
   },
   notifications: {
     title: "Powiadomienia",
@@ -295,5 +356,8 @@ export const pl: Dict = {
     emailComingSoon: "Powiadomienia mailowe pojawią się w kolejnej wersji.",
     errorGeneric: "Nie udało się zaktualizować powiadomień.",
     menu: "Powiadomienia",
+    birthdayAddedTitle: "{actor} dodał urodziny",
+    birthdayUpdatedTitle: "{actor} zaktualizował urodziny",
+    notificationBodySeparator: " — ",
   },
 };

@@ -1,14 +1,16 @@
 import { config as loadEnv } from "dotenv";
 import { resolve } from "path";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { ACCOUNT_MODE, FAMILY_ROLE, type AccountMode } from "@/lib/constants/account";
+import { TEST_USER_SEED_KIND } from "@/lib/constants/test";
 
 loadEnv({ path: resolve(process.cwd(), ".env.local") });
 
 export type TestUserSeed =
-  | { kind: "pending" }
+  | { kind: typeof TEST_USER_SEED_KIND.PENDING }
   | {
-      kind: "onboarded";
-      accountMode: "family" | "solo";
+      kind: typeof TEST_USER_SEED_KIND.ONBOARDED;
+      accountMode: AccountMode;
       firstName?: string;
       lastName?: string;
       familyName?: string;
@@ -103,14 +105,14 @@ async function createAuthUserViaSignUp(
 async function seedProfile(
   admin: SupabaseClient,
   userId: string,
-  seed: Extract<TestUserSeed, { kind: "onboarded" }>
+  seed: Extract<TestUserSeed, { kind: typeof TEST_USER_SEED_KIND.ONBOARDED }>
 ) {
   const firstName = seed.firstName ?? "Anna";
   const lastName = seed.lastName ?? "Testowa";
   const accountMode = seed.accountMode;
   let familyId: string | null = null;
 
-  if (accountMode === "family") {
+  if (accountMode === ACCOUNT_MODE.FAMILY) {
     const familyName = seed.familyName ?? "Rodzina Testowa";
     const { data: family, error: familyError } = await admin
       .from("families")
@@ -131,6 +133,7 @@ async function seedProfile(
     last_name: lastName,
     avatar_color: "#618764",
     family_id: familyId,
+    family_role: accountMode === ACCOUNT_MODE.FAMILY ? FAMILY_ROLE.ADMIN : null,
     account_mode: accountMode,
     onboarding_completed: true,
   });
@@ -149,7 +152,7 @@ export function registerSupabaseTasks(on: Cypress.PluginEvents) {
     async createTestUser({
       prefix = "e2e",
       password = "TestPassword123!",
-      seed = { kind: "pending" } as TestUserSeed,
+      seed = { kind: TEST_USER_SEED_KIND.PENDING } as TestUserSeed,
     }: {
       prefix?: string;
       password?: string;
@@ -157,7 +160,7 @@ export function registerSupabaseTasks(on: Cypress.PluginEvents) {
     }): Promise<CreatedTestUser> {
       const email = randomEmail(prefix);
 
-      if (seed.kind === "onboarded" && !hasAdminAccess()) {
+      if (seed.kind === TEST_USER_SEED_KIND.ONBOARDED && !hasAdminAccess()) {
         throw new Error(
           "Seed onboarded wymaga SUPABASE_SERVICE_ROLE_KEY — użyj cy.setupOnboardedFamilyUser() / cy.setupOnboardedSoloUser()."
         );
@@ -167,7 +170,7 @@ export function registerSupabaseTasks(on: Cypress.PluginEvents) {
         const admin = getAdminClient();
         const user = await createAuthUserViaAdmin(admin, email, password);
 
-        if (seed.kind === "onboarded") {
+        if (seed.kind === TEST_USER_SEED_KIND.ONBOARDED) {
           await seedProfile(admin, user.id, seed);
         }
 

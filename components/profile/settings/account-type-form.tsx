@@ -9,6 +9,7 @@ import { SettingsFormFooter } from "@/components/profile/settings/settings-form-
 import { useT } from "@/lib/lang-context";
 import { cn } from "@/lib/utils";
 import { useProfileStore } from "@/lib/stores/profile-store";
+import { ACCOUNT_MODE } from "@/lib/constants/account";
 import type { AccountMode } from "@/lib/profile";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
 import { updateAccountMode } from "@/app/(app)/account/actions";
@@ -40,9 +41,11 @@ export function AccountTypeForm() {
   const profile = useProfileStore((s) => s.profile);
   const refreshProfile = useProfileStore((s) => s.refreshProfile);
   const [accountMode, setAccountMode] = useState<AccountMode>(
-    profile?.account_mode ?? "solo"
+    profile?.account_mode ?? ACCOUNT_MODE.SOLO
   );
-  const [syncedAccountMode, setSyncedAccountMode] = useState(profile?.account_mode);
+  const [syncedAccountMode, setSyncedAccountMode] = useState<AccountMode | undefined>(
+    profile?.account_mode
+  );
   const [state, action, pending] = useActionState(updateAccountMode, null);
 
   if (profile?.account_mode && profile.account_mode !== syncedAccountMode) {
@@ -72,12 +75,12 @@ export function AccountTypeForm() {
       <div className="grid gap-3">
         <Button
           type="button"
-          variant={accountMode === "family" ? "default" : "outline"}
+          variant={accountMode === ACCOUNT_MODE.FAMILY ? "default" : "outline"}
           className="h-auto w-full justify-start rounded-none p-4 text-left"
-          onClick={() => setAccountMode("family")}
+          onClick={() => setAccountMode(ACCOUNT_MODE.FAMILY)}
         >
           <div className="flex items-center gap-4">
-            <AccountModeBadge selected={accountMode === "family"}>
+            <AccountModeBadge selected={accountMode === ACCOUNT_MODE.FAMILY}>
               <Heart />
             </AccountModeBadge>
             <div>
@@ -89,12 +92,12 @@ export function AccountTypeForm() {
 
         <Button
           type="button"
-          variant={accountMode === "solo" ? "default" : "outline"}
+          variant={accountMode === ACCOUNT_MODE.SOLO ? "default" : "outline"}
           className="h-auto w-full justify-start rounded-none p-4 text-left"
-          onClick={() => setAccountMode("solo")}
+          onClick={() => setAccountMode(ACCOUNT_MODE.SOLO)}
         >
           <div className="flex items-center gap-4">
-            <AccountModeBadge selected={accountMode === "solo"}>
+            <AccountModeBadge selected={accountMode === ACCOUNT_MODE.SOLO}>
               <User />
             </AccountModeBadge>
             <div>
@@ -105,7 +108,7 @@ export function AccountTypeForm() {
         </Button>
       </div>
 
-      {accountMode === "family" && !profile.family_id && (
+      {accountMode === ACCOUNT_MODE.FAMILY && !profile.family_id && (
         <div className="space-y-1.5">
           <Label htmlFor="settings-familyName">{t.account.familyNameLabel}</Label>
           <Input
@@ -116,7 +119,7 @@ export function AccountTypeForm() {
         </div>
       )}
 
-      {accountMode === "solo" && profile.account_mode === "family" && (
+      {accountMode === ACCOUNT_MODE.SOLO && profile.account_mode === ACCOUNT_MODE.FAMILY && (
         <p className="text-xs text-muted-foreground rounded-none bg-muted/50 px-3 py-2">
           {t.account.soloWarning}
         </p>

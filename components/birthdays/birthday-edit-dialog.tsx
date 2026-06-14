@@ -29,9 +29,9 @@ export function BirthdayEditDialog({
   onSuccess,
 }: BirthdayEditDialogProps) {
   const t = useT();
-  const [personName, setPersonName] = useState("");
+  const [personName, setPersonName] = useState<string>("");
   const [date, setDate] = useState<Date | undefined>();
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useState<string>("");
   const [state, action, pending] = useActionState(updateBirthday, null);
 
   useEffect(() => {

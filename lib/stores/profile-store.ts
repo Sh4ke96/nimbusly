@@ -1,3 +1,5 @@
+import { ACCOUNT_MODE } from "@/lib/constants/account";
+import { INVITATION_STATUS } from "@/lib/constants/family-invitation";
 import { create } from "zustand";
 import { createClient } from "@/lib/supabase/client";
 import type { Family, FamilyInvitation, FamilyMember, Profile } from "@/lib/profile";
@@ -39,7 +41,7 @@ async function loadFamilyData(familyId: string, userId: string, isOwner: boolean
       .maybeSingle(),
     supabase
       .from("profiles")
-      .select("id, first_name, last_name, avatar_color")
+      .select("id, first_name, last_name, avatar_color, family_role")
       .eq("family_id", familyId),
   ] as const;
 
@@ -51,7 +53,7 @@ async function loadFamilyData(familyId: string, userId: string, isOwner: boolean
       .from("family_invitations")
       .select("id, family_id, email, status, created_at, expires_at")
       .eq("family_id", familyId)
-      .eq("status", "pending")
+      .eq("status", INVITATION_STATUS.PENDING)
       .order("created_at", { ascending: false });
     invitations = (data ?? []) as FamilyInvitation[];
   }
@@ -92,7 +94,7 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
         const familyData = await loadFamilyData(
           profile.family_id,
           user.id,
-          profile.account_mode === "family"
+          profile.account_mode === ACCOUNT_MODE.FAMILY
         );
         family = familyData.family;
         members = familyData.members;
@@ -144,7 +146,7 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
       const { family, members, invitations } = await loadFamilyData(
         profile.family_id,
         user.id,
-        profile.account_mode === "family"
+        profile.account_mode === ACCOUNT_MODE.FAMILY
       );
       set({ family, members, invitations });
     });

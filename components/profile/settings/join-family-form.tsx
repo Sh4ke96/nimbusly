@@ -16,7 +16,7 @@ export function JoinFamilyForm() {
   const t = useT();
   const refreshProfile = useProfileStore((s) => s.refreshProfile);
   const refreshFamily = useProfileStore((s) => s.refreshFamily);
-  const [inviteCode, setInviteCode] = useState(() => readInviteCodeFromCookie());
+  const [inviteCode, setInviteCode] = useState<string>(() => readInviteCodeFromCookie());
   const [state, action, pending] = useActionState(joinFamilyWithInviteCode, null);
 
   useActionFeedback(state, () => {

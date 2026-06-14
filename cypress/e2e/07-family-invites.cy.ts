@@ -1,3 +1,6 @@
+import { SETTINGS_TAB } from "../support/app-constants";
+import { t } from "../support/texts";
+
 describe("Zaproszenia do rodziny", () => {
   let owner: import("../support/commands").CreatedTestUser;
   let joiner: import("../support/commands").CreatedTestUser;
@@ -20,9 +23,9 @@ describe("Zaproszenia do rodziny", () => {
 
   it("pokazuje kod zaproszenia właścicielowi rodziny", () => {
     cy.login(owner.email, owner.password);
-    cy.visit("/profile/settings?tab=family");
-    cy.contains("h1", "Ustawienia konta").should("be.visible");
-    cy.contains("Kod zaproszenia").should("be.visible");
+    cy.visit(`/profile/settings?tab=${SETTINGS_TAB.FAMILY}`);
+    cy.contains("h1", t.account.settingsTitle).should("be.visible");
+    cy.contains(t.account.familyInviteCode).should("be.visible");
     cy.get("code").should("match", /[A-Z0-9]{4}-[A-Z0-9]{4}/);
   });
 
@@ -43,15 +46,15 @@ describe("Zaproszenia do rodziny", () => {
 
   it("właściciel widzi nowego członka rodziny", () => {
     cy.login(owner.email, owner.password);
-    cy.visit("/profile/settings?tab=family");
+    cy.visit(`/profile/settings?tab=${SETTINGS_TAB.FAMILY}`);
     cy.contains("Nowy Członek").should("be.visible");
   });
 
   it("właściciel może wysłać zaproszenie email", () => {
     cy.login(owner.email, owner.password);
-    cy.visit("/profile/settings?tab=family");
+    cy.visit(`/profile/settings?tab=${SETTINGS_TAB.FAMILY}`);
     cy.get("#family-invite-email").type("zaproszenie@example.com");
-    cy.contains("button", "Wyślij zaproszenie").click();
+    cy.contains("button", t.account.familyInviteSend).click();
     cy.get("body").should("contain.text", "zaproszenie@example.com");
   });
 });

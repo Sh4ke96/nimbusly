@@ -25,7 +25,7 @@ export function isAvatarColor(value: string): value is AvatarColor {
 
 export const DEFAULT_AVATAR_COLOR = AVATAR_COLORS[1].value;
 
-export function resolveAvatarColor(color?: string | null): string {
-  if (color && color.trim().length > 0) return color;
+export function resolveAvatarColor(color?: string | null): AvatarColor {
+  if (color && isAvatarColor(color)) return color;
   return DEFAULT_AVATAR_COLOR;
 }

@@ -25,7 +25,7 @@ function readInitialInviteCode(codeFromUrl: string | null): string {
 export function RegisterForm() {
   const t = useT();
   const searchParams = useSearchParams();
-  const [inviteCode, setInviteCode] = useState(() =>
+  const [inviteCode, setInviteCode] = useState<string>(() =>
     readInitialInviteCode(searchParams.get("code"))
   );
   const [state, action, pending] = useActionState<AuthState, FormData>(

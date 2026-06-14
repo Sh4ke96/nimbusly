@@ -1,5 +1,6 @@
 "use client";
 
+import { LANGS, type Lang } from "@/lib/constants/lang";
 import { useLang } from "@/lib/lang-context";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { HEADER_CONTROL_HEIGHT } from "@/lib/ui/header-controls";
@@ -12,7 +13,7 @@ export function LanguageToggle({ className }: { className?: string }) {
     <ToggleGroup
       type="single"
       value={lang}
-      onValueChange={(value) => value && setLang(value as "pl" | "en")}
+      onValueChange={(value) => value && setLang(value as Lang)}
       variant="outline"
       size="sm"
       spacing={0}
@@ -23,7 +24,7 @@ export function LanguageToggle({ className }: { className?: string }) {
         className
       )}
     >
-      {(["pl", "en"] as const).map((l) => (
+      {LANGS.map((l) => (
         <ToggleGroupItem
           key={l}
           value={l}

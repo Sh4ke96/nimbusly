@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MemberAvatar } from "@/components/member-avatar";
-import { AVATAR_COLORS, resolveAvatarColor } from "@/lib/avatar-colors";
+import { AVATAR_COLORS, resolveAvatarColor, type AvatarColor } from "@/lib/avatar-colors";
 import { getDisplayName } from "@/lib/profile";
 import { useT } from "@/lib/lang-context";
 import { cn } from "@/lib/utils";
@@ -18,10 +18,12 @@ export function ProfileForm() {
   const t = useT();
   const profile = useProfileStore((s) => s.profile);
   const refreshProfile = useProfileStore((s) => s.refreshProfile);
-  const [avatarColor, setAvatarColor] = useState(() =>
+  const [avatarColor, setAvatarColor] = useState<AvatarColor>(() =>
     resolveAvatarColor(profile?.avatar_color)
   );
-  const [syncedAvatarColor, setSyncedAvatarColor] = useState(profile?.avatar_color);
+  const [syncedAvatarColor, setSyncedAvatarColor] = useState<string | undefined>(
+    profile?.avatar_color
+  );
 
   if (profile?.avatar_color && profile.avatar_color !== syncedAvatarColor) {
     setSyncedAvatarColor(profile.avatar_color);

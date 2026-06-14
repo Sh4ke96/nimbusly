@@ -5,7 +5,8 @@ import { cookies } from "next/headers";
 import { LangProvider } from "@/lib/lang-context";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
-import type { Lang } from "@/lib/i18n";
+import { LANG, LANG_COOKIE, type Lang } from "@/lib/constants/lang";
+import { dict } from "@/lib/i18n";
 import "./globals.css";
 
 const quicksand = Quicksand({
@@ -25,16 +26,21 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Nimbusly — Wspólna przestrzeń dla całej rodziny",
-  description:
-    "Zarządzaj budżetem, planuj zakupy, pamiętaj o urodzinach i dziel się pomysłami. Połącz się z bliskimi i widzcie te same dane — każdy wie, kto co dodał.",
-  icons: {
-    icon: "/icon.svg",
-    shortcut: "/icon.svg",
-    apple: "/icon.svg",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const cookieStore = await cookies();
+  const value = cookieStore.get(LANG_COOKIE)?.value;
+  const lang: Lang = value === LANG.EN ? LANG.EN : LANG.PL;
+
+  return {
+    title: dict[lang].meta.title,
+    description: dict[lang].meta.description,
+    icons: {
+      icon: "/icon.svg",
+      shortcut: "/icon.svg",
+      apple: "/icon.svg",
+    },
+  };
+}
 
 export default async function RootLayout({
   children,
@@ -42,7 +48,8 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const cookieStore = await cookies();
-  const lang = (cookieStore.get("nimbusly-lang")?.value ?? "pl") as Lang;
+  const value = cookieStore.get(LANG_COOKIE)?.value;
+  const lang: Lang = value === LANG.EN ? LANG.EN : LANG.PL;
 
   return (
     <html

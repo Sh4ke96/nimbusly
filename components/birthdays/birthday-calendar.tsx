@@ -9,7 +9,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useLang, useT } from "@/lib/lang-context";
+import { ACCOUNT_MODE } from "@/lib/constants/account";
+import { useT } from "@/lib/lang-context";
 import { buildMonthGrid, getMonthName, getWeekdayLabels, shiftMonth } from "@/lib/birthdays/calendar";
 import { birthdayDateKey, formatBirthdayLabel, type BirthdayEntry } from "@/lib/birthdays/types";
 import { getDisplayName } from "@/lib/profile";
@@ -54,8 +55,7 @@ export function BirthdayCalendar({
   onEntrySelect,
 }: BirthdayCalendarProps) {
   const t = useT();
-  const { lang } = useLang();
-  const isFamily = profile?.account_mode === "family" && !!profile.family_id;
+  const isFamily = profile?.account_mode === ACCOUNT_MODE.FAMILY && !!profile.family_id;
   const calendarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -76,7 +76,7 @@ export function BirthdayCalendar({
   }, [entries]);
 
   const cells = buildMonthGrid(year, month);
-  const weekdays = getWeekdayLabels(lang);
+  const weekdays = getWeekdayLabels(t.birthdays.calendarWeekdays);
 
   return (
     <TooltipProvider>
@@ -94,7 +94,7 @@ export function BirthdayCalendar({
             <ChevronLeft className="size-4" />
           </Button>
           <h2 className="font-heading font-semibold text-lg">
-            {getMonthName(month, lang)} {year}
+            {getMonthName(month, t.birthdays.calendarMonths)} {year}
           </h2>
           <Button
             type="button"
@@ -136,7 +136,7 @@ export function BirthdayCalendar({
                   "min-h-24 bg-background p-2 transition-all duration-200",
                   cell.isToday && !isFocusedDay && "shadow-[inset_0_0_0_1px] shadow-primary/30",
                   isFocusedDay &&
-                    "bg-primary/[0.04] shadow-[inset_0_0_0_2px] shadow-primary/50"
+                  "bg-primary/4 shadow-[inset_0_0_0_2px] shadow-primary/50"
                 )}
               >
                 <span

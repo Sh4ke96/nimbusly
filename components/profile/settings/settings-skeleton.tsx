@@ -25,7 +25,7 @@ export function SettingsSkeleton() {
           <CardContent className="p-0">
             <div className="grid grid-cols-1 md:grid-cols-[15rem_minmax(0,1fr)]">
               <aside className="border-b border-border bg-muted/30 p-2 md:border-b-0 md:border-r">
-                {Array.from({ length: 4 }).map((_, i) => (
+                {Array.from({ length: 5 }).map((_, i) => (
                   <Fragment key={i}>
                     {i > 0 && <Separator />}
                     <Skeleton className="h-12 w-full rounded-none" />

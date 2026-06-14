@@ -3,7 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { getServerT } from "@/lib/i18n/server";
 import { isAvatarColor } from "@/lib/avatar-colors";
-import type { AccountMode } from "@/lib/profile";
+import { ACCOUNT_MODE, FAMILY_ROLE, type AccountMode, type FamilyRole } from "@/lib/constants/account";
 
 export type AccountActionState = { error: string } | { success: string } | null;
 
@@ -64,25 +64,27 @@ export async function updateAccountMode(
   const accountMode = formData.get("accountMode") as AccountMode;
   const familyName = (formData.get("familyName") as string)?.trim();
 
-  if (accountMode !== "family" && accountMode !== "solo") {
+  if (accountMode !== ACCOUNT_MODE.FAMILY && accountMode !== ACCOUNT_MODE.SOLO) {
     return { error: t.account.errorGeneric };
   }
 
-  if (accountMode === "family" && !familyName) {
+  if (accountMode === ACCOUNT_MODE.FAMILY && !familyName) {
     return { error: t.account.errorFamilyName };
   }
 
   let familyId: string | null = null;
+  let familyRole: FamilyRole | null = null;
 
-  if (accountMode === "family") {
+  if (accountMode === ACCOUNT_MODE.FAMILY) {
     const { data: existingProfile } = await supabase
       .from("profiles")
-      .select("family_id")
+      .select("family_id, family_role")
       .eq("id", user.id)
       .maybeSingle();
 
     if (existingProfile?.family_id) {
       familyId = existingProfile.family_id;
+      familyRole = existingProfile.family_role;
     } else {
       const { data: family, error: familyError } = await supabase
         .from("families")
@@ -95,6 +97,7 @@ export async function updateAccountMode(
       }
 
       familyId = family.id;
+      familyRole = FAMILY_ROLE.ADMIN;
     }
   }
 
@@ -103,6 +106,7 @@ export async function updateAccountMode(
     .update({
       account_mode: accountMode,
       family_id: familyId,
+      family_role: accountMode === ACCOUNT_MODE.SOLO ? null : familyRole,
       updated_at: new Date().toISOString(),
     })
     .eq("id", user.id);
@@ -111,7 +115,7 @@ export async function updateAccountMode(
 
   return {
     success:
-      accountMode === "family"
+      accountMode === ACCOUNT_MODE.FAMILY
         ? t.account.accountModeFamilySaved
         : t.account.accountModeSoloSaved,
   };

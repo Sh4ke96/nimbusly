@@ -1,8 +1,8 @@
 "use client";
 
 import { createContext, useContext, useState, type ReactNode } from "react";
+import { LANG, LANG_COOKIE, type Lang } from "@/lib/constants/lang";
 import { dict } from "./i18n";
-import type { Lang } from "./i18n";
 
 interface LangContextValue {
   lang: Lang;
@@ -10,7 +10,7 @@ interface LangContextValue {
 }
 
 const LangContext = createContext<LangContextValue>({
-  lang: "pl",
+  lang: LANG.PL,
   setLang: () => {},
 });
 
@@ -24,7 +24,7 @@ export function LangProvider({
   const [lang, setLangState] = useState<Lang>(initialLang);
 
   function setLang(newLang: Lang) {
-    document.cookie = `nimbusly-lang=${newLang};path=/;max-age=31536000;SameSite=Lax`;
+    document.cookie = `${LANG_COOKIE}=${newLang};path=/;max-age=31536000;SameSite=Lax`;
     setLangState(newLang);
   }
 

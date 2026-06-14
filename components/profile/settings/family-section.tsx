@@ -30,8 +30,8 @@ export function FamilySection() {
   const [nameState, nameAction, namePending] = useActionState(updateFamilyName, null);
   const [inviteState, inviteAction, invitePending] = useActionState(sendFamilyInvitation, null);
   const [revokeState, revokeAction, revokePending] = useActionState(revokeFamilyInvitation, null);
-  const [copied, setCopied] = useState(false);
-  const [ensuringCode, setEnsuringCode] = useState(false);
+  const [copied, setCopied] = useState<boolean>(false);
+  const [ensuringCode, setEnsuringCode] = useState<boolean>(false);
 
   const isOwner = family?.created_by === user?.id;
   const displayCode = family?.invite_code ? formatInviteCode(family.invite_code) : null;

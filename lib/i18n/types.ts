@@ -1,6 +1,13 @@
-export type Lang = "pl" | "en";
+import type { DemoMemberRole } from "@/lib/constants/demo";
+import type { Lang } from "@/lib/constants/lang";
+
+export type { Lang };
 
 export type Dict = {
+  meta: {
+    title: string;
+    description: string;
+  };
   nav: {
     features: string;
     featuresSlug: string;
@@ -22,6 +29,8 @@ export type Dict = {
     socialProofCount: string;
     socialProofLabel: string;
     rating: string;
+    imageAlt: string;
+    demoAvatars: { name: string; member: DemoMemberRole }[];
   };
   chips: {
     budget: string;
@@ -141,6 +150,7 @@ export type Dict = {
     modeFamily: string;
     modeSolo: string;
     menuFamily: string;
+    menuPermissions: string;
     menuPassword: string;
     profileTitle: string;
     accountTypeTitle: string;
@@ -169,7 +179,28 @@ export type Dict = {
     familyInviteAlreadyPending: string;
     familyInviteEmailInvalid: string;
     familyInviteError: string;
+    familyInviteEmailSubject: string;
+    familyInviteEmailHeading: string;
+    familyInviteEmailBody: string;
+    familyInviteEmailCta: string;
+    familyInviteEmailFooter: string;
     errorNotFamilyOwner: string;
+    errorNotFamilyAdmin: string;
+    errorCannotDemoteFounder: string;
+    errorCannotDemoteSelf: string;
+    permissionsDesc: string;
+    permissionsMembersTitle: string;
+    permissionsYou: string;
+    permissionsFounder: string;
+    permissionsRoleAdmin: string;
+    permissionsRoleMember: string;
+    permissionsMakeAdmin: string;
+    permissionsMakeMember: string;
+    permissionsMemberHint: string;
+    permissionsMoreTitle: string;
+    permissionsMoreDesc: string;
+    permissionsPromotedSuccess: string;
+    permissionsDemotedSuccess: string;
     soloWarning: string;
     joinFamilyTitle: string;
     joinFamilyDesc: string;
@@ -266,6 +297,16 @@ export type Dict = {
     errorInvalidDate: string;
     errorNotOwner: string;
     errorGeneric: string;
+    changeSummaryName: string;
+    changeSummaryDate: string;
+    changeSummaryDescription: string;
+    changeSummaryEmpty: string;
+    changeSummarySeparator: string;
+    calendarMonths: string[];
+    calendarWeekdays: string[];
+  };
+  theme: {
+    toggleLabel: string;
   };
   notifications: {
     title: string;
@@ -281,5 +322,8 @@ export type Dict = {
     emailComingSoon: string;
     errorGeneric: string;
     menu: string;
+    birthdayAddedTitle: string;
+    birthdayUpdatedTitle: string;
+    notificationBodySeparator: string;
   };
 };

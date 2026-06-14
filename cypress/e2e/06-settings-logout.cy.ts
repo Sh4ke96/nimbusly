@@ -1,4 +1,5 @@
 import type { CreatedTestUser } from "../support/commands";
+import { SETTINGS_TAB } from "../support/app-constants";
 import { t } from "../support/texts";
 
 describe("Ustawienia konta", () => {
@@ -43,13 +44,13 @@ describe("Ustawienia konta", () => {
 
   it("przełącza zakładki przez sidebar", () => {
     cy.get('[data-slot="tabs-trigger"]').contains(t.account.menuAccountType).click();
-    cy.url().should("include", "tab=account");
+    cy.url().should("include", `tab=${SETTINGS_TAB.ACCOUNT}`);
 
     cy.get('[data-slot="tabs-trigger"]').contains(t.account.menuFamily).click();
-    cy.url().should("include", "tab=family");
+    cy.url().should("include", `tab=${SETTINGS_TAB.FAMILY}`);
 
     cy.get('[data-slot="tabs-trigger"]').contains(t.account.menuPassword).click();
-    cy.url().should("include", "tab=password");
+    cy.url().should("include", `tab=${SETTINGS_TAB.PASSWORD}`);
   });
 
   it("aktualizuje profil (imię i nazwisko)", () => {
@@ -61,18 +62,18 @@ describe("Ustawienia konta", () => {
   });
 
   it("pokazuje formularz typu konta", () => {
-    cy.visit("/profile/settings?tab=account");
+    cy.visit(`/profile/settings?tab=${SETTINGS_TAB.ACCOUNT}`);
     cy.contains("button", t.onboarding.familyTitle).should("be.visible");
     cy.contains("button", t.onboarding.soloTitle).should("be.visible");
   });
 
   it("pokazuje sekcję rodziny z nazwą", () => {
-    cy.visit("/profile/settings?tab=family");
+    cy.visit(`/profile/settings?tab=${SETTINGS_TAB.FAMILY}`);
     cy.get("#settings-family-name").should("have.value", "Rodzina Ustawień");
   });
 
   it("wysyła prośbę o reset hasła", () => {
-    cy.visit("/profile/settings?tab=password");
+    cy.visit(`/profile/settings?tab=${SETTINGS_TAB.PASSWORD}`);
     cy.contains("button", t.account.changePasswordBtn).click();
     cy.contains(t.account.changePasswordSuccessMessage, { timeout: 15_000 }).should(
       "be.visible"

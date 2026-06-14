@@ -22,10 +22,10 @@ interface BirthdayFormDialogProps {
 
 export function BirthdayFormDialog({ onSuccess }: BirthdayFormDialogProps) {
   const t = useT();
-  const [open, setOpen] = useState(false);
-  const [personName, setPersonName] = useState("");
+  const [open, setOpen] = useState<boolean>(false);
+  const [personName, setPersonName] = useState<string>("");
   const [date, setDate] = useState<Date | undefined>();
-  const [description, setDescription] = useState("");
+  const [description, setDescription] = useState<string>("");
   const [state, action, pending] = useActionState(createBirthday, null);
 
   useActionFeedback(state, () => {

@@ -11,8 +11,8 @@ import { toast } from "sonner";
 
 export function PasswordSection() {
   const t = useT();
-  const [pending, setPending] = useState(false);
-  const [sent, setSent] = useState(false);
+  const [pending, setPending] = useState<boolean>(false);
+  const [sent, setSent] = useState<boolean>(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

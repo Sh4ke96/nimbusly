@@ -2,7 +2,7 @@
 
 import { Fragment, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { KeyRound, Palette, User, Users, type LucideIcon } from "lucide-react";
+import { KeyRound, Palette, ShieldCheck, User, Users, type LucideIcon } from "lucide-react";
 import { AppHeader } from "@/components/app/app-header";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { Card, CardContent } from "@/components/ui/card";
@@ -12,15 +12,18 @@ import { ProfileForm } from "@/components/profile/settings/profile-form";
 import { AccountTypeForm } from "@/components/profile/settings/account-type-form";
 import { JoinFamilyForm } from "@/components/profile/settings/join-family-form";
 import { FamilySection } from "@/components/profile/settings/family-section";
+import { FamilyPermissionsSection } from "@/components/profile/settings/family-permissions-section";
 import { PasswordSection } from "@/components/profile/settings/password-section";
 import { SettingsTabHeader } from "@/components/profile/settings/settings-tab-header";
 import { SettingsSkeleton } from "@/components/profile/settings/settings-skeleton";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useT } from "@/lib/lang-context";
 import { cn } from "@/lib/utils";
+import { ACCOUNT_MODE } from "@/lib/constants/account";
 import {
   parseSettingsTab,
   settingsTabHref,
+  SETTINGS_TAB,
   type SettingsTab,
 } from "@/lib/profile/settings-tabs";
 
@@ -38,19 +41,22 @@ export default function ProfileSettingsPage() {
   const loaded = useProfileStore((s) => s.loaded);
   const profile = useProfileStore((s) => s.profile);
 
-  const showFamily = profile?.account_mode === "family" && !!profile.family_id;
-  const showJoinFamily = profile?.account_mode === "solo" && !profile.family_id;
+  const showFamily = profile?.account_mode === ACCOUNT_MODE.FAMILY && !!profile.family_id;
+  const showJoinFamily = profile?.account_mode === ACCOUNT_MODE.SOLO && !profile.family_id;
 
   const urlTab = parseSettingsTab(searchParams.get("tab"));
   const [tab, setTab] = useState<SettingsTab>(urlTab);
 
   const navItems: { value: SettingsTab; icon: LucideIcon; label: string }[] = [
-    { value: "profile", icon: Palette, label: t.account.menuProfile },
-    { value: "account", icon: User, label: t.account.menuAccountType },
+    { value: SETTINGS_TAB.PROFILE, icon: Palette, label: t.account.menuProfile },
+    { value: SETTINGS_TAB.ACCOUNT, icon: User, label: t.account.menuAccountType },
     ...(showFamily
-      ? [{ value: "family" as const, icon: Users, label: t.account.menuFamily }]
+      ? [
+          { value: SETTINGS_TAB.FAMILY, icon: Users, label: t.account.menuFamily },
+          { value: SETTINGS_TAB.PERMISSIONS, icon: ShieldCheck, label: t.account.menuPermissions },
+        ]
       : []),
-    { value: "password", icon: KeyRound, label: t.account.menuPassword },
+    { value: SETTINGS_TAB.PASSWORD, icon: KeyRound, label: t.account.menuPassword },
   ];
 
   const activeNav = navItems.find((item) => item.value === tab) ?? navItems[0];
@@ -61,9 +67,12 @@ export default function ProfileSettingsPage() {
 
   useEffect(() => {
     if (!loaded) return;
-    if (tab === "family" && !showFamily) {
-      setTab("profile");
-      window.history.replaceState(window.history.state, "", settingsTabHref("profile"));
+    if (
+      (tab === SETTINGS_TAB.FAMILY || tab === SETTINGS_TAB.PERMISSIONS) &&
+      !showFamily
+    ) {
+      setTab(SETTINGS_TAB.PROFILE);
+      window.history.replaceState(window.history.state, "", settingsTabHref(SETTINGS_TAB.PROFILE));
     }
   }, [tab, showFamily, loaded]);
 
@@ -139,22 +148,27 @@ export default function ProfileSettingsPage() {
                 <div className="min-w-0 p-6 md:p-8">
                   <SettingsTabHeader icon={activeNav.icon} title={activeNav.label} />
 
-                  <TabsContent value="profile" className="mt-0 outline-none">
+                  <TabsContent value={SETTINGS_TAB.PROFILE} className="mt-0 outline-none">
                     <ProfileForm />
                   </TabsContent>
 
-                  <TabsContent value="account" className="mt-0 outline-none space-y-8">
+                  <TabsContent value={SETTINGS_TAB.ACCOUNT} className="mt-0 outline-none space-y-8">
                     <AccountTypeForm />
                     {showJoinFamily && <JoinFamilyForm />}
                   </TabsContent>
 
                   {showFamily && (
-                    <TabsContent value="family" className="mt-0 outline-none">
-                      <FamilySection />
-                    </TabsContent>
+                    <>
+                      <TabsContent value={SETTINGS_TAB.FAMILY} className="mt-0 outline-none">
+                        <FamilySection />
+                      </TabsContent>
+                      <TabsContent value={SETTINGS_TAB.PERMISSIONS} className="mt-0 outline-none">
+                        <FamilyPermissionsSection />
+                      </TabsContent>
+                    </>
                   )}
 
-                  <TabsContent value="password" className="mt-0 outline-none">
+                  <TabsContent value={SETTINGS_TAB.PASSWORD} className="mt-0 outline-none">
                     <PasswordSection />
                   </TabsContent>
                 </div>

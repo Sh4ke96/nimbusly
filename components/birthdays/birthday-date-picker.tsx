@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { format } from "date-fns";
-import { enUS, pl } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { getDateFnsLocale } from "@/lib/i18n/date-fns-locale";
 import { useLang, useT } from "@/lib/lang-context";
 import { cn } from "@/lib/utils";
 
@@ -22,8 +22,8 @@ const CALENDAR_YEAR = 2000;
 export function BirthdayDatePicker({ date, onDateChange }: BirthdayDatePickerProps) {
   const t = useT();
   const { lang } = useLang();
-  const locale = lang === "pl" ? pl : enUS;
-  const [open, setOpen] = useState(false);
+  const locale = getDateFnsLocale(lang);
+  const [open, setOpen] = useState<boolean>(false);
 
   const displayLabel = date
     ? format(date, "d MMMM", { locale })

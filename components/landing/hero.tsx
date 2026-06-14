@@ -8,13 +8,6 @@ import { FloatingChip } from "@/components/landing/floating-chip";
 import { useT } from "@/lib/lang-context";
 import { ArrowRight, Wallet, ShoppingCart, Gift, Cake, Star, Sparkles } from "lucide-react";
 
-const demoAvatars = [
-  { name: "Anna K.", member: "mama" as const },
-  { name: "Piotr K.", member: "tata" as const },
-  { name: "Zosia K.", member: "corka" as const },
-  { name: "Jakub K.", member: "syn" as const },
-];
-
 export function HeroSection() {
   const t = useT();
 
@@ -62,7 +55,7 @@ export function HeroSection() {
 
             <div className="flex items-center gap-3">
               <div className="flex -space-x-2">
-                {demoAvatars.map((a) => (
+                {t.hero.demoAvatars.map((a) => (
                   <MemberAvatar key={a.name} name={a.name} member={a.member} size="sm" ring />
                 ))}
               </div>
@@ -87,7 +80,7 @@ export function HeroSection() {
             <div className="relative rounded-none overflow-hidden">
               <Image
                 src="/hero-room.png"
-                alt="Nimbusly — family home illustration"
+                alt={t.hero.imageAlt}
                 width={620}
                 height={620}
                 className="w-full h-auto object-cover"

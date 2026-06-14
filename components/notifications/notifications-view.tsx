@@ -7,6 +7,8 @@ import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { LOCALE_BY_LANG } from "@/lib/constants/lang";
+import { NOTIFICATION_TYPE } from "@/lib/constants/notifications";
 import { useLang, useT } from "@/lib/lang-context";
 import { useNotificationsStore } from "@/lib/stores/notifications-store";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
@@ -46,7 +48,7 @@ export function NotificationsView() {
     void fetchNotifications(true);
   });
 
-  const locale = lang === "pl" ? "pl-PL" : "en-US";
+  const locale = LOCALE_BY_LANG[lang];
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -99,7 +101,8 @@ export function NotificationsView() {
                         </time>
                       </div>
                       <p className="text-sm text-muted-foreground">{item.body}</p>
-                      {(item.type === "birthday_added" || item.type === "birthday_updated") && (
+                      {(item.type === NOTIFICATION_TYPE.BIRTHDAY_ADDED ||
+                        item.type === NOTIFICATION_TYPE.BIRTHDAY_UPDATED) && (
                         <Link
                           href="/birthdays"
                           className="text-xs font-medium text-primary hover:underline"

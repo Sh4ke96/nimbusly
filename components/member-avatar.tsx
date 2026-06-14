@@ -1,13 +1,13 @@
+import type { DemoMemberRole } from "@/lib/constants/demo";
+import { DEMO_MEMBER_ROLE } from "@/lib/constants/demo";
 import { cn } from "@/lib/utils";
 import { DEFAULT_AVATAR_COLOR, resolveAvatarColor } from "@/lib/avatar-colors";
 
-type Member = "mama" | "tata" | "corka" | "syn";
-
-const memberColors: Record<Member, string> = {
-  mama: "#2b5748",
-  tata: "#618764",
-  corka: "#9cb080",
-  syn: "#273338",
+const memberColors: Record<DemoMemberRole, string> = {
+  [DEMO_MEMBER_ROLE.MOM]: "#2b5748",
+  [DEMO_MEMBER_ROLE.DAD]: "#618764",
+  [DEMO_MEMBER_ROLE.DAUGHTER]: "#9cb080",
+  [DEMO_MEMBER_ROLE.SON]: "#273338",
 };
 
 function getContrastColor(hexBg: string): string {
@@ -31,7 +31,7 @@ const sizeClasses = {
 
 interface MemberAvatarProps {
   name: string;
-  member?: Member;
+  member?: DemoMemberRole;
   color?: string;
   size?: keyof typeof sizeClasses;
   ring?: boolean;

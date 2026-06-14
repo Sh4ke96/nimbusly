@@ -21,7 +21,8 @@ import { getDisplayName } from "@/lib/profile";
 import { useT } from "@/lib/lang-context";
 import { cn } from "@/lib/utils";
 import { HEADER_CONTROL_HEIGHT } from "@/lib/ui/header-controls";
-import { navigateSettingsTab, settingsTabHref } from "@/lib/profile/settings-tabs";
+import { ACCOUNT_MODE } from "@/lib/constants/account";
+import { navigateSettingsTab, settingsTabHref, SETTINGS_TAB } from "@/lib/profile/settings-tabs";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { logout } from "@/app/(app)/actions";
 import {
@@ -30,6 +31,7 @@ import {
   KeyRound,
   LogOut,
   Palette,
+  ShieldCheck,
   Ticket,
   User,
   Users,
@@ -45,7 +47,7 @@ export function AccountMenu() {
     ? getDisplayName(profile)
     : user?.email?.split("@")[0] ?? "…";
 
-  const isFamily = profile?.account_mode === "family";
+  const isFamily = profile?.account_mode === ACCOUNT_MODE.FAMILY;
   const modeLabel = isFamily ? t.account.modeFamily : t.account.modeSolo;
 
   return (
@@ -107,8 +109,8 @@ export function AccountMenu() {
 
           <DropdownMenuItem asChild>
             <Link
-              href={settingsTabHref("profile")}
-              onClick={(e) => navigateSettingsTab("profile", pathname) && e.preventDefault()}
+              href={settingsTabHref(SETTINGS_TAB.PROFILE)}
+              onClick={(e) => navigateSettingsTab(SETTINGS_TAB.PROFILE, pathname) && e.preventDefault()}
               className="flex items-center gap-2"
             >
               <Palette className="size-4 text-primary" />
@@ -117,20 +119,21 @@ export function AccountMenu() {
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link
-              href={settingsTabHref("account")}
-              onClick={(e) => navigateSettingsTab("account", pathname) && e.preventDefault()}
+              href={settingsTabHref(SETTINGS_TAB.ACCOUNT)}
+              onClick={(e) => navigateSettingsTab(SETTINGS_TAB.ACCOUNT, pathname) && e.preventDefault()}
               className="flex items-center gap-2"
             >
               <User className="size-4 text-primary" />
               {t.account.menuAccountType}
             </Link>
           </DropdownMenuItem>
-          {profile?.account_mode === "solo" && !profile.family_id && (
+          {profile?.account_mode === ACCOUNT_MODE.SOLO && !profile.family_id && (
             <DropdownMenuItem asChild>
               <Link
-                href={`${settingsTabHref("account")}#join-family`}
+                href={`${settingsTabHref(SETTINGS_TAB.ACCOUNT)}#join-family`}
                 onClick={(e) =>
-                  navigateSettingsTab("account", pathname, "#join-family") && e.preventDefault()
+                  navigateSettingsTab(SETTINGS_TAB.ACCOUNT, pathname, "#join-family") &&
+                  e.preventDefault()
                 }
                 className="flex items-center gap-2"
               >
@@ -139,22 +142,40 @@ export function AccountMenu() {
               </Link>
             </DropdownMenuItem>
           )}
-          {profile?.account_mode === "family" && profile.family_id && (
-            <DropdownMenuItem asChild>
-              <Link
-                href={settingsTabHref("family")}
-                onClick={(e) => navigateSettingsTab("family", pathname) && e.preventDefault()}
-                className="flex items-center gap-2"
-              >
-                <Users className="size-4 text-primary" />
-                {t.account.menuFamily}
-              </Link>
-            </DropdownMenuItem>
+          {profile?.account_mode === ACCOUNT_MODE.FAMILY && profile.family_id && (
+            <>
+              <DropdownMenuItem asChild>
+                <Link
+                  href={settingsTabHref(SETTINGS_TAB.FAMILY)}
+                  onClick={(e) =>
+                    navigateSettingsTab(SETTINGS_TAB.FAMILY, pathname) && e.preventDefault()
+                  }
+                  className="flex items-center gap-2"
+                >
+                  <Users className="size-4 text-primary" />
+                  {t.account.menuFamily}
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link
+                  href={settingsTabHref(SETTINGS_TAB.PERMISSIONS)}
+                  onClick={(e) =>
+                    navigateSettingsTab(SETTINGS_TAB.PERMISSIONS, pathname) && e.preventDefault()
+                  }
+                  className="flex items-center gap-2"
+                >
+                  <ShieldCheck className="size-4 text-primary" />
+                  {t.account.menuPermissions}
+                </Link>
+              </DropdownMenuItem>
+            </>
           )}
           <DropdownMenuItem asChild>
             <Link
-              href={settingsTabHref("password")}
-              onClick={(e) => navigateSettingsTab("password", pathname) && e.preventDefault()}
+              href={settingsTabHref(SETTINGS_TAB.PASSWORD)}
+              onClick={(e) =>
+                navigateSettingsTab(SETTINGS_TAB.PASSWORD, pathname) && e.preventDefault()
+              }
               className="flex items-center gap-2"
             >
               <KeyRound className="size-4 text-primary" />

@@ -27,18 +27,17 @@ export function BirthdaysView() {
   const fetchNotifications = useNotificationsStore((s) => s.fetchNotifications);
 
   const now = new Date();
-  const [year, setYear] = useState(now.getFullYear());
-  const [month, setMonth] = useState(now.getMonth() + 1);
+  const [year, setYear] = useState<number>(now.getFullYear());
+  const [month, setMonth] = useState<number>(now.getMonth() + 1);
   const [entries, setEntries] = useState<BirthdayEntry[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [focusedDay, setFocusedDay] = useState<number | null>(null);
   const [focusedEntryId, setFocusedEntryId] = useState<string | null>(null);
   const [editingEntry, setEditingEntry] = useState<BirthdayEntry | null>(null);
-  const [editOpen, setEditOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState<boolean>(false);
   const [deleteState, deleteAction, deletePending] = useActionState(deleteBirthday, null);
 
-  const loadEntries = useCallback(async () => {
-    setLoading(true);
+  const fetchBirthdayEntries = useCallback(async () => {
     const supabase = createClient();
     const { data } = await supabase
       .from("birthday_entries")
@@ -46,13 +45,29 @@ export function BirthdaysView() {
       .order("birth_month")
       .order("birth_day");
 
-    setEntries((data ?? []) as BirthdayEntry[]);
-    setLoading(false);
+    return (data ?? []) as BirthdayEntry[];
   }, []);
 
+  const loadEntries = useCallback(async () => {
+    setLoading(true);
+    const data = await fetchBirthdayEntries();
+    setEntries(data);
+    setLoading(false);
+  }, [fetchBirthdayEntries]);
+
   useEffect(() => {
-    void loadEntries();
-  }, [loadEntries]);
+    let cancelled = false;
+
+    void fetchBirthdayEntries().then((data) => {
+      if (cancelled) return;
+      setEntries(data);
+      setLoading(false);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [fetchBirthdayEntries]);
 
   useActionFeedback(deleteState, () => void loadEntries());
 
@@ -98,7 +113,7 @@ export function BirthdaysView() {
           <Card id="birthday-calendar" className="rounded-none py-0 shadow-sm scroll-mt-24">
             <CardContent className="p-4 md:p-6">
               {loading ? (
-                <Skeleton className="h-[28rem] w-full rounded-none" />
+                <Skeleton className="h-112 w-full rounded-none" />
               ) : (
                 <BirthdayCalendar
                   year={year}
@@ -144,7 +159,7 @@ export function BirthdaysView() {
                         key={entry.id}
                         className={cn(
                           "flex items-start gap-2 p-3 transition-colors",
-                          isSelected && "bg-primary/[0.04]"
+                          isSelected && "bg-primary/4"
                         )}
                       >
                         <button
@@ -154,7 +169,7 @@ export function BirthdaysView() {
                             "min-w-0 flex-1 cursor-pointer rounded-sm border-l-2 text-left transition-all duration-150",
                             "hover:bg-muted/60 -my-1 py-2 pl-3 pr-2",
                             isSelected
-                              ? "border-l-primary bg-primary/[0.06] shadow-sm ring-1 ring-primary/15"
+                              ? "border-l-primary bg-primary/6 shadow-sm ring-1 ring-primary/15"
                               : "border-l-transparent"
                           )}
                         >

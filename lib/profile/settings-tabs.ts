@@ -1,12 +1,17 @@
-export type SettingsTab = "profile" | "account" | "family" | "password";
+import {
+  SETTINGS_TAB,
+  SETTINGS_TAB_DEFAULT,
+  SETTINGS_TABS,
+  type SettingsTab,
+} from "@/lib/constants/settings";
 
-const SETTINGS_TABS: SettingsTab[] = ["profile", "account", "family", "password"];
+export type { SettingsTab };
 
 export function parseSettingsTab(value: string | null): SettingsTab {
   if (value && SETTINGS_TABS.includes(value as SettingsTab)) {
     return value as SettingsTab;
   }
-  return "profile";
+  return SETTINGS_TAB_DEFAULT;
 }
 
 export function settingsTabHref(tab: SettingsTab) {
@@ -27,3 +32,5 @@ export function navigateSettingsTab(tab: SettingsTab, pathname: string, hash = "
 
   return true;
 }
+
+export { SETTINGS_TAB };

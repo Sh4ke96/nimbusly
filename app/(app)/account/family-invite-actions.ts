@@ -2,6 +2,9 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { getServerLang, getServerT } from "@/lib/i18n/server";
+import { ACCOUNT_MODE, FAMILY_ROLE } from "@/lib/constants/account";
+import { INVITATION_STATUS } from "@/lib/constants/family-invitation";
+import { FAMILY_ACCESS_ERROR } from "@/lib/constants/server-error";
 import { getDisplayName } from "@/lib/profile";
 import { isValidInviteCodeFormat, normalizeInviteCode } from "@/lib/family/invite";
 import { sendFamilyInviteEmail } from "@/lib/family/send-invite-email";
@@ -13,7 +16,7 @@ async function requireFamilyOwner() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) return { error: "unauthorized" as const };
+  if (!user) return { error: FAMILY_ACCESS_ERROR.UNAUTHORIZED };
 
   const { data: profile } = await supabase
     .from("profiles")
@@ -21,8 +24,8 @@ async function requireFamilyOwner() {
     .eq("id", user.id)
     .maybeSingle();
 
-  if (!profile?.family_id || profile.account_mode !== "family") {
-    return { error: "no_family" as const };
+  if (!profile?.family_id || profile.account_mode !== ACCOUNT_MODE.FAMILY) {
+    return { error: FAMILY_ACCESS_ERROR.NO_FAMILY };
   }
 
   const { data: family } = await supabase
@@ -32,7 +35,7 @@ async function requireFamilyOwner() {
     .maybeSingle();
 
   if (!family || family.created_by !== user.id) {
-    return { error: "not_owner" as const };
+    return { error: FAMILY_ACCESS_ERROR.NOT_OWNER };
   }
 
   return { supabase, user, family };
@@ -47,8 +50,8 @@ export async function sendFamilyInvitation(
   const ctx = await requireFamilyOwner();
 
   if ("error" in ctx) {
-    if (ctx.error === "unauthorized") return { error: t.account.errorUnauthorized };
-    if (ctx.error === "no_family") return { error: t.account.errorNoFamily };
+    if (ctx.error === FAMILY_ACCESS_ERROR.UNAUTHORIZED) return { error: t.account.errorUnauthorized };
+    if (ctx.error === FAMILY_ACCESS_ERROR.NO_FAMILY) return { error: t.account.errorNoFamily };
     return { error: t.account.errorNotFamilyOwner };
   }
 
@@ -98,7 +101,7 @@ export async function sendFamilyInvitation(
   } catch {
     await ctx.supabase
       .from("family_invitations")
-      .update({ status: "revoked" })
+      .update({ status: INVITATION_STATUS.REVOKED })
       .eq("token", invitation.token);
 
     return { error: t.account.familyInviteError };
@@ -113,7 +116,7 @@ export async function revokeFamilyInvitation(
   const ctx = await requireFamilyOwner();
 
   if ("error" in ctx) {
-    if (ctx.error === "unauthorized") return { error: t.account.errorUnauthorized };
+    if (ctx.error === FAMILY_ACCESS_ERROR.UNAUTHORIZED) return { error: t.account.errorUnauthorized };
     return { error: t.account.errorNotFamilyOwner };
   }
 
@@ -122,10 +125,10 @@ export async function revokeFamilyInvitation(
 
   const { error } = await ctx.supabase
     .from("family_invitations")
-    .update({ status: "revoked" })
+    .update({ status: INVITATION_STATUS.REVOKED })
     .eq("id", invitationId)
     .eq("family_id", ctx.family.id)
-    .eq("status", "pending");
+    .eq("status", INVITATION_STATUS.PENDING);
 
   if (error) return { error: t.account.errorGeneric };
 
@@ -169,7 +172,7 @@ export async function ensureFamilyInviteCode(): Promise<string | null> {
     .eq("id", user.id)
     .maybeSingle();
 
-  if (!profile?.family_id || profile.account_mode !== "family") return null;
+  if (!profile?.family_id || profile.account_mode !== ACCOUNT_MODE.FAMILY) return null;
 
   const { data, error } = await supabase.rpc("ensure_family_invite_code", {
     p_family_id: profile.family_id,
@@ -222,8 +225,9 @@ export async function joinFamilyWithInviteCode(
   const { error: updateError } = await supabase
     .from("profiles")
     .update({
-      account_mode: "family",
+      account_mode: ACCOUNT_MODE.FAMILY,
       family_id: familyId,
+      family_role: FAMILY_ROLE.MEMBER,
       updated_at: new Date().toISOString(),
     })
     .eq("id", user.id);

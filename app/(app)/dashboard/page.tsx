@@ -4,6 +4,8 @@ import { AppHeader } from "@/components/app/app-header";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useT } from "@/lib/lang-context";
 import { getDisplayName } from "@/lib/profile";
+import { ACCOUNT_MODE } from "@/lib/constants/account";
+import { SETTINGS_TAB } from "@/lib/profile/settings-tabs";
 import {
   Wallet,
   ShoppingCart,
@@ -35,7 +37,10 @@ export default function DashboardPage() {
       key: "family",
       label: t.dashboard.moduleLabels.family,
       desc: t.dashboard.moduleDescs.family,
-      href: profile?.account_mode === "family" && profile.family_id ? "/profile/settings?tab=family" : "#",
+      href:
+        profile?.account_mode === ACCOUNT_MODE.FAMILY && profile.family_id
+          ? `/profile/settings?tab=${SETTINGS_TAB.FAMILY}`
+          : "#",
     },
   ];
 

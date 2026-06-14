@@ -12,9 +12,9 @@ import { toast } from "sonner";
 export default function ResetPasswordPage() {
   const t = useT();
   const router = useRouter();
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [pending, setPending] = useState(false);
+  const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
+  const [pending, setPending] = useState<boolean>(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

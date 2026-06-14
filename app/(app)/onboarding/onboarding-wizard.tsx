@@ -10,6 +10,7 @@ import { INVITE_TOKEN_COOKIE } from "@/lib/family/constants";
 import { formatInviteCode, readInviteCodeFromCookie } from "@/lib/family/invite";
 import { useT } from "@/lib/lang-context";
 import { cn } from "@/lib/utils";
+import { FAMILY_SETUP_INTENT } from "@/lib/constants/account";
 import type { FamilySetupIntent } from "@/lib/profile";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
 import { completeOnboarding, type OnboardingState } from "./actions";
@@ -30,15 +31,15 @@ export function OnboardingWizard() {
   const t = useT();
   const [step, setStep] = useState<Step>("color");
   const [avatarColor, setAvatarColor] = useState<AvatarColor>(DEFAULT_AVATAR_COLOR);
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [firstName, setFirstName] = useState<string>("");
+  const [lastName, setLastName] = useState<string>("");
   const [familyIntent, setFamilyIntent] = useState<FamilySetupIntent>(() => {
-    if (readInviteTokenCookie() || readInviteCodeFromCookie()) return "join";
-    return "create";
+    if (readInviteTokenCookie() || readInviteCodeFromCookie()) return FAMILY_SETUP_INTENT.JOIN;
+    return FAMILY_SETUP_INTENT.CREATE;
   });
-  const [familyName, setFamilyName] = useState("");
-  const [inviteCode, setInviteCode] = useState(() => readInviteCodeFromCookie());
-  const [inviteToken] = useState(() => readInviteTokenCookie());
+  const [familyName, setFamilyName] = useState<string>("");
+  const [inviteCode, setInviteCode] = useState<string>(() => readInviteCodeFromCookie());
+  const [inviteToken] = useState<string>(() => readInviteTokenCookie());
   const inviteCodeFromRegistration = inviteCode.length > 0 && !inviteToken;
   const [state, action, pending] = useActionState<OnboardingState, FormData>(
     completeOnboarding,
@@ -65,8 +66,8 @@ export function OnboardingWizard() {
 
   function canContinue() {
     if (step === "name") return firstName.trim().length > 0 && lastName.trim().length > 0;
-    if (step === "account" && familyIntent === "create") return familyName.trim().length > 0;
-    if (step === "account" && familyIntent === "join") {
+    if (step === "account" && familyIntent === FAMILY_SETUP_INTENT.CREATE) return familyName.trim().length > 0;
+    if (step === "account" && familyIntent === FAMILY_SETUP_INTENT.JOIN) {
       return inviteToken.length > 0 || inviteCode.trim().length > 0;
     }
     return true;
@@ -191,9 +192,9 @@ export function OnboardingWizard() {
           <div className="grid gap-3">
             <Button
               type="button"
-              variant={familyIntent === "create" ? "default" : "outline"}
+              variant={familyIntent === FAMILY_SETUP_INTENT.CREATE ? "default" : "outline"}
               className="h-auto w-full justify-start rounded-none p-4 text-left"
-              onClick={() => setFamilyIntent("create")}
+              onClick={() => setFamilyIntent(FAMILY_SETUP_INTENT.CREATE)}
             >
               <div className="flex items-start gap-3">
                 <span className="inline-flex size-10 items-center justify-center rounded-none bg-primary/10 text-primary">
@@ -208,9 +209,9 @@ export function OnboardingWizard() {
 
             <Button
               type="button"
-              variant={familyIntent === "join" ? "default" : "outline"}
+              variant={familyIntent === FAMILY_SETUP_INTENT.JOIN ? "default" : "outline"}
               className="h-auto w-full justify-start rounded-none p-4 text-left"
-              onClick={() => setFamilyIntent("join")}
+              onClick={() => setFamilyIntent(FAMILY_SETUP_INTENT.JOIN)}
             >
               <div className="flex items-start gap-3">
                 <span className="inline-flex size-10 items-center justify-center rounded-none bg-primary/10 text-primary">
@@ -225,9 +226,9 @@ export function OnboardingWizard() {
 
             <Button
               type="button"
-              variant={familyIntent === "solo" ? "default" : "outline"}
+              variant={familyIntent === FAMILY_SETUP_INTENT.SOLO ? "default" : "outline"}
               className="h-auto w-full justify-start rounded-none p-4 text-left"
-              onClick={() => setFamilyIntent("solo")}
+              onClick={() => setFamilyIntent(FAMILY_SETUP_INTENT.SOLO)}
             >
               <div className="flex items-start gap-3">
                 <span className="inline-flex size-10 items-center justify-center rounded-none bg-primary/10 text-primary">
@@ -241,7 +242,7 @@ export function OnboardingWizard() {
             </Button>
           </div>
 
-          {familyIntent === "create" && (
+          {familyIntent === FAMILY_SETUP_INTENT.CREATE && (
             <div className="space-y-1.5 animate-rise">
               <Label htmlFor="familyName">{t.onboarding.familyNameLabel}</Label>
               <Input
@@ -253,19 +254,19 @@ export function OnboardingWizard() {
             </div>
           )}
 
-          {familyIntent === "join" && inviteToken && (
+          {familyIntent === FAMILY_SETUP_INTENT.JOIN && inviteToken && (
             <p className="text-sm text-muted-foreground rounded-none border border-primary/30 bg-primary/10 px-3 py-2">
               {t.onboarding.inviteEmailPending}
             </p>
           )}
 
-          {familyIntent === "join" && inviteCodeFromRegistration && (
+          {familyIntent === FAMILY_SETUP_INTENT.JOIN && inviteCodeFromRegistration && (
             <p className="text-sm text-muted-foreground rounded-none border border-primary/30 bg-primary/10 px-3 py-2">
               {t.onboarding.inviteCodeFromRegistration}
             </p>
           )}
 
-          {familyIntent === "join" && !inviteToken && (
+          {familyIntent === FAMILY_SETUP_INTENT.JOIN && !inviteToken && (
             <div className="space-y-1.5 animate-rise">
               <Label htmlFor="inviteCode">{t.onboarding.inviteCodeLabel}</Label>
               <Input

@@ -1,10 +1,13 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { getServerLang, getServerT } from "@/lib/i18n/server";
+import { getServerT } from "@/lib/i18n/server";
+import { formatMessage } from "@/lib/i18n/format";
 import { buildBirthdayChangeSummary } from "@/lib/birthdays/changes";
 import { isValidBirthDate } from "@/lib/birthdays/types";
 import { formatBirthdayLabel } from "@/lib/birthdays/types";
+import { ACCOUNT_MODE } from "@/lib/constants/account";
+import { NOTIFICATION_TYPE, type NotificationType } from "@/lib/constants/notifications";
 import { getDisplayName } from "@/lib/profile";
 import type { AccountActionState } from "@/app/(app)/account/actions";
 
@@ -19,7 +22,7 @@ async function requireUser() {
 async function notifyFamilyAboutBirthdayEvent(
   supabase: Awaited<ReturnType<typeof createClient>>,
   params: {
-    type: "birthday_added" | "birthday_updated";
+    type: NotificationType;
     actorId: string;
     actorName: string;
     familyId: string;
@@ -29,7 +32,7 @@ async function notifyFamilyAboutBirthdayEvent(
     changeSummary?: string;
   }
 ) {
-  const lang = await getServerLang();
+  const t = await getServerT();
   const { data: members } = await supabase
     .from("profiles")
     .select("id")
@@ -41,16 +44,13 @@ async function notifyFamilyAboutBirthdayEvent(
 
   if (recipientIds.length === 0) return;
 
-  const title =
-    params.type === "birthday_added"
-      ? lang === "pl"
-        ? `${params.actorName} dodał urodziny`
-        : `${params.actorName} added a birthday`
-      : lang === "pl"
-        ? `${params.actorName} zaktualizował urodziny`
-        : `${params.actorName} updated a birthday`;
+  const titleTemplate =
+    params.type === NOTIFICATION_TYPE.BIRTHDAY_ADDED
+      ? t.notifications.birthdayAddedTitle
+      : t.notifications.birthdayUpdatedTitle;
 
-  const body = `${params.personName} — ${params.bodyDetail}`;
+  const title = formatMessage(titleTemplate, { actor: params.actorName });
+  const body = `${params.personName}${t.notifications.notificationBodySeparator}${params.bodyDetail}`;
 
   await supabase.rpc("create_family_notifications", {
     p_recipient_ids: recipientIds,
@@ -94,7 +94,7 @@ export async function createBirthday(
     .maybeSingle();
 
   const familyId =
-    profile?.account_mode === "family" && profile.family_id ? profile.family_id : null;
+    profile?.account_mode === ACCOUNT_MODE.FAMILY && profile.family_id ? profile.family_id : null;
 
   const { data: birthday, error } = await supabase
     .from("birthday_entries")
@@ -121,7 +121,7 @@ export async function createBirthday(
 
     try {
       await notifyFamilyAboutBirthdayEvent(supabase, {
-        type: "birthday_added",
+        type: NOTIFICATION_TYPE.BIRTHDAY_ADDED,
         actorId: user.id,
         actorName,
         familyId,
@@ -142,7 +142,6 @@ export async function updateBirthday(
   formData: FormData
 ): Promise<AccountActionState> {
   const t = await getServerT();
-  const lang = await getServerLang();
   const { supabase, user } = await requireUser();
 
   if (!user) return { error: t.account.errorUnauthorized };
@@ -189,19 +188,23 @@ export async function updateBirthday(
 
   if (error) return { error: t.birthdays.errorGeneric };
 
-  const changeSummary = buildBirthdayChangeSummary(existing, {
-    person_name: personName,
-    birth_month: birthMonth,
-    birth_day: birthDay,
-    description,
-  }, lang);
+  const changeSummary = buildBirthdayChangeSummary(
+    existing,
+    {
+      person_name: personName,
+      birth_month: birthMonth,
+      birth_day: birthDay,
+      description,
+    },
+    t.birthdays
+  );
 
   const familyId = existing.family_id;
-  if (familyId && profile?.account_mode === "family") {
+  if (familyId && profile?.account_mode === ACCOUNT_MODE.FAMILY) {
     const actorName = getDisplayName(profile);
     try {
       await notifyFamilyAboutBirthdayEvent(supabase, {
-        type: "birthday_updated",
+        type: NOTIFICATION_TYPE.BIRTHDAY_UPDATED,
         actorId: user.id,
         actorName,
         familyId,

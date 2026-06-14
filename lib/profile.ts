@@ -1,13 +1,19 @@
-export type AccountMode = "family" | "solo";
+import type { AccountMode, FamilyRole } from "@/lib/constants/account";
+import type { InvitationStatus } from "@/lib/constants/family-invitation";
 
-/** Onboarding account step: create family, join via code, or solo. */
-export type FamilySetupIntent = "create" | "join" | "solo";
+export type {
+  AccountMode,
+  FamilyRole,
+  FamilySetupIntent,
+} from "@/lib/constants/account";
+
+export type { InvitationStatus } from "@/lib/constants/family-invitation";
 
 export type FamilyInvitation = {
   id: string;
   family_id: string;
   email: string;
-  status: "pending" | "accepted" | "revoked";
+  status: InvitationStatus;
   created_at: string;
   expires_at: string;
 };
@@ -25,13 +31,14 @@ export type Profile = {
   last_name: string;
   avatar_color: string;
   family_id: string | null;
+  family_role: FamilyRole | null;
   account_mode: AccountMode;
   onboarding_completed: boolean;
 };
 
 export type FamilyMember = Pick<
   Profile,
-  "id" | "first_name" | "last_name" | "avatar_color"
+  "id" | "first_name" | "last_name" | "avatar_color" | "family_role"
 >;
 
 export function getDisplayName(profile: Pick<Profile, "first_name" | "last_name">) {

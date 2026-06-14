@@ -1,10 +1,12 @@
 import { cookies } from "next/headers";
+import { LANG, LANG_COOKIE } from "@/lib/constants/lang";
+import type { Lang } from "@/lib/constants/lang";
 import { dict } from ".";
-import type { Lang } from "./types";
 
 export async function getServerLang(): Promise<Lang> {
   const store = await cookies();
-  return (store.get("nimbusly-lang")?.value ?? "pl") as Lang;
+  const value = store.get(LANG_COOKIE)?.value;
+  return value === LANG.EN ? LANG.EN : LANG.PL;
 }
 
 export async function getServerT() {

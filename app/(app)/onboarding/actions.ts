@@ -7,7 +7,13 @@ import { getServerT } from "@/lib/i18n/server";
 import { isAvatarColor } from "@/lib/avatar-colors";
 import { INVITE_TOKEN_COOKIE, INVITE_CODE_COOKIE, parseFamilySetupIntent } from "@/lib/family/constants";
 import { isValidInviteCodeFormat, normalizeInviteCode } from "@/lib/family/invite";
-import type { AccountMode } from "@/lib/profile";
+import {
+  ACCOUNT_MODE,
+  FAMILY_ROLE,
+  FAMILY_SETUP_INTENT,
+  type AccountMode,
+  type FamilyRole,
+} from "@/lib/constants/account";
 
 export type OnboardingState = { error: string } | null;
 
@@ -53,7 +59,7 @@ export async function completeOnboarding(
 
   const { data: existingProfile } = await supabase
     .from("profiles")
-    .select("id, family_id, onboarding_completed")
+    .select("id, family_id, family_role, onboarding_completed")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -85,10 +91,15 @@ export async function completeOnboarding(
     return { error: t.onboarding.errorGeneric };
   }
 
-  let accountMode: AccountMode = familyIntent === "solo" ? "solo" : "family";
+  let accountMode: AccountMode =
+    familyIntent === FAMILY_SETUP_INTENT.SOLO ? ACCOUNT_MODE.SOLO : ACCOUNT_MODE.FAMILY;
   let familyId: string | null = existingProfile?.family_id ?? null;
+  let familyRole: FamilyRole | null =
+    familyIntent === FAMILY_SETUP_INTENT.SOLO
+      ? null
+      : (existingProfile?.family_role ?? null);
 
-  if (familyIntent === "create") {
+  if (familyIntent === FAMILY_SETUP_INTENT.CREATE) {
     if (!familyName) {
       return { error: t.onboarding.errorFamilyName };
     }
@@ -116,7 +127,9 @@ export async function completeOnboarding(
 
       familyId = family.id;
     }
-  } else if (familyIntent === "join") {
+
+    familyRole = FAMILY_ROLE.ADMIN;
+  } else if (familyIntent === FAMILY_SETUP_INTENT.JOIN) {
     const cookieStore = await cookies();
     const tokenFromCookie = cookieStore.get(INVITE_TOKEN_COOKIE)?.value ?? "";
     const codeFromCookie = cookieStore.get(INVITE_CODE_COOKIE)?.value ?? "";
@@ -141,10 +154,12 @@ export async function completeOnboarding(
       familyId = joinedFamilyId;
     }
 
-    accountMode = "family";
+    accountMode = ACCOUNT_MODE.FAMILY;
+    familyRole = FAMILY_ROLE.MEMBER;
   } else {
     familyId = null;
-    accountMode = "solo";
+    accountMode = ACCOUNT_MODE.SOLO;
+    familyRole = null;
   }
 
   const profilePayload = {
@@ -152,6 +167,7 @@ export async function completeOnboarding(
     last_name: lastName,
     avatar_color: avatarColor,
     family_id: familyId,
+    family_role: familyRole,
     account_mode: accountMode,
     onboarding_completed: true,
     updated_at: new Date().toISOString(),
@@ -175,7 +191,7 @@ export async function completeOnboarding(
     return { error: t.onboarding.errorGeneric };
   }
 
-  if (familyIntent === "join") {
+  if (familyIntent === FAMILY_SETUP_INTENT.JOIN) {
     const cookieStore = await cookies();
     cookieStore.delete(INVITE_TOKEN_COOKIE);
     cookieStore.delete(INVITE_CODE_COOKIE);

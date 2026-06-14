@@ -1,6 +1,11 @@
 import type { Dict } from "@/lib/i18n/types";
 
 export const en: Dict = {
+  meta: {
+    title: "Nimbusly — Your family's shared home",
+    description:
+      "Manage your budget, plan shopping, remember birthdays and share ideas. Connect with loved ones and see the same data — everyone knows who added what.",
+  },
   nav: {
     features: "Features",
     featuresSlug: "features",
@@ -22,6 +27,13 @@ export const en: Dict = {
     socialProofCount: "12,000+",
     socialProofLabel: "families use it",
     rating: "4.9/5 app store rating",
+    imageAlt: "Nimbusly — family home illustration",
+    demoAvatars: [
+      { name: "Anna K.", member: "mama" },
+      { name: "Piotr K.", member: "tata" },
+      { name: "Zosia K.", member: "corka" },
+      { name: "Jakub K.", member: "syn" },
+    ],
   },
   chips: {
     budget: "Budget",
@@ -153,6 +165,7 @@ export const en: Dict = {
     modeFamily: "Family account",
     modeSolo: "Solo account",
     menuFamily: "Manage family",
+    menuPermissions: "Permissions",
     menuPassword: "Change password",
     profileTitle: "Your profile",
     accountTypeTitle: "Account type",
@@ -182,7 +195,32 @@ export const en: Dict = {
     familyInviteAlreadyPending: "An invitation for this email is already pending.",
     familyInviteEmailInvalid: "Please enter a valid email address.",
     familyInviteError: "Could not send the invitation.",
+    familyInviteEmailSubject: "Invitation to join “{family}” — Nimbusly",
+    familyInviteEmailHeading: "Join your family on Nimbusly",
+    familyInviteEmailBody: "{inviter} invited you to join the “{family}” family on Nimbusly.",
+    familyInviteEmailCta: "Create account and join",
+    familyInviteEmailFooter:
+      "This link is valid for 14 days. If you did not expect this email, you can ignore it.",
     errorNotFamilyOwner: "Only the family creator can send invitations.",
+    errorNotFamilyAdmin: "Only a family admin can change permissions.",
+    errorCannotDemoteFounder: "The family founder cannot be demoted.",
+    errorCannotDemoteSelf: "You cannot remove your own admin role.",
+    permissionsDesc:
+      "Admins can grant permissions to family members. The family founder always remains an admin.",
+    permissionsMembersTitle: "Members and roles",
+    permissionsYou: "You",
+    permissionsFounder: "Founder",
+    permissionsRoleAdmin: "Admin",
+    permissionsRoleMember: "Member",
+    permissionsMakeAdmin: "Make admin",
+    permissionsMakeMember: "Remove admin",
+    permissionsMemberHint:
+      "Only admins can change roles. Contact your family founder or an admin.",
+    permissionsMoreTitle: "More options coming soon",
+    permissionsMoreDesc:
+      "Additional permission settings for family members will be added in future updates.",
+    permissionsPromotedSuccess: "Admin permissions granted.",
+    permissionsDemotedSuccess: "Admin permissions removed.",
     soloWarning: "Switching to solo will disconnect you from the family. Other members will stay in the group.",
     joinFamilyTitle: "Join a family",
     joinFamilyDesc: "Have an invite code? Enter it here to join an existing family.",
@@ -280,6 +318,29 @@ export const en: Dict = {
     errorInvalidDate: "Invalid birth date.",
     errorNotOwner: "You can only edit birthdays you added yourself.",
     errorGeneric: "Failed to save birthday.",
+    changeSummaryName: "name: {from} → {to}",
+    changeSummaryDate: "date: {from} → {to}",
+    changeSummaryDescription: "description updated",
+    changeSummaryEmpty: "no changes",
+    changeSummarySeparator: "; ",
+    calendarMonths: [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ],
+    calendarWeekdays: ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"],
+  },
+  theme: {
+    toggleLabel: "Toggle theme",
   },
   notifications: {
     title: "Notifications",
@@ -295,5 +356,8 @@ export const en: Dict = {
     emailComingSoon: "Email notifications will arrive in a future update.",
     errorGeneric: "Failed to update notifications.",
     menu: "Notifications",
+    birthdayAddedTitle: "{actor} added a birthday",
+    birthdayUpdatedTitle: "{actor} updated a birthday",
+    notificationBodySeparator: " — ",
   },
 };

@@ -1,4 +1,7 @@
-export type NotificationType = "birthday_added" | "birthday_updated";
+export type { NotificationType } from "@/lib/constants/notifications";
+export { NOTIFICATION_TYPE } from "@/lib/constants/notifications";
+
+import type { NotificationType } from "@/lib/constants/notifications";
 
 export interface AppNotification {
   id: string;

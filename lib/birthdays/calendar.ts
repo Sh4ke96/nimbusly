@@ -1,43 +1,9 @@
-const MONTH_NAMES_PL = [
-  "Styczeń",
-  "Luty",
-  "Marzec",
-  "Kwiecień",
-  "Maj",
-  "Czerwiec",
-  "Lipiec",
-  "Sierpień",
-  "Wrzesień",
-  "Październik",
-  "Listopad",
-  "Grudzień",
-] as const;
-
-const MONTH_NAMES_EN = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-] as const;
-
-const WEEKDAY_SHORT_PL = ["Pn", "Wt", "Śr", "Cz", "Pt", "So", "Nd"] as const;
-const WEEKDAY_SHORT_EN = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"] as const;
-
-export function getMonthName(month: number, lang: "pl" | "en"): string {
-  const names = lang === "pl" ? MONTH_NAMES_PL : MONTH_NAMES_EN;
-  return names[month - 1] ?? "";
+export function getMonthName(month: number, monthNames: readonly string[]): string {
+  return monthNames[month - 1] ?? "";
 }
 
-export function getWeekdayLabels(lang: "pl" | "en"): readonly string[] {
-  return lang === "pl" ? WEEKDAY_SHORT_PL : WEEKDAY_SHORT_EN;
+export function getWeekdayLabels(weekdayLabels: readonly string[]): readonly string[] {
+  return weekdayLabels;
 }
 
 export interface CalendarCell {

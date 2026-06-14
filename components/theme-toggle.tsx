@@ -4,9 +4,11 @@ import { useTheme } from "next-themes";
 import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { HEADER_CONTROL_HEIGHT } from "@/lib/ui/header-controls";
+import { useT } from "@/lib/lang-context";
 import { cn } from "@/lib/utils";
 
 export function ThemeToggle({ className }: { className?: string }) {
+  const t = useT();
   const { setTheme } = useTheme();
 
   function toggleTheme() {
@@ -20,7 +22,7 @@ export function ThemeToggle({ className }: { className?: string }) {
       variant="outline"
       size="icon-sm"
       onClick={toggleTheme}
-      aria-label="Toggle theme"
+      aria-label={t.theme.toggleLabel}
       className={cn(
         HEADER_CONTROL_HEIGHT,
         "group relative w-8 rounded-none border-border bg-muted/50 text-muted-foreground",
