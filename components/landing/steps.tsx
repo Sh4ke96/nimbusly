@@ -17,7 +17,7 @@ export function StepsSection() {
         <div className="grid sm:grid-cols-3 gap-8">
           {t.steps.items.map((s) => (
             <div key={s.step} className="space-y-4 text-center">
-              <span className="inline-flex size-14 items-center justify-center rounded-full bg-primary/10 font-heading font-bold text-xl text-primary">
+              <span className="inline-flex size-14 items-center justify-center rounded-none bg-primary/10 font-heading font-bold text-xl text-primary">
                 {s.step}
               </span>
               <div className="space-y-1">

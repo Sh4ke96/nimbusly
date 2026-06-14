@@ -3,6 +3,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getServerT } from '@/lib/i18n/server'
+import { getPostAuthRedirectPath } from '@/lib/profile/server'
 
 export type AuthState = { error: string } | { success: string } | null
 
@@ -31,7 +32,15 @@ export async function login(
     return { error: t.login.errorGeneric }
   }
 
-  redirect('/dashboard')
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (user) {
+    redirect(await getPostAuthRedirectPath(user.id))
+  }
+
+  redirect('/onboarding')
 }
 
 export async function register(

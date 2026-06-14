@@ -22,17 +22,17 @@ export function HeroSection() {
     <section className="relative overflow-hidden">
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-32 -right-32 size-[600px] rounded-full bg-primary/6 blur-3xl"
+        className="pointer-events-none absolute -top-32 -right-32 size-[600px] rounded-none bg-primary/6 blur-3xl"
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute top-48 -left-48 size-[480px] rounded-full bg-accent/8 blur-3xl"
+        className="pointer-events-none absolute top-48 -left-48 size-[480px] rounded-none bg-accent/8 blur-3xl"
       />
 
       <div className="mx-auto max-w-6xl px-4 pt-16 pb-16 lg:pt-20">
         <div className="grid lg:grid-cols-[1fr_52%] gap-8 lg:gap-0 items-end">
           <div className="space-y-8 pb-16 animate-rise lg:pr-12">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-1.5 text-sm font-medium text-primary">
+            <span className="inline-flex items-center gap-1.5 rounded-none border border-primary/30 bg-primary/10 px-3.5 py-1.5 text-sm font-medium text-primary">
               <Sparkles className="size-3.5" />
               {t.hero.badge}
             </span>
@@ -84,7 +84,7 @@ export function HeroSection() {
           </div>
 
           <div className="relative animate-pop self-end">
-            <div className="relative rounded-3xl overflow-hidden">
+            <div className="relative rounded-none overflow-hidden">
               <Image
                 src="/hero-room.png"
                 alt="Nimbusly — family home illustration"

@@ -1,13 +1,9 @@
 "use client";
 
-import { createClient } from "@/lib/supabase/client";
-import { logout } from "../actions";
-import { Button } from "@/components/ui/button";
-import { Logo } from "@/components/logo";
-import { MemberAvatar } from "@/components/member-avatar";
-import { ThemeToggle } from "@/components/theme-toggle";
-import { LanguageToggle } from "@/components/language-toggle";
+import { AppHeader } from "@/components/app/app-header";
+import { useProfileStore } from "@/lib/stores/profile-store";
 import { useT } from "@/lib/lang-context";
+import { getDisplayName } from "@/lib/profile";
 import {
   Wallet,
   ShoppingCart,
@@ -17,21 +13,17 @@ import {
   Users,
   ArrowRight,
 } from "lucide-react";
-import { useEffect, useState } from "react";
-import type { User } from "@supabase/supabase-js";
 
 const moduleIcons = [Wallet, ShoppingCart, Gift, Cake, CalendarDays, Users];
 
 export default function DashboardPage() {
   const t = useT();
-  const [user, setUser] = useState<User | null>(null);
+  const user = useProfileStore((s) => s.user);
+  const profile = useProfileStore((s) => s.profile);
 
-  useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getUser().then(({ data }) => setUser(data.user));
-  }, []);
-
-  const emailName = user?.email?.split("@")[0] ?? "…";
+  const displayName = profile
+    ? getDisplayName(profile)
+    : user?.email?.split("@")[0] ?? "…";
 
   const modules = [
     { key: "budget", label: t.dashboard.moduleLabels.budget, desc: t.dashboard.moduleDescs.budget },
@@ -44,29 +36,13 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <header className="sticky top-0 z-40 flex items-center justify-between border-b border-border bg-background/80 backdrop-blur-md px-6 py-3">
-        <Logo size="sm" />
-        <div className="flex items-center gap-2">
-          <LanguageToggle className="hidden sm:flex" />
-          <ThemeToggle />
-          <MemberAvatar name={emailName} member="tata" size="sm" />
-          <form action={logout}>
-            <Button type="submit" variant="ghost" size="sm">
-              {t.dashboard.logout}
-            </Button>
-          </form>
-        </div>
-      </header>
+      <AppHeader />
 
       <main className="flex-1 mx-auto w-full max-w-5xl px-4 py-10 space-y-10">
         <div className="space-y-1">
           <h1 className="font-heading font-bold text-3xl tracking-tight">
-            {t.dashboard.greeting}, {emailName} 👋
+            {t.dashboard.greeting}, {displayName} 👋
           </h1>
-          <p className="text-muted-foreground text-sm">
-            {t.dashboard.loggedAs}{" "}
-            <span className="font-medium text-foreground">{user?.email}</span>
-          </p>
         </div>
 
         <section>
@@ -80,9 +56,9 @@ export default function DashboardPage() {
                 <a
                   key={m.key}
                   href="#"
-                  className="group flex items-center gap-4 rounded-2xl border border-border bg-card p-5 shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all duration-200"
+                  className="group flex items-center gap-4 rounded-none border border-border bg-card p-5 shadow-sm hover:-translate-y-0.5 hover:shadow-md transition-all duration-200"
                 >
-                  <span className="inline-flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-200">
+                  <span className="inline-flex size-11 items-center justify-center rounded-none bg-primary/10 text-primary group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-200">
                     <Icon className="size-5" />
                   </span>
                   <div className="flex-1 min-w-0">
@@ -96,7 +72,7 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        <div className="rounded-2xl border border-dashed border-border bg-muted/30 p-8 text-center space-y-2">
+        <div className="rounded-none border border-dashed border-border bg-muted/30 p-8 text-center space-y-2">
           <p className="font-heading font-semibold text-base">{t.dashboard.comingSoon}</p>
           <p className="text-sm text-muted-foreground">{t.dashboard.comingSoonDesc}</p>
         </div>

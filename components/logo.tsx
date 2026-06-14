@@ -26,7 +26,7 @@ export function Logo({
     <span className={cn("inline-flex items-center gap-2.5 group", className)}>
       {/* Icon */}
       <span
-        className="relative shrink-0 rounded-[22%] overflow-hidden"
+        className="relative shrink-0 rounded-none overflow-hidden"
         style={{ width: iconSize, height: iconSize }}
       >
         <svg

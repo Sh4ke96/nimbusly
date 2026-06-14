@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Potwierdź rejestrację — Nimbusly</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f6f8f2;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color:#f6f8f2;">
+    <tr>
+      <td align="center" style="padding:40px 16px;">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:560px;background-color:#ffffff;border:1px solid #dde3d2;">
+          <!-- Header -->
+          <tr>
+            <td style="background-color:#2b5748;padding:28px 32px;">
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                <tr>
+                  <td style="width:44px;height:44px;background-color:#618764;vertical-align:middle;text-align:center;">
+                    <img src="{{ .SiteURL }}/icon.svg" width="44" height="44" alt="Nimbusly" style="display:block;border:0;" />
+                  </td>
+                  <td style="padding-left:14px;vertical-align:middle;">
+                    <span style="font-family:Georgia,'Times New Roman',serif;font-size:22px;font-weight:700;color:#f6f8f2;letter-spacing:-0.02em;">Nimbusly</span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding:36px 32px 28px;">
+              <h1 style="margin:0 0 12px;font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:700;color:#273338;line-height:1.3;">
+                Potwierdź rejestrację
+              </h1>
+              <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#5c6b5c;">
+                Cześć! Dziękujemy za założenie konta w Nimbusly — aplikacji, która pomaga rodzinie ogarnąć codzienność w jednym miejscu.
+              </p>
+              <p style="margin:0 0 28px;font-size:15px;line-height:1.6;color:#5c6b5c;">
+                Kliknij przycisk poniżej, aby potwierdzić adres <strong style="color:#273338;">{{ .Email }}</strong> i dokończyć rejestrację.
+              </p>
+
+              <table role="presentation" cellspacing="0" cellpadding="0" border="0">
+                <tr>
+                  <td style="background-color:#618764;">
+                    <a href="{{ .ConfirmationURL }}" target="_blank" style="display:inline-block;padding:14px 28px;font-size:15px;font-weight:600;color:#f6f8f2;text-decoration:none;letter-spacing:0.01em;">
+                      Potwierdź adres e-mail
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin:28px 0 0;font-size:13px;line-height:1.6;color:#5c6b5c;">
+                Link jest ważny przez ograniczony czas i można z niego skorzystać tylko raz.
+              </p>
+
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-top:28px;border-top:1px solid #eef2e7;">
+                <tr>
+                  <td style="padding-top:20px;">
+                    <p style="margin:0 0 8px;font-size:12px;line-height:1.5;color:#9bab98;text-transform:uppercase;letter-spacing:0.06em;font-weight:600;">
+                      Link nie działa?
+                    </p>
+                    <p style="margin:0;font-size:13px;line-height:1.6;color:#5c6b5c;">
+                      Skopiuj i wklej ten adres w przeglądarce:<br />
+                      <a href="{{ .ConfirmationURL }}" style="color:#618764;word-break:break-all;">{{ .ConfirmationURL }}</a>
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding:20px 32px 28px;background-color:#eef2e7;border-top:1px solid #dde3d2;">
+              <p style="margin:0 0 6px;font-size:12px;line-height:1.5;color:#5c6b5c;">
+                Jeśli to nie Ty zakładałeś konto, zignoruj tę wiadomość.
+              </p>
+              <p style="margin:0;font-size:12px;line-height:1.5;color:#9bab98;">
+                © Nimbusly · <a href="{{ .SiteURL }}" style="color:#618764;text-decoration:none;">nimbusly.pl</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

@@ -1,6 +1,23 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
+async function isOnboardingComplete(
+  supabase: ReturnType<typeof createServerClient>,
+  userId: string
+): Promise<boolean> {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('onboarding_completed')
+    .eq('id', userId)
+    .maybeSingle()
+
+  if (error || !data) {
+    return false
+  }
+
+  return data.onboarding_completed === true
+}
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
 
@@ -39,10 +56,33 @@ export async function updateSession(request: NextRequest) {
     isAuthPage ||
     pathname.startsWith('/api/auth/')
 
-  if (user && isAuthPage) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/dashboard'
-    return NextResponse.redirect(url)
+  if (user) {
+    const onboardingComplete = await isOnboardingComplete(supabase, user.id)
+
+    if (onboardingComplete && pathname === '/onboarding') {
+      const url = request.nextUrl.clone()
+      url.pathname = '/dashboard'
+      return NextResponse.redirect(url)
+    }
+
+    if (
+      !onboardingComplete &&
+      (pathname === "/dashboard" ||
+        pathname.startsWith("/profile") ||
+        pathname === "/change-password")
+    ) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/onboarding'
+      return NextResponse.redirect(url)
+    }
+
+    if (isAuthPage || pathname === '/dashboard') {
+      const url = request.nextUrl.clone()
+      url.pathname = onboardingComplete ? '/dashboard' : '/onboarding'
+      if (pathname !== url.pathname) {
+        return NextResponse.redirect(url)
+      }
+    }
   }
 
   if (!user && !isPublic) {

@@ -57,7 +57,7 @@ export function MemberAvatar({
   return (
     <span
       className={cn(
-        "inline-flex items-center justify-center rounded-full font-semibold font-heading shrink-0",
+        "inline-flex items-center justify-center rounded-none font-semibold font-heading shrink-0",
         sizeClasses[size],
         ring && "ring-2 ring-background ring-offset-1 ring-offset-background",
         className

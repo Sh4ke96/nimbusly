@@ -14,7 +14,7 @@ export function FloatingChip({ icon, label, className, delay = "0s" }: FloatingC
   return (
     <span
       className={cn(
-        "animate-rise inline-flex items-center gap-1.5 rounded-full",
+        "animate-rise inline-flex items-center gap-1.5 rounded-none",
         "bg-card/95 backdrop-blur-sm border border-border",
         "px-3 py-1.5 text-xs font-semibold text-foreground shadow-lg",
         className

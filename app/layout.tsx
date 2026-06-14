@@ -3,6 +3,7 @@ import { Quicksand, Nunito, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { cookies } from "next/headers";
 import { LangProvider } from "@/lib/lang-context";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import type { Lang } from "@/lib/i18n";
 import "./globals.css";
 
@@ -55,7 +56,9 @@ export default async function RootLayout({
           defaultTheme="dark"
           disableTransitionOnChange
         >
-          <LangProvider initialLang={lang}>{children}</LangProvider>
+          <LangProvider initialLang={lang}>
+            <TooltipProvider>{children}</TooltipProvider>
+          </LangProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -26,9 +26,9 @@ export function FeaturesSection() {
             return (
               <div
                 key={f.title}
-                className="group bg-card rounded-2xl border border-border p-6 space-y-4 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-200"
+                className="group bg-card rounded-none border border-border p-6 space-y-4 shadow-sm hover:-translate-y-1 hover:shadow-md transition-all duration-200"
               >
-                <span className="inline-flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-200">
+                <span className="inline-flex size-10 items-center justify-center rounded-none bg-primary/10 text-primary group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-200">
                   <Icon className="size-5" />
                 </span>
                 <div className="space-y-1">
