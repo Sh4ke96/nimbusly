@@ -4,9 +4,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { MemberAvatar } from "@/components/member-avatar";
-import { FloatingChip } from "@/components/landing/floating-chip";
+import { HeroModulePills } from "@/components/landing/hero-module-pills";
 import { useT } from "@/lib/lang-context";
-import { ArrowRight, Wallet, ShoppingCart, Gift, Cake, Star, Sparkles } from "lucide-react";
+import { ArrowRight, Star, Sparkles } from "lucide-react";
 
 export function HeroSection() {
   const t = useT();
@@ -23,8 +23,8 @@ export function HeroSection() {
       />
 
       <div className="mx-auto max-w-6xl px-4 pt-16 pb-16 lg:pt-20">
-        <div className="grid lg:grid-cols-[1fr_52%] gap-8 lg:gap-0 items-end">
-          <div className="space-y-8 pb-16 animate-rise lg:pr-12">
+        <div className="grid items-center gap-10 lg:grid-cols-[1fr_52%] lg:gap-12">
+          <div className="space-y-8 animate-rise lg:pr-8">
             <span className="inline-flex items-center gap-1.5 rounded-none border border-primary/30 bg-primary/10 px-3.5 py-1.5 text-sm font-medium text-primary">
               <Sparkles className="size-3.5" />
               {t.hero.badge}
@@ -49,7 +49,7 @@ export function HeroSection() {
                 </Link>
               </Button>
               <Button variant="outline" size="lg" asChild>
-                <Link href="#demo">{t.hero.ctaSecondary}</Link>
+                <Link href={`#${t.nav.featuresSlug}`}>{t.hero.ctaSecondary}</Link>
               </Button>
             </div>
 
@@ -76,8 +76,8 @@ export function HeroSection() {
             </div>
           </div>
 
-          <div className="relative animate-pop self-end">
-            <div className="relative rounded-none overflow-hidden">
+          <div className="relative animate-pop">
+            <div className="relative overflow-hidden">
               <Image
                 src="/hero-room.png"
                 alt={t.hero.imageAlt}
@@ -86,33 +86,8 @@ export function HeroSection() {
                 className="w-full h-auto object-cover"
                 priority
               />
-              <div className="absolute inset-x-0 bottom-0 h-16 bg-linear-to-t from-background/20 to-transparent" />
+              <HeroModulePills />
             </div>
-
-            <FloatingChip
-              icon={<Wallet className="size-3.5" />}
-              label={t.chips.budget}
-              className="absolute top-5 left-5"
-              delay="0.2s"
-            />
-            <FloatingChip
-              icon={<ShoppingCart className="size-3.5" />}
-              label={t.chips.shopping}
-              className="absolute top-5 right-5"
-              delay="0.3s"
-            />
-            <FloatingChip
-              icon={<Gift className="size-3.5" />}
-              label={t.chips.gifts}
-              className="absolute bottom-10 left-5"
-              delay="0.4s"
-            />
-            <FloatingChip
-              icon={<Cake className="size-3.5" />}
-              label={t.chips.birthdays}
-              className="absolute bottom-10 right-5"
-              delay="0.5s"
-            />
           </div>
         </div>
       </div>

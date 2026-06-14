@@ -4,6 +4,7 @@ import { BUDGET_ENTRY_TYPE } from "@/lib/constants/budget";
 import type { Budget, BudgetExpense } from "@/lib/budget/types";
 import { watchedBudgetIdsFromRows } from "@/lib/budget/watches";
 import { dedupeAsync } from "@/lib/stores/dedupe-async";
+import { compareNamesByProfileLang } from "@/lib/stores/sort-lang";
 
 export const EMPTY_BUDGET_EXPENSES: BudgetExpense[] = [];
 export const EMPTY_BUDGET_MEMBER_IDS: string[] = [];
@@ -34,6 +35,7 @@ interface BudgetStore {
   loaded: boolean;
   watchesLoaded: boolean;
   loading: boolean;
+  error: boolean;
   fetchBudgets: (force?: boolean) => Promise<void>;
   fetchWatches: (force?: boolean) => Promise<void>;
   reset: () => void;
@@ -47,10 +49,11 @@ const initialState = {
   loaded: false,
   watchesLoaded: false,
   loading: false,
+  error: false,
 };
 
 function sortBudgets(budgets: Budget[]): Budget[] {
-  return [...budgets].sort((a, b) => a.name.localeCompare(b.name, "pl"));
+  return [...budgets].sort((a, b) => compareNamesByProfileLang(a.name, b.name));
 }
 
 function sortExpenses(expenses: BudgetExpense[]): BudgetExpense[] {
@@ -73,73 +76,90 @@ export const useBudgetStore = create<BudgetStore>((set, get) => ({
   ...initialState,
 
   fetchBudgets: async (force = false) => {
-    if (!force && get().loaded && !get().loading) return;
+    if (!force && get().loaded && !get().loading && !get().error) return;
 
     return dedupeAsync("budget:list", async () => {
-      set({ loading: true });
-      const supabase = createClient();
+      set({ loading: true, error: false });
+      try {
+        const supabase = createClient();
 
-      const { data: budgets } = await supabase
-        .from("budgets")
-        .select("*")
-        .order("updated_at", { ascending: false });
+        const { data: budgets, error: budgetsError } = await supabase
+          .from("budgets")
+          .select("*")
+          .order("updated_at", { ascending: false });
 
-      const list = sortBudgets((budgets ?? []) as Budget[]);
-      const budgetIds = list.map((budget) => budget.id);
+        if (budgetsError) {
+          set({ loading: false, loaded: true, error: true });
+          return;
+        }
 
-      if (budgetIds.length === 0) {
+        const list = sortBudgets((budgets ?? []) as Budget[]);
+        const budgetIds = list.map((budget) => budget.id);
+
+        if (budgetIds.length === 0) {
+          set({
+            budgets: [],
+            expensesByBudgetId: {},
+            memberIdsByBudgetId: {},
+            loaded: true,
+            loading: false,
+            error: false,
+          });
+          return;
+        }
+
+        const [{ data: expenses, error: expensesError }, { data: members, error: membersError }] =
+          await Promise.all([
+            supabase
+              .from("budget_expenses")
+              .select("*")
+              .in("budget_id", budgetIds)
+              .order("expense_date", { ascending: false }),
+            supabase
+              .from("budget_members")
+              .select("budget_id, member_id")
+              .in("budget_id", budgetIds),
+          ]);
+
+        if (expensesError || membersError) {
+          set({ loading: false, loaded: true, error: true });
+          return;
+        }
+
+        const expensesGrouped: Record<string, BudgetExpense[]> = {};
+        for (const budgetId of budgetIds) {
+          expensesGrouped[budgetId] = [];
+        }
+        for (const expense of mapExpenseAmounts((expenses ?? []) as BudgetExpense[])) {
+          if (!expensesGrouped[expense.budget_id]) {
+            expensesGrouped[expense.budget_id] = [];
+          }
+          expensesGrouped[expense.budget_id].push(expense);
+        }
+
+        const membersGrouped: Record<string, string[]> = {};
+        for (const budgetId of budgetIds) {
+          membersGrouped[budgetId] = [];
+        }
+        for (const row of members ?? []) {
+          const budgetId = row.budget_id as string;
+          if (!membersGrouped[budgetId]) membersGrouped[budgetId] = [];
+          membersGrouped[budgetId].push(row.member_id as string);
+        }
+
         set({
-          budgets: [],
-          expensesByBudgetId: {},
-          memberIdsByBudgetId: {},
+          budgets: list,
+          expensesByBudgetId: Object.fromEntries(
+            Object.entries(expensesGrouped).map(([id, rows]) => [id, sortExpenses(rows)])
+          ),
+          memberIdsByBudgetId: membersGrouped,
           loaded: true,
           loading: false,
+          error: false,
         });
-        return;
+      } catch {
+        set({ loading: false, loaded: true, error: true });
       }
-
-      const [{ data: expenses }, { data: members }] = await Promise.all([
-        supabase
-          .from("budget_expenses")
-          .select("*")
-          .in("budget_id", budgetIds)
-          .order("expense_date", { ascending: false }),
-        supabase
-          .from("budget_members")
-          .select("budget_id, member_id")
-          .in("budget_id", budgetIds),
-      ]);
-
-      const expensesGrouped: Record<string, BudgetExpense[]> = {};
-      for (const budgetId of budgetIds) {
-        expensesGrouped[budgetId] = [];
-      }
-      for (const expense of mapExpenseAmounts((expenses ?? []) as BudgetExpense[])) {
-        if (!expensesGrouped[expense.budget_id]) {
-          expensesGrouped[expense.budget_id] = [];
-        }
-        expensesGrouped[expense.budget_id].push(expense);
-      }
-
-      const membersGrouped: Record<string, string[]> = {};
-      for (const budgetId of budgetIds) {
-        membersGrouped[budgetId] = [];
-      }
-      for (const row of members ?? []) {
-        const budgetId = row.budget_id as string;
-        if (!membersGrouped[budgetId]) membersGrouped[budgetId] = [];
-        membersGrouped[budgetId].push(row.member_id as string);
-      }
-
-      set({
-        budgets: list,
-        expensesByBudgetId: Object.fromEntries(
-          Object.entries(expensesGrouped).map(([id, rows]) => [id, sortExpenses(rows)])
-        ),
-        memberIdsByBudgetId: membersGrouped,
-        loaded: true,
-        loading: false,
-      });
     });
   },
 

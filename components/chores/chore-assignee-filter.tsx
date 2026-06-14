@@ -9,7 +9,9 @@ import {
 } from "@/lib/constants/chores";
 import type { ChoreTask } from "@/lib/chores/types";
 import type { FamilyMember } from "@/lib/profile";
-import { useT } from "@/lib/lang-context";
+import { compareByLocale } from "@/lib/i18n/compare";
+import type { Lang } from "@/lib/constants/lang";
+import { useLang, useT } from "@/lib/lang-context";
 import { cn } from "@/lib/utils";
 
 interface AssigneeFilterOption {
@@ -22,7 +24,8 @@ function buildAssigneeFilterOptions(
   tasks: ChoreTask[],
   members: FamilyMember[],
   allLabel: string,
-  unassignedLabel: string
+  unassignedLabel: string,
+  lang: Lang
 ): AssigneeFilterOption[] {
   const options: AssigneeFilterOption[] = [{ key: CHORE_FILTER_ALL, label: allLabel }];
   const seen = new Set<string>();
@@ -49,7 +52,7 @@ function buildAssigneeFilterOptions(
     if (b.key === CHORE_FILTER_ALL) return 1;
     if (a.key === CHORE_ASSIGNEE_UNASSIGNED) return -1;
     if (b.key === CHORE_ASSIGNEE_UNASSIGNED) return 1;
-    return a.label.localeCompare(b.label, "pl");
+    return compareByLocale(a.label, b.label, lang);
   });
 }
 
@@ -75,11 +78,13 @@ export function ChoreAssigneeFilter({
   onChange,
 }: ChoreAssigneeFilterProps) {
   const t = useT();
+  const { lang } = useLang();
   const options = buildAssigneeFilterOptions(
     tasks,
     members,
     t.chores.filterAll,
-    t.chores.assigneeUnassigned
+    t.chores.assigneeUnassigned,
+    lang
   );
 
   if (options.length <= 1) {

@@ -1,6 +1,8 @@
 import { GIFT_FILTER_ALL } from "@/lib/constants/gifts";
+import type { Lang } from "@/lib/constants/lang";
 import type { GiftIdea } from "@/lib/gifts/types";
 import { getGiftRecipientFilterKey, normalizeRecipientName } from "@/lib/gifts/types";
+import { compareByLocale } from "@/lib/i18n/compare";
 import { getDisplayName, type FamilyMember } from "@/lib/profile";
 
 export type GiftRecipientFilterOption = {
@@ -23,7 +25,8 @@ export function resolveGiftRecipientLabel(
 export function buildGiftRecipientFilterOptions(
   entries: GiftIdea[],
   members: FamilyMember[],
-  allLabel: string
+  allLabel: string,
+  lang: Lang
 ): GiftRecipientFilterOption[] {
   const options: GiftRecipientFilterOption[] = [
     { key: GIFT_FILTER_ALL, label: allLabel },
@@ -45,7 +48,7 @@ export function buildGiftRecipientFilterOptions(
   return options.sort((a, b) => {
     if (a.key === GIFT_FILTER_ALL) return -1;
     if (b.key === GIFT_FILTER_ALL) return 1;
-    return a.label.localeCompare(b.label, "pl");
+    return compareByLocale(a.label, b.label, lang);
   });
 }
 

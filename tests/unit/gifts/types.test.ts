@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { GIFT_FILTER_ALL, GIFT_RECIPIENT_TYPE } from "@/lib/constants/gifts";
+import { LANG } from "@/lib/constants/lang";
 import {
   buildGiftRecipientFilterOptions,
   filterGiftIdeasByRecipient,
@@ -67,7 +68,7 @@ describe("getGiftRecipientFilterKey", () => {
 
 describe("buildGiftRecipientFilterOptions", () => {
   it("includes all option and unique recipients", () => {
-    const options = buildGiftRecipientFilterOptions(sampleEntries, [], "Wszyscy");
+    const options = buildGiftRecipientFilterOptions(sampleEntries, [], "Wszyscy", LANG.PL);
     assert.equal(options[0]?.key, GIFT_FILTER_ALL);
     assert.equal(options.length, 3);
   });

@@ -2,9 +2,9 @@ import type { Dict } from "./types";
 
 export const pl: Dict = {
   meta: {
-    title: "Nimbusly — Wspólna przestrzeń dla całej rodziny",
+    title: "Nimbusly — Rodzinny hub: budżet, zakupy, zdrowie i codzienność",
     description:
-      "Zarządzaj budżetem, planuj zakupy, pamiętaj o urodzinach i dziel się pomysłami. Połącz się z bliskimi i widzcie te same dane — każdy wie, kto co dodał.",
+      "Jeden hub dla całej rodziny: budżet, zakupy, prezenty, grafik, apteczka, filmy, restauracje, zwierzęta, obowiązki i więcej. Wspólny dashboard, powiadomienia i synchronizacja na żywo.",
   },
   nav: {
     features: "Funkcje",
@@ -18,12 +18,12 @@ export const pl: Dict = {
       dashboard: "Panel",
   },
   hero: {
-    badge: "Dla całej rodziny",
-    headline: "Cały dom rodzinny w jednym, ciepłym miejscu",
-    headlineAccent: "w jednym,",
-    desc: "Zarządzaj budżetem, planuj zakupy, pamiętaj o urodzinach i dziel się pomysłami. Połącz się z bliskimi i widzcie te same dane — każdy wie, kto co dodał.",
+    badge: "11 modułów · solo lub rodzina",
+    headline: "Wszystko, co dzieje się w domu — w jednym miejscu",
+    headlineAccent: "w jednym miejscu",
+    desc: "Budżet, listy zakupów, urodziny, grafik, apteczka, obowiązki, zwierzęta i więcej. Wspólny dashboard pokazuje, co wymaga uwagi, a powiadomienia informują rodzinę o zmianach — na żywo, po polsku lub angielsku.",
     ctaPrimary: "Załóż rodzinne konto",
-    ctaSecondary: "Zobacz demo",
+    ctaSecondary: "Zobacz moduły",
     socialProofCount: "12 000+",
     socialProofLabel: "rodzin korzysta",
     rating: "4.9/5 ocena w sklepie",
@@ -35,42 +35,93 @@ export const pl: Dict = {
       { name: "Jakub K.", member: "syn" },
     ],
   },
-  chips: {
-    budget: "Budżet",
-    shopping: "Zakupy",
-    gifts: "Prezenty",
-    birthdays: "Urodziny",
+  highlights: {
+    items: [
+      {
+        title: "Dashboard „wymaga uwagi”",
+        desc: "Jedno spojrzenie na budżet, zakupy, apteczkę, obowiązki i nadchodzące terminy.",
+      },
+      {
+        title: "Powiadomienia rodzinne",
+        desc: "W aplikacji i e-mailu — wiecie, kto co dodał lub zmienił.",
+      },
+      {
+        title: "Synchronizacja na żywo",
+        desc: "Listy zakupów, prezenty i obowiązki aktualizują się od razu u wszystkich.",
+      },
+      {
+        title: "Polski i angielski",
+        desc: "Każdy członek wybiera język interfejsu. Solo lub rodzina do 6 osób.",
+      },
+    ],
   },
   features: {
-    heading: "Wszystko, czego potrzebuje dom",
-    subheading: "Jedenaście modułów, które zastąpią chaos przyklejonych karteczek i zapomnianych rozmów.",
+    heading: "Jedenaście modułów pod jednym dachem",
+    subheading: "Od budżetu po apteczkę — wszystko, czego potrzebuje wspólny dom, zamiast karteczek i zapomnianych rozmów.",
     items: [
-      { title: "Budżet rodzinny", desc: "Śledź wydatki i dochody — solo lub z rodziną. Kategorie, miesiące i podgląd na dashboardzie." },
-      { title: "Listy zakupów", desc: "Wspólne listy z podglądem na żywo. Każdy wie, co kupić i kto to dodał." },
-      { title: "Prezenty", desc: "Pomysły na prezenty w formie notatek — bez psucia niespodzianki." },
-      { title: "Urodziny", desc: "Kalendarz urodzin z przypomnieniami w aplikacji i na dashboardzie." },
-      { title: "Grafik i plany", desc: "Wspólny kalendarz rodziny z wpisami pracy, wyjazdów i wizyt." },
-      { title: "Domowa apteczka", desc: "Leki, daty ważności i stan zapasów — z alertami przed końcem terminu." },
-      { title: "Filmy i seriale", desc: "Lista do obejrzenia i już obejrzane — dla całej rodziny." },
-      { title: "Restauracje i puby", desc: "Miejsca, oceny, adresy i plany wizyt w jednym miejscu." },
-      { title: "Zwierzęta", desc: "Profile pupili, szczepienia, wizyty u weterynarza i zapasy karmy." },
-      { title: "Obowiązki domowe", desc: "Zadania z terminami, przypisaniem i powtarzalnością." },
-      { title: "Wieloosobowe konto", desc: "Solo lub rodzina — wspólne dane i powiadomienia o zmianach." },
+      {
+        title: "Budżet rodzinny",
+        desc: "Wydatki i dochody z kategoriami i podglądem miesiąca. Eksport CSV i karta na dashboardzie.",
+      },
+      {
+        title: "Listy zakupów",
+        desc: "Wspólne listy z synchronizacją na żywo. Każdy wie, co kupić, kto to dodał i co już jest w koszyku.",
+      },
+      {
+        title: "Prezenty",
+        desc: "Pomysły na prezenty w formie notatek — bez psucia niespodzianki. Aktualizacje widoczne od razu.",
+      },
+      {
+        title: "Urodziny",
+        desc: "Kalendarz urodzin z przypomnieniami w aplikacji, na dashboardzie i w e-mailu.",
+      },
+      {
+        title: "Grafik i plany",
+        desc: "Wspólny kalendarz rodziny: praca, wyjazdy, wizyty i plany na miesiąc.",
+      },
+      {
+        title: "Domowa apteczka",
+        desc: "Leki, daty ważności i stan zapasów — z alertami, zanim coś się skończy lub wygaśnie.",
+      },
+      {
+        title: "Filmy i seriale",
+        desc: "Wspólna lista do obejrzenia i już obejrzane — planujcie wieczory filmowe razem.",
+      },
+      {
+        title: "Restauracje i puby",
+        desc: "Miejsca, oceny, adresy i plany wizyt — żeby nie debatować „gdzie idziemy” od zera.",
+      },
+      {
+        title: "Zwierzęta",
+        desc: "Profile pupili, szczepienia, wizyty u weterynarza i zapasy karmy w jednym miejscu.",
+      },
+      {
+        title: "Obowiązki domowe",
+        desc: "Zadania z terminami, przypisaniem i powtarzalnością — synchronizowane na żywo.",
+      },
+      {
+        title: "Rodzina i ustawienia",
+        desc: "Solo lub do 6 osób z rolami. Zaproszenia, uprawnienia i wspólne powiadomienia o zmianach.",
+      },
     ],
   },
   steps: {
     heading: "Trzy kroki do rodzinnego porządku",
     items: [
-      { step: "01", title: "Załóż konto", desc: "Zarejestruj się w 30 sekund. Żadnej karty kredytowej." },
-      { step: "02", title: "Zaproś rodzinę", desc: "Wyślij link zaproszenia bliskim. Każdy dostaje swój profil." },
-      { step: "03", title: "Działajcie razem", desc: "Dodawajcie dane, planujcie i widzcie to samo w czasie rzeczywistym." },
+      { step: "01", title: "Załóż konto", desc: "Rejestracja w minutę. Solo od razu albo rodzina — bez karty kredytowej." },
+      { step: "02", title: "Zaproś rodzinę", desc: "Wyślij link zaproszenia. Każdy dostaje profil, rolę i własny język interfejsu." },
+      {
+        step: "03",
+        title: "Korzystajcie z hubu",
+        desc: "Ustawcie dashboard, dodawajcie dane w modułach i reagujcie na powiadomienia — wszystko na żywo.",
+      },
     ],
   },
   cta: {
     heading: "Gotowi, żeby zacząć?",
-    desc: "Dołącz do tysięcy rodzin, które już korzystają z Nimbusly. Bezpłatnie, bez karty.",
+    desc: "Budżet, zakupy, zdrowie domowników i codzienna organizacja — w jednym miejscu, bezpłatnie.",
     btn: "Załóż rodzinne konto",
-    perks: ["Bezpłatny plan na zawsze", "Brak karty kredytowej", "Konfiguracja w 2 minuty"],
+    perks: ["Wspólny dashboard", "Powiadomienia rodzinne", "Bezpłatnie, bez karty"],
   },
   footer: {
     rights: "Wszelkie prawa zastrzeżone.",
@@ -342,6 +393,8 @@ export const pl: Dict = {
     attentionMedicineExpiring: "Lek wkrótce traci ważność: {name}",
     attentionPetCareDue: "Termin opieki: {pet} — {item}",
     attentionBirthdaySoon: "Urodziny: {name} ({when})",
+    attentionShowMore: "Pokaż więcej ({count})",
+    attentionShowLess: "Pokaż mniej",
     customizeOverviewBtn: "Dostosuj podsumowanie",
     customizeOverviewDoneBtn: "Gotowe",
     customizeOverviewHint: "Przeciągnij karty, aby zmienić kolejność. Ukryte moduły możesz przywrócić poniżej.",
@@ -900,6 +953,8 @@ export const pl: Dict = {
     watchingBadge: "Obserwujesz tę listę",
     watchEnabledSuccess: "Obserwujesz tę listę — dostaniesz powiadomienia o dodaniu i usunięciu produktów.",
     watchDisabledSuccess: "Nie obserwujesz już tej listy.",
+    csvYes: "tak",
+    csvNo: "nie",
   },
   budget: {
     title: "Budżet",
@@ -1090,5 +1145,10 @@ export const pl: Dict = {
     openPets: "Otwórz moduł zwierząt",
     openChores: "Otwórz obowiązki domowe",
     notificationBodySeparator: " — ",
+  },
+  module: {
+    fetchError: "Nie udało się załadować danych. Sprawdź połączenie i spróbuj ponownie.",
+    retry: "Spróbuj ponownie",
+    exportCsv: "Eksport CSV",
   },
 };

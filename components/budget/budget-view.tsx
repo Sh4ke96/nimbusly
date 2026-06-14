@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Printer, Scale, TrendingDown, TrendingUp } from "lucide-react";
+import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
+import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
+import { Printer, Scale, TrendingDown, TrendingUp, Download } from "lucide-react";
 import { AppHeader } from "@/components/app/app-header";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { BudgetCard } from "@/components/budget/budget-card";
@@ -14,6 +16,7 @@ import { BudgetFormDialog } from "@/components/budget/budget-form-dialog";
 import { BudgetMonthPicker } from "@/components/budget/budget-month-picker";
 import { BudgetTypeFilter } from "@/components/budget/budget-type-filter";
 import { BudgetWatchButton } from "@/components/budget/budget-watch-button";
+import { ModuleFetchError } from "@/components/ui/module-fetch-error";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -29,6 +32,12 @@ import {
 import { filterEntriesByMonth, getCurrentMonthKey } from "@/lib/budget/monthly";
 import { BudgetIncomeFormDialog } from "@/components/budget/budget-income-form-dialog";
 import { buildBudgetPrintHtml, openBudgetPrintWindow } from "@/lib/budget/print-document";
+import {
+  buildBudgetEntriesCsv,
+  downloadCsv,
+  formatCsvDateStamp,
+  sanitizeCsvFilename,
+} from "@/lib/budget/export-csv";
 import type { Budget } from "@/lib/budget/types";
 import { BUDGET_ENTRY_TYPE, BUDGET_FILTER_ALL, type BudgetExpenseCategory, type BudgetIncomeCategory } from "@/lib/constants/budget";
 import { useLang, useT } from "@/lib/lang-context";
@@ -41,7 +50,6 @@ import {
   EMPTY_BUDGET_MEMBER_IDS,
   useBudgetStore,
 } from "@/lib/stores/budget-store";
-import { useNotificationsStore } from "@/lib/stores/notifications-store";
 import { cn } from "@/lib/utils";
 
 export function BudgetView() {
@@ -54,9 +62,9 @@ export function BudgetView() {
   const budgets = useBudgetStore((s) => s.budgets);
   const loaded = useBudgetStore((s) => s.loaded);
   const loading = useBudgetStore((s) => s.loading);
+  const error = useBudgetStore((s) => s.error);
   const fetchBudgets = useBudgetStore((s) => s.fetchBudgets);
   const fetchWatches = useBudgetStore((s) => s.fetchWatches);
-  const fetchNotifications = useNotificationsStore((s) => s.fetchNotifications);
 
   const [activeBudgetId, setActiveBudgetId] = useState<string | null>(null);
   const [selectedMonthKey, setSelectedMonthKey] = useState(getCurrentMonthKey);
@@ -121,10 +129,11 @@ export function BudgetView() {
     (row) => row.total > 0
   );
 
+  useStoreBootstrap(loaded, error, fetchBudgets);
+
   useEffect(() => {
-    if (!loaded) void fetchBudgets();
     void fetchWatches();
-  }, [loaded, fetchBudgets, fetchWatches]);
+  }, [fetchWatches]);
 
   useEffect(() => {
     if (budgets.length === 0) {
@@ -146,10 +155,7 @@ export function BudgetView() {
     setCategoryFilter(BUDGET_FILTER_ALL);
   }, [typeFilter]);
 
-  const onDataChanged = () => {
-    void fetchBudgets(true);
-    void fetchNotifications(true);
-  };
+  const onDataChanged = useModuleRefresh(fetchBudgets);
 
   const onWatchChanged = () => {
     void fetchWatches(true);
@@ -200,6 +206,28 @@ export function BudgetView() {
     openBudgetPrintWindow(html);
   }
 
+  function handleExportCsv() {
+    if (!activeBudget) return;
+    const content = buildBudgetEntriesCsv({
+      budgetName: activeBudget.name,
+      expenses: monthlyEntries,
+      lang,
+      labels: {
+        date: t.budget.dateLabel,
+        type: t.budget.entryTypeLabel,
+        category: t.budget.categoryLabel,
+        amount: t.budget.amountLabel,
+        description: t.budget.descriptionLabel,
+        income: t.budget.filterIncome,
+        expense: t.budget.filterExpenses,
+      },
+    });
+    downloadCsv(
+      `${sanitizeCsvFilename(activeBudget.name)}-${formatCsvDateStamp()}.csv`,
+      content
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <AppHeader />
@@ -215,7 +243,9 @@ export function BudgetView() {
           <BudgetFormDialog onSuccess={onDataChanged} />
         </div>
 
-        {loading && !loaded ? (
+        {error ? (
+          <ModuleFetchError onRetry={() => void fetchBudgets(true)} />
+        ) : loading && !loaded ? (
           <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
             <Skeleton className="h-48 w-full rounded-none" />
             <Skeleton className="h-72 w-full rounded-none" />
@@ -327,6 +357,15 @@ export function BudgetView() {
                     </div>
                     <div className="flex flex-wrap gap-2">
                       <BudgetWatchButton budgetId={activeBudgetId} onChanged={onWatchChanged} />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="cursor-pointer"
+                        onClick={handleExportCsv}
+                      >
+                        <Download className="size-4" />
+                        {t.module.exportCsv}
+                      </Button>
                       <Button
                         type="button"
                         variant="outline"

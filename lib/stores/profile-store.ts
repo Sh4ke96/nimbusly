@@ -164,5 +164,5 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
     });
   },
 
-  reset: () => set({ ...initialState, loaded: true }),
+  reset: () => set({ ...initialState }),
 }));

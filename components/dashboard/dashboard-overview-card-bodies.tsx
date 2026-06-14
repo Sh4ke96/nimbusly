@@ -17,7 +17,6 @@ import {
   User,
   Users,
   Wallet,
-  type LucideIcon,
 } from "lucide-react";
 import {
   Bar,
@@ -30,7 +29,7 @@ import {
 import { BudgetResponsiveChart } from "@/components/budget/budget-responsive-chart";
 import { MemberAvatar } from "@/components/member-avatar";
 import { RestaurantStarRating } from "@/components/restaurants/restaurant-star-rating";
-import { overviewAccentStyles, type OverviewAccent } from "@/components/dashboard/sortable-overview-card";
+import { BigStat, EmptyHint, StatTile } from "@/components/dashboard/overview-cards/primitives";
 import { formatBirthdayLabel, type BirthdayEntry } from "@/lib/birthdays/types";
 import { daysUntilBirthday } from "@/lib/dashboard/birthdays";
 import {
@@ -43,6 +42,8 @@ import { budgetChartTooltipFormatter } from "@/lib/budget/chart-tooltip";
 import { BRAND_COLOR } from "@/lib/constants/brand";
 import { BUDGET_EXPENSE_COLOR } from "@/lib/constants/budget";
 import { MEDICINE_EXPIRY_STATUS } from "@/lib/constants/medicine";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { DASHBOARD_OVERVIEW_CARD, type DashboardOverviewCardId } from "@/lib/constants/dashboard-overview";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import type { Lang } from "@/lib/constants/lang";
@@ -64,174 +65,16 @@ import { formatPetDueCountdown } from "@/lib/pets/due";
 import type { ScheduleEntry } from "@/lib/schedule/types";
 import { cn } from "@/lib/utils";
 
-function StatTile({
-  label,
-  value,
-  icon: Icon,
-  tone = "default",
-}: {
-  label: string;
-  value: string;
-  icon: LucideIcon;
-  tone?: "income" | "expense" | "default";
-}) {
-  return (
-    <div className="rounded-none border border-border bg-muted/30 px-2.5 py-2 text-center">
-      <div className="flex items-center justify-center gap-1 text-[10px] text-muted-foreground uppercase tracking-wide">
-        <Icon className="size-3 shrink-0" />
-        <span className="truncate">{label}</span>
-      </div>
-      <p
-        className={cn(
-          "font-heading text-sm font-semibold mt-1 truncate",
-          tone === "income" && "text-primary",
-          tone === "expense" && "text-orange-700 dark:text-orange-400"
-        )}
-      >
-        {value}
-      </p>
-    </div>
-  );
-}
-
-function EmptyHint({ icon: Icon, text }: { icon: LucideIcon; text: string }) {
-  return (
-    <div className="flex flex-col items-center justify-center gap-2 py-6 text-center border border-dashed border-border bg-muted/20">
-      <span className="inline-flex size-9 items-center justify-center rounded-none bg-muted text-muted-foreground">
-        <Icon className="size-4" />
-      </span>
-      <p className="text-xs text-muted-foreground max-w-56">{text}</p>
-    </div>
-  );
-}
-
-function BigStat({
-  value,
-  label,
-  accent,
-}: {
-  value: string | number;
-  label: string;
-  accent: OverviewAccent;
-}) {
-  const styles = overviewAccentStyles[accent];
-  return (
-    <div className="flex items-end gap-3">
-      <p className="font-heading text-4xl font-bold tracking-tight leading-none">
-        {value}
-      </p>
-      <p
-        className={cn(
-          "text-xs font-medium border px-2 py-1 mb-0.5 rounded-none",
-          styles.badge
-        )}
-      >
-        {label}
-      </p>
-    </div>
-  );
-}
-
-export interface OverviewCardMeta {
-  href: string;
-  title: string;
-  icon: LucideIcon;
-  accent: OverviewAccent;
-  className?: string;
-}
-
-export function getOverviewCardMeta(
-  cardId: DashboardOverviewCardId,
-  t: Dict["dashboard"],
-  profile: Profile | null
-): OverviewCardMeta {
-  switch (cardId) {
-    case DASHBOARD_OVERVIEW_CARD.BUDGET:
-      return {
-        href: "/budget",
-        title: t.moduleLabels.budget,
-        icon: Wallet,
-        accent: "primary",
-        className: "sm:col-span-2 xl:col-span-1",
-      };
-    case DASHBOARD_OVERVIEW_CARD.SHOPPING:
-      return {
-        href: "/shopping",
-        title: t.moduleLabels.shopping,
-        icon: ShoppingCart,
-        accent: "orange",
-      };
-    case DASHBOARD_OVERVIEW_CARD.GIFTS:
-      return {
-        href: "/gifts",
-        title: t.moduleLabels.gifts,
-        icon: Gift,
-        accent: "violet",
-      };
-    case DASHBOARD_OVERVIEW_CARD.MEDICINE_CABINET:
-      return {
-        href: "/medicine-cabinet",
-        title: t.moduleLabels.medicineCabinet,
-        icon: Cross,
-        accent: "emerald",
-      };
-    case DASHBOARD_OVERVIEW_CARD.WATCHLIST:
-      return {
-        href: "/watchlist",
-        title: t.moduleLabels.watchlist,
-        icon: Clapperboard,
-        accent: "indigo",
-      };
-    case DASHBOARD_OVERVIEW_CARD.RESTAURANTS:
-      return {
-        href: "/restaurants",
-        title: t.moduleLabels.restaurants,
-        icon: UtensilsCrossed,
-        accent: "amber",
-      };
-    case DASHBOARD_OVERVIEW_CARD.PETS:
-      return {
-        href: "/pets",
-        title: t.moduleLabels.pets,
-        icon: PawPrint,
-        accent: "rose",
-      };
-    case DASHBOARD_OVERVIEW_CARD.CHORES:
-      return {
-        href: "/chores",
-        title: t.moduleLabels.chores,
-        icon: ListChecks,
-        accent: "orange",
-      };
-    case DASHBOARD_OVERVIEW_CARD.BIRTHDAYS:
-      return {
-        href: "/birthdays",
-        title: t.moduleLabels.birthdays,
-        icon: Cake,
-        accent: "rose",
-      };
-    case DASHBOARD_OVERVIEW_CARD.CALENDAR:
-      return {
-        href: "/schedule",
-        title: t.moduleLabels.calendar,
-        icon: CalendarDays,
-        accent: "sky",
-      };
-    case DASHBOARD_OVERVIEW_CARD.FAMILY:
-      return {
-        href:
-          profile?.account_mode === ACCOUNT_MODE.FAMILY && profile.family_id
-            ? `/profile/settings?tab=${SETTINGS_TAB.FAMILY}`
-            : `/profile/settings?tab=${SETTINGS_TAB.ACCOUNT}`,
-        title: t.moduleLabels.family,
-        icon: Users,
-        accent: "slate",
-      };
-  }
-}
+export {
+  getOverviewCardMeta,
+  type OverviewCardMeta,
+} from "@/components/dashboard/overview-cards/card-meta";
 
 export interface OverviewCardBodiesProps {
   cardId: DashboardOverviewCardId;
+  cardLoading?: boolean;
+  cardError?: boolean;
+  onCardRetry?: () => void;
   t: Dict;
   lang: Lang;
   profile: Profile | null;
@@ -268,6 +111,9 @@ export interface OverviewCardBodiesProps {
 
 export function OverviewCardBody({
   cardId,
+  cardLoading = false,
+  cardError = false,
+  onCardRetry,
   t,
   lang,
   profile,
@@ -300,6 +146,23 @@ export function OverviewCardBody({
   monthScheduleEntries,
   scheduleByType,
 }: OverviewCardBodiesProps) {
+  if (cardError) {
+    return (
+      <div className="flex flex-col items-center gap-2 py-6 text-center">
+        <p className="text-xs text-muted-foreground max-w-xs">{t.module.fetchError}</p>
+        {onCardRetry && (
+          <Button type="button" variant="outline" size="sm" onClick={onCardRetry}>
+            {t.module.retry}
+          </Button>
+        )}
+      </div>
+    );
+  }
+
+  if (cardLoading) {
+    return <Skeleton className="h-32 w-full rounded-none" />;
+  }
+
   switch (cardId) {
     case DASHBOARD_OVERVIEW_CARD.BUDGET:
       return (

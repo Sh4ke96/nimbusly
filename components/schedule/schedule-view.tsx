@@ -1,6 +1,8 @@
 "use client";
 
 import { useActionState, useEffect, useMemo, useState } from "react";
+import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
+import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { AppHeader } from "@/components/app/app-header";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { ScheduleCalendar } from "@/components/schedule/schedule-calendar";
@@ -9,12 +11,12 @@ import { ScheduleFormDialog } from "@/components/schedule/schedule-form-dialog";
 import { ScheduleTypeBadge } from "@/components/schedule/schedule-type-picker";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ModuleFetchError } from "@/components/ui/module-fetch-error";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLang, useT } from "@/lib/lang-context";
 import { formatMessage } from "@/lib/i18n/format";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useScheduleStore } from "@/lib/stores/schedule-store";
-import { useNotificationsStore } from "@/lib/stores/notifications-store";
 import {
   formatScheduleDateLabel,
   parseEntryDateParts,
@@ -42,8 +44,8 @@ export function ScheduleView() {
   const entries = useScheduleStore((s) => s.entries);
   const loaded = useScheduleStore((s) => s.loaded);
   const loading = useScheduleStore((s) => s.loading);
+  const error = useScheduleStore((s) => s.error);
   const fetchEntries = useScheduleStore((s) => s.fetchEntries);
-  const fetchNotifications = useNotificationsStore((s) => s.fetchNotifications);
 
   const now = new Date();
   const [year, setYear] = useState<number>(now.getFullYear());
@@ -54,14 +56,10 @@ export function ScheduleView() {
   const [editOpen, setEditOpen] = useState<boolean>(false);
   const [deleteState, deleteAction, deletePending] = useActionState(deleteScheduleEntry, null);
 
-  useEffect(() => {
-    if (!loaded) void fetchEntries();
-  }, [loaded, fetchEntries]);
+  useStoreBootstrap(loaded, error, fetchEntries);
+  const onScheduleChanged = useModuleRefresh(fetchEntries);
 
-  useActionFeedback(deleteState, () => {
-    void fetchEntries(true);
-    void fetchNotifications(true);
-  });
+  useActionFeedback(deleteState, onScheduleChanged, deletePending);
 
   const monthEntries = useMemo(
     () =>
@@ -70,11 +68,6 @@ export function ScheduleView() {
         .sort((a, b) => a.entry_date.localeCompare(b.entry_date)),
     [entries, year, month]
   );
-
-  const onScheduleChanged = () => {
-    void fetchEntries(true);
-    void fetchNotifications(true);
-  };
 
   function focusEntry(entry: ScheduleEntry) {
     const parts = parseEntryDateParts(entry.entry_date);
@@ -143,6 +136,9 @@ export function ScheduleView() {
           </div>
         </div>
 
+        {error ? (
+          <ModuleFetchError onRetry={() => void fetchEntries(true)} />
+        ) : (
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
           <Card id="schedule-calendar" className="rounded-none py-0 shadow-sm scroll-mt-24">
             <CardContent className="p-4 md:p-6">
@@ -259,6 +255,7 @@ export function ScheduleView() {
             </CardContent>
           </Card>
         </div>
+        )}
       </main>
 
       <ScheduleEditDialog

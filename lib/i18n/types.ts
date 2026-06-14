@@ -32,11 +32,8 @@ export type Dict = {
     imageAlt: string;
     demoAvatars: { name: string; member: DemoMemberRole }[];
   };
-  chips: {
-    budget: string;
-    shopping: string;
-    gifts: string;
-    birthdays: string;
+  highlights: {
+    items: { title: string; desc: string }[];
   };
   features: {
     heading: string;
@@ -316,6 +313,8 @@ export type Dict = {
     attentionMedicineExpiring: string;
     attentionPetCareDue: string;
     attentionBirthdaySoon: string;
+    attentionShowMore: string;
+    attentionShowLess: string;
     customizeOverviewBtn: string;
     customizeOverviewDoneBtn: string;
     customizeOverviewHint: string;
@@ -848,6 +847,8 @@ export type Dict = {
     watchingBadge: string;
     watchEnabledSuccess: string;
     watchDisabledSuccess: string;
+    csvYes: string;
+    csvNo: string;
   };
   budget: {
     title: string;
@@ -1038,5 +1039,10 @@ export type Dict = {
     openPets: string;
     openChores: string;
     notificationBodySeparator: string;
+  };
+  module: {
+    fetchError: string;
+    retry: string;
+    exportCsv: string;
   };
 };

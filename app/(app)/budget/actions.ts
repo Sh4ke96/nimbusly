@@ -24,14 +24,8 @@ import { NOTIFICATION_TYPE, type NotificationType } from "@/lib/constants/notifi
 import { getFamilyNotificationTitle } from "@/lib/notifications/family-notification";
 import { getDisplayName } from "@/lib/profile";
 import type { AccountActionState } from "@/app/(app)/account/actions";
-
-async function requireUser() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  return { supabase, user };
-}
+import { requireUser } from "@/lib/server-actions/require-user";
+import { notifyFamilyMembers } from "@/lib/server-actions/notify-family";
 
 async function getActorProfile(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -43,50 +37,6 @@ async function getActorProfile(
     .eq("id", userId)
     .maybeSingle();
   return data;
-}
-
-async function notifyFamilyAboutBudgetEvent(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  params: {
-    type: NotificationType;
-    actorId: string;
-    actorName: string;
-    familyId: string;
-    budgetId: string;
-    budgetName: string;
-    bodyDetail: string;
-    changeSummary?: string;
-  }
-) {
-  const t = await getServerT();
-  const { data: members } = await supabase
-    .from("profiles")
-    .select("id")
-    .eq("family_id", params.familyId);
-
-  const recipientIds = (members ?? [])
-    .map((m) => m.id as string)
-    .filter((id) => id !== params.actorId);
-
-  if (recipientIds.length === 0) return;
-
-  const title = getFamilyNotificationTitle(params.type, t.notifications, params.actorName);
-  const body = `${params.budgetName}${t.notifications.notificationBodySeparator}${params.bodyDetail}`;
-
-  await supabase.rpc("create_family_notifications", {
-    p_recipient_ids: recipientIds,
-    p_type: params.type,
-    p_title: title,
-    p_body: body,
-    p_payload: {
-      budget_id: params.budgetId,
-      budget_name: params.budgetName,
-      actor_id: params.actorId,
-      family_id: params.familyId,
-      change_summary: params.changeSummary ?? null,
-      updated_at: new Date().toISOString(),
-    },
-  });
 }
 
 async function notifyWatchersAboutBudgetExpenseEvent(
@@ -235,14 +185,20 @@ export async function createBudget(
 
   if (familyId && profile) {
     try {
-      await notifyFamilyAboutBudgetEvent(supabase, {
+      await notifyFamilyMembers(supabase, {
         type: NOTIFICATION_TYPE.BUDGET_ADDED,
         actorId: user.id,
         actorName: getDisplayName(profile),
         familyId,
-        budgetId: budget.id,
-        budgetName: name,
-        bodyDetail: formatBudgetNotificationDetail(name, 0, t.budget),
+        body: `${name}${t.notifications.notificationBodySeparator}${formatBudgetNotificationDetail(name, 0, t.budget)}`,
+        payload: {
+          budget_id: budget.id,
+          budget_name: name,
+          actor_id: user.id,
+          family_id: familyId,
+          change_summary: null,
+          updated_at: new Date().toISOString(),
+        },
       });
     } catch {
       // best-effort
@@ -292,15 +248,20 @@ export async function updateBudget(
   const changeSummary = buildBudgetChangeSummary(existing, { name }, t.budget);
   if (existing.family_id && profile?.account_mode === ACCOUNT_MODE.FAMILY) {
     try {
-      await notifyFamilyAboutBudgetEvent(supabase, {
+      await notifyFamilyMembers(supabase, {
         type: NOTIFICATION_TYPE.BUDGET_UPDATED,
         actorId: user.id,
         actorName: getDisplayName(profile),
         familyId: existing.family_id,
-        budgetId: id,
-        budgetName: name,
-        bodyDetail: changeSummary,
-        changeSummary,
+        body: `${name}${t.notifications.notificationBodySeparator}${changeSummary}`,
+        payload: {
+          budget_id: id,
+          budget_name: name,
+          actor_id: user.id,
+          family_id: existing.family_id,
+          change_summary: changeSummary,
+          updated_at: new Date().toISOString(),
+        },
       });
     } catch {
       // best-effort
@@ -335,18 +296,24 @@ export async function deleteBudget(
 
   if (existing.family_id && profile?.account_mode === ACCOUNT_MODE.FAMILY) {
     try {
-      await notifyFamilyAboutBudgetEvent(supabase, {
+      await notifyFamilyMembers(supabase, {
         type: NOTIFICATION_TYPE.BUDGET_DELETED,
         actorId: user.id,
         actorName: getDisplayName(profile),
         familyId: existing.family_id,
-        budgetId: id,
-        budgetName: existing.name,
-        bodyDetail: formatBudgetNotificationDetail(
+        body: `${existing.name}${t.notifications.notificationBodySeparator}${formatBudgetNotificationDetail(
           existing.name,
           count ?? 0,
           t.budget
-        ),
+        )}`,
+        payload: {
+          budget_id: id,
+          budget_name: existing.name,
+          actor_id: user.id,
+          family_id: existing.family_id,
+          change_summary: null,
+          updated_at: new Date().toISOString(),
+        },
       });
     } catch {
       // best-effort

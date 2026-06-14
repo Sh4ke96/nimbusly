@@ -3,6 +3,8 @@ import {
   MEDICINE_EXPIRY_WARNING_DAYS,
   type MedicineExpiryStatus,
 } from "@/lib/constants/medicine";
+import { LANG, type Lang } from "@/lib/constants/lang";
+import { compareByLocale } from "@/lib/i18n/compare";
 import { formatMessage } from "@/lib/i18n/format";
 import type { Dict } from "@/lib/i18n/types";
 import { parseMedicineDateString } from "@/lib/medicine/types";
@@ -45,18 +47,18 @@ export function isMedicineExpiringSoon(
 
 export function sortMedicineByExpiry<
   T extends { expiry_date: string | null; name: string },
->(items: T[], today: Date = new Date()): T[] {
+>(items: T[], today: Date = new Date(), lang: Lang = LANG.PL): T[] {
   return [...items].sort((a, b) => {
     const daysA = daysUntilExpiry(a.expiry_date, today);
     const daysB = daysUntilExpiry(b.expiry_date, today);
 
     if (daysA === null && daysB === null) {
-      return a.name.localeCompare(b.name, "pl");
+      return compareByLocale(a.name, b.name, lang);
     }
     if (daysA === null) return 1;
     if (daysB === null) return -1;
     if (daysA !== daysB) return daysA - daysB;
-    return a.name.localeCompare(b.name, "pl");
+    return compareByLocale(a.name, b.name, lang);
   });
 }
 

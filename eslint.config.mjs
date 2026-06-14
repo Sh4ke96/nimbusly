@@ -12,7 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
-    "cypress/**",
+    "tests/e2e/**",
+    "tests/support/**",
+    "tests/tasks/**",
   ]),
 ]);
 

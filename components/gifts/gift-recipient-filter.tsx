@@ -7,7 +7,7 @@ import type { GiftIdea } from "@/lib/gifts/types";
 import { buildGiftRecipientFilterOptions } from "@/lib/gifts/recipients";
 import { getGiftRecipientFilterKey } from "@/lib/gifts/types";
 import type { FamilyMember } from "@/lib/profile";
-import { useT } from "@/lib/lang-context";
+import { useLang, useT } from "@/lib/lang-context";
 import { cn } from "@/lib/utils";
 
 interface GiftRecipientFilterProps {
@@ -24,7 +24,8 @@ export function GiftRecipientFilter({
   onChange,
 }: GiftRecipientFilterProps) {
   const t = useT();
-  const options = buildGiftRecipientFilterOptions(ideas, members, t.gifts.filterAll);
+  const { lang } = useLang();
+  const options = buildGiftRecipientFilterOptions(ideas, members, t.gifts.filterAll, lang);
 
   if (options.length <= 1) {
     return null;

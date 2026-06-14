@@ -10,6 +10,7 @@ import { NotificationsPagination } from "@/components/notifications/notification
 import { SettingsTabHeader } from "@/components/profile/settings/settings-tab-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { ModuleFetchError } from "@/components/ui/module-fetch-error";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -25,6 +26,7 @@ import {
 } from "@/lib/notifications/filter-tabs";
 import { useNotificationsStore } from "@/lib/stores/notifications-store";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
+import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { markAllNotificationsRead } from "@/app/(app)/notifications/actions";
 import { cn } from "@/lib/utils";
 
@@ -65,9 +67,12 @@ export function NotificationsView() {
   const page = parsePage(searchParams.get("page"));
 
   const unreadCount = useNotificationsStore((s) => s.unreadCount);
+  const loaded = useNotificationsStore((s) => s.loaded);
+  const error = useNotificationsStore((s) => s.error);
   const pageItems = useNotificationsStore((s) => s.pageItems);
   const pageTotal = useNotificationsStore((s) => s.pageTotal);
   const pageLoading = useNotificationsStore((s) => s.pageLoading);
+  const pageError = useNotificationsStore((s) => s.pageError);
   const fetchNotifications = useNotificationsStore((s) => s.fetchNotifications);
   const fetchNotificationsPage = useNotificationsStore((s) => s.fetchNotificationsPage);
   const markReadLocally = useNotificationsStore((s) => s.markReadLocally);
@@ -101,9 +106,7 @@ export function NotificationsView() {
 
   const activeFilter = filterTabs.find((tab) => tab.value === filter) ?? filterTabs[0];
 
-  useEffect(() => {
-    void fetchNotifications();
-  }, [fetchNotifications]);
+  useStoreBootstrap(loaded, error, fetchNotifications);
 
   useEffect(() => {
     void fetchNotificationsPage({ filter, page });
@@ -194,7 +197,11 @@ export function NotificationsView() {
                     title={activeFilter.label}
                   />
 
-                  {pageLoading ? (
+                  {pageError ? (
+                    <ModuleFetchError
+                      onRetry={() => void fetchNotificationsPage({ filter, page })}
+                    />
+                  ) : pageLoading ? (
                     <div className="space-y-2">
                       <Skeleton className="h-16 w-full rounded-none" />
                       <Skeleton className="h-16 w-full rounded-none" />

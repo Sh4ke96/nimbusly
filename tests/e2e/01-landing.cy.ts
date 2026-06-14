@@ -1,8 +1,8 @@
 describe("Strona główna", () => {
   it("ładuje landing i pokazuje główne sekcje", () => {
     cy.visit("/");
-    cy.contains("Cały dom rodzinny").should("be.visible");
-    cy.contains("Wszystko, czego potrzebuje dom").should("be.visible");
+    cy.contains("Wszystko, co dzieje się w domu").should("be.visible");
+    cy.contains("Jedenaście modułów pod jednym dachem").should("be.visible");
     cy.contains("Trzy kroki do rodzinnego porządku").should("be.visible");
   });
 

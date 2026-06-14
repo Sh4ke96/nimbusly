@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
+import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { AppHeader } from "@/components/app/app-header";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { ShoppingListCard } from "@/components/shopping/shopping-list-card";
@@ -8,14 +10,21 @@ import { ShoppingListEditDialog } from "@/components/shopping/shopping-list-edit
 import { ShoppingListFormDialog } from "@/components/shopping/shopping-list-form-dialog";
 import { ShoppingListWatchButton } from "@/components/shopping/shopping-list-watch-button";
 import { ShoppingListItemsPanel } from "@/components/shopping/shopping-list-items-panel";
+import { Button } from "@/components/ui/button";
+import { ModuleFetchError } from "@/components/ui/module-fetch-error";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useShoppingListsRealtime } from "@/lib/hooks/use-shopping-lists-realtime";
+import { downloadShoppingListCsv } from "@/lib/shopping-lists/export-csv";
 import { useT } from "@/lib/lang-context";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { useProfileStore } from "@/lib/stores/profile-store";
-import { useShoppingListsStore } from "@/lib/stores/shopping-lists-store";
-import { useNotificationsStore } from "@/lib/stores/notifications-store";
+import {
+  EMPTY_SHOPPING_LIST_ITEMS,
+  selectShoppingListItems,
+  useShoppingListsStore,
+} from "@/lib/stores/shopping-lists-store";
 import type { ShoppingList } from "@/lib/shopping-lists/types";
+import { Download } from "lucide-react";
 
 export function ShoppingListsView() {
   const t = useT();
@@ -25,10 +34,10 @@ export function ShoppingListsView() {
   const lists = useShoppingListsStore((s) => s.lists);
   const loaded = useShoppingListsStore((s) => s.loaded);
   const loading = useShoppingListsStore((s) => s.loading);
+  const error = useShoppingListsStore((s) => s.error);
   const fetchLists = useShoppingListsStore((s) => s.fetchLists);
   const fetchWatches = useShoppingListsStore((s) => s.fetchWatches);
   const fetchItems = useShoppingListsStore((s) => s.fetchItems);
-  const fetchNotifications = useNotificationsStore((s) => s.fetchNotifications);
 
   const [activeListId, setActiveListId] = useState<string | null>(null);
   const [editingList, setEditingList] = useState<ShoppingList | null>(null);
@@ -39,10 +48,11 @@ export function ShoppingListsView() {
       ? profile.family_id
       : null;
 
+  useStoreBootstrap(loaded, error, fetchLists);
+
   useEffect(() => {
-    if (!loaded) void fetchLists();
     void fetchWatches();
-  }, [loaded, fetchLists, fetchWatches]);
+  }, [fetchWatches]);
 
   useEffect(() => {
     if (lists.length === 0) {
@@ -68,19 +78,42 @@ export function ShoppingListsView() {
     [lists, activeListId]
   );
 
+  const selectItems = useMemo(
+    () =>
+      activeListId
+        ? selectShoppingListItems(activeListId)
+        : () => EMPTY_SHOPPING_LIST_ITEMS,
+    [activeListId]
+  );
+  const activeListItems = useShoppingListsStore(selectItems);
+
   const onWatchChanged = () => {
     void fetchWatches(true);
   };
 
-  const onListsChanged = () => {
-    void fetchLists(true);
-    void fetchNotifications(true);
+  const refreshLists = useModuleRefresh(fetchLists);
+  const onListsChanged = useCallback(() => {
+    refreshLists();
     if (activeListId) void fetchItems(activeListId, true);
-  };
+  }, [refreshLists, activeListId, fetchItems]);
 
   function openEdit(list: ShoppingList) {
     setEditingList(list);
     setEditOpen(true);
+  }
+
+  function handleExportCsv() {
+    if (!activeList) return;
+    downloadShoppingListCsv({
+      list: activeList,
+      items: activeListItems,
+      labels: {
+        item: t.shoppingLists.itemsHeading,
+        checked: t.shoppingLists.toggleItemLabel,
+        yes: t.shoppingLists.csvYes,
+        no: t.shoppingLists.csvNo,
+      },
+    });
   }
 
   return (
@@ -106,7 +139,9 @@ export function ShoppingListsView() {
           </p>
         )}
 
-        {loading && !loaded ? (
+        {error ? (
+          <ModuleFetchError onRetry={() => void fetchLists(true)} />
+        ) : loading && !loaded ? (
           <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
             <Skeleton className="h-48 w-full rounded-none" />
             <Skeleton className="h-64 w-full rounded-none" />
@@ -141,11 +176,25 @@ export function ShoppingListsView() {
                 <h2 className="font-heading text-xs uppercase tracking-wider text-muted-foreground">
                   {activeList?.name ?? t.shoppingLists.itemsHeading}
                 </h2>
-                {activeListId ? (
-                  <ShoppingListWatchButton
-                    listId={activeListId}
-                    onChanged={onWatchChanged}
-                  />
+                {activeList ? (
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="cursor-pointer"
+                      onClick={handleExportCsv}
+                    >
+                      <Download className="size-4" />
+                      {t.module.exportCsv}
+                    </Button>
+                    {activeListId ? (
+                      <ShoppingListWatchButton
+                        listId={activeListId}
+                        onChanged={onWatchChanged}
+                      />
+                    ) : null}
+                  </div>
                 ) : null}
               </div>
               {activeListId ? (

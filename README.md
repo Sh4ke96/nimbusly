@@ -127,7 +127,7 @@ The endpoint sends digest emails for overdue chores, expiring medicine, due pet 
 | `npm run build` | Production build |
 | `npm run start` | Production server |
 | `npm run lint` | ESLint |
-| `npm test` | Unit tests (`lib/**/*.test.ts`) |
+| `npm test` | Unit tests (`tests/unit/**/*.test.ts`) |
 | `npm run e2e` | Cypress headless (starts dev server) |
 | `npm run e2e:open` | Cypress interactive |
 | `npm run db:push` | Apply SQL migrations to linked Supabase project |
@@ -143,7 +143,7 @@ app/              Next.js App Router (auth, app routes, API, Server Actions)
 components/       UI (shadcn, feature views, layout)
 lib/              Domain logic, stores, i18n, Supabase helpers
 supabase/         SQL migrations
-cypress/          E2E tests
+tests/            Unit tests (`tests/unit/`) and E2E (`tests/e2e/`)
 ```
 
 Developer guidelines: [`AGENTS.md`](AGENTS.md) and [`.cursor/rules/`](.cursor/rules/).

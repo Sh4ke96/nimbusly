@@ -1,6 +1,5 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
 import { getServerT } from "@/lib/i18n/server";
 import {
   buildPetCareChangeSummary,
@@ -22,66 +21,11 @@ import {
   parsePetFromForm,
   validatePetCareFields,
 } from "@/lib/pets/types";
-import { ACCOUNT_MODE } from "@/lib/constants/account";
-import { NOTIFICATION_TYPE, type NotificationType } from "@/lib/constants/notifications";
-import { getFamilyNotificationTitle } from "@/lib/notifications/family-notification";
+import { NOTIFICATION_TYPE } from "@/lib/constants/notifications";
 import { getDisplayName } from "@/lib/profile";
 import type { AccountActionState } from "@/app/(app)/account/actions";
-
-async function requireUser() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  return { supabase, user };
-}
-
-async function notifyFamily(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  params: {
-    type: NotificationType;
-    actorId: string;
-    actorName: string;
-    familyId: string;
-    body: string;
-    payload: Record<string, unknown>;
-  }
-) {
-  const t = await getServerT();
-  const { data: members } = await supabase
-    .from("profiles")
-    .select("id")
-    .eq("family_id", params.familyId);
-
-  const recipientIds = (members ?? [])
-    .map((m) => m.id as string)
-    .filter((id) => id !== params.actorId);
-
-  if (recipientIds.length === 0) return;
-
-  await supabase.rpc("create_family_notifications", {
-    p_recipient_ids: recipientIds,
-    p_type: params.type,
-    p_title: getFamilyNotificationTitle(params.type, t.notifications, params.actorName),
-    p_body: params.body,
-    p_payload: params.payload,
-  });
-}
-
-async function getFamilyId(supabase: Awaited<ReturnType<typeof createClient>>, userId: string) {
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("account_mode, family_id, first_name, last_name")
-    .eq("id", userId)
-    .maybeSingle();
-
-  const familyId =
-    profile?.account_mode === ACCOUNT_MODE.FAMILY && profile.family_id
-      ? profile.family_id
-      : null;
-
-  return { profile, familyId };
-}
+import { getProfileFamilyContext, requireUser } from "@/lib/server-actions/require-user";
+import { notifyFamilyMembers } from "@/lib/server-actions/notify-family";
 
 export async function createPet(
   _prev: AccountActionState,
@@ -96,7 +40,7 @@ export async function createPet(
   if (!parsed.species) return { error: t.pets.errorSpeciesRequired };
   if (!isValidPetNotes(parsed.notes)) return { error: t.pets.errorGeneric };
 
-  const { profile, familyId } = await getFamilyId(supabase, user.id);
+  const { profile, familyId } = await getProfileFamilyContext(supabase, user.id);
   const name = normalizePetName(parsed.name);
 
   const { data: pet, error } = await supabase
@@ -115,7 +59,7 @@ export async function createPet(
 
   if (familyId && profile) {
     try {
-      await notifyFamily(supabase, {
+      await notifyFamilyMembers(supabase, {
         type: NOTIFICATION_TYPE.PET_ADDED,
         actorId: user.id,
         actorName: getDisplayName(profile),
@@ -249,7 +193,7 @@ export async function createPetCareItem(
   if (validationError === "stockStatus") return { error: t.pets.errorStockStatusRequired };
   if (validationError) return { error: t.pets.errorGeneric };
 
-  const { profile, familyId } = await getFamilyId(supabase, user.id);
+  const { profile, familyId } = await getProfileFamilyContext(supabase, user.id);
   const payload = carePayload(parsed);
 
   const { data: pet } = await supabase
@@ -276,7 +220,7 @@ export async function createPetCareItem(
       t.pets
     );
     try {
-      await notifyFamily(supabase, {
+      await notifyFamilyMembers(supabase, {
         type: NOTIFICATION_TYPE.PET_CARE_ADDED,
         actorId: user.id,
         actorName: getDisplayName(profile),
@@ -332,7 +276,7 @@ export async function updatePetCareItem(
 
   if (error) return { error: t.pets.errorGeneric };
 
-  const { profile, familyId } = await getFamilyId(supabase, user.id);
+  const { profile, familyId } = await getProfileFamilyContext(supabase, user.id);
   if (familyId && profile) {
     const { data: pet } = await supabase
       .from("pets")
@@ -342,7 +286,7 @@ export async function updatePetCareItem(
 
     const changeSummary = buildPetCareChangeSummary(existing, payload, t.pets);
     try {
-      await notifyFamily(supabase, {
+      await notifyFamilyMembers(supabase, {
         type: NOTIFICATION_TYPE.PET_CARE_UPDATED,
         actorId: user.id,
         actorName: getDisplayName(profile),
@@ -393,7 +337,7 @@ export async function deletePetCareItem(
 
   if (error) return { error: t.pets.errorGeneric };
 
-  const { profile, familyId } = await getFamilyId(supabase, user.id);
+  const { profile, familyId } = await getProfileFamilyContext(supabase, user.id);
   if (familyId && profile && isValidPetCareType(existing.care_type)) {
     const { data: pet } = await supabase
       .from("pets")
@@ -409,7 +353,7 @@ export async function deletePetCareItem(
         t.pets
       );
       try {
-        await notifyFamily(supabase, {
+        await notifyFamilyMembers(supabase, {
           type: NOTIFICATION_TYPE.PET_CARE_DELETED,
           actorId: user.id,
           actorName: getDisplayName(profile),

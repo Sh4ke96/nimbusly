@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
+import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { AppHeader } from "@/components/app/app-header";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { WatchlistEditDialog } from "@/components/watchlist/watchlist-edit-dialog";
@@ -8,6 +10,7 @@ import { WatchlistFormDialog } from "@/components/watchlist/watchlist-form-dialo
 import { WatchlistItemCard } from "@/components/watchlist/watchlist-item-card";
 import { WatchlistMediaTypeFilter } from "@/components/watchlist/watchlist-media-type-filter";
 import { WatchlistStatusFilter } from "@/components/watchlist/watchlist-status-filter";
+import { ModuleFetchError } from "@/components/ui/module-fetch-error";
 import { Skeleton } from "@/components/ui/skeleton";
 import { WATCHLIST_FILTER_ALL } from "@/lib/constants/watchlist";
 import {
@@ -18,7 +21,6 @@ import type { WatchlistItem } from "@/lib/watchlist/types";
 import { useT } from "@/lib/lang-context";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useWatchlistStore } from "@/lib/stores/watchlist-store";
-import { useNotificationsStore } from "@/lib/stores/notifications-store";
 
 export function WatchlistView() {
   const t = useT();
@@ -28,27 +30,21 @@ export function WatchlistView() {
   const items = useWatchlistStore((s) => s.items);
   const loaded = useWatchlistStore((s) => s.loaded);
   const loading = useWatchlistStore((s) => s.loading);
+  const error = useWatchlistStore((s) => s.error);
   const fetchItems = useWatchlistStore((s) => s.fetchItems);
-  const fetchNotifications = useNotificationsStore((s) => s.fetchNotifications);
 
   const [statusFilter, setStatusFilter] = useState<string>(WATCHLIST_FILTER_ALL);
   const [mediaFilter, setMediaFilter] = useState<string>(WATCHLIST_FILTER_ALL);
   const [editingItem, setEditingItem] = useState<WatchlistItem | null>(null);
   const [editOpen, setEditOpen] = useState<boolean>(false);
 
-  useEffect(() => {
-    if (!loaded) void fetchItems();
-  }, [loaded, fetchItems]);
+  useStoreBootstrap(loaded, error, fetchItems);
+  const onItemsChanged = useModuleRefresh(fetchItems);
 
   const filteredItems = useMemo(() => {
     const byStatus = filterWatchlistByStatus(items, statusFilter);
     return filterWatchlistByMediaType(byStatus, mediaFilter);
   }, [items, statusFilter, mediaFilter]);
-
-  const onItemsChanged = () => {
-    void fetchItems(true);
-    void fetchNotifications(true);
-  };
 
   function openEdit(item: WatchlistItem) {
     setEditingItem(item);
@@ -90,7 +86,9 @@ export function WatchlistView() {
           </div>
         )}
 
-        {loading && !loaded ? (
+        {error ? (
+          <ModuleFetchError onRetry={() => void fetchItems(true)} />
+        ) : loading && !loaded ? (
           <div className="grid gap-4 sm:grid-cols-2">
             <Skeleton className="h-44 w-full rounded-none" />
             <Skeleton className="h-44 w-full rounded-none" />

@@ -9,20 +9,13 @@ import {
   isValidScheduleEntryType,
 } from "@/lib/schedule/types";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
-import { NOTIFICATION_TYPE, type NotificationType } from "@/lib/constants/notifications";
-import { getFamilyNotificationTitle } from "@/lib/notifications/family-notification";
+import { NOTIFICATION_TYPE } from "@/lib/constants/notifications";
 import { SCHEDULE_MAX_ENTRIES_PER_DAY } from "@/lib/constants/schedule";
 import type { ScheduleEntryType } from "@/lib/constants/schedule";
 import { getDisplayName } from "@/lib/profile";
 import type { AccountActionState } from "@/app/(app)/account/actions";
-
-async function requireUser() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  return { supabase, user };
-}
+import { requireUser } from "@/lib/server-actions/require-user";
+import { notifyFamilyMembers } from "@/lib/server-actions/notify-family";
 
 async function countScheduleEntriesOnDate(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -52,47 +45,6 @@ async function countScheduleEntriesOnDate(
   if (error) return SCHEDULE_MAX_ENTRIES_PER_DAY;
 
   return count ?? 0;
-}
-
-async function notifyFamilyAboutScheduleEvent(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  params: {
-    type: NotificationType;
-    actorId: string;
-    actorName: string;
-    familyId: string;
-    scheduleId: string;
-    bodyDetail: string;
-    changeSummary?: string;
-  }
-) {
-  const t = await getServerT();
-  const { data: members } = await supabase
-    .from("profiles")
-    .select("id")
-    .eq("family_id", params.familyId);
-
-  const recipientIds = (members ?? [])
-    .map((m) => m.id as string)
-    .filter((id) => id !== params.actorId);
-
-  if (recipientIds.length === 0) return;
-
-  const title = getFamilyNotificationTitle(params.type, t.notifications, params.actorName);
-
-  await supabase.rpc("create_family_notifications", {
-    p_recipient_ids: recipientIds,
-    p_type: params.type,
-    p_title: title,
-    p_body: params.bodyDetail,
-    p_payload: {
-      schedule_id: params.scheduleId,
-      actor_id: params.actorId,
-      family_id: params.familyId,
-      change_summary: params.changeSummary ?? null,
-      updated_at: new Date().toISOString(),
-    },
-  });
 }
 
 export async function createScheduleEntry(
@@ -164,13 +116,19 @@ export async function createScheduleEntry(
     );
 
     try {
-      await notifyFamilyAboutScheduleEvent(supabase, {
+      await notifyFamilyMembers(supabase, {
         type: NOTIFICATION_TYPE.SCHEDULE_ADDED,
         actorId: user.id,
         actorName,
         familyId,
-        scheduleId: entry.id,
-        bodyDetail,
+        body: bodyDetail,
+        payload: {
+          schedule_id: entry.id,
+          actor_id: user.id,
+          family_id: familyId,
+          change_summary: null,
+          updated_at: new Date().toISOString(),
+        },
       });
     } catch {
       // Entry saved; notifications are best-effort
@@ -259,14 +217,19 @@ export async function updateScheduleEntry(
   if (familyId && profile?.account_mode === ACCOUNT_MODE.FAMILY) {
     const actorName = getDisplayName(profile);
     try {
-      await notifyFamilyAboutScheduleEvent(supabase, {
+      await notifyFamilyMembers(supabase, {
         type: NOTIFICATION_TYPE.SCHEDULE_UPDATED,
         actorId: user.id,
         actorName,
         familyId,
-        scheduleId: id,
-        bodyDetail: changeSummary,
-        changeSummary,
+        body: changeSummary,
+        payload: {
+          schedule_id: id,
+          actor_id: user.id,
+          family_id: familyId,
+          change_summary: changeSummary,
+          updated_at: new Date().toISOString(),
+        },
       });
     } catch {
       // Update saved; notifications are best-effort
@@ -322,13 +285,19 @@ export async function deleteScheduleEntry(
     );
 
     try {
-      await notifyFamilyAboutScheduleEvent(supabase, {
+      await notifyFamilyMembers(supabase, {
         type: NOTIFICATION_TYPE.SCHEDULE_DELETED,
         actorId: user.id,
         actorName,
         familyId,
-        scheduleId: id,
-        bodyDetail,
+        body: bodyDetail,
+        payload: {
+          schedule_id: id,
+          actor_id: user.id,
+          family_id: familyId,
+          change_summary: null,
+          updated_at: new Date().toISOString(),
+        },
       });
     } catch {
       // Entry deleted; notifications are best-effort

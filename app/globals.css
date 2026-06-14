@@ -185,6 +185,16 @@
     animation: nimbus-sweep 2s ease-in-out infinite;
   }
 
+  @keyframes nimbus-hero-drift {
+    0%, 100% { transform: translate(0, 0); }
+    33% { transform: translate(2px, -6px); }
+    66% { transform: translate(-3px, -4px); }
+  }
+  .hero-module-pill {
+    animation: nimbus-hero-drift var(--hero-drift-duration, 4s) ease-in-out infinite;
+    animation-delay: var(--hero-drift-delay, 0s);
+  }
+
   [data-sonner-toaster] {
     font-family: var(--font-nunito), "Nunito", system-ui, sans-serif;
   }

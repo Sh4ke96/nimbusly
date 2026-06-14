@@ -2,9 +2,9 @@ import type { Dict } from "@/lib/i18n/types";
 
 export const en: Dict = {
   meta: {
-    title: "Nimbusly — Your family's shared home",
+    title: "Nimbusly — Family hub: budget, shopping, health & daily life",
     description:
-      "Manage your budget, plan shopping, remember birthdays and share ideas. Connect with loved ones and see the same data — everyone knows who added what.",
+      "One hub for your whole family: budget, shopping, gifts, schedule, medicine cabinet, watchlist, restaurants, pets, chores, and more. Shared dashboard, notifications, and live sync.",
   },
   nav: {
     features: "Features",
@@ -18,12 +18,12 @@ export const en: Dict = {
     dashboard: "Dashboard",
   },
   hero: {
-    badge: "For the whole family",
-    headline: "Your family home in one warm place",
-    headlineAccent: "in one",
-    desc: "Manage your budget, plan shopping, remember birthdays and share ideas. Connect with loved ones and see the same data — everyone knows who added what.",
+    badge: "11 modules · solo or family",
+    headline: "Everything that happens at home — in one place",
+    headlineAccent: "in one place",
+    desc: "Budget, shopping lists, birthdays, schedule, medicine cabinet, chores, pets, and more. A shared dashboard shows what needs attention; notifications keep everyone in the loop — live, in Polish or English.",
     ctaPrimary: "Create family account",
-    ctaSecondary: "See demo",
+    ctaSecondary: "See modules",
     socialProofCount: "12,000+",
     socialProofLabel: "families use it",
     rating: "4.9/5 app store rating",
@@ -35,42 +35,93 @@ export const en: Dict = {
       { name: "Jakub K.", member: "syn" },
     ],
   },
-  chips: {
-    budget: "Budget",
-    shopping: "Shopping",
-    gifts: "Gifts",
-    birthdays: "Birthdays",
+  highlights: {
+    items: [
+      {
+        title: "“Needs attention” dashboard",
+        desc: "One glance at budget, shopping, medicine cabinet, chores, and upcoming dates.",
+      },
+      {
+        title: "Family notifications",
+        desc: "In-app and by email — know who added or changed what.",
+      },
+      {
+        title: "Live sync",
+        desc: "Shopping lists, gifts, and chores update instantly for everyone.",
+      },
+      {
+        title: "Polish & English",
+        desc: "Each member picks their UI language. Solo or family up to 6 people.",
+      },
+    ],
   },
   features: {
-    heading: "Everything your home needs",
-    subheading: "Eleven modules that replace sticky notes and forgotten conversations.",
+    heading: "Eleven modules under one roof",
+    subheading: "From budget to medicine cabinet — everything a shared home needs, instead of sticky notes and forgotten conversations.",
     items: [
-      { title: "Family budget", desc: "Track income and spending — solo or with family. Categories, months, and dashboard overview." },
-      { title: "Shopping lists", desc: "Shared lists with live updates. Everyone knows what to buy and who added it." },
-      { title: "Gifts", desc: "Gift ideas as private notes — without spoiling surprises." },
-      { title: "Birthdays", desc: "Birthday calendar with in-app reminders and dashboard highlights." },
-      { title: "Schedule & plans", desc: "Shared family calendar for work, trips, and appointments." },
-      { title: "Medicine cabinet", desc: "Meds, expiry dates, and stock — with alerts before they run out." },
-      { title: "Movies & TV", desc: "Watchlist and watched titles for the whole family." },
-      { title: "Restaurants & pubs", desc: "Places, ratings, addresses, and visit plans in one list." },
-      { title: "Pets", desc: "Pet profiles, vaccinations, vet visits, and food supplies." },
-      { title: "Household chores", desc: "Tasks with due dates, assignees, and recurrence." },
-      { title: "Multi-person account", desc: "Solo or family — shared data and change notifications." },
+      {
+        title: "Family budget",
+        desc: "Income and spending with categories and monthly overview. CSV export and a dashboard card.",
+      },
+      {
+        title: "Shopping lists",
+        desc: "Shared lists with live sync. Everyone knows what to buy, who added it, and what's in the cart.",
+      },
+      {
+        title: "Gifts",
+        desc: "Gift ideas as private notes — without spoiling surprises. Updates visible right away.",
+      },
+      {
+        title: "Birthdays",
+        desc: "Birthday calendar with reminders in the app, on the dashboard, and by email.",
+      },
+      {
+        title: "Schedule & plans",
+        desc: "Shared family calendar for work, trips, appointments, and monthly plans.",
+      },
+      {
+        title: "Medicine cabinet",
+        desc: "Meds, expiry dates, and stock levels — with alerts before something runs out or expires.",
+      },
+      {
+        title: "Movies & TV",
+        desc: "A shared watchlist and watched list — plan movie nights together.",
+      },
+      {
+        title: "Restaurants & pubs",
+        desc: "Places, ratings, addresses, and visit plans — skip the “where should we go?” debate.",
+      },
+      {
+        title: "Pets",
+        desc: "Pet profiles, vaccinations, vet visits, and food supplies in one place.",
+      },
+      {
+        title: "Household chores",
+        desc: "Tasks with due dates, assignees, and recurrence — synced live.",
+      },
+      {
+        title: "Family & settings",
+        desc: "Solo or up to 6 people with roles. Invites, permissions, and shared change notifications.",
+      },
     ],
   },
   steps: {
     heading: "Three steps to family order",
     items: [
-      { step: "01", title: "Create account", desc: "Sign up in 30 seconds. No credit card required." },
-      { step: "02", title: "Invite family", desc: "Send an invitation link to loved ones. Everyone gets their own profile." },
-      { step: "03", title: "Work together", desc: "Add data, plan together and see the same thing in real time." },
+      { step: "01", title: "Create account", desc: "Sign up in a minute. Solo right away or family — no credit card." },
+      { step: "02", title: "Invite family", desc: "Send an invite link. Everyone gets a profile, role, and preferred language." },
+      {
+        step: "03",
+        title: "Use the hub",
+        desc: "Set up your dashboard, add data in modules, and react to notifications — all live.",
+      },
     ],
   },
   cta: {
     heading: "Ready to get started?",
-    desc: "Join thousands of families already using Nimbusly. Free, no card needed.",
+    desc: "Budget, shopping, household health, and daily organization — in one place, for free.",
     btn: "Create family account",
-    perks: ["Free plan forever", "No credit card", "Setup in 2 minutes"],
+    perks: ["Shared dashboard", "Family notifications", "Free, no card needed"],
   },
   footer: {
     rights: "All rights reserved.",
@@ -342,6 +393,8 @@ export const en: Dict = {
     attentionMedicineExpiring: "Medicine expiring soon: {name}",
     attentionPetCareDue: "Pet care due: {pet} — {item}",
     attentionBirthdaySoon: "Birthday: {name} ({when})",
+    attentionShowMore: "Show more ({count})",
+    attentionShowLess: "Show less",
     customizeOverviewBtn: "Customize overview",
     customizeOverviewDoneBtn: "Done",
     customizeOverviewHint: "Drag cards to reorder them. Restore hidden modules below.",
@@ -900,6 +953,8 @@ export const en: Dict = {
     watchingBadge: "You are watching this list",
     watchEnabledSuccess: "You are watching this list — you will be notified when items are added or removed.",
     watchDisabledSuccess: "You are no longer watching this list.",
+    csvYes: "yes",
+    csvNo: "no",
   },
   budget: {
     title: "Budget",
@@ -1090,5 +1145,10 @@ export const en: Dict = {
     openPets: "Open pets",
     openChores: "Open household chores",
     notificationBodySeparator: " — ",
+  },
+  module: {
+    fetchError: "Could not load data. Check your connection and try again.",
+    retry: "Try again",
+    exportCsv: "Export CSV",
   },
 };

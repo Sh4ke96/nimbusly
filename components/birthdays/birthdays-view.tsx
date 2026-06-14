@@ -1,6 +1,8 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useState } from "react";
+import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
+import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { AppHeader } from "@/components/app/app-header";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { BirthdayCalendar } from "@/components/birthdays/birthday-calendar";
@@ -8,10 +10,10 @@ import { BirthdayEditDialog } from "@/components/birthdays/birthday-edit-dialog"
 import { BirthdayFormDialog } from "@/components/birthdays/birthday-form-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ModuleFetchError } from "@/components/ui/module-fetch-error";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useT } from "@/lib/lang-context";
 import { useProfileStore } from "@/lib/stores/profile-store";
-import { useNotificationsStore } from "@/lib/stores/notifications-store";
 import { useBirthdaysStore } from "@/lib/stores/birthdays-store";
 import { formatBirthdayLabel, type BirthdayEntry } from "@/lib/birthdays/types";
 import { cn } from "@/lib/utils";
@@ -27,8 +29,8 @@ export function BirthdaysView() {
   const entries = useBirthdaysStore((s) => s.entries);
   const loaded = useBirthdaysStore((s) => s.loaded);
   const loading = useBirthdaysStore((s) => s.loading);
+  const error = useBirthdaysStore((s) => s.error);
   const fetchEntries = useBirthdaysStore((s) => s.fetchEntries);
-  const fetchNotifications = useNotificationsStore((s) => s.fetchNotifications);
 
   const now = new Date();
   const [year, setYear] = useState<number>(now.getFullYear());
@@ -39,18 +41,10 @@ export function BirthdaysView() {
   const [editOpen, setEditOpen] = useState<boolean>(false);
   const [deleteState, deleteAction, deletePending] = useActionState(deleteBirthday, null);
 
-  useEffect(() => {
-    if (!loaded) void fetchEntries();
-  }, [loaded, fetchEntries]);
+  useStoreBootstrap(loaded, error, fetchEntries);
+  const onBirthdayChanged = useModuleRefresh(fetchEntries);
 
-  useActionFeedback(deleteState, () => {
-    void fetchEntries(true);
-  }, deletePending);
-
-  const onBirthdayChanged = () => {
-    void fetchEntries(true);
-    void fetchNotifications(true);
-  };
+  useActionFeedback(deleteState, onBirthdayChanged, deletePending);
 
   const upcoming = [...entries].sort((a, b) => {
     if (a.birth_month !== b.birth_month) return a.birth_month - b.birth_month;
@@ -85,6 +79,9 @@ export function BirthdaysView() {
           <BirthdayFormDialog onSuccess={onBirthdayChanged} />
         </div>
 
+        {error ? (
+          <ModuleFetchError onRetry={() => void fetchEntries(true)} />
+        ) : (
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
           <Card id="birthday-calendar" className="rounded-none py-0 shadow-sm scroll-mt-24">
             <CardContent className="p-4 md:p-6">
@@ -191,6 +188,7 @@ export function BirthdaysView() {
             </CardContent>
           </Card>
         </div>
+        )}
       </main>
 
       <BirthdayEditDialog

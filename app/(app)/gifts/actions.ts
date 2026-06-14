@@ -12,62 +12,11 @@ import {
 } from "@/lib/gifts/types";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { GIFT_RECIPIENT_TYPE } from "@/lib/constants/gifts";
-import { NOTIFICATION_TYPE, type NotificationType } from "@/lib/constants/notifications";
-import { getFamilyNotificationTitle } from "@/lib/notifications/family-notification";
+import { NOTIFICATION_TYPE } from "@/lib/constants/notifications";
 import { getDisplayName } from "@/lib/profile";
 import type { AccountActionState } from "@/app/(app)/account/actions";
-
-async function requireUser() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  return { supabase, user };
-}
-
-async function notifyFamilyAboutGiftEvent(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  params: {
-    type: NotificationType;
-    actorId: string;
-    actorName: string;
-    familyId: string;
-    giftId: string;
-    recipientName: string;
-    bodyDetail: string;
-    changeSummary?: string;
-  }
-) {
-  const t = await getServerT();
-  const { data: members } = await supabase
-    .from("profiles")
-    .select("id")
-    .eq("family_id", params.familyId);
-
-  const recipientIds = (members ?? [])
-    .map((m) => m.id as string)
-    .filter((id) => id !== params.actorId);
-
-  if (recipientIds.length === 0) return;
-
-  const title = getFamilyNotificationTitle(params.type, t.notifications, params.actorName);
-  const body = `${params.recipientName}${t.notifications.notificationBodySeparator}${params.bodyDetail}`;
-
-  await supabase.rpc("create_family_notifications", {
-    p_recipient_ids: recipientIds,
-    p_type: params.type,
-    p_title: title,
-    p_body: body,
-    p_payload: {
-      gift_id: params.giftId,
-      recipient_name: params.recipientName,
-      actor_id: params.actorId,
-      family_id: params.familyId,
-      change_summary: params.changeSummary ?? null,
-      updated_at: new Date().toISOString(),
-    },
-  });
-}
+import { requireUser } from "@/lib/server-actions/require-user";
+import { notifyFamilyMembers } from "@/lib/server-actions/notify-family";
 
 async function resolveRecipientForInsert(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -170,14 +119,20 @@ export async function createGiftIdea(
     );
 
     try {
-      await notifyFamilyAboutGiftEvent(supabase, {
+      await notifyFamilyMembers(supabase, {
         type: NOTIFICATION_TYPE.GIFT_ADDED,
         actorId: user.id,
         actorName,
         familyId,
-        giftId: gift.id,
-        recipientName: recipient.recipientName,
-        bodyDetail,
+        body: `${recipient.recipientName}${t.notifications.notificationBodySeparator}${bodyDetail}`,
+        payload: {
+          gift_id: gift.id,
+          recipient_name: recipient.recipientName,
+          actor_id: user.id,
+          family_id: familyId,
+          change_summary: null,
+          updated_at: new Date().toISOString(),
+        },
       });
     } catch {
       // Saved; notifications are best-effort
@@ -255,15 +210,20 @@ export async function updateGiftIdea(
   if (familyId && profile?.account_mode === ACCOUNT_MODE.FAMILY) {
     const actorName = getDisplayName(profile);
     try {
-      await notifyFamilyAboutGiftEvent(supabase, {
+      await notifyFamilyMembers(supabase, {
         type: NOTIFICATION_TYPE.GIFT_UPDATED,
         actorId: user.id,
         actorName,
         familyId,
-        giftId: id,
-        recipientName: recipient.recipientName,
-        bodyDetail: changeSummary,
-        changeSummary,
+        body: `${recipient.recipientName}${t.notifications.notificationBodySeparator}${changeSummary}`,
+        payload: {
+          gift_id: id,
+          recipient_name: recipient.recipientName,
+          actor_id: user.id,
+          family_id: familyId,
+          change_summary: changeSummary,
+          updated_at: new Date().toISOString(),
+        },
       });
     } catch {
       // Updated; notifications are best-effort
@@ -318,14 +278,20 @@ export async function deleteGiftIdea(
     );
 
     try {
-      await notifyFamilyAboutGiftEvent(supabase, {
+      await notifyFamilyMembers(supabase, {
         type: NOTIFICATION_TYPE.GIFT_DELETED,
         actorId: user.id,
         actorName,
         familyId,
-        giftId: id,
-        recipientName: existing.recipient_name,
-        bodyDetail,
+        body: `${existing.recipient_name}${t.notifications.notificationBodySeparator}${bodyDetail}`,
+        payload: {
+          gift_id: id,
+          recipient_name: existing.recipient_name,
+          actor_id: user.id,
+          family_id: familyId,
+          change_summary: null,
+          updated_at: new Date().toISOString(),
+        },
       });
     } catch {
       // Deleted; notifications are best-effort

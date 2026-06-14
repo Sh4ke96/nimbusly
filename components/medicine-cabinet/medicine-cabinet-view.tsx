@@ -1,50 +1,47 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
+import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { AppHeader } from "@/components/app/app-header";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { MedicineAvailabilityFilter } from "@/components/medicine-cabinet/medicine-availability-filter";
 import { MedicineEditDialog } from "@/components/medicine-cabinet/medicine-edit-dialog";
 import { MedicineFormDialog } from "@/components/medicine-cabinet/medicine-form-dialog";
 import { MedicineItemCard } from "@/components/medicine-cabinet/medicine-item-card";
+import { ModuleFetchError } from "@/components/ui/module-fetch-error";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MEDICINE_FILTER_ALL } from "@/lib/constants/medicine";
 import { filterMedicineByAvailability } from "@/lib/medicine/filters";
 import { sortMedicineByExpiry } from "@/lib/medicine/expiry";
 import type { MedicineItem } from "@/lib/medicine/types";
-import { useT } from "@/lib/lang-context";
+import { useLang, useT } from "@/lib/lang-context";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useMedicineStore } from "@/lib/stores/medicine-store";
-import { useNotificationsStore } from "@/lib/stores/notifications-store";
 
 export function MedicineView() {
   const t = useT();
+  const { lang } = useLang();
   const user = useProfileStore((s) => s.user);
   const profile = useProfileStore((s) => s.profile);
   const members = useProfileStore((s) => s.members);
   const items = useMedicineStore((s) => s.items);
   const loaded = useMedicineStore((s) => s.loaded);
   const loading = useMedicineStore((s) => s.loading);
+  const error = useMedicineStore((s) => s.error);
   const fetchItems = useMedicineStore((s) => s.fetchItems);
-  const fetchNotifications = useNotificationsStore((s) => s.fetchNotifications);
 
   const [filterKey, setFilterKey] = useState<string>(MEDICINE_FILTER_ALL);
   const [editingItem, setEditingItem] = useState<MedicineItem | null>(null);
   const [editOpen, setEditOpen] = useState<boolean>(false);
 
-  useEffect(() => {
-    if (!loaded) void fetchItems();
-  }, [loaded, fetchItems]);
+  useStoreBootstrap(loaded, error, fetchItems);
+  const onItemsChanged = useModuleRefresh(fetchItems);
 
   const filteredItems = useMemo(() => {
     const filtered = filterMedicineByAvailability(items, filterKey);
-    return sortMedicineByExpiry(filtered);
-  }, [items, filterKey]);
-
-  const onItemsChanged = () => {
-    void fetchItems(true);
-    void fetchNotifications(true);
-  };
+    return sortMedicineByExpiry(filtered, new Date(), lang);
+  }, [items, filterKey, lang]);
 
   function openEdit(item: MedicineItem) {
     setEditingItem(item);
@@ -76,7 +73,9 @@ export function MedicineView() {
           />
         )}
 
-        {loading && !loaded ? (
+        {error ? (
+          <ModuleFetchError onRetry={() => void fetchItems(true)} />
+        ) : loading && !loaded ? (
           <div className="grid gap-4 sm:grid-cols-2">
             <Skeleton className="h-44 w-full rounded-none" />
             <Skeleton className="h-44 w-full rounded-none" />

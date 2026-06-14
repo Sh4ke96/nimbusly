@@ -1,20 +1,11 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
 import { getServerT } from "@/lib/i18n/server";
 import { isAvatarColor } from "@/lib/avatar-colors";
 import { ACCOUNT_MODE, FAMILY_ROLE, type AccountMode, type FamilyRole } from "@/lib/constants/account";
+import { requireUser } from "@/lib/server-actions/require-user";
 
 export type AccountActionState = { error: string } | { success: string } | null;
-
-async function requireUser() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  return { supabase, user };
-}
 
 export async function updateProfile(
   _prev: AccountActionState,

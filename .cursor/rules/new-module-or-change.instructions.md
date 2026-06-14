@@ -217,8 +217,8 @@ When adding tables, columns, or policies:
 
 | Change type | Required tests |
 |-------------|----------------|
-| New pure helpers (`lib/**/helpers.ts`, validators, formatters) | `lib/**/*.test.ts` (Node test runner) |
-| New user flow (auth, onboarding, settings, invites) | Cypress spec in `cypress/e2e/` or extend existing |
+| New pure helpers (`lib/**/helpers.ts`, validators, formatters) | `tests/unit/**/*.test.ts` (Node test runner) |
+| New user flow (auth, onboarding, settings, invites) | Cypress spec in `tests/e2e/` or extend existing |
 | Bug fix | Regression test when feasible |
 
 ### Commands
@@ -242,7 +242,7 @@ describe("myHelper", () => {
 });
 ```
 
-Reference: `lib/family/invite.test.ts`.
+Reference: `tests/unit/family/invite.test.ts`.
 
 ### Before finishing
 

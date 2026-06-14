@@ -13,9 +13,11 @@ interface NotificationsStore {
   unreadCount: number;
   loaded: boolean;
   loading: boolean;
+  error: boolean;
   pageItems: AppNotification[];
   pageTotal: number;
   pageLoading: boolean;
+  pageError: boolean;
   fetchNotifications: (force?: boolean) => Promise<void>;
   fetchNotificationsPage: (params: {
     filter: NotificationFilterTab;
@@ -31,9 +33,11 @@ const initialState = {
   unreadCount: 0,
   loaded: false,
   loading: false,
+  error: false,
   pageItems: [] as AppNotification[],
   pageTotal: 0,
   pageLoading: false,
+  pageError: false,
 };
 
 function applyReadAt(items: AppNotification[], id: string, readAt: string) {
@@ -46,10 +50,10 @@ export const useNotificationsStore = create<NotificationsStore>((set, get) => ({
   ...initialState,
 
   fetchNotifications: async (force = false) => {
-    if (!force && get().loaded && !get().loading) return;
+    if (!force && get().loaded && !get().loading && !get().error) return;
 
     return dedupeAsync("notifications:list", async () => {
-      set({ loading: true });
+      set({ loading: true, error: false });
 
       const user = useProfileStore.getState().user;
       if (!user) {
@@ -57,42 +61,52 @@ export const useNotificationsStore = create<NotificationsStore>((set, get) => ({
         return;
       }
 
-      const supabase = createClient();
-      const [listResult, unreadResult] = await Promise.all([
-        supabase
-          .from("notifications")
-          .select("id, user_id, type, title, body, payload, read_at, created_at")
-          .eq("user_id", user.id)
-          .order("created_at", { ascending: false })
-          .limit(50),
-        supabase
-          .from("notifications")
-          .select("id", { count: "exact", head: true })
-          .eq("user_id", user.id)
-          .is("read_at", null),
-      ]);
+      try {
+        const supabase = createClient();
+        const [listResult, unreadResult] = await Promise.all([
+          supabase
+            .from("notifications")
+            .select("id, user_id, type, title, body, payload, read_at, created_at")
+            .eq("user_id", user.id)
+            .order("created_at", { ascending: false })
+            .limit(50),
+          supabase
+            .from("notifications")
+            .select("id", { count: "exact", head: true })
+            .eq("user_id", user.id)
+            .is("read_at", null),
+        ]);
 
-      const items = (listResult.data ?? []) as AppNotification[];
+        if (listResult.error || unreadResult.error) {
+          set({ loading: false, loaded: true, error: true });
+          return;
+        }
 
-      set({
-        items,
-        unreadCount: unreadResult.count ?? 0,
-        loaded: true,
-        loading: false,
-      });
+        const items = (listResult.data ?? []) as AppNotification[];
+
+        set({
+          items,
+          unreadCount: unreadResult.count ?? 0,
+          loaded: true,
+          loading: false,
+          error: false,
+        });
+      } catch {
+        set({ loading: false, loaded: true, error: true });
+      }
     });
   },
 
   fetchNotificationsPage: async ({ filter, page }) => {
     const user = useProfileStore.getState().user;
     if (!user) {
-      set({ pageItems: [], pageTotal: 0, pageLoading: false });
+      set({ pageItems: [], pageTotal: 0, pageLoading: false, pageError: false });
       return;
     }
 
     const dedupeKey = `notifications:page:${filter}:${page}`;
     return dedupeAsync(dedupeKey, async () => {
-      set({ pageLoading: true });
+      set({ pageLoading: true, pageError: false });
 
       const from = (page - 1) * NOTIFICATIONS_PAGE_SIZE;
       const to = from + NOTIFICATIONS_PAGE_SIZE - 1;
@@ -116,7 +130,7 @@ export const useNotificationsStore = create<NotificationsStore>((set, get) => ({
       const { data, count, error } = await query;
 
       if (error) {
-        set({ pageItems: [], pageTotal: 0, pageLoading: false });
+        set({ pageItems: [], pageTotal: 0, pageLoading: false, pageError: true });
         return;
       }
 
@@ -124,6 +138,7 @@ export const useNotificationsStore = create<NotificationsStore>((set, get) => ({
         pageItems: (data ?? []) as AppNotification[],
         pageTotal: count ?? 0,
         pageLoading: false,
+        pageError: false,
       });
     });
   },

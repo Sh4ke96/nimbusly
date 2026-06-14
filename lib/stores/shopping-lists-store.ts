@@ -7,6 +7,8 @@ import {
   type ShoppingListItem,
 } from "@/lib/shopping-lists/types";
 import { dedupeAsync } from "@/lib/stores/dedupe-async";
+import { listFetchInitial } from "@/lib/stores/list-fetch";
+import { compareNamesByProfileLang } from "@/lib/stores/sort-lang";
 import { watchedListIdsFromRows } from "@/lib/shopping-lists/watches";
 
 export const EMPTY_SHOPPING_LIST_ITEMS: ShoppingListItem[] = [];
@@ -31,6 +33,7 @@ interface ShoppingListsStore {
   itemsLoadingByListId: Record<string, boolean>;
   watchedListIds: string[];
   watchesLoaded: boolean;
+  error: boolean;
   fetchLists: (force?: boolean) => Promise<void>;
   fetchWatches: (force?: boolean) => Promise<void>;
   fetchItems: (listId: string, force?: boolean) => Promise<void>;
@@ -53,63 +56,79 @@ const initialState = {
   watchesLoaded: false,
   loading: false,
   itemsLoadingByListId: {} as Record<string, boolean>,
+  error: false,
 };
 
 function sortLists(lists: ShoppingList[]): ShoppingList[] {
-  return [...lists].sort((a, b) => a.name.localeCompare(b.name, "pl"));
+  return [...lists].sort((a, b) => compareNamesByProfileLang(a.name, b.name));
 }
 
 export const useShoppingListsStore = create<ShoppingListsStore>((set, get) => ({
   ...initialState,
 
   fetchLists: async (force = false) => {
-    if (!force && get().loaded && !get().loading) return;
+    if (!force && get().loaded && !get().loading && !get().error) return;
 
     return dedupeAsync("shopping-lists:list", async () => {
-      set({ loading: true });
+      set({ loading: true, error: false });
+      try {
+        const supabase = createClient();
+        const { data, error } = await supabase
+          .from("shopping_lists")
+          .select("*")
+          .order("updated_at", { ascending: false });
 
-      const supabase = createClient();
-      const { data } = await supabase
-        .from("shopping_lists")
-        .select("*")
-        .order("updated_at", { ascending: false });
+        if (error) {
+          set({ loading: false, loaded: true, error: true });
+          return;
+        }
 
-      set({
-        lists: sortLists((data ?? []) as ShoppingList[]),
-        loaded: true,
-        loading: false,
-      });
+        const lists = sortLists((data ?? []) as ShoppingList[]);
+        set({
+          lists,
+          loaded: true,
+          loading: false,
+          error: false,
+        });
 
-      const listIds = ((data ?? []) as ShoppingList[]).map((list) => list.id);
-      if (listIds.length === 0) return;
+        const listIds = lists.map((list) => list.id);
+        if (listIds.length === 0) return;
 
-      const { data: items } = await supabase
-        .from("shopping_list_items")
-        .select("*")
-        .in("list_id", listIds)
-        .order("sort_order", { ascending: true })
-        .order("created_at", { ascending: true });
+        const { data: items, error: itemsError } = await supabase
+          .from("shopping_list_items")
+          .select("*")
+          .in("list_id", listIds)
+          .order("sort_order", { ascending: true })
+          .order("created_at", { ascending: true });
 
-      const grouped: Record<string, ShoppingListItem[]> = {};
-      for (const item of (items ?? []) as ShoppingListItem[]) {
-        if (!grouped[item.list_id]) grouped[item.list_id] = [];
-        grouped[item.list_id].push(item);
+        if (itemsError) {
+          set({ loading: false, loaded: true, error: true });
+          return;
+        }
+
+        const grouped: Record<string, ShoppingListItem[]> = {};
+        for (const item of (items ?? []) as ShoppingListItem[]) {
+          if (!grouped[item.list_id]) grouped[item.list_id] = [];
+          grouped[item.list_id].push(item);
+        }
+
+        set((state) => {
+          const nextItems = { ...state.itemsByListId };
+          const listIdSet = new Set(listIds);
+
+          for (const key of Object.keys(nextItems)) {
+            if (!listIdSet.has(key)) delete nextItems[key];
+          }
+
+          for (const listId of listIds) {
+            nextItems[listId] = sortShoppingListItems(grouped[listId] ?? []);
+          }
+
+          return { itemsByListId: nextItems };
+        });
+      } catch {
+        set({ loading: false, loaded: true, error: true });
       }
-
-      set((state) => {
-        const nextItems = { ...state.itemsByListId };
-        const listIdSet = new Set(listIds);
-
-        for (const key of Object.keys(nextItems)) {
-          if (!listIdSet.has(key)) delete nextItems[key];
-        }
-
-        for (const listId of listIds) {
-          nextItems[listId] = sortShoppingListItems(grouped[listId] ?? []);
-        }
-
-        return { itemsByListId: nextItems };
-      });
     });
   },
 

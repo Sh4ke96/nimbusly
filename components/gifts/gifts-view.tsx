@@ -1,20 +1,24 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
+import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
+import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
 import { AppHeader } from "@/components/app/app-header";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { GiftEditDialog } from "@/components/gifts/gift-edit-dialog";
 import { GiftFormDialog } from "@/components/gifts/gift-form-dialog";
 import { GiftNoteCard } from "@/components/gifts/gift-note-card";
 import { GiftRecipientFilter } from "@/components/gifts/gift-recipient-filter";
+import { ModuleFetchError } from "@/components/ui/module-fetch-error";
 import { Skeleton } from "@/components/ui/skeleton";
 import { GIFT_FILTER_ALL } from "@/lib/constants/gifts";
+import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { filterGiftIdeasByRecipient } from "@/lib/gifts/recipients";
 import type { GiftIdea } from "@/lib/gifts/types";
 import { useT } from "@/lib/lang-context";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useGiftsStore } from "@/lib/stores/gifts-store";
-import { useNotificationsStore } from "@/lib/stores/notifications-store";
 
 export function GiftsView() {
   const t = useT();
@@ -24,27 +28,38 @@ export function GiftsView() {
   const ideas = useGiftsStore((s) => s.ideas);
   const loaded = useGiftsStore((s) => s.loaded);
   const loading = useGiftsStore((s) => s.loading);
+  const error = useGiftsStore((s) => s.error);
   const fetchIdeas = useGiftsStore((s) => s.fetchIdeas);
-  const fetchNotifications = useNotificationsStore((s) => s.fetchNotifications);
+
+  const familyId =
+    profile?.account_mode === ACCOUNT_MODE.FAMILY && profile.family_id
+      ? profile.family_id
+      : null;
 
   const [filterKey, setFilterKey] = useState<string>(GIFT_FILTER_ALL);
   const [focusedId, setFocusedId] = useState<string | null>(null);
   const [editingIdea, setEditingIdea] = useState<GiftIdea | null>(null);
   const [editOpen, setEditOpen] = useState<boolean>(false);
 
-  useEffect(() => {
-    if (!loaded) void fetchIdeas();
-  }, [loaded, fetchIdeas]);
+  useStoreBootstrap(loaded, error, fetchIdeas);
+  const onGiftsChanged = useModuleRefresh(fetchIdeas);
+
+  const onRealtimeChange = useCallback(() => {
+    void fetchIdeas(true);
+  }, [fetchIdeas]);
+
+  useScopedRealtime({
+    userId: user?.id,
+    familyId,
+    channelKey: "gift-ideas",
+    table: "gift_ideas",
+    onChange: onRealtimeChange,
+  });
 
   const filteredIdeas = useMemo(
     () => filterGiftIdeasByRecipient(ideas, filterKey),
     [ideas, filterKey]
   );
-
-  const onGiftsChanged = () => {
-    void fetchIdeas(true);
-    void fetchNotifications(true);
-  };
 
   function openEdit(idea: GiftIdea) {
     setEditingIdea(idea);
@@ -75,7 +90,9 @@ export function GiftsView() {
           />
         )}
 
-        {loading && !loaded ? (
+        {error ? (
+          <ModuleFetchError onRetry={() => void fetchIdeas(true)} />
+        ) : loading && !loaded ? (
           <div className="grid gap-4 sm:grid-cols-2">
             <Skeleton className="h-40 w-full rounded-none" />
             <Skeleton className="h-40 w-full rounded-none" />

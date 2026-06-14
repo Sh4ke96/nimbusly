@@ -65,4 +65,11 @@ export const t = {
     login: "Zaloguj się",
     getStarted: "Zacznij za darmo",
   },
+  gifts: {
+    title: "Prezenty",
+    subtitle:
+      "Pomysły na prezenty w formie notatek — solo lub współdzielone z rodziną.",
+    addBtn: "Dodaj pomysł",
+    addTitle: "Nowy pomysł na prezent",
+  },
 } as const;

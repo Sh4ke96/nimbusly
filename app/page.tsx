@@ -2,6 +2,7 @@
 
 import { SiteNavbar } from "@/components/landing/navbar";
 import { HeroSection } from "@/components/landing/hero";
+import { HighlightsSection } from "@/components/landing/highlights";
 import { FeaturesSection } from "@/components/landing/features";
 import { StepsSection } from "@/components/landing/steps";
 import { CtaSection } from "@/components/landing/cta";
@@ -13,6 +14,7 @@ export default function Home() {
       <SiteNavbar />
       <main className="flex-1">
         <HeroSection />
+        <HighlightsSection />
         <FeaturesSection />
         <StepsSection />
         <CtaSection />

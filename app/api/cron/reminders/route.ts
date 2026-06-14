@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { buildAttentionItems } from "@/lib/dashboard/attention";
 import { dict } from "@/lib/i18n";
-import type { Lang } from "@/lib/i18n";
+import { LANG, type Lang } from "@/lib/constants/lang";
 import { formatMessage } from "@/lib/i18n/format";
 import {
   buildReminderDigestHtml,
@@ -33,7 +33,7 @@ export async function GET(request: Request) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
   const { data: profiles } = await supabase
     .from("profiles")
-    .select("id, family_id, first_name, last_name");
+    .select("id, family_id, first_name, last_name, preferred_lang");
 
   let sent = 0;
   const errors: string[] = [];
@@ -44,7 +44,8 @@ export async function GET(request: Request) {
     if (!email) continue;
 
     const scope = scopeFilter(profile.family_id, profile.id);
-    const lang: Lang = "pl";
+    const lang: Lang =
+      profile.preferred_lang === LANG.EN ? LANG.EN : LANG.PL;
     const t = dict[lang].dashboard;
 
     const [{ data: choreTasks }, { data: medicineItems }, { data: careItems }, { data: pets }, { data: birthdays }] =

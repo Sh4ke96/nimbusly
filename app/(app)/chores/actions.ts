@@ -20,66 +20,11 @@ import {
   parseChoreDateString,
   parseChoreTaskFromForm,
 } from "@/lib/chores/types";
-import { ACCOUNT_MODE } from "@/lib/constants/account";
-import { NOTIFICATION_TYPE, type NotificationType } from "@/lib/constants/notifications";
-import { getFamilyNotificationTitle } from "@/lib/notifications/family-notification";
+import { NOTIFICATION_TYPE } from "@/lib/constants/notifications";
 import { getDisplayName, type Profile } from "@/lib/profile";
 import type { AccountActionState } from "@/app/(app)/account/actions";
-
-async function requireUser() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  return { supabase, user };
-}
-
-async function getProfileContext(supabase: Awaited<ReturnType<typeof createClient>>, userId: string) {
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("id, account_mode, family_id, first_name, last_name")
-    .eq("id", userId)
-    .maybeSingle();
-
-  const familyId =
-    profile?.account_mode === ACCOUNT_MODE.FAMILY && profile.family_id
-      ? profile.family_id
-      : null;
-
-  return { profile, familyId };
-}
-
-async function notifyFamily(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  params: {
-    type: NotificationType;
-    actorId: string;
-    actorName: string;
-    familyId: string;
-    body: string;
-    payload: Record<string, unknown>;
-  }
-) {
-  const t = await getServerT();
-  const { data: members } = await supabase
-    .from("profiles")
-    .select("id")
-    .eq("family_id", params.familyId);
-
-  const recipientIds = (members ?? [])
-    .map((m) => m.id as string)
-    .filter((id) => id !== params.actorId);
-
-  if (recipientIds.length === 0) return;
-
-  await supabase.rpc("create_family_notifications", {
-    p_recipient_ids: recipientIds,
-    p_type: params.type,
-    p_title: getFamilyNotificationTitle(params.type, t.notifications, params.actorName),
-    p_body: params.body,
-    p_payload: params.payload,
-  });
-}
+import { getProfileFamilyContext, requireUser } from "@/lib/server-actions/require-user";
+import { notifyFamilyMembers } from "@/lib/server-actions/notify-family";
 
 async function validateAssignee(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -156,7 +101,7 @@ export async function createChoreTask(
   if (validationError === "dueDate") return { error: t.chores.errorInvalidDueDate };
   if (validationError) return { error: t.chores.errorGeneric };
 
-  const { profile, familyId } = await getProfileContext(supabase, user.id);
+  const { profile, familyId } = await getProfileFamilyContext(supabase, user.id);
   if (!(await validateAssignee(supabase, parsed.assignedTo, familyId))) {
     return { error: t.chores.errorInvalidAssignee };
   }
@@ -183,7 +128,7 @@ export async function createChoreTask(
       t.chores
     );
     try {
-      await notifyFamily(supabase, {
+      await notifyFamilyMembers(supabase, {
         type: NOTIFICATION_TYPE.CHORE_ADDED,
         actorId: user.id,
         actorName: getDisplayName(profile),
@@ -226,7 +171,7 @@ export async function updateChoreTask(
 
   if (!existing) return { error: t.chores.errorNotOwner };
 
-  const { profile, familyId } = await getProfileContext(supabase, user.id);
+  const { profile, familyId } = await getProfileFamilyContext(supabase, user.id);
   if (!(await validateAssignee(supabase, parsed.assignedTo, familyId))) {
     return { error: t.chores.errorInvalidAssignee };
   }
@@ -262,7 +207,7 @@ export async function updateChoreTask(
     );
 
     try {
-      await notifyFamily(supabase, {
+      await notifyFamilyMembers(supabase, {
         type: NOTIFICATION_TYPE.CHORE_UPDATED,
         actorId: user.id,
         actorName: getDisplayName(profile),
@@ -339,7 +284,7 @@ export async function setChoreTaskStatus(
 
   if (error) return { error: t.chores.errorGeneric };
 
-  const { profile, familyId } = await getProfileContext(supabase, user.id);
+  const { profile, familyId } = await getProfileFamilyContext(supabase, user.id);
   if (familyId && profile) {
     const { data: members } = await supabase
       .from("profiles")
@@ -356,7 +301,7 @@ export async function setChoreTaskStatus(
     );
 
     try {
-      await notifyFamily(supabase, {
+      await notifyFamilyMembers(supabase, {
         type: NOTIFICATION_TYPE.CHORE_UPDATED,
         actorId: user.id,
         actorName: getDisplayName(profile),
@@ -413,7 +358,7 @@ export async function deleteChoreTask(
 
   if (error) return { error: t.chores.errorGeneric };
 
-  const { profile, familyId } = await getProfileContext(supabase, user.id);
+  const { profile, familyId } = await getProfileFamilyContext(supabase, user.id);
   if (familyId && profile && isValidChoreStatus(existing.status)) {
     const bodyDetail = formatChoreNotificationDetail(
       existing.title,
@@ -421,7 +366,7 @@ export async function deleteChoreTask(
       t.chores
     );
     try {
-      await notifyFamily(supabase, {
+      await notifyFamilyMembers(supabase, {
         type: NOTIFICATION_TYPE.CHORE_DELETED,
         actorId: user.id,
         actorName: getDisplayName(profile),

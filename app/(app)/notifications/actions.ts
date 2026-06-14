@@ -1,16 +1,8 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
 import { getServerT } from "@/lib/i18n/server";
 import type { AccountActionState } from "@/app/(app)/account/actions";
-
-async function requireUser() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  return { supabase, user };
-}
+import { requireUser } from "@/lib/server-actions/require-user";
 
 export async function markNotificationRead(
   _prev: AccountActionState,

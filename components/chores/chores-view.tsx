@@ -1,6 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
+import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
+import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
 import { AppHeader } from "@/components/app/app-header";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { ChoreAssigneeFilter } from "@/components/chores/chore-assignee-filter";
@@ -8,6 +11,7 @@ import { ChoreEditDialog } from "@/components/chores/chore-edit-dialog";
 import { ChoreFormDialog } from "@/components/chores/chore-form-dialog";
 import { ChoreStatusFilter } from "@/components/chores/chore-status-filter";
 import { ChoreTaskCard } from "@/components/chores/chore-task-card";
+import { ModuleFetchError } from "@/components/ui/module-fetch-error";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { CHORE_FILTER_ALL } from "@/lib/constants/chores";
@@ -20,7 +24,6 @@ import {
 import { useT } from "@/lib/lang-context";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useChoresStore } from "@/lib/stores/chores-store";
-import { useNotificationsStore } from "@/lib/stores/notifications-store";
 
 export function ChoresView() {
   const t = useT();
@@ -30,30 +33,40 @@ export function ChoresView() {
   const tasks = useChoresStore((s) => s.tasks);
   const loaded = useChoresStore((s) => s.loaded);
   const loading = useChoresStore((s) => s.loading);
+  const error = useChoresStore((s) => s.error);
   const fetchTasks = useChoresStore((s) => s.fetchTasks);
-  const fetchNotifications = useNotificationsStore((s) => s.fetchNotifications);
 
-  const isFamily = profile?.account_mode === ACCOUNT_MODE.FAMILY && !!profile.family_id;
+  const familyId =
+    profile?.account_mode === ACCOUNT_MODE.FAMILY && profile.family_id
+      ? profile.family_id
+      : null;
+  const isFamily = !!familyId;
 
   const [statusFilter, setStatusFilter] = useState<string>(CHORE_FILTER_ALL);
   const [assigneeFilter, setAssigneeFilter] = useState<string>(CHORE_FILTER_ALL);
   const [editingTask, setEditingTask] = useState<ChoreTask | null>(null);
   const [editOpen, setEditOpen] = useState<boolean>(false);
 
-  useEffect(() => {
-    if (!loaded) void fetchTasks();
-  }, [loaded, fetchTasks]);
+  useStoreBootstrap(loaded, error, fetchTasks);
+  const onTasksChanged = useModuleRefresh(fetchTasks);
+
+  const onRealtimeChange = useCallback(() => {
+    void fetchTasks(true);
+  }, [fetchTasks]);
+
+  useScopedRealtime({
+    userId: user?.id,
+    familyId,
+    channelKey: "chore-tasks",
+    table: "chore_tasks",
+    onChange: onRealtimeChange,
+  });
 
   const filteredTasks = useMemo(() => {
     const byStatus = filterChoresByStatus(tasks, statusFilter);
     const byAssignee = filterChoresByAssignee(byStatus, assigneeFilter);
     return sortChoresForDisplay(byAssignee);
   }, [tasks, statusFilter, assigneeFilter]);
-
-  const onTasksChanged = () => {
-    void fetchTasks(true);
-    void fetchNotifications(true);
-  };
 
   function openEdit(task: ChoreTask) {
     setEditingTask(task);
@@ -99,7 +112,9 @@ export function ChoresView() {
           </div>
         )}
 
-        {loading && !loaded ? (
+        {error ? (
+          <ModuleFetchError onRetry={() => void fetchTasks(true)} />
+        ) : loading && !loaded ? (
           <div className="grid gap-4 sm:grid-cols-2">
             <Skeleton className="h-44 w-full rounded-none" />
             <Skeleton className="h-44 w-full rounded-none" />

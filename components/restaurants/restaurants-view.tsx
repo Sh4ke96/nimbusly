@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
+import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { AppHeader } from "@/components/app/app-header";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { RestaurantEditDialog } from "@/components/restaurants/restaurant-edit-dialog";
@@ -8,6 +10,7 @@ import { RestaurantFormDialog } from "@/components/restaurants/restaurant-form-d
 import { RestaurantPlaceCard } from "@/components/restaurants/restaurant-place-card";
 import { RestaurantVenueTypeFilter } from "@/components/restaurants/restaurant-venue-type-filter";
 import { RestaurantVisitStatusFilter } from "@/components/restaurants/restaurant-visit-status-filter";
+import { ModuleFetchError } from "@/components/ui/module-fetch-error";
 import { Skeleton } from "@/components/ui/skeleton";
 import { RESTAURANT_FILTER_ALL } from "@/lib/constants/restaurants";
 import {
@@ -19,7 +22,6 @@ import type { RestaurantPlace } from "@/lib/restaurants/types";
 import { useT } from "@/lib/lang-context";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useRestaurantsStore } from "@/lib/stores/restaurants-store";
-import { useNotificationsStore } from "@/lib/stores/notifications-store";
 
 export function RestaurantsView() {
   const t = useT();
@@ -29,28 +31,22 @@ export function RestaurantsView() {
   const places = useRestaurantsStore((s) => s.places);
   const loaded = useRestaurantsStore((s) => s.loaded);
   const loading = useRestaurantsStore((s) => s.loading);
+  const error = useRestaurantsStore((s) => s.error);
   const fetchPlaces = useRestaurantsStore((s) => s.fetchPlaces);
-  const fetchNotifications = useNotificationsStore((s) => s.fetchNotifications);
 
   const [visitFilter, setVisitFilter] = useState<string>(RESTAURANT_FILTER_ALL);
   const [venueFilter, setVenueFilter] = useState<string>(RESTAURANT_FILTER_ALL);
   const [editingPlace, setEditingPlace] = useState<RestaurantPlace | null>(null);
   const [editOpen, setEditOpen] = useState<boolean>(false);
 
-  useEffect(() => {
-    if (!loaded) void fetchPlaces();
-  }, [loaded, fetchPlaces]);
+  useStoreBootstrap(loaded, error, fetchPlaces);
+  const onPlacesChanged = useModuleRefresh(fetchPlaces);
 
   const filteredPlaces = useMemo(() => {
     const byVisit = filterRestaurantsByVisitStatus(places, visitFilter);
     const byVenue = filterRestaurantsByVenueType(byVisit, venueFilter);
     return sortRestaurantsByVisitedAt(byVenue);
   }, [places, visitFilter, venueFilter]);
-
-  const onPlacesChanged = () => {
-    void fetchPlaces(true);
-    void fetchNotifications(true);
-  };
 
   function openEdit(place: RestaurantPlace) {
     setEditingPlace(place);
@@ -92,7 +88,9 @@ export function RestaurantsView() {
           </div>
         )}
 
-        {loading && !loaded ? (
+        {error ? (
+          <ModuleFetchError onRetry={() => void fetchPlaces(true)} />
+        ) : loading && !loaded ? (
           <div className="grid gap-4 sm:grid-cols-2">
             <Skeleton className="h-64 w-full rounded-none sm:col-span-2" />
             <Skeleton className="h-64 w-full rounded-none sm:col-span-2" />

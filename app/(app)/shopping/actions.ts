@@ -20,58 +20,8 @@ import { NOTIFICATION_TYPE, type NotificationType } from "@/lib/constants/notifi
 import { getFamilyNotificationTitle } from "@/lib/notifications/family-notification";
 import { getDisplayName } from "@/lib/profile";
 import type { AccountActionState } from "@/app/(app)/account/actions";
-
-async function requireUser() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  return { supabase, user };
-}
-
-async function notifyFamilyAboutShoppingListEvent(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  params: {
-    type: NotificationType;
-    actorId: string;
-    actorName: string;
-    familyId: string;
-    listId: string;
-    listName: string;
-    bodyDetail: string;
-    changeSummary?: string;
-  }
-) {
-  const t = await getServerT();
-  const { data: members } = await supabase
-    .from("profiles")
-    .select("id")
-    .eq("family_id", params.familyId);
-
-  const recipientIds = (members ?? [])
-    .map((m) => m.id as string)
-    .filter((id) => id !== params.actorId);
-
-  if (recipientIds.length === 0) return;
-
-  const title = getFamilyNotificationTitle(params.type, t.notifications, params.actorName);
-  const body = `${params.listName}${t.notifications.notificationBodySeparator}${params.bodyDetail}`;
-
-  await supabase.rpc("create_family_notifications", {
-    p_recipient_ids: recipientIds,
-    p_type: params.type,
-    p_title: title,
-    p_body: body,
-    p_payload: {
-      shopping_list_id: params.listId,
-      list_name: params.listName,
-      actor_id: params.actorId,
-      family_id: params.familyId,
-      change_summary: params.changeSummary ?? null,
-      updated_at: new Date().toISOString(),
-    },
-  });
-}
+import { requireUser } from "@/lib/server-actions/require-user";
+import { notifyFamilyMembers } from "@/lib/server-actions/notify-family";
 
 async function notifyWatchersAboutListItemEvent(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -190,14 +140,20 @@ export async function createShoppingList(
     );
 
     try {
-      await notifyFamilyAboutShoppingListEvent(supabase, {
+      await notifyFamilyMembers(supabase, {
         type: NOTIFICATION_TYPE.SHOPPING_LIST_ADDED,
         actorId: user.id,
         actorName,
         familyId,
-        listId: list.id,
-        listName: name,
-        bodyDetail,
+        body: `${name}${t.notifications.notificationBodySeparator}${bodyDetail}`,
+        payload: {
+          shopping_list_id: list.id,
+          list_name: name,
+          actor_id: user.id,
+          family_id: familyId,
+          change_summary: null,
+          updated_at: new Date().toISOString(),
+        },
       });
     } catch {
       // Saved; notifications are best-effort
@@ -249,15 +205,20 @@ export async function updateShoppingList(
   if (familyId && profile?.account_mode === ACCOUNT_MODE.FAMILY) {
     const actorName = getDisplayName(profile);
     try {
-      await notifyFamilyAboutShoppingListEvent(supabase, {
+      await notifyFamilyMembers(supabase, {
         type: NOTIFICATION_TYPE.SHOPPING_LIST_UPDATED,
         actorId: user.id,
         actorName,
         familyId,
-        listId: id,
-        listName: name,
-        bodyDetail: changeSummary,
-        changeSummary,
+        body: `${name}${t.notifications.notificationBodySeparator}${changeSummary}`,
+        payload: {
+          shopping_list_id: id,
+          list_name: name,
+          actor_id: user.id,
+          family_id: familyId,
+          change_summary: changeSummary,
+          updated_at: new Date().toISOString(),
+        },
       });
     } catch {
       // Updated; notifications are best-effort
@@ -306,14 +267,20 @@ export async function deleteShoppingList(
     );
 
     try {
-      await notifyFamilyAboutShoppingListEvent(supabase, {
+      await notifyFamilyMembers(supabase, {
         type: NOTIFICATION_TYPE.SHOPPING_LIST_DELETED,
         actorId: user.id,
         actorName,
         familyId,
-        listId: id,
-        listName: existing.name,
-        bodyDetail,
+        body: `${existing.name}${t.notifications.notificationBodySeparator}${bodyDetail}`,
+        payload: {
+          shopping_list_id: id,
+          list_name: existing.name,
+          actor_id: user.id,
+          family_id: familyId,
+          change_summary: null,
+          updated_at: new Date().toISOString(),
+        },
       });
     } catch {
       // Deleted; notifications are best-effort

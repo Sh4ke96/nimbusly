@@ -12,6 +12,9 @@
 
 # testing
 /coverage
+tests/screenshots
+tests/videos
+tests/downloads
 cypress/screenshots
 cypress/videos
 cypress/downloads

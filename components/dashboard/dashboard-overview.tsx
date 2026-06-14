@@ -23,7 +23,6 @@ import {
   getOverviewCardMeta,
 } from "@/components/dashboard/dashboard-overview-card-bodies";
 import { SortableOverviewCard } from "@/components/dashboard/sortable-overview-card";
-import { Skeleton } from "@/components/ui/skeleton";
 import { sortBirthdaysByUpcoming } from "@/lib/dashboard/birthdays";
 import { buildAttentionItems } from "@/lib/dashboard/attention";
 import { formatMessage } from "@/lib/i18n/format";
@@ -50,6 +49,7 @@ import { WATCHLIST_STATUS } from "@/lib/constants/watchlist";
 import { BRAND_COLOR } from "@/lib/constants/brand";
 import { BUDGET_EXPENSE_COLOR } from "@/lib/constants/budget";
 import type { DashboardOverviewCardId } from "@/lib/constants/dashboard-overview";
+import { DASHBOARD_OVERVIEW_CARD } from "@/lib/constants/dashboard-overview";
 import { parseEntryDateParts } from "@/lib/schedule/types";
 import {
   parseDashboardOverviewLayout,
@@ -88,52 +88,62 @@ export function DashboardOverview() {
   const expensesByBudgetId = useBudgetStore((s) => s.expensesByBudgetId);
   const budgetLoaded = useBudgetStore((s) => s.loaded);
   const budgetLoading = useBudgetStore((s) => s.loading);
+  const budgetError = useBudgetStore((s) => s.error);
   const fetchBudgets = useBudgetStore((s) => s.fetchBudgets);
 
   const lists = useShoppingListsStore((s) => s.lists);
   const listsLoaded = useShoppingListsStore((s) => s.loaded);
   const listsLoading = useShoppingListsStore((s) => s.loading);
+  const listsError = useShoppingListsStore((s) => s.error);
   const fetchLists = useShoppingListsStore((s) => s.fetchLists);
 
   const gifts = useGiftsStore((s) => s.ideas);
   const giftsLoaded = useGiftsStore((s) => s.loaded);
   const giftsLoading = useGiftsStore((s) => s.loading);
+  const giftsError = useGiftsStore((s) => s.error);
   const fetchIdeas = useGiftsStore((s) => s.fetchIdeas);
 
   const medicineItems = useMedicineStore((s) => s.items);
   const medicineLoaded = useMedicineStore((s) => s.loaded);
   const medicineLoading = useMedicineStore((s) => s.loading);
+  const medicineError = useMedicineStore((s) => s.error);
   const fetchMedicineItems = useMedicineStore((s) => s.fetchItems);
 
   const watchlistItems = useWatchlistStore((s) => s.items);
   const watchlistLoaded = useWatchlistStore((s) => s.loaded);
   const watchlistLoading = useWatchlistStore((s) => s.loading);
+  const watchlistError = useWatchlistStore((s) => s.error);
   const fetchWatchlistItems = useWatchlistStore((s) => s.fetchItems);
 
   const restaurantPlaces = useRestaurantsStore((s) => s.places);
   const restaurantsLoaded = useRestaurantsStore((s) => s.loaded);
   const restaurantsLoading = useRestaurantsStore((s) => s.loading);
+  const restaurantsError = useRestaurantsStore((s) => s.error);
   const fetchRestaurantPlaces = useRestaurantsStore((s) => s.fetchPlaces);
 
   const pets = usePetsStore((s) => s.pets);
   const careItems = usePetsStore((s) => s.careItems);
   const petsLoaded = usePetsStore((s) => s.loaded);
   const petsLoading = usePetsStore((s) => s.loading);
+  const petsError = usePetsStore((s) => s.error);
   const fetchPets = usePetsStore((s) => s.fetchAll);
 
   const choreTasks = useChoresStore((s) => s.tasks);
   const choresLoaded = useChoresStore((s) => s.loaded);
   const choresLoading = useChoresStore((s) => s.loading);
+  const choresError = useChoresStore((s) => s.error);
   const fetchChores = useChoresStore((s) => s.fetchTasks);
 
   const scheduleEntries = useScheduleStore((s) => s.entries);
   const scheduleLoaded = useScheduleStore((s) => s.loaded);
   const scheduleLoading = useScheduleStore((s) => s.loading);
+  const scheduleError = useScheduleStore((s) => s.error);
   const fetchSchedule = useScheduleStore((s) => s.fetchEntries);
 
   const birthdays = useBirthdaysStore((s) => s.entries);
   const birthdaysLoaded = useBirthdaysStore((s) => s.loaded);
   const birthdaysLoading = useBirthdaysStore((s) => s.loading);
+  const birthdaysError = useBirthdaysStore((s) => s.error);
   const fetchBirthdays = useBirthdaysStore((s) => s.fetchEntries);
 
   const [editMode, setEditMode] = useState<boolean>(false);
@@ -324,8 +334,103 @@ export function DashboardOverview() {
           birthdayInDays: (count) =>
             formatMessage(t.dashboard.birthdayInDays, { count }),
         },
+        limit: undefined,
       }),
     [choreTasks, medicineItems, careItems, pets, birthdays, t.dashboard]
+  );
+
+  const cardErrorById = useMemo(
+    (): Record<DashboardOverviewCardId, boolean> => ({
+      [DASHBOARD_OVERVIEW_CARD.BUDGET]: budgetError,
+      [DASHBOARD_OVERVIEW_CARD.SHOPPING]: listsError,
+      [DASHBOARD_OVERVIEW_CARD.GIFTS]: giftsError,
+      [DASHBOARD_OVERVIEW_CARD.MEDICINE_CABINET]: medicineError,
+      [DASHBOARD_OVERVIEW_CARD.WATCHLIST]: watchlistError,
+      [DASHBOARD_OVERVIEW_CARD.RESTAURANTS]: restaurantsError,
+      [DASHBOARD_OVERVIEW_CARD.PETS]: petsError,
+      [DASHBOARD_OVERVIEW_CARD.CHORES]: choresError,
+      [DASHBOARD_OVERVIEW_CARD.BIRTHDAYS]: birthdaysError,
+      [DASHBOARD_OVERVIEW_CARD.CALENDAR]: scheduleError,
+      [DASHBOARD_OVERVIEW_CARD.FAMILY]: false,
+    }),
+    [
+      budgetError,
+      listsError,
+      giftsError,
+      medicineError,
+      watchlistError,
+      restaurantsError,
+      petsError,
+      choresError,
+      birthdaysError,
+      scheduleError,
+    ]
+  );
+
+  const cardRetryById = useMemo(
+    (): Record<DashboardOverviewCardId, () => void> => ({
+      [DASHBOARD_OVERVIEW_CARD.BUDGET]: () => void fetchBudgets(true),
+      [DASHBOARD_OVERVIEW_CARD.SHOPPING]: () => void fetchLists(true),
+      [DASHBOARD_OVERVIEW_CARD.GIFTS]: () => void fetchIdeas(true),
+      [DASHBOARD_OVERVIEW_CARD.MEDICINE_CABINET]: () => void fetchMedicineItems(true),
+      [DASHBOARD_OVERVIEW_CARD.WATCHLIST]: () => void fetchWatchlistItems(true),
+      [DASHBOARD_OVERVIEW_CARD.RESTAURANTS]: () => void fetchRestaurantPlaces(true),
+      [DASHBOARD_OVERVIEW_CARD.PETS]: () => void fetchPets(true),
+      [DASHBOARD_OVERVIEW_CARD.CHORES]: () => void fetchChores(true),
+      [DASHBOARD_OVERVIEW_CARD.BIRTHDAYS]: () => void fetchBirthdays(true),
+      [DASHBOARD_OVERVIEW_CARD.CALENDAR]: () => void fetchSchedule(true),
+      [DASHBOARD_OVERVIEW_CARD.FAMILY]: () => {},
+    }),
+    [
+      fetchBudgets,
+      fetchLists,
+      fetchIdeas,
+      fetchMedicineItems,
+      fetchWatchlistItems,
+      fetchRestaurantPlaces,
+      fetchPets,
+      fetchChores,
+      fetchBirthdays,
+      fetchSchedule,
+    ]
+  );
+
+  const cardLoadingById = useMemo(
+    (): Record<DashboardOverviewCardId, boolean> => ({
+      [DASHBOARD_OVERVIEW_CARD.BUDGET]: !budgetLoaded && budgetLoading,
+      [DASHBOARD_OVERVIEW_CARD.SHOPPING]: !listsLoaded && listsLoading,
+      [DASHBOARD_OVERVIEW_CARD.GIFTS]: !giftsLoaded && giftsLoading,
+      [DASHBOARD_OVERVIEW_CARD.MEDICINE_CABINET]: !medicineLoaded && medicineLoading,
+      [DASHBOARD_OVERVIEW_CARD.WATCHLIST]: !watchlistLoaded && watchlistLoading,
+      [DASHBOARD_OVERVIEW_CARD.RESTAURANTS]: !restaurantsLoaded && restaurantsLoading,
+      [DASHBOARD_OVERVIEW_CARD.PETS]: !petsLoaded && petsLoading,
+      [DASHBOARD_OVERVIEW_CARD.CHORES]: !choresLoaded && choresLoading,
+      [DASHBOARD_OVERVIEW_CARD.BIRTHDAYS]: !birthdaysLoaded && birthdaysLoading,
+      [DASHBOARD_OVERVIEW_CARD.CALENDAR]: !scheduleLoaded && scheduleLoading,
+      [DASHBOARD_OVERVIEW_CARD.FAMILY]: false,
+    }),
+    [
+      budgetLoaded,
+      budgetLoading,
+      listsLoaded,
+      listsLoading,
+      giftsLoaded,
+      giftsLoading,
+      medicineLoaded,
+      medicineLoading,
+      watchlistLoaded,
+      watchlistLoading,
+      restaurantsLoaded,
+      restaurantsLoading,
+      petsLoaded,
+      petsLoading,
+      choresLoaded,
+      choresLoading,
+      birthdaysLoaded,
+      birthdaysLoading,
+      scheduleLoaded,
+      scheduleLoading,
+    ]
   );
 
   const visibleCardIds = useMemo(
@@ -436,33 +541,6 @@ export function DashboardOverview() {
     await persistLayout(next, previous);
   }
 
-  const loading =
-    (budgetLoading && !budgetLoaded) ||
-    (listsLoading && !listsLoaded) ||
-    (giftsLoading && !giftsLoaded) ||
-    (medicineLoading && !medicineLoaded) ||
-    (watchlistLoading && !watchlistLoaded) ||
-    (restaurantsLoading && !restaurantsLoaded) ||
-    (petsLoading && !petsLoaded) ||
-    (choresLoading && !choresLoaded) ||
-    (scheduleLoading && !scheduleLoaded) ||
-    (birthdaysLoading && !birthdaysLoaded);
-
-  if (loading) {
-    return (
-      <section className="space-y-4">
-        <h2 className="font-heading font-semibold text-xs text-muted-foreground uppercase tracking-wider">
-          {t.dashboard.overviewHeading}
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {Array.from({ length: 11 }).map((_, i) => (
-            <Skeleton key={i} className="h-52 w-full rounded-none" />
-          ))}
-        </div>
-      </section>
-    );
-  }
-
   return (
     <section className="space-y-4">
       <DashboardOverviewControls
@@ -520,7 +598,13 @@ export function DashboardOverview() {
                     editMode={editMode}
                     onHide={() => void handleHideCard(cardId)}
                   >
-                    <OverviewCardBody cardId={cardId} {...cardBodiesProps} />
+                    <OverviewCardBody
+                      cardId={cardId}
+                      cardLoading={cardLoadingById[cardId]}
+                      cardError={cardErrorById[cardId]}
+                      onCardRetry={cardRetryById[cardId]}
+                      {...cardBodiesProps}
+                    />
                   </SortableOverviewCard>
                 );
               })}

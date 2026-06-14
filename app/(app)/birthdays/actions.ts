@@ -1,67 +1,15 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
 import { getServerT } from "@/lib/i18n/server";
 import { buildBirthdayChangeSummary } from "@/lib/birthdays/changes";
 import { isValidBirthDate } from "@/lib/birthdays/types";
 import { formatBirthdayLabel } from "@/lib/birthdays/types";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
-import { NOTIFICATION_TYPE, type NotificationType } from "@/lib/constants/notifications";
-import { getFamilyNotificationTitle } from "@/lib/notifications/family-notification";
+import { NOTIFICATION_TYPE } from "@/lib/constants/notifications";
 import { getDisplayName } from "@/lib/profile";
 import type { AccountActionState } from "@/app/(app)/account/actions";
-
-async function requireUser() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  return { supabase, user };
-}
-
-async function notifyFamilyAboutBirthdayEvent(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  params: {
-    type: NotificationType;
-    actorId: string;
-    actorName: string;
-    familyId: string;
-    birthdayId: string;
-    personName: string;
-    bodyDetail: string;
-    changeSummary?: string;
-  }
-) {
-  const t = await getServerT();
-  const { data: members } = await supabase
-    .from("profiles")
-    .select("id")
-    .eq("family_id", params.familyId);
-
-  const recipientIds = (members ?? [])
-    .map((m) => m.id as string)
-    .filter((id) => id !== params.actorId);
-
-  if (recipientIds.length === 0) return;
-
-  const title = getFamilyNotificationTitle(params.type, t.notifications, params.actorName);
-  const body = `${params.personName}${t.notifications.notificationBodySeparator}${params.bodyDetail}`;
-
-  await supabase.rpc("create_family_notifications", {
-    p_recipient_ids: recipientIds,
-    p_type: params.type,
-    p_title: title,
-    p_body: body,
-    p_payload: {
-      birthday_id: params.birthdayId,
-      person_name: params.personName,
-      actor_id: params.actorId,
-      family_id: params.familyId,
-      change_summary: params.changeSummary ?? null,
-      updated_at: new Date().toISOString(),
-    },
-  });
-}
+import { requireUser } from "@/lib/server-actions/require-user";
+import { notifyFamilyMembers } from "@/lib/server-actions/notify-family";
 
 export async function createBirthday(
   _prev: AccountActionState,
@@ -115,14 +63,20 @@ export async function createBirthday(
     } as Parameters<typeof formatBirthdayLabel>[0]);
 
     try {
-      await notifyFamilyAboutBirthdayEvent(supabase, {
+      await notifyFamilyMembers(supabase, {
         type: NOTIFICATION_TYPE.BIRTHDAY_ADDED,
         actorId: user.id,
         actorName,
         familyId,
-        birthdayId: birthday.id,
-        personName,
-        bodyDetail: dateLabel,
+        body: `${personName}${t.notifications.notificationBodySeparator}${dateLabel}`,
+        payload: {
+          birthday_id: birthday.id,
+          person_name: personName,
+          actor_id: user.id,
+          family_id: familyId,
+          change_summary: null,
+          updated_at: new Date().toISOString(),
+        },
       });
     } catch {
       // Birthday saved; notifications are best-effort
@@ -198,15 +152,20 @@ export async function updateBirthday(
   if (familyId && profile?.account_mode === ACCOUNT_MODE.FAMILY) {
     const actorName = getDisplayName(profile);
     try {
-      await notifyFamilyAboutBirthdayEvent(supabase, {
+      await notifyFamilyMembers(supabase, {
         type: NOTIFICATION_TYPE.BIRTHDAY_UPDATED,
         actorId: user.id,
         actorName,
         familyId,
-        birthdayId: id,
-        personName,
-        bodyDetail: changeSummary,
-        changeSummary,
+        body: `${personName}${t.notifications.notificationBodySeparator}${changeSummary}`,
+        payload: {
+          birthday_id: id,
+          person_name: personName,
+          actor_id: user.id,
+          family_id: familyId,
+          change_summary: changeSummary,
+          updated_at: new Date().toISOString(),
+        },
       });
     } catch {
       // Update saved; notifications are best-effort
@@ -260,14 +219,20 @@ export async function deleteBirthday(
     } as Parameters<typeof formatBirthdayLabel>[0]);
 
     try {
-      await notifyFamilyAboutBirthdayEvent(supabase, {
+      await notifyFamilyMembers(supabase, {
         type: NOTIFICATION_TYPE.BIRTHDAY_DELETED,
         actorId: user.id,
         actorName,
         familyId,
-        birthdayId: id,
-        personName: existing.person_name,
-        bodyDetail: dateLabel,
+        body: `${existing.person_name}${t.notifications.notificationBodySeparator}${dateLabel}`,
+        payload: {
+          birthday_id: id,
+          person_name: existing.person_name,
+          actor_id: user.id,
+          family_id: familyId,
+          change_summary: null,
+          updated_at: new Date().toISOString(),
+        },
       });
     } catch {
       // Entry deleted; notifications are best-effort

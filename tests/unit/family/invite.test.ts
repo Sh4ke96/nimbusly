@@ -5,7 +5,7 @@ import {
   formatInviteCode,
   isValidInviteCodeFormat,
   normalizeInviteCode,
-} from "./invite";
+} from "@/lib/family/invite";
 
 describe("family invite helpers", () => {
   it("normalizes invite codes", () => {

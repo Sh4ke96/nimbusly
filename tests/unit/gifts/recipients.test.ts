@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { GIFT_FILTER_ALL, GIFT_RECIPIENT_TYPE } from "@/lib/constants/gifts";
+import { LANG } from "@/lib/constants/lang";
 import {
   buildGiftRecipientFilterOptions,
   filterGiftIdeasByRecipient,
@@ -73,7 +74,8 @@ describe("buildGiftRecipientFilterOptions", () => {
         gift({ id: "2", recipient_name: "Ciocia" }),
       ],
       members,
-      "Wszyscy"
+      "Wszyscy",
+      LANG.PL
     );
     assert.equal(options[0].key, GIFT_FILTER_ALL);
     assert.equal(options.length, 3);

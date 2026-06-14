@@ -41,8 +41,8 @@ Nimbusly is a **family hub** web app: shared budget, shopping, gifts, birthdays,
 | **State** | Zustand (client stores), Server Actions (mutations) |
 | **Backend** | Supabase + SQL migrations in `supabase/migrations/` |
 | **Package manager** | npm |
-| **E2E** | Cypress (`cypress/e2e/`) |
-| **Unit tests** | Node test runner (`lib/**/*.test.ts`) |
+| **E2E** | Cypress (`tests/e2e/`) |
+| **Unit tests** | Node test runner (`tests/unit/**/*.test.ts`) |
 
 ---
 
@@ -101,10 +101,10 @@ npm run cy:run       # Cypress only (server must already run)
 
 | Layer | Location |
 |-------|----------|
-| Unit | `lib/**/*.test.ts` |
-| E2E | `cypress/e2e/**/*.cy.ts` |
+| Unit | `tests/unit/**/*.test.ts` |
+| E2E | `tests/e2e/**/*.cy.ts` |
 | Cypress config | `cypress.config.ts` — `baseUrl` from `NEXT_PUBLIC_SITE_URL` or `http://localhost:3000` |
-| Supabase test tasks | `cypress/tasks/supabase` |
+| Supabase test tasks | `tests/tasks/supabase` |
 
 ---
 
@@ -141,7 +141,7 @@ lib/
 
 supabase/migrations/     # numbered SQL migrations (RLS, RPC, tables)
 
-cypress/                 # E2E specs, support, tasks
+tests/                 # Unit tests (tests/unit/), E2E (tests/e2e/), Cypress support/tasks
 
 .cursor/rules/           # project instructions for AI (this file)
 ```
@@ -210,7 +210,7 @@ export type AccountMode = (typeof ACCOUNT_MODE)[keyof typeof ACCOUNT_MODE];
 - Compare with `=== ACCOUNT_MODE.FAMILY`, not `=== "family"`
 - Hidden form fields, query params, and RPC args use the same constant values
 - Internal error codes (e.g. `FAMILY_ACCESS_ERROR.NOT_ADMIN`) map to i18n in the action handler
-- Cypress E2E: import domain constants from `cypress/support/app-constants.ts` (re-exports `lib/constants/`)
+- Cypress E2E: import domain constants from `tests/support/app-constants.ts` (re-exports `lib/constants/`)
 
 ### Server Actions
 

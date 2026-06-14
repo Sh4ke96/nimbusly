@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
+import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { Pencil } from "lucide-react";
 import { AppHeader } from "@/components/app/app-header";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
@@ -11,6 +13,7 @@ import { PetCareTypeFilter } from "@/components/pets/pet-care-type-filter";
 import { PetEditDialog } from "@/components/pets/pet-edit-dialog";
 import { PetFilter } from "@/components/pets/pet-filter";
 import { PetFormDialog } from "@/components/pets/pet-form-dialog";
+import { ModuleFetchError } from "@/components/ui/module-fetch-error";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PET_FILTER_ALL } from "@/lib/constants/pets";
@@ -24,7 +27,6 @@ import type { Pet, PetCareItem } from "@/lib/pets/types";
 import { useT } from "@/lib/lang-context";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { usePetsStore } from "@/lib/stores/pets-store";
-import { useNotificationsStore } from "@/lib/stores/notifications-store";
 import { cn } from "@/lib/utils";
 
 export function PetsView() {
@@ -36,8 +38,8 @@ export function PetsView() {
   const careItems = usePetsStore((s) => s.careItems);
   const loaded = usePetsStore((s) => s.loaded);
   const loading = usePetsStore((s) => s.loading);
+  const error = usePetsStore((s) => s.error);
   const fetchAll = usePetsStore((s) => s.fetchAll);
-  const fetchNotifications = useNotificationsStore((s) => s.fetchNotifications);
 
   const [petFilter, setPetFilter] = useState<string>(PET_FILTER_ALL);
   const [typeFilter, setTypeFilter] = useState<string>(PET_FILTER_ALL);
@@ -46,9 +48,8 @@ export function PetsView() {
   const [editingPet, setEditingPet] = useState<Pet | null>(null);
   const [petEditOpen, setPetEditOpen] = useState<boolean>(false);
 
-  useEffect(() => {
-    if (!loaded) void fetchAll();
-  }, [loaded, fetchAll]);
+  useStoreBootstrap(loaded, error, fetchAll);
+  const onDataChanged = useModuleRefresh(fetchAll);
 
   const filteredItems = useMemo(() => {
     const byPet = filterPetCareByPet(careItems, petFilter);
@@ -58,11 +59,6 @@ export function PetsView() {
 
   const hasActiveFilter =
     petFilter !== PET_FILTER_ALL || typeFilter !== PET_FILTER_ALL;
-
-  const onDataChanged = () => {
-    void fetchAll(true);
-    void fetchNotifications(true);
-  };
 
   function openCareEdit(item: PetCareItem) {
     setEditingCareItem(item);
@@ -141,7 +137,9 @@ export function PetsView() {
           </div>
         )}
 
-        {loading && !loaded ? (
+        {error ? (
+          <ModuleFetchError onRetry={() => void fetchAll(true)} />
+        ) : loading && !loaded ? (
           <div className="grid gap-4 sm:grid-cols-2">
             <Skeleton className="h-44 w-full rounded-none" />
             <Skeleton className="h-44 w-full rounded-none" />

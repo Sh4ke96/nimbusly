@@ -1,15 +1,15 @@
 import { defineConfig } from "cypress";
 import { config as loadEnv } from "dotenv";
 import { resolve } from "path";
-import { registerSupabaseTasks } from "./cypress/tasks/supabase";
+import { registerSupabaseTasks } from "./tests/tasks/supabase";
 
 loadEnv({ path: resolve(__dirname, ".env.local") });
 
 export default defineConfig({
   e2e: {
     baseUrl: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
-    specPattern: "cypress/e2e/**/*.cy.ts",
-    supportFile: "cypress/support/e2e.ts",
+    specPattern: "tests/e2e/**/*.cy.ts",
+    supportFile: "tests/support/e2e.ts",
     viewportWidth: 1280,
     viewportHeight: 800,
     defaultCommandTimeout: 12_000,

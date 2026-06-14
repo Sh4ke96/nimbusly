@@ -19,64 +19,11 @@ import {
   parseMedicineItemFromForm,
 } from "@/lib/medicine/types";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
-import { NOTIFICATION_TYPE, type NotificationType } from "@/lib/constants/notifications";
-import { getFamilyNotificationTitle } from "@/lib/notifications/family-notification";
+import { NOTIFICATION_TYPE } from "@/lib/constants/notifications";
 import { getDisplayName } from "@/lib/profile";
 import type { AccountActionState } from "@/app/(app)/account/actions";
-
-async function requireUser() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  return { supabase, user };
-}
-
-async function notifyFamilyAboutMedicineEvent(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  params: {
-    type: NotificationType;
-    actorId: string;
-    actorName: string;
-    familyId: string;
-    itemId: string;
-    itemName: string;
-    bodyDetail: string;
-    changeSummary?: string;
-    expiryDate?: string | null;
-  }
-) {
-  const t = await getServerT();
-  const { data: members } = await supabase
-    .from("profiles")
-    .select("id")
-    .eq("family_id", params.familyId);
-
-  const recipientIds = (members ?? [])
-    .map((m) => m.id as string)
-    .filter((id) => id !== params.actorId);
-
-  if (recipientIds.length === 0) return;
-
-  const title = getFamilyNotificationTitle(params.type, t.notifications, params.actorName);
-  const body = `${params.itemName}${t.notifications.notificationBodySeparator}${params.bodyDetail}`;
-
-  await supabase.rpc("create_family_notifications", {
-    p_recipient_ids: recipientIds,
-    p_type: params.type,
-    p_title: title,
-    p_body: body,
-    p_payload: {
-      medicine_item_id: params.itemId,
-      medicine_name: params.itemName,
-      actor_id: params.actorId,
-      family_id: params.familyId,
-      change_summary: params.changeSummary ?? null,
-      expiry_date: params.expiryDate ?? null,
-      updated_at: new Date().toISOString(),
-    },
-  });
-}
+import { requireUser } from "@/lib/server-actions/require-user";
+import { notifyFamilyMembers } from "@/lib/server-actions/notify-family";
 
 function validateMedicineFields(parsed: ReturnType<typeof parseMedicineItemFromForm>): string | null {
   if (!isValidMedicineName(parsed.name)) return "name";
@@ -111,15 +58,21 @@ async function maybeNotifyExpiring(
   );
 
   try {
-    await notifyFamilyAboutMedicineEvent(supabase, {
+    await notifyFamilyMembers(supabase, {
       type: NOTIFICATION_TYPE.MEDICINE_EXPIRING,
       actorId: params.actorId,
       actorName: params.actorName,
       familyId: params.familyId,
-      itemId: params.itemId,
-      itemName: params.itemName,
-      bodyDetail,
-      expiryDate: params.expiryDate,
+      body: `${params.itemName}${t.notifications.notificationBodySeparator}${bodyDetail}`,
+      payload: {
+        medicine_item_id: params.itemId,
+        medicine_name: params.itemName,
+        actor_id: params.actorId,
+        family_id: params.familyId,
+        change_summary: null,
+        expiry_date: params.expiryDate ?? null,
+        updated_at: new Date().toISOString(),
+      },
     });
   } catch {
     // Best-effort
@@ -186,15 +139,21 @@ export async function createMedicineItem(
     );
 
     try {
-      await notifyFamilyAboutMedicineEvent(supabase, {
+      await notifyFamilyMembers(supabase, {
         type: NOTIFICATION_TYPE.MEDICINE_ADDED,
         actorId: user.id,
         actorName,
         familyId,
-        itemId: item.id,
-        itemName: normalizeMedicineName(parsed.name),
-        bodyDetail,
-        expiryDate: parsed.expiryDate,
+        body: `${normalizeMedicineName(parsed.name)}${t.notifications.notificationBodySeparator}${bodyDetail}`,
+        payload: {
+          medicine_item_id: item.id,
+          medicine_name: normalizeMedicineName(parsed.name),
+          actor_id: user.id,
+          family_id: familyId,
+          change_summary: null,
+          expiry_date: parsed.expiryDate ?? null,
+          updated_at: new Date().toISOString(),
+        },
       });
     } catch {
       // Saved; notifications are best-effort
@@ -281,16 +240,21 @@ export async function updateMedicineItem(
     );
 
     try {
-      await notifyFamilyAboutMedicineEvent(supabase, {
+      await notifyFamilyMembers(supabase, {
         type: NOTIFICATION_TYPE.MEDICINE_UPDATED,
         actorId: user.id,
         actorName,
         familyId,
-        itemId: id,
-        itemName: name,
-        bodyDetail: changeSummary,
-        changeSummary,
-        expiryDate: parsed.expiryDate,
+        body: `${name}${t.notifications.notificationBodySeparator}${changeSummary}`,
+        payload: {
+          medicine_item_id: id,
+          medicine_name: name,
+          actor_id: user.id,
+          family_id: familyId,
+          change_summary: changeSummary,
+          expiry_date: parsed.expiryDate ?? null,
+          updated_at: new Date().toISOString(),
+        },
       });
     } catch {
       // Updated; notifications are best-effort
@@ -361,14 +325,21 @@ export async function deleteMedicineItem(
     );
 
     try {
-      await notifyFamilyAboutMedicineEvent(supabase, {
+      await notifyFamilyMembers(supabase, {
         type: NOTIFICATION_TYPE.MEDICINE_DELETED,
         actorId: user.id,
         actorName,
         familyId,
-        itemId: id,
-        itemName: existing.name,
-        bodyDetail,
+        body: `${existing.name}${t.notifications.notificationBodySeparator}${bodyDetail}`,
+        payload: {
+          medicine_item_id: id,
+          medicine_name: existing.name,
+          actor_id: user.id,
+          family_id: familyId,
+          change_summary: null,
+          expiry_date: null,
+          updated_at: new Date().toISOString(),
+        },
       });
     } catch {
       // Deleted; notifications are best-effort

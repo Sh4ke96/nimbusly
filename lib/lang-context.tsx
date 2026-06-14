@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, type ReactNode } from "react";
+import { updatePreferredLang } from "@/app/(app)/account/lang-actions";
 import { LANG, LANG_COOKIE, type Lang } from "@/lib/constants/lang";
 import { dict } from "./i18n";
 
@@ -26,6 +27,7 @@ export function LangProvider({
   function setLang(newLang: Lang) {
     document.cookie = `${LANG_COOKIE}=${newLang};path=/;max-age=31536000;SameSite=Lax`;
     setLangState(newLang);
+    void updatePreferredLang(newLang);
   }
 
   return (
