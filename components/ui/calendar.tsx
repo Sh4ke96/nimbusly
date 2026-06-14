@@ -44,12 +44,12 @@ function Calendar({
         ),
         button_previous: cn(
           buttonVariants({ variant: buttonVariant, size: "icon" }),
-          "size-(--cell-size) rounded-none p-0 select-none aria-disabled:opacity-50",
+          "size-(--cell-size) rounded-none p-0 select-none text-primary hover:bg-primary/10 hover:text-primary aria-disabled:opacity-50",
           defaultClassNames.button_previous
         ),
         button_next: cn(
           buttonVariants({ variant: buttonVariant, size: "icon" }),
-          "size-(--cell-size) rounded-none p-0 select-none aria-disabled:opacity-50",
+          "size-(--cell-size) rounded-none p-0 select-none text-primary hover:bg-primary/10 hover:text-primary aria-disabled:opacity-50",
           defaultClassNames.button_next
         ),
         month_caption: cn(
@@ -88,12 +88,24 @@ function Calendar({
         ),
         Chevron: ({ className: chevronClassName, orientation, ...chevronProps }) => {
           if (orientation === "left") {
-            return <ChevronLeft className={cn("size-4", chevronClassName)} {...chevronProps} />;
+            return (
+              <ChevronLeft
+                className={cn("size-4 text-primary", chevronClassName)}
+                {...chevronProps}
+              />
+            );
           }
           if (orientation === "right") {
-            return <ChevronRight className={cn("size-4", chevronClassName)} {...chevronProps} />;
+            return (
+              <ChevronRight
+                className={cn("size-4 text-primary", chevronClassName)}
+                {...chevronProps}
+              />
+            );
           }
-          return <ChevronDown className={cn("size-4", chevronClassName)} {...chevronProps} />;
+          return (
+            <ChevronDown className={cn("size-4 text-primary", chevronClassName)} {...chevronProps} />
+          );
         },
         DayButton: CalendarDayButton,
         ...components,

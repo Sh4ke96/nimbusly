@@ -1,4 +1,4 @@
-export type NotificationType = "birthday_added";
+export type NotificationType = "birthday_added" | "birthday_updated";
 
 export interface AppNotification {
   id: string;
@@ -11,9 +11,11 @@ export interface AppNotification {
   created_at: string;
 }
 
-export interface BirthdayAddedPayload {
+export interface BirthdayNotificationPayload {
   birthday_id: string;
   person_name: string;
   actor_id: string;
   family_id: string;
+  change_summary?: string | null;
+  updated_at?: string | null;
 }

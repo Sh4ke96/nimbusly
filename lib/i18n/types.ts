@@ -256,11 +256,15 @@ export type Dict = {
     listTitle: string;
     empty: string;
     addedBy: string;
+    editBtn: string;
+    editTitle: string;
     createdSuccess: string;
+    updatedSuccess: string;
     deletedSuccess: string;
     errorPersonName: string;
     errorDateRequired: string;
     errorInvalidDate: string;
+    errorNotOwner: string;
     errorGeneric: string;
   };
   notifications: {

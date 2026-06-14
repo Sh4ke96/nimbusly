@@ -30,7 +30,7 @@ export function birthdayDateKey(month: number, day: number): string {
   return `${month}-${day}`;
 }
 
-export function formatBirthdayLabel(entry: BirthdayEntry): string {
+export function formatBirthdayLabel(entry: Pick<BirthdayEntry, "birth_month" | "birth_day">): string {
   const day = String(entry.birth_day).padStart(2, "0");
   const month = String(entry.birth_month).padStart(2, "0");
   return `${day}.${month}`;

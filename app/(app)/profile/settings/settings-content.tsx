@@ -60,11 +60,12 @@ export default function ProfileSettingsPage() {
   }, [urlTab]);
 
   useEffect(() => {
+    if (!loaded) return;
     if (tab === "family" && !showFamily) {
       setTab("profile");
       window.history.replaceState(window.history.state, "", settingsTabHref("profile"));
     }
-  }, [tab, showFamily]);
+  }, [tab, showFamily, loaded]);
 
   useEffect(() => {
     function onPopState() {

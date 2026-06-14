@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,7 +23,10 @@ interface BirthdayCalendarProps {
   profile: Profile | null;
   members: FamilyMember[];
   userId: string | undefined;
+  focusedDay?: number | null;
+  focusedEntryId?: string | null;
   onMonthChange: (year: number, month: number) => void;
+  onEntrySelect?: (entry: BirthdayEntry) => void;
 }
 
 function resolveCreatorName(
@@ -45,11 +48,21 @@ export function BirthdayCalendar({
   profile,
   members,
   userId,
+  focusedDay,
+  focusedEntryId,
   onMonthChange,
+  onEntrySelect,
 }: BirthdayCalendarProps) {
   const t = useT();
   const { lang } = useLang();
   const isFamily = profile?.account_mode === "family" && !!profile.family_id;
+  const calendarRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!focusedDay) return;
+    const cell = calendarRef.current?.querySelector(`[data-birthday-day="${focusedDay}"]`);
+    cell?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }, [focusedDay, month, year]);
 
   const entriesByDay = useMemo(() => {
     const map = new Map<string, BirthdayEntry[]>();
@@ -67,7 +80,7 @@ export function BirthdayCalendar({
 
   return (
     <TooltipProvider>
-      <div className="space-y-4">
+      <div ref={calendarRef} className="space-y-4">
         <div className="flex items-center justify-between gap-3">
           <Button
             type="button"
@@ -112,25 +125,35 @@ export function BirthdayCalendar({
             }
 
             const dayEntries = entriesByDay.get(birthdayDateKey(month, cell.day)) ?? [];
+            const isFocusedDay = focusedDay === cell.day;
+            const hasFocusedEntry = dayEntries.some((e) => e.id === focusedEntryId);
 
             return (
               <div
                 key={`${month}-${cell.day}`}
+                data-birthday-day={cell.day}
                 className={cn(
-                  "min-h-24 bg-background p-2",
-                  cell.isToday && "ring-2 ring-inset ring-primary/40"
+                  "min-h-24 bg-background p-2 transition-all duration-200",
+                  cell.isToday && !isFocusedDay && "shadow-[inset_0_0_0_1px] shadow-primary/30",
+                  isFocusedDay &&
+                    "bg-primary/[0.04] shadow-[inset_0_0_0_2px] shadow-primary/50"
                 )}
               >
                 <span
                   className={cn(
-                    "text-xs font-medium",
-                    cell.isToday ? "text-primary" : "text-muted-foreground"
+                    "inline-flex size-6 items-center justify-center text-xs font-medium transition-colors",
+                    isFocusedDay || hasFocusedEntry
+                      ? "rounded-full bg-primary text-primary-foreground font-semibold"
+                      : cell.isToday
+                        ? "text-primary"
+                        : "text-muted-foreground"
                   )}
                 >
                   {cell.day}
                 </span>
                 <div className="mt-1 space-y-1">
                   {dayEntries.map((entry) => {
+                    const isSelected = entry.id === focusedEntryId;
                     const creator = resolveCreatorName(entry.created_by, userId, profile, members);
                     const tooltip = (
                       <div className="space-y-1 text-left">
@@ -150,7 +173,13 @@ export function BirthdayCalendar({
                         <TooltipTrigger asChild>
                           <button
                             type="button"
-                            className="block w-full truncate rounded-none bg-primary/10 px-1.5 py-0.5 text-left text-[11px] font-medium text-primary hover:bg-primary/20"
+                            onClick={() => onEntrySelect?.(entry)}
+                            className={cn(
+                              "block w-full cursor-pointer truncate rounded-sm px-1.5 py-0.5 text-left text-[11px] font-medium transition-all duration-150",
+                              isSelected
+                                ? "bg-primary text-primary-foreground shadow-sm ring-1 ring-primary/40"
+                                : "bg-primary/10 text-primary hover:bg-primary/20 hover:ring-1 hover:ring-primary/20"
+                            )}
                           >
                             {entry.person_name}
                           </button>

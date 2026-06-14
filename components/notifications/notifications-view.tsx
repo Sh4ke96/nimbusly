@@ -37,13 +37,13 @@ export function NotificationsView() {
   const [markAllState, markAllAction] = useActionState(markAllNotificationsRead, null);
 
   useEffect(() => {
-    void fetchNotifications();
-  }, [fetchNotifications]);
+    if (!loaded) void fetchNotifications();
+  }, [loaded, fetchNotifications]);
 
-  useActionFeedback(markState, () => void fetchNotifications());
+  useActionFeedback(markState, () => void fetchNotifications(true));
   useActionFeedback(markAllState, () => {
     markAllReadLocally();
-    void fetchNotifications();
+    void fetchNotifications(true);
   });
 
   const locale = lang === "pl" ? "pl-PL" : "en-US";
@@ -99,7 +99,7 @@ export function NotificationsView() {
                         </time>
                       </div>
                       <p className="text-sm text-muted-foreground">{item.body}</p>
-                      {item.type === "birthday_added" && (
+                      {(item.type === "birthday_added" || item.type === "birthday_updated") && (
                         <Link
                           href="/birthdays"
                           className="text-xs font-medium text-primary hover:underline"

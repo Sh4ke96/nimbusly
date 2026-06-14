@@ -1,13 +1,15 @@
 import { create } from "zustand";
 import { createClient } from "@/lib/supabase/client";
 import type { AppNotification } from "@/lib/notifications/types";
+import { dedupeAsync } from "@/lib/stores/dedupe-async";
+import { useProfileStore } from "@/lib/stores/profile-store";
 
 interface NotificationsStore {
   items: AppNotification[];
   unreadCount: number;
   loaded: boolean;
   loading: boolean;
-  fetchNotifications: () => Promise<void>;
+  fetchNotifications: (force?: boolean) => Promise<void>;
   markReadLocally: (id: string) => void;
   markAllReadLocally: () => void;
   reset: () => void;
@@ -23,30 +25,31 @@ const initialState = {
 export const useNotificationsStore = create<NotificationsStore>((set, get) => ({
   ...initialState,
 
-  fetchNotifications: async () => {
-    set({ loading: true });
+  fetchNotifications: async (force = false) => {
+    if (!force && get().loaded && !get().loading) return;
 
-    const supabase = createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    return dedupeAsync("notifications:list", async () => {
+      set({ loading: true });
 
-    if (!user) {
-      set({ ...initialState, loaded: true, loading: false });
-      return;
-    }
+      const user = useProfileStore.getState().user;
+      if (!user) {
+        set({ ...initialState, loaded: true, loading: false });
+        return;
+      }
 
-    const { data } = await supabase
-      .from("notifications")
-      .select("id, user_id, type, title, body, payload, read_at, created_at")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false })
-      .limit(50);
+      const supabase = createClient();
+      const { data } = await supabase
+        .from("notifications")
+        .select("id, user_id, type, title, body, payload, read_at, created_at")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false })
+        .limit(50);
 
-    const items = (data ?? []) as AppNotification[];
-    const unreadCount = items.filter((n) => !n.read_at).length;
+      const items = (data ?? []) as AppNotification[];
+      const unreadCount = items.filter((n) => !n.read_at).length;
 
-    set({ items, unreadCount, loaded: true, loading: false });
+      set({ items, unreadCount, loaded: true, loading: false });
+    });
   },
 
   markReadLocally: (id) => {

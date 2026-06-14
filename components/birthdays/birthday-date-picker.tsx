@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { format } from "date-fns";
 import { enUS, pl } from "date-fns/locale";
 import { CalendarIcon } from "lucide-react";
@@ -22,6 +23,7 @@ export function BirthdayDatePicker({ date, onDateChange }: BirthdayDatePickerPro
   const t = useT();
   const { lang } = useLang();
   const locale = lang === "pl" ? pl : enUS;
+  const [open, setOpen] = useState(false);
 
   const displayLabel = date
     ? format(date, "d MMMM", { locale })
@@ -35,13 +37,14 @@ export function BirthdayDatePicker({ date, onDateChange }: BirthdayDatePickerPro
     onDateChange(
       new Date(CALENDAR_YEAR, selected.getMonth(), selected.getDate())
     );
+    setOpen(false);
   }
 
   return (
     <div className="space-y-1.5">
       <Label>{t.birthdays.dateLabel}</Label>
       <p className="text-xs text-muted-foreground">{t.birthdays.dateHint}</p>
-      <Popover>
+      <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
             type="button"
@@ -61,7 +64,10 @@ export function BirthdayDatePicker({ date, onDateChange }: BirthdayDatePickerPro
             selected={date}
             onSelect={handleSelect}
             locale={locale}
-            captionLayout="dropdown-months"
+            captionLayout="label"
+            formatters={{
+              formatCaption: (month) => format(month, "MMMM", { locale }),
+            }}
             startMonth={new Date(CALENDAR_YEAR, 0, 1)}
             endMonth={new Date(CALENDAR_YEAR, 11, 31)}
             defaultMonth={date ?? new Date(CALENDAR_YEAR, new Date().getMonth(), 1)}

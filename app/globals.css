@@ -84,6 +84,13 @@
   --sidebar-ring: #9cb080;
 }
 
+/* react-day-picker defaults to blue — align with app primary */
+.rdp-root {
+  --rdp-accent-color: var(--primary);
+  --rdp-accent-background-color: color-mix(in oklch, var(--primary) 14%, transparent);
+  --rdp-today-color: var(--primary);
+}
+
 .dark {
   --background: #1f2a2e;
   --foreground: #e7ede1;

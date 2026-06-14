@@ -9,9 +9,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { BirthdayDatePicker } from "@/components/birthdays/birthday-date-picker";
+import { BirthdayEntryForm } from "@/components/birthdays/birthday-entry-form";
 import { useT } from "@/lib/lang-context";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
 import { createBirthday } from "@/app/(app)/birthdays/actions";
@@ -25,12 +23,16 @@ interface BirthdayFormDialogProps {
 export function BirthdayFormDialog({ onSuccess }: BirthdayFormDialogProps) {
   const t = useT();
   const [open, setOpen] = useState(false);
+  const [personName, setPersonName] = useState("");
   const [date, setDate] = useState<Date | undefined>();
+  const [description, setDescription] = useState("");
   const [state, action, pending] = useActionState(createBirthday, null);
 
   useActionFeedback(state, () => {
     setOpen(false);
+    setPersonName("");
     setDate(undefined);
+    setDescription("");
     onSuccess();
   });
 
@@ -38,7 +40,6 @@ export function BirthdayFormDialog({ onSuccess }: BirthdayFormDialogProps) {
     if (!date) {
       e.preventDefault();
       toast.error(t.birthdays.errorDateRequired);
-      return;
     }
   }
 
@@ -55,28 +56,14 @@ export function BirthdayFormDialog({ onSuccess }: BirthdayFormDialogProps) {
           <DialogTitle className="font-heading">{t.birthdays.addTitle}</DialogTitle>
         </DialogHeader>
         <form action={action} className="space-y-4" onSubmit={onSubmit}>
-          <div className="space-y-1.5">
-            <Label htmlFor="personName">{t.birthdays.personNameLabel}</Label>
-            <Input
-              id="personName"
-              name="personName"
-              required
-              placeholder={t.birthdays.personNamePlaceholder}
-            />
-          </div>
-
-          <BirthdayDatePicker date={date} onDateChange={setDate} />
-
-          <div className="space-y-1.5">
-            <Label htmlFor="description">{t.birthdays.descriptionLabel}</Label>
-            <Input
-              id="description"
-              name="description"
-              maxLength={120}
-              placeholder={t.birthdays.descriptionPlaceholder}
-            />
-          </div>
-
+          <BirthdayEntryForm
+            personName={personName}
+            onPersonNameChange={setPersonName}
+            date={date}
+            onDateChange={setDate}
+            description={description}
+            onDescriptionChange={setDescription}
+          />
           <Button type="submit" className="w-full" disabled={pending}>
             {pending ? t.birthdays.saving : t.birthdays.saveBtn}
           </Button>

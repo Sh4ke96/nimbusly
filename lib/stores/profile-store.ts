@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { createClient } from "@/lib/supabase/client";
 import type { Family, FamilyInvitation, FamilyMember, Profile } from "@/lib/profile";
 import type { User } from "@supabase/supabase-js";
+import { dedupeAsync } from "@/lib/stores/dedupe-async";
 
 interface ProfileStore {
   user: User | null;
@@ -11,7 +12,7 @@ interface ProfileStore {
   invitations: FamilyInvitation[];
   loaded: boolean;
   loading: boolean;
-  fetchSession: () => Promise<void>;
+  fetchSession: (force?: boolean) => Promise<void>;
   refreshProfile: () => Promise<void>;
   refreshFamily: () => Promise<void>;
   reset: () => void;
@@ -61,85 +62,92 @@ async function loadFamilyData(familyId: string, userId: string, isOwner: boolean
 export const useProfileStore = create<ProfileStore>((set, get) => ({
   ...initialState,
 
-  fetchSession: async () => {
-    set({ loading: true });
+  fetchSession: async (force = false) => {
+    if (!force && get().loaded && !get().loading) return;
 
-    const supabase = createClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    return dedupeAsync("profile:session", async () => {
+      set({ loading: true });
 
-    if (!user) {
-      set({ ...initialState, loaded: true, loading: false });
-      return;
-    }
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", user.id)
-      .maybeSingle();
+      if (!user) {
+        set({ ...initialState, loaded: true, loading: false });
+        return;
+      }
 
-    let family: Family | null = null;
-    let members: FamilyMember[] = [];
-    let invitations: FamilyInvitation[] = [];
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .maybeSingle();
 
-    if (profile?.family_id) {
-      const isOwnerCandidate = profile.account_mode === "family";
-      const familyData = await loadFamilyData(
-        profile.family_id,
-        user.id,
-        isOwnerCandidate
-      );
-      family = familyData.family;
-      members = familyData.members;
-      invitations = familyData.invitations;
-    }
+      let family: Family | null = null;
+      let members: FamilyMember[] = [];
+      let invitations: FamilyInvitation[] = [];
 
-    set({
-      user,
-      profile,
-      family,
-      members,
-      invitations,
-      loaded: true,
-      loading: false,
+      if (profile?.family_id) {
+        const familyData = await loadFamilyData(
+          profile.family_id,
+          user.id,
+          profile.account_mode === "family"
+        );
+        family = familyData.family;
+        members = familyData.members;
+        invitations = familyData.invitations;
+      }
+
+      set({
+        user,
+        profile,
+        family,
+        members,
+        invitations,
+        loaded: true,
+        loading: false,
+      });
     });
   },
 
   refreshProfile: async () => {
-    const { user } = get();
-    if (!user) return;
+    return dedupeAsync("profile:refresh", async () => {
+      const { user } = get();
+      if (!user) return;
 
-    const supabase = createClient();
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", user.id)
-      .maybeSingle();
+      const supabase = createClient();
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user.id)
+        .maybeSingle();
 
-    set({ profile });
+      set({ profile });
 
-    if (profile?.family_id) {
-      await get().refreshFamily();
-    } else {
-      set({ family: null, members: [], invitations: [] });
-    }
+      if (profile?.family_id) {
+        await get().refreshFamily();
+      } else {
+        set({ family: null, members: [], invitations: [] });
+      }
+    });
   },
 
   refreshFamily: async () => {
-    const { profile, user } = get();
-    if (!profile?.family_id || !user) {
-      set({ family: null, members: [], invitations: [] });
-      return;
-    }
+    return dedupeAsync("profile:family", async () => {
+      const { profile, user } = get();
+      if (!profile?.family_id || !user) {
+        set({ family: null, members: [], invitations: [] });
+        return;
+      }
 
-    const { family, members, invitations } = await loadFamilyData(
-      profile.family_id,
-      user.id,
-      profile.account_mode === "family"
-    );
-    set({ family, members, invitations });
+      const { family, members, invitations } = await loadFamilyData(
+        profile.family_id,
+        user.id,
+        profile.account_mode === "family"
+      );
+      set({ family, members, invitations });
+    });
   },
 
   reset: () => set({ ...initialState, loaded: true }),

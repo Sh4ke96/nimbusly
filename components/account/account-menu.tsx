@@ -98,8 +98,6 @@ export function AccountMenu() {
 
           <DropdownMenuSeparator />
 
-          <DropdownMenuSeparator />
-
           <DropdownMenuItem asChild>
             <Link href="/notifications" className="flex items-center gap-2">
               <Bell className="size-4 text-primary" />
