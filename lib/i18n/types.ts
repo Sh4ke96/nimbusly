@@ -286,6 +286,18 @@ export type Dict = {
     medicineItemsCount: string;
     medicineItemsEmpty: string;
     medicineExpiringCount: string;
+    customizeOverviewBtn: string;
+    customizeOverviewDoneBtn: string;
+    customizeOverviewHint: string;
+    overviewDragHandleLabel: string;
+    hideOverviewCardBtn: string;
+    showOverviewCardBtn: string;
+    hiddenOverviewCardsLabel: string;
+    overviewLayoutSaved: string;
+    errorOverviewLayoutInvalid: string;
+    errorOverviewLayoutSave: string;
+    overviewAllHidden: string;
+    restoreAllOverviewCardsBtn: string;
   };
   birthdays: {
     title: string;

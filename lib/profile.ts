@@ -34,6 +34,7 @@ export type Profile = {
   family_role: FamilyRole | null;
   account_mode: AccountMode;
   onboarding_completed: boolean;
+  dashboard_overview_layout?: unknown;
 };
 
 export type FamilyMember = Pick<

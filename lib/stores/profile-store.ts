@@ -17,6 +17,7 @@ interface ProfileStore {
   fetchSession: (force?: boolean) => Promise<void>;
   refreshProfile: () => Promise<void>;
   refreshFamily: () => Promise<void>;
+  patchDashboardOverviewLayout: (layout: unknown) => void;
   reset: () => void;
 }
 
@@ -149,6 +150,17 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
         profile.account_mode === ACCOUNT_MODE.FAMILY
       );
       set({ family, members, invitations });
+    });
+  },
+
+  patchDashboardOverviewLayout: (layout: unknown) => {
+    const profile = get().profile;
+    if (!profile) return;
+    set({
+      profile: {
+        ...profile,
+        dashboard_overview_layout: layout,
+      },
     });
   },
 

@@ -11,7 +11,7 @@
     "cy:run": "cypress run",
     "e2e": "start-server-and-test dev http://localhost:3000 cy:run",
     "e2e:open": "start-server-and-test dev http://localhost:3000 cy:open",
-    "test": "node --import tsx --test lib/family/invite.test.ts lib/schedule/types.test.ts lib/gifts/types.test.ts lib/shopping-lists/types.test.ts lib/shopping-lists/watches.test.ts lib/budget/types.test.ts lib/budget/aggregates.test.ts lib/budget/monthly.test.ts lib/dashboard/birthdays.test.ts lib/medicine/types.test.ts lib/medicine/expiry.test.ts lib/notifications/pagination.test.ts",
+    "test": "node --import tsx --test lib/family/invite.test.ts lib/schedule/types.test.ts lib/gifts/types.test.ts lib/shopping-lists/types.test.ts lib/shopping-lists/watches.test.ts lib/budget/types.test.ts lib/budget/aggregates.test.ts lib/budget/monthly.test.ts lib/dashboard/birthdays.test.ts lib/dashboard/overview-layout.test.ts lib/medicine/types.test.ts lib/medicine/expiry.test.ts lib/notifications/pagination.test.ts",
     "db:link": "dotenv -e .env.local -- supabase link --project-ref mxjbextvckzjfkzzpvin",
     "db:push": "dotenv -e .env.local -- supabase db push",
     "db:status": "dotenv -e .env.local -- supabase migration list",
