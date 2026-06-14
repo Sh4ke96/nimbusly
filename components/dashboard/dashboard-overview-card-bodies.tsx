@@ -6,6 +6,7 @@ import {
   CalendarDays,
   Clapperboard,
   Cross,
+  UtensilsCrossed,
   Gift,
   ListChecks,
   Scale,
@@ -27,6 +28,7 @@ import {
   YAxis,
 } from "recharts";
 import { MemberAvatar } from "@/components/member-avatar";
+import { RestaurantStarRating } from "@/components/restaurants/restaurant-star-rating";
 import { overviewAccentStyles, type OverviewAccent } from "@/components/dashboard/sortable-overview-card";
 import { formatBirthdayLabel, type BirthdayEntry } from "@/lib/birthdays/types";
 import { daysUntilBirthday } from "@/lib/dashboard/birthdays";
@@ -51,6 +53,7 @@ import type { GiftIdea } from "@/lib/gifts/types";
 import type { MedicineItem } from "@/lib/medicine/types";
 import type { ShoppingList } from "@/lib/shopping-lists/types";
 import type { WatchlistItem } from "@/lib/watchlist/types";
+import type { RestaurantPlace } from "@/lib/restaurants/types";
 import type { ScheduleEntry } from "@/lib/schedule/types";
 import { cn } from "@/lib/utils";
 
@@ -172,6 +175,13 @@ export function getOverviewCardMeta(
         icon: Clapperboard,
         accent: "indigo",
       };
+    case DASHBOARD_OVERVIEW_CARD.RESTAURANTS:
+      return {
+        href: "/restaurants",
+        title: t.moduleLabels.restaurants,
+        icon: UtensilsCrossed,
+        accent: "amber",
+      };
     case DASHBOARD_OVERVIEW_CARD.BIRTHDAYS:
       return {
         href: "/birthdays",
@@ -220,6 +230,9 @@ export interface OverviewCardBodiesProps {
   watchlistItems: WatchlistItem[];
   previewWatchlistItems: WatchlistItem[];
   toWatchCount: number;
+  restaurantPlaces: RestaurantPlace[];
+  previewRestaurantPlaces: RestaurantPlace[];
+  plannedRestaurantCount: number;
   upcomingBirthdays: BirthdayEntry[];
   monthScheduleEntries: ScheduleEntry[];
   scheduleByType: [string, number][];
@@ -246,6 +259,9 @@ export function OverviewCardBody({
   watchlistItems,
   previewWatchlistItems,
   toWatchCount,
+  restaurantPlaces,
+  previewRestaurantPlaces,
+  plannedRestaurantCount,
   upcomingBirthdays,
   monthScheduleEntries,
   scheduleByType,
@@ -456,6 +472,48 @@ export function OverviewCardBody({
                     <span className="shrink-0 text-[10px] font-medium text-muted-foreground uppercase">
                       {t.watchlist.statusLabels[item.status]}
                     </span>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+        </div>
+      );
+
+    case DASHBOARD_OVERVIEW_CARD.RESTAURANTS:
+      return restaurantPlaces.length === 0 ? (
+        <EmptyHint icon={UtensilsCrossed} text={t.dashboard.restaurantsEmpty} />
+      ) : (
+        <div className="space-y-3">
+          <BigStat
+            value={restaurantPlaces.length}
+            label={formatMessage(t.dashboard.restaurantsCount, {
+              count: String(restaurantPlaces.length),
+            })}
+            accent="amber"
+          />
+          {plannedRestaurantCount > 0 && (
+            <>
+              <p className="text-xs text-amber-800 dark:text-amber-300 font-medium">
+                {formatMessage(t.dashboard.restaurantsPlannedCount, {
+                  count: String(plannedRestaurantCount),
+                })}
+              </p>
+              <ul className="space-y-1.5">
+                {previewRestaurantPlaces.map((place) => (
+                  <li
+                    key={place.id}
+                    className="flex items-center gap-2 text-sm border border-border bg-muted/20 px-2.5 py-2"
+                  >
+                    <UtensilsCrossed className="size-3.5 shrink-0 text-amber-600 dark:text-amber-400" />
+                    <span className="truncate font-medium flex-1 min-w-0">{place.name}</span>
+                    {place.rating !== null ? (
+                      <RestaurantStarRating value={place.rating} size="sm" />
+                    ) : (
+                      <span className="shrink-0 text-[10px] font-medium text-muted-foreground uppercase">
+                        {t.restaurants.visitStatusLabels[place.visit_status]}
+                      </span>
+                    )}
                   </li>
                 ))}
               </ul>

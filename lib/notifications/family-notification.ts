@@ -39,6 +39,9 @@ export function getFamilyNotificationTitle(
     [NOTIFICATION_TYPE.WATCHLIST_ADDED]: notifications.watchlistAddedTitle,
     [NOTIFICATION_TYPE.WATCHLIST_UPDATED]: notifications.watchlistUpdatedTitle,
     [NOTIFICATION_TYPE.WATCHLIST_DELETED]: notifications.watchlistDeletedTitle,
+    [NOTIFICATION_TYPE.RESTAURANT_ADDED]: notifications.restaurantAddedTitle,
+    [NOTIFICATION_TYPE.RESTAURANT_UPDATED]: notifications.restaurantUpdatedTitle,
+    [NOTIFICATION_TYPE.RESTAURANT_DELETED]: notifications.restaurantDeletedTitle,
   };
 
   return formatMessage(templateByType[type], { actor: actorName });

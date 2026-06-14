@@ -4,7 +4,7 @@ import { getTotalPages, getVisiblePageNumbers } from "@/lib/notifications/pagina
 import { parseNotificationFilterTab } from "@/lib/notifications/filter-tabs";
 import { NOTIFICATION_FILTER_TAB, NOTIFICATION_TYPE } from "@/lib/constants/notifications";
 import { getNotificationModuleIcon } from "@/lib/notifications/module-icon";
-import { Cake, CalendarDays, Clapperboard, Cross, Gift, ShoppingCart, Wallet } from "lucide-react";
+import { Cake, CalendarDays, Clapperboard, Cross, Gift, ShoppingCart, UtensilsCrossed, Wallet } from "lucide-react";
 
 describe("getTotalPages", () => {
   it("returns at least one page", () => {
@@ -47,5 +47,6 @@ describe("getNotificationModuleIcon", () => {
     assert.equal(getNotificationModuleIcon(NOTIFICATION_TYPE.BUDGET_ADDED), Wallet);
     assert.equal(getNotificationModuleIcon(NOTIFICATION_TYPE.MEDICINE_ADDED), Cross);
     assert.equal(getNotificationModuleIcon(NOTIFICATION_TYPE.WATCHLIST_ADDED), Clapperboard);
+    assert.equal(getNotificationModuleIcon(NOTIFICATION_TYPE.RESTAURANT_ADDED), UtensilsCrossed);
   });
 });

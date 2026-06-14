@@ -16,6 +16,7 @@ import {
   Users,
   Cross,
   Clapperboard,
+  UtensilsCrossed,
   ArrowRight,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -88,6 +89,13 @@ export default function DashboardPage() {
       desc: t.dashboard.moduleDescs.watchlist,
       href: "/watchlist",
       Icon: Clapperboard,
+    },
+    {
+      key: "restaurants",
+      label: t.dashboard.moduleLabels.restaurants,
+      desc: t.dashboard.moduleDescs.restaurants,
+      href: "/restaurants",
+      Icon: UtensilsCrossed,
     },
     {
       key: "family",

@@ -14,6 +14,7 @@ function getOverviewCardLabel(
     gifts: string;
     medicineCabinet: string;
     watchlist: string;
+    restaurants: string;
     birthdays: string;
     calendar: string;
     family: string;
@@ -30,6 +31,8 @@ function getOverviewCardLabel(
       return labels.medicineCabinet;
     case DASHBOARD_OVERVIEW_CARD.WATCHLIST:
       return labels.watchlist;
+    case DASHBOARD_OVERVIEW_CARD.RESTAURANTS:
+      return labels.restaurants;
     case DASHBOARD_OVERVIEW_CARD.BIRTHDAYS:
       return labels.birthdays;
     case DASHBOARD_OVERVIEW_CARD.CALENDAR:

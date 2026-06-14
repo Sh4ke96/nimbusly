@@ -27,6 +27,9 @@ export const NOTIFICATION_TYPE = {
   WATCHLIST_ADDED: "watchlist_added",
   WATCHLIST_UPDATED: "watchlist_updated",
   WATCHLIST_DELETED: "watchlist_deleted",
+  RESTAURANT_ADDED: "restaurant_added",
+  RESTAURANT_UPDATED: "restaurant_updated",
+  RESTAURANT_DELETED: "restaurant_deleted",
 } as const;
 
 export type NotificationType = (typeof NOTIFICATION_TYPE)[keyof typeof NOTIFICATION_TYPE];
@@ -78,6 +81,12 @@ export const WATCHLIST_NOTIFICATION_TYPES: NotificationType[] = [
   NOTIFICATION_TYPE.WATCHLIST_ADDED,
   NOTIFICATION_TYPE.WATCHLIST_UPDATED,
   NOTIFICATION_TYPE.WATCHLIST_DELETED,
+];
+
+export const RESTAURANT_NOTIFICATION_TYPES: NotificationType[] = [
+  NOTIFICATION_TYPE.RESTAURANT_ADDED,
+  NOTIFICATION_TYPE.RESTAURANT_UPDATED,
+  NOTIFICATION_TYPE.RESTAURANT_DELETED,
 ];
 
 export const NOTIFICATION_FILTER_TAB = {
