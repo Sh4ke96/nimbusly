@@ -1,5 +1,6 @@
 "use client";
 
+import { RESTAURANT_FORM_FIELD } from "@/lib/restaurants/types";
 import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -98,7 +99,7 @@ function RestaurantEditForm({
 
   return (
     <form action={action} className="space-y-4" onSubmit={onSubmit}>
-      <input type="hidden" name="id" value={place.id} />
+      <input type="hidden" name={RESTAURANT_FORM_FIELD.ID} value={place.id} />
       <RestaurantEntryForm
         name={name}
         onNameChange={setName}

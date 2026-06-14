@@ -1,5 +1,6 @@
 "use client";
 
+import { MEDICINE_FORM_FIELD } from "@/lib/medicine/types";
 import { useT } from "@/lib/lang-context";
 import { formatMessage } from "@/lib/i18n/format";
 import { DatePickerField } from "@/components/ui/date-picker-field";
@@ -28,7 +29,7 @@ export function MedicineDatePicker({
       hiddenInputs={
         <input
           type="hidden"
-          name="expiryDate"
+          name={MEDICINE_FORM_FIELD.EXPIRY_DATE}
           value={date ? dateToMedicineDateString(date) : ""}
         />
       }

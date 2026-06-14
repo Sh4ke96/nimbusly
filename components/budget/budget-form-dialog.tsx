@@ -1,5 +1,6 @@
 "use client";
 
+import { BUDGET_FORM_FIELD } from "@/lib/budget/types";
 import { useActionState, useState } from "react";
 import { Plus } from "lucide-react";
 import { createBudget } from "@/app/(app)/budget/actions";
@@ -54,7 +55,7 @@ export function BudgetFormDialog({ onSuccess }: BudgetFormDialogProps) {
             <Label htmlFor="budget-name">{t.budget.nameLabel}</Label>
             <Input
               id="budget-name"
-              name="name"
+              name={BUDGET_FORM_FIELD.NAME}
               required
               maxLength={BUDGET_NAME_MAX_LENGTH}
               placeholder={t.budget.namePlaceholder}

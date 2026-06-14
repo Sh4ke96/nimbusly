@@ -3,6 +3,8 @@ import {
   SCHEDULE_MAX_ENTRIES_PER_DAY,
   type ScheduleEntryType,
 } from "@/lib/constants/schedule";
+import { COMMON_FORM_FIELD } from "@/lib/form/common-fields";
+import { getFormTrimmedString } from "@/lib/form/values";
 
 export { SCHEDULE_MAX_ENTRIES_PER_DAY };
 import type { Dict } from "@/lib/i18n/types";
@@ -91,4 +93,27 @@ export function isValidEntryDateString(entryDate: string): boolean {
     date.getMonth() === month - 1 &&
     date.getDate() === day
   );
+}
+
+export const SCHEDULE_FORM_FIELD = {
+  ID: COMMON_FORM_FIELD.ID,
+  ENTRY_DATE: "entryDate",
+  ENTRY_TYPE: "entryType",
+  DESCRIPTION: "description",
+} as const;
+
+export function parseScheduleEntryFromForm(formData: FormData): {
+  entryDate: string;
+  entryType: string;
+  description: string;
+} {
+  return {
+    entryDate: getFormTrimmedString(formData, SCHEDULE_FORM_FIELD.ENTRY_DATE),
+    entryType: getFormTrimmedString(formData, SCHEDULE_FORM_FIELD.ENTRY_TYPE),
+    description: getFormTrimmedString(formData, SCHEDULE_FORM_FIELD.DESCRIPTION),
+  };
+}
+
+export function parseScheduleIdFromForm(formData: FormData): string {
+  return getFormTrimmedString(formData, SCHEDULE_FORM_FIELD.ID);
 }

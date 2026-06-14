@@ -1,5 +1,6 @@
 "use client";
 
+import { CHORE_FORM_FIELD } from "@/lib/chores/types";
 import { format } from "date-fns";
 import { useActionState } from "react";
 import {
@@ -188,7 +189,7 @@ export function ChoreTaskCard({
                 <Pencil className="size-4" />
               </Button>
               <form action={deleteAction}>
-                <input type="hidden" name="id" value={task.id} />
+                <input type="hidden" name={CHORE_FORM_FIELD.ID} value={task.id} />
                 <Button
                   type="submit"
                   variant="ghost"
@@ -250,8 +251,8 @@ export function ChoreTaskCard({
           <div className="flex flex-wrap gap-1.5 border-t border-border pt-3">
             {CHORE_STATUSES.map((status) => (
               <form key={status} action={statusAction}>
-                <input type="hidden" name="id" value={task.id} />
-                <input type="hidden" name="status" value={status} />
+                <input type="hidden" name={CHORE_FORM_FIELD.ID} value={task.id} />
+                <input type="hidden" name={CHORE_FORM_FIELD.STATUS} value={status} />
                 <Button
                   type="submit"
                   size="sm"

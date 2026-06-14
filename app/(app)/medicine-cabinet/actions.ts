@@ -16,6 +16,7 @@ import {
   isValidMedicineNotes,
   isValidMedicineQuantity,
   normalizeMedicineName,
+  parseMedicineIdFromForm,
   parseMedicineItemFromForm,
 } from "@/lib/medicine/types";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
@@ -172,7 +173,7 @@ export async function updateMedicineItem(
 
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const id = formData.get("id") as string;
+  const id = parseMedicineIdFromForm(formData);
   const parsed = parseMedicineItemFromForm(formData);
   const validationError = validateMedicineFields(parsed);
 
@@ -286,7 +287,7 @@ export async function deleteMedicineItem(
 
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const id = formData.get("id") as string;
+  const id = parseMedicineIdFromForm(formData);
   if (!id) return { error: t.medicineCabinet.errorGeneric };
 
   const { data: existing } = await supabase

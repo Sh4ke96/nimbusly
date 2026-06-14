@@ -1,4 +1,5 @@
 import type { BirthdayEntry } from "@/lib/birthdays/types";
+import { APP_MODULE, APP_MODULE_ROUTES } from "@/lib/constants/app-modules";
 import { daysUntilBirthday } from "@/lib/dashboard/birthdays";
 import type { ChoreTask } from "@/lib/chores/types";
 import { isChoreOverdue } from "@/lib/chores/filters";
@@ -49,7 +50,7 @@ export function buildAttentionItems(params: {
     if (!isChoreOverdue(task)) continue;
     items.push({
       kind: ATTENTION_KIND.CHORE_OVERDUE,
-      href: "/chores",
+      href: APP_MODULE_ROUTES[APP_MODULE.CHORES],
       label: params.labels.choreOverdue(task.title),
     });
   }
@@ -58,7 +59,7 @@ export function buildAttentionItems(params: {
     if (!isMedicineExpiringSoon(medicine.expiry_date)) continue;
     items.push({
       kind: ATTENTION_KIND.MEDICINE_EXPIRING,
-      href: "/medicine-cabinet",
+      href: APP_MODULE_ROUTES[APP_MODULE.MEDICINE_CABINET],
       label: params.labels.medicineExpiring(medicine.name),
     });
   }
@@ -68,7 +69,7 @@ export function buildAttentionItems(params: {
     const petName = resolvePetName(params.pets, care.pet_id);
     items.push({
       kind: ATTENTION_KIND.PET_CARE_DUE,
-      href: "/pets",
+      href: APP_MODULE_ROUTES[APP_MODULE.PETS],
       label: params.labels.petCareDue(petName, care.name),
     });
   }
@@ -82,7 +83,7 @@ export function buildAttentionItems(params: {
         : params.labels.birthdayInDays(String(days));
     items.push({
       kind: ATTENTION_KIND.BIRTHDAY_SOON,
-      href: "/birthdays",
+      href: APP_MODULE_ROUTES[APP_MODULE.BIRTHDAYS],
       label: params.labels.birthdaySoon(birthday.person_name, when),
     });
   }

@@ -1,5 +1,6 @@
 "use client";
 
+import { BUDGET_FORM_FIELD } from "@/lib/budget/types";
 import { useActionState } from "react";
 import { Trash2 } from "lucide-react";
 import { deleteBudgetExpense } from "@/app/(app)/budget/actions";
@@ -98,8 +99,8 @@ function EntryRow({
           )}
         </div>
         <form action={deleteAction}>
-          <input type="hidden" name="id" value={entry.id} />
-          <input type="hidden" name="budgetId" value={budgetId} />
+          <input type="hidden" name={BUDGET_FORM_FIELD.ID} value={entry.id} />
+          <input type="hidden" name={BUDGET_FORM_FIELD.BUDGET_ID} value={budgetId} />
           <Button
             type="submit"
             variant="ghost"

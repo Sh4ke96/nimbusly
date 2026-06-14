@@ -1,5 +1,6 @@
 "use client";
 
+import { FAMILY_FORM_FIELD } from "@/lib/family/form";
 import { useActionState, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -49,7 +50,7 @@ export function JoinFamilyForm() {
         <Label htmlFor="settings-join-invite-code">{t.onboarding.inviteCodeLabel}</Label>
         <Input
           id="settings-join-invite-code"
-          name="inviteCode"
+          name={FAMILY_FORM_FIELD.INVITE_CODE}
           value={inviteCode}
           onChange={(e) => setInviteCode(formatInviteCode(e.target.value))}
           placeholder={t.onboarding.inviteCodePlaceholder}

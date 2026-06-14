@@ -5,8 +5,9 @@ import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
 import { getServerT } from "@/lib/i18n/server";
 import { isAvatarColor } from "@/lib/avatar-colors";
-import { INVITE_TOKEN_COOKIE, INVITE_CODE_COOKIE, parseFamilySetupIntent } from "@/lib/family/constants";
+import { INVITE_TOKEN_COOKIE, INVITE_CODE_COOKIE } from "@/lib/family/constants";
 import { isValidInviteCodeFormat, normalizeInviteCode } from "@/lib/family/invite";
+import { parseOnboardingFromForm } from "@/lib/profile/form";
 import {
   ACCOUNT_MODE,
   FAMILY_ROLE,
@@ -67,13 +68,15 @@ export async function completeOnboarding(
     redirect("/dashboard");
   }
 
-  const firstName = (formData.get("firstName") as string)?.trim();
-  const lastName = (formData.get("lastName") as string)?.trim();
-  const avatarColor = formData.get("avatarColor") as string;
-  const familyIntent = parseFamilySetupIntent(formData.get("familyIntent"));
-  const familyName = (formData.get("familyName") as string)?.trim();
-  const inviteCode = (formData.get("inviteCode") as string)?.trim();
-  const inviteToken = (formData.get("inviteToken") as string)?.trim();
+  const {
+    firstName,
+    lastName,
+    avatarColor,
+    familyIntent,
+    familyName,
+    inviteCode,
+    inviteToken,
+  } = parseOnboardingFromForm(formData);
 
   if (!firstName) {
     return { error: t.onboarding.errorFirstName };

@@ -1,5 +1,6 @@
 "use client";
 
+import { BUDGET_FORM_FIELD } from "@/lib/budget/types";
 import { useActionState, useMemo } from "react";
 import { Pencil, Trash2 } from "lucide-react";
 import { deleteBudget } from "@/app/(app)/budget/actions";
@@ -99,7 +100,7 @@ export function BudgetCard({
               <Pencil className="size-4" />
             </Button>
             <form action={deleteAction}>
-              <input type="hidden" name="id" value={budget.id} />
+              <input type="hidden" name={BUDGET_FORM_FIELD.ID} value={budget.id} />
               <Button
                 type="submit"
                 variant="ghost"

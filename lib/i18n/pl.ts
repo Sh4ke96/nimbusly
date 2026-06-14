@@ -123,6 +123,10 @@ export const pl: Dict = {
     rights: "Wszelkie prawa zastrzeżone.",
     madeWith: "Zrobione z miłością",
   },
+  authDecor: {
+    headline: "Twój domowy hub czeka",
+    desc: "Budżet, zakupy, urodziny i osiem innych modułów — w jednym miejscu, dla Ciebie lub całej rodziny.",
+  },
   login: {
     title: "Witaj z powrotem",
     subtitle: "Zaloguj się do swojego konta rodzinnego",

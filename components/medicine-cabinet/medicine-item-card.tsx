@@ -1,5 +1,6 @@
 "use client";
 
+import { MEDICINE_FORM_FIELD } from "@/lib/medicine/types";
 import { format } from "date-fns";
 import { AlertTriangle, Calendar, MapPin, Package } from "lucide-react";
 import { MedicineExpiryBadge } from "@/components/medicine-cabinet/medicine-expiry-badge";
@@ -98,7 +99,7 @@ export function MedicineItemCard({
                 <Pencil className="size-4" />
               </Button>
               <form action={deleteAction}>
-                <input type="hidden" name="id" value={item.id} />
+                <input type="hidden" name={MEDICINE_FORM_FIELD.ID} value={item.id} />
                 <Button
                   type="submit"
                   variant="ghost"

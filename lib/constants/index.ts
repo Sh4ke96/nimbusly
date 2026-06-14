@@ -11,3 +11,6 @@ export * from "@/lib/constants/shopping-lists";
 export * from "@/lib/constants/budget";
 export * from "@/lib/constants/brand";
 export * from "@/lib/constants/test";
+export * from "@/lib/constants/app-modules";
+export * from "@/lib/constants/dashboard-overview";
+export * from "@/lib/constants/overview-accent";

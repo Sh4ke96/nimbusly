@@ -1,5 +1,7 @@
 "use client";
 
+import { PROFILE_FORM_FIELD } from "@/lib/profile/form";
+import { FAMILY_FORM_FIELD } from "@/lib/family/form";
 import { useActionState, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -69,7 +71,7 @@ export function FamilySection() {
             <Label htmlFor="settings-family-name">{t.account.familyNameLabel}</Label>
             <Input
               id="settings-family-name"
-              name="familyName"
+              name={PROFILE_FORM_FIELD.FAMILY_NAME}
               defaultValue={family?.name ?? ""}
               key={family?.name}
             />
@@ -114,7 +116,7 @@ export function FamilySection() {
               <Label htmlFor="family-invite-email">{t.account.familyInviteEmailLabel}</Label>
               <Input
                 id="family-invite-email"
-                name="email"
+                name={FAMILY_FORM_FIELD.EMAIL}
                 type="email"
                 placeholder={t.account.familyInviteEmailPlaceholder}
                 required
@@ -163,7 +165,7 @@ export function FamilySection() {
               >
                 <span className="text-sm text-muted-foreground truncate">{invitation.email}</span>
                 <form action={revokeAction}>
-                  <input type="hidden" name="invitationId" value={invitation.id} />
+                  <input type="hidden" name={FAMILY_FORM_FIELD.INVITATION_ID} value={invitation.id} />
                   <Button
                     type="submit"
                     variant="ghost"

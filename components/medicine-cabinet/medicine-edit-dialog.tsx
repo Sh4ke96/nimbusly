@@ -1,5 +1,6 @@
 "use client";
 
+import { MEDICINE_FORM_FIELD } from "@/lib/medicine/types";
 import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -77,7 +78,7 @@ function MedicineEditForm({
 
   return (
     <form action={action} className="space-y-4" onSubmit={onSubmit}>
-      <input type="hidden" name="id" value={item.id} />
+      <input type="hidden" name={MEDICINE_FORM_FIELD.ID} value={item.id} />
       <MedicineEntryForm
         name={name}
         onNameChange={setName}

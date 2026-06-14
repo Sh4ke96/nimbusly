@@ -6,6 +6,8 @@ import {
   type WatchlistMediaType,
   type WatchlistStatus,
 } from "@/lib/constants/watchlist";
+import { COMMON_FORM_FIELD } from "@/lib/form/common-fields";
+import { getFormString, getFormTrimmedString } from "@/lib/form/values";
 
 export interface WatchlistItem {
   id: string;
@@ -40,16 +42,38 @@ export function isValidWatchlistNotes(notes: string): boolean {
   return notes.length <= WATCHLIST_NOTES_MAX_LENGTH;
 }
 
+export const WATCHLIST_FORM_FIELD = {
+  ID: COMMON_FORM_FIELD.ID,
+  TITLE: "title",
+  MEDIA_TYPE: "mediaType",
+  STATUS: "status",
+  NOTES: "notes",
+} as const;
+
+export function parseWatchlistIdFromForm(formData: FormData): string {
+  return getFormTrimmedString(formData, WATCHLIST_FORM_FIELD.ID);
+}
+
+export function parseWatchlistStatusFromForm(formData: FormData): {
+  id: string;
+  status: string;
+} {
+  return {
+    id: getFormTrimmedString(formData, WATCHLIST_FORM_FIELD.ID),
+    status: getFormTrimmedString(formData, WATCHLIST_FORM_FIELD.STATUS),
+  };
+}
+
 export function parseWatchlistItemFromForm(formData: FormData): {
   title: string;
   mediaType: WatchlistMediaType | null;
   status: WatchlistStatus | null;
   notes: string;
 } {
-  const title = normalizeWatchlistTitle((formData.get("title") as string) ?? "");
-  const mediaTypeRaw = (formData.get("mediaType") as string)?.trim() ?? "";
-  const statusRaw = (formData.get("status") as string)?.trim() ?? "";
-  const notes = ((formData.get("notes") as string) ?? "").trim();
+  const title = normalizeWatchlistTitle(getFormString(formData, WATCHLIST_FORM_FIELD.TITLE));
+  const mediaTypeRaw = getFormTrimmedString(formData, WATCHLIST_FORM_FIELD.MEDIA_TYPE);
+  const statusRaw = getFormTrimmedString(formData, WATCHLIST_FORM_FIELD.STATUS);
+  const notes = getFormTrimmedString(formData, WATCHLIST_FORM_FIELD.NOTES);
 
   return {
     title,

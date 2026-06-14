@@ -1,5 +1,6 @@
 "use client";
 
+import { PET_FORM_FIELD } from "@/lib/pets/types";
 import { format } from "date-fns";
 import { useActionState } from "react";
 import { AlertTriangle, Calendar, Package, PawPrint, Pencil, Trash2 } from "lucide-react";
@@ -117,7 +118,7 @@ export function PetCareItemCard({
                 <Pencil className="size-4" />
               </Button>
               <form action={deleteAction}>
-                <input type="hidden" name="id" value={item.id} />
+                <input type="hidden" name={PET_FORM_FIELD.ID} value={item.id} />
                 <Button
                   type="submit"
                   variant="ghost"

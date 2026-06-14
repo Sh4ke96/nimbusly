@@ -8,6 +8,8 @@ import {
   isValidGiftRecipientType,
   isValidRecipientName,
   normalizeRecipientName,
+  parseGiftContentFromForm,
+  parseGiftIdFromForm,
   parseGiftRecipientFromForm,
 } from "@/lib/gifts/types";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
@@ -65,7 +67,7 @@ export async function createGiftIdea(
 
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const content = (formData.get("content") as string)?.trim() ?? "";
+  const { content } = parseGiftContentFromForm(formData);
   const parsed = parseGiftRecipientFromForm(formData);
 
   if (!parsed.recipientType) return { error: t.gifts.errorInvalidRecipient };
@@ -151,8 +153,8 @@ export async function updateGiftIdea(
 
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const id = formData.get("id") as string;
-  const content = (formData.get("content") as string)?.trim() ?? "";
+  const id = parseGiftIdFromForm(formData);
+  const { content } = parseGiftContentFromForm(formData);
   const parsed = parseGiftRecipientFromForm(formData);
 
   if (!id) return { error: t.gifts.errorGeneric };
@@ -242,7 +244,7 @@ export async function deleteGiftIdea(
 
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const id = formData.get("id") as string;
+  const id = parseGiftIdFromForm(formData);
   if (!id) return { error: t.gifts.errorGeneric };
 
   const { data: existing } = await supabase

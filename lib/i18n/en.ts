@@ -123,6 +123,10 @@ export const en: Dict = {
     rights: "All rights reserved.",
     madeWith: "Made with love",
   },
+  authDecor: {
+    headline: "Your family hub awaits",
+    desc: "Budget, shopping, birthdays, and eight more modules — in one place, for you or the whole family.",
+  },
   login: {
     title: "Welcome back",
     subtitle: "Sign in to your family account",

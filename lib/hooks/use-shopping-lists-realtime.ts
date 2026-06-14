@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { createClient } from "@/lib/supabase/client";
 import type { ShoppingList, ShoppingListItem } from "@/lib/shopping-lists/types";
 import { useShoppingListsStore } from "@/lib/stores/shopping-lists-store";
@@ -18,7 +19,7 @@ export function useShoppingListsRealtime(params: {
     if (!userId) return;
 
     const supabase = createClient();
-    const channelName = `shopping-lists:${userId}:${familyId ?? "solo"}`;
+    const channelName = `shopping-lists:${userId}:${familyId ?? ACCOUNT_MODE.SOLO}`;
     const channel = supabase.channel(channelName);
 
     const listsFilter = familyId

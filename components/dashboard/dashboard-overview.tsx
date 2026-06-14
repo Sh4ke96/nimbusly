@@ -1,5 +1,6 @@
 "use client";
 
+import { DASHBOARD_FORM_FIELD } from "@/lib/dashboard/form";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   DndContext,
@@ -180,7 +181,7 @@ export function DashboardOverview() {
       patchDashboardOverviewLayout(nextLayout);
 
       const formData = new FormData();
-      formData.set("layout", serializeDashboardOverviewLayout(nextLayout));
+      formData.set(DASHBOARD_FORM_FIELD.LAYOUT, serializeDashboardOverviewLayout(nextLayout));
 
       const result = await updateDashboardOverviewLayout(null, formData);
       setSavingLayout(false);

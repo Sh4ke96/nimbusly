@@ -1,5 +1,6 @@
 "use client";
 
+import { FAMILY_FORM_FIELD } from "@/lib/family/form";
 import { useActionState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { MemberAvatar } from "@/components/member-avatar";
@@ -97,16 +98,16 @@ export function FamilyPermissionsSection() {
                   <div className="flex shrink-0 gap-2">
                     {role === FAMILY_ROLE.MEMBER ? (
                       <form action={action}>
-                        <input type="hidden" name="memberId" value={member.id} />
-                        <input type="hidden" name="role" value={FAMILY_ROLE.ADMIN} />
+                        <input type="hidden" name={FAMILY_FORM_FIELD.MEMBER_ID} value={member.id} />
+                        <input type="hidden" name={FAMILY_FORM_FIELD.ROLE} value={FAMILY_ROLE.ADMIN} />
                         <Button type="submit" variant="outline" size="sm" disabled={pending}>
                           {t.account.permissionsMakeAdmin}
                         </Button>
                       </form>
                     ) : (
                       <form action={action}>
-                        <input type="hidden" name="memberId" value={member.id} />
-                        <input type="hidden" name="role" value={FAMILY_ROLE.MEMBER} />
+                        <input type="hidden" name={FAMILY_FORM_FIELD.MEMBER_ID} value={member.id} />
+                        <input type="hidden" name={FAMILY_FORM_FIELD.ROLE} value={FAMILY_ROLE.MEMBER} />
                         <Button type="submit" variant="outline" size="sm" disabled={pending}>
                           {t.account.permissionsMakeMember}
                         </Button>

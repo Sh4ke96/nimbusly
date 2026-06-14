@@ -7,6 +7,11 @@ import { INVITATION_STATUS } from "@/lib/constants/family-invitation";
 import { FAMILY_ACCESS_ERROR } from "@/lib/constants/server-error";
 import { getDisplayName } from "@/lib/profile";
 import { isValidInviteCodeFormat, normalizeInviteCode } from "@/lib/family/invite";
+import {
+  parseFamilyInvitationIdFromForm,
+  parseFamilyInviteCodeFromForm,
+  parseFamilyInviteEmailFromForm,
+} from "@/lib/family/form";
 import { sendFamilyInviteEmail } from "@/lib/family/send-invite-email";
 import type { AccountActionState } from "@/app/(app)/account/actions";
 
@@ -55,7 +60,7 @@ export async function sendFamilyInvitation(
     return { error: t.account.errorNotFamilyOwner };
   }
 
-  const email = (formData.get("email") as string)?.trim().toLowerCase();
+  const { email } = parseFamilyInviteEmailFromForm(formData);
 
   if (!email || !email.includes("@")) {
     return { error: t.account.familyInviteEmailInvalid };
@@ -120,7 +125,7 @@ export async function revokeFamilyInvitation(
     return { error: t.account.errorNotFamilyOwner };
   }
 
-  const invitationId = formData.get("invitationId") as string;
+  const invitationId = parseFamilyInvitationIdFromForm(formData);
   if (!invitationId) return { error: t.account.errorGeneric };
 
   const { error } = await ctx.supabase
@@ -206,7 +211,7 @@ export async function joinFamilyWithInviteCode(
     return { error: t.account.errorAlreadyInFamily };
   }
 
-  const inviteCode = (formData.get("inviteCode") as string)?.trim();
+  const { inviteCode } = parseFamilyInviteCodeFromForm(formData);
 
   if (!inviteCode || !isValidInviteCodeFormat(inviteCode)) {
     return { error: t.onboarding.errorInviteCodeInvalid };

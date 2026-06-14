@@ -1,5 +1,6 @@
 "use client";
 
+import { AUTH_FORM_FIELD } from "@/lib/auth/form";
 import { useActionState, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { register, type AuthState } from "../actions";
@@ -53,7 +54,7 @@ export function RegisterForm() {
         <Label htmlFor="email">{t.register.emailLabel}</Label>
         <Input
           id="email"
-          name="email"
+          name={AUTH_FORM_FIELD.EMAIL}
           type="email"
           required
           autoComplete="email"
@@ -65,7 +66,7 @@ export function RegisterForm() {
         <Label htmlFor="password">{t.register.passwordLabel}</Label>
         <Input
           id="password"
-          name="password"
+          name={AUTH_FORM_FIELD.PASSWORD}
           type="password"
           required
           autoComplete="new-password"
@@ -77,7 +78,7 @@ export function RegisterForm() {
         <Label htmlFor="confirmPassword">{t.register.confirmLabel}</Label>
         <Input
           id="confirmPassword"
-          name="confirmPassword"
+          name={AUTH_FORM_FIELD.CONFIRM_PASSWORD}
           type="password"
           required
           autoComplete="new-password"
@@ -89,7 +90,7 @@ export function RegisterForm() {
         <Label htmlFor="inviteCode">{t.register.inviteCodeLabel}</Label>
         <Input
           id="inviteCode"
-          name="inviteCode"
+          name={AUTH_FORM_FIELD.INVITE_CODE}
           value={inviteCode}
           onChange={(e) => setInviteCode(formatInviteCode(e.target.value))}
           placeholder={t.register.inviteCodePlaceholder}

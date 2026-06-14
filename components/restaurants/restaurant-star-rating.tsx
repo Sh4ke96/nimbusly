@@ -1,5 +1,6 @@
 "use client";
 
+import { RESTAURANT_FORM_FIELD } from "@/lib/restaurants/types";
 import { Star } from "lucide-react";
 import { RESTAURANT_RATING_MAX, RESTAURANT_RATING_MIN } from "@/lib/constants/restaurants";
 import { cn } from "@/lib/utils";
@@ -59,10 +60,10 @@ export function RestaurantStarRating({
         </span>
       )}
       {interactive && value === null && (
-        <input type="hidden" name="rating" value="" />
+        <input type="hidden" name={RESTAURANT_FORM_FIELD.RATING} value="" />
       )}
       {interactive && value !== null && value >= RESTAURANT_RATING_MIN && (
-        <input type="hidden" name="rating" value={String(value)} />
+        <input type="hidden" name={RESTAURANT_FORM_FIELD.RATING} value={String(value)} />
       )}
     </div>
   );

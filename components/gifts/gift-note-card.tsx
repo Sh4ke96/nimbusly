@@ -1,5 +1,6 @@
 "use client";
 
+import { GIFT_FORM_FIELD } from "@/lib/gifts/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MemberAvatar } from "@/components/member-avatar";
@@ -122,7 +123,7 @@ export function GiftNoteCard({
                 <Pencil className="size-4" />
               </Button>
               <form action={deleteAction}>
-                <input type="hidden" name="id" value={idea.id} />
+                <input type="hidden" name={GIFT_FORM_FIELD.ID} value={idea.id} />
                 <Button
                   type="submit"
                   variant="ghost"

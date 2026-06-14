@@ -7,6 +7,8 @@ import {
   type ChoreRecurrence,
   type ChoreStatus,
 } from "@/lib/constants/chores";
+import { COMMON_FORM_FIELD } from "@/lib/form/common-fields";
+import { getFormString, getFormTrimmedString } from "@/lib/form/values";
 
 export interface ChoreTask {
   id: string;
@@ -99,6 +101,30 @@ export function computeNextChoreDueDate(
   return next;
 }
 
+export const CHORE_FORM_FIELD = {
+  ID: COMMON_FORM_FIELD.ID,
+  TITLE: "title",
+  NOTES: "notes",
+  STATUS: "status",
+  ASSIGNED_TO: "assignedTo",
+  DUE_DATE: "dueDate",
+  RECURRENCE: "recurrence",
+} as const;
+
+export function parseChoreIdFromForm(formData: FormData): string {
+  return getFormTrimmedString(formData, CHORE_FORM_FIELD.ID);
+}
+
+export function parseChoreStatusFromForm(formData: FormData): {
+  id: string;
+  status: string;
+} {
+  return {
+    id: getFormTrimmedString(formData, CHORE_FORM_FIELD.ID),
+    status: getFormTrimmedString(formData, CHORE_FORM_FIELD.STATUS),
+  };
+}
+
 export function parseChoreTaskFromForm(formData: FormData): {
   title: string;
   notes: string;
@@ -107,12 +133,12 @@ export function parseChoreTaskFromForm(formData: FormData): {
   dueDate: string | null;
   recurrence: ChoreRecurrence | null;
 } {
-  const title = normalizeChoreTitle((formData.get("title") as string) ?? "");
-  const notes = ((formData.get("notes") as string) ?? "").trim();
-  const statusRaw = (formData.get("status") as string)?.trim() ?? "";
-  const assignedRaw = ((formData.get("assignedTo") as string) ?? "").trim();
-  const dueDateRaw = ((formData.get("dueDate") as string) ?? "").trim();
-  const recurrenceRaw = (formData.get("recurrence") as string)?.trim() ?? "";
+  const title = normalizeChoreTitle(getFormString(formData, CHORE_FORM_FIELD.TITLE));
+  const notes = getFormTrimmedString(formData, CHORE_FORM_FIELD.NOTES);
+  const statusRaw = getFormTrimmedString(formData, CHORE_FORM_FIELD.STATUS);
+  const assignedRaw = getFormTrimmedString(formData, CHORE_FORM_FIELD.ASSIGNED_TO);
+  const dueDateRaw = getFormTrimmedString(formData, CHORE_FORM_FIELD.DUE_DATE);
+  const recurrenceRaw = getFormTrimmedString(formData, CHORE_FORM_FIELD.RECURRENCE);
 
   return {
     title,

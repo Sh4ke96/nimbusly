@@ -15,7 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useT } from "@/lib/lang-context";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useBirthdaysStore } from "@/lib/stores/birthdays-store";
-import { formatBirthdayLabel, type BirthdayEntry } from "@/lib/birthdays/types";
+import { formatBirthdayLabel, type BirthdayEntry, BIRTHDAY_FORM_FIELD } from "@/lib/birthdays/types";
 import { cn } from "@/lib/utils";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
 import { deleteBirthday } from "@/app/(app)/birthdays/actions";
@@ -65,7 +65,7 @@ export function BirthdaysView() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col">
       <AppHeader />
 
       <main className="flex-1 mx-auto w-full max-w-7xl px-4 py-10 space-y-6">
@@ -167,7 +167,7 @@ export function BirthdaysView() {
                               <Pencil className="size-4" />
                             </Button>
                             <form action={deleteAction} onClick={(e) => e.stopPropagation()}>
-                              <input type="hidden" name="id" value={entry.id} />
+                              <input type="hidden" name={BIRTHDAY_FORM_FIELD.ID} value={entry.id} />
                               <Button
                                 type="submit"
                                 variant="ghost"

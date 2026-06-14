@@ -1,4 +1,5 @@
 import {
+  APP_MODULE,
   APP_MODULE_IDS,
   APP_MODULE_ROUTES,
   getAppModuleLabel,
@@ -48,8 +49,8 @@ export function buildSearchIndex(input: SearchIndexInput): SearchResult[] {
       id: `budget:${budget.id}`,
       title: budget.name,
       subtitle: input.moduleLabels.budget,
-      href: "/budget",
-      moduleId: "budget",
+      href: APP_MODULE_ROUTES[APP_MODULE.BUDGET],
+      moduleId: APP_MODULE.BUDGET,
       kind: "item",
     });
   }
@@ -59,8 +60,8 @@ export function buildSearchIndex(input: SearchIndexInput): SearchResult[] {
       id: `shopping-list:${list.id}`,
       title: list.name,
       subtitle: input.moduleLabels.shopping,
-      href: "/shopping",
-      moduleId: "shopping",
+      href: APP_MODULE_ROUTES[APP_MODULE.SHOPPING],
+      moduleId: APP_MODULE.SHOPPING,
       kind: "item",
     });
   }
@@ -70,8 +71,8 @@ export function buildSearchIndex(input: SearchIndexInput): SearchResult[] {
       id: `shopping-item:${item.id}`,
       title: item.content,
       subtitle: `${input.moduleLabels.shopping} · ${item.listName}`,
-      href: "/shopping",
-      moduleId: "shopping",
+      href: APP_MODULE_ROUTES[APP_MODULE.SHOPPING],
+      moduleId: APP_MODULE.SHOPPING,
       kind: "item",
     });
   }
@@ -81,8 +82,8 @@ export function buildSearchIndex(input: SearchIndexInput): SearchResult[] {
       id: `gift:${gift.id}`,
       title: gift.content,
       subtitle: `${input.moduleLabels.gifts} · ${gift.recipientLabel}`,
-      href: "/gifts",
-      moduleId: "gifts",
+      href: APP_MODULE_ROUTES[APP_MODULE.GIFTS],
+      moduleId: APP_MODULE.GIFTS,
       kind: "item",
     });
   }
@@ -92,8 +93,8 @@ export function buildSearchIndex(input: SearchIndexInput): SearchResult[] {
       id: `birthday:${birthday.id}`,
       title: birthday.personName,
       subtitle: input.moduleLabels.birthdays,
-      href: "/birthdays",
-      moduleId: "birthdays",
+      href: APP_MODULE_ROUTES[APP_MODULE.BIRTHDAYS],
+      moduleId: APP_MODULE.BIRTHDAYS,
       kind: "item",
     });
   }
@@ -103,8 +104,8 @@ export function buildSearchIndex(input: SearchIndexInput): SearchResult[] {
       id: `schedule:${entry.id}`,
       title: entry.title,
       subtitle: `${input.moduleLabels.calendar} · ${entry.dateLabel}`,
-      href: "/schedule",
-      moduleId: "calendar",
+      href: APP_MODULE_ROUTES[APP_MODULE.CALENDAR],
+      moduleId: APP_MODULE.CALENDAR,
       kind: "item",
     });
   }
@@ -114,8 +115,8 @@ export function buildSearchIndex(input: SearchIndexInput): SearchResult[] {
       id: `medicine:${item.id}`,
       title: item.name,
       subtitle: input.moduleLabels.medicineCabinet,
-      href: "/medicine-cabinet",
-      moduleId: "medicineCabinet",
+      href: APP_MODULE_ROUTES[APP_MODULE.MEDICINE_CABINET],
+      moduleId: APP_MODULE.MEDICINE_CABINET,
       kind: "item",
     });
   }
@@ -125,8 +126,8 @@ export function buildSearchIndex(input: SearchIndexInput): SearchResult[] {
       id: `watchlist:${item.id}`,
       title: item.title,
       subtitle: input.moduleLabels.watchlist,
-      href: "/watchlist",
-      moduleId: "watchlist",
+      href: APP_MODULE_ROUTES[APP_MODULE.WATCHLIST],
+      moduleId: APP_MODULE.WATCHLIST,
       kind: "item",
     });
   }
@@ -136,8 +137,8 @@ export function buildSearchIndex(input: SearchIndexInput): SearchResult[] {
       id: `restaurant:${place.id}`,
       title: place.name,
       subtitle: input.moduleLabels.restaurants,
-      href: "/restaurants",
-      moduleId: "restaurants",
+      href: APP_MODULE_ROUTES[APP_MODULE.RESTAURANTS],
+      moduleId: APP_MODULE.RESTAURANTS,
       kind: "item",
     });
   }
@@ -147,8 +148,8 @@ export function buildSearchIndex(input: SearchIndexInput): SearchResult[] {
       id: `pet:${pet.id}`,
       title: pet.name,
       subtitle: input.moduleLabels.pets,
-      href: "/pets",
-      moduleId: "pets",
+      href: APP_MODULE_ROUTES[APP_MODULE.PETS],
+      moduleId: APP_MODULE.PETS,
       kind: "item",
     });
   }
@@ -158,8 +159,8 @@ export function buildSearchIndex(input: SearchIndexInput): SearchResult[] {
       id: `chore:${chore.id}`,
       title: chore.title,
       subtitle: input.moduleLabels.chores,
-      href: "/chores",
-      moduleId: "chores",
+      href: APP_MODULE_ROUTES[APP_MODULE.CHORES],
+      moduleId: APP_MODULE.CHORES,
       kind: "item",
     });
   }

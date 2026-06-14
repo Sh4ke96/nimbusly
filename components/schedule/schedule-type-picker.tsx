@@ -7,7 +7,7 @@ import {
   type ScheduleEntryType,
 } from "@/lib/constants/schedule";
 import { useT } from "@/lib/lang-context";
-import { getScheduleTypeLabel } from "@/lib/schedule/types";
+import { getScheduleTypeLabel, SCHEDULE_FORM_FIELD } from "@/lib/schedule/types";
 import { scheduleTypeChipClass } from "@/lib/schedule/type-styles";
 import { cn } from "@/lib/utils";
 
@@ -17,7 +17,7 @@ interface ScheduleTypePickerProps {
   name?: string;
 }
 
-export function ScheduleTypePicker({ value, onChange, name = "entryType" }: ScheduleTypePickerProps) {
+export function ScheduleTypePicker({ value, onChange, name = SCHEDULE_FORM_FIELD.ENTRY_TYPE }: ScheduleTypePickerProps) {
   const t = useT();
 
   return (

@@ -2,7 +2,12 @@
 
 import { getServerT } from "@/lib/i18n/server";
 import { isAvatarColor } from "@/lib/avatar-colors";
-import { ACCOUNT_MODE, FAMILY_ROLE, type AccountMode, type FamilyRole } from "@/lib/constants/account";
+import { ACCOUNT_MODE, FAMILY_ROLE, type FamilyRole } from "@/lib/constants/account";
+import {
+  parseAccountModeSetupFromForm,
+  parseFamilyRenameFromForm,
+  parseProfileNamesFromForm,
+} from "@/lib/profile/form";
 import { requireUser } from "@/lib/server-actions/require-user";
 
 export type AccountActionState = { error: string } | { success: string } | null;
@@ -18,9 +23,7 @@ export async function updateProfile(
     return { error: t.account.errorUnauthorized };
   }
 
-  const firstName = (formData.get("firstName") as string)?.trim();
-  const lastName = (formData.get("lastName") as string)?.trim();
-  const avatarColor = formData.get("avatarColor") as string;
+  const { firstName, lastName, avatarColor } = parseProfileNamesFromForm(formData);
 
   if (!firstName) return { error: t.account.errorFirstName };
   if (!lastName) return { error: t.account.errorLastName };
@@ -52,8 +55,7 @@ export async function updateAccountMode(
     return { error: t.account.errorUnauthorized };
   }
 
-  const accountMode = formData.get("accountMode") as AccountMode;
-  const familyName = (formData.get("familyName") as string)?.trim();
+  const { accountMode, familyName } = parseAccountModeSetupFromForm(formData);
 
   if (accountMode !== ACCOUNT_MODE.FAMILY && accountMode !== ACCOUNT_MODE.SOLO) {
     return { error: t.account.errorGeneric };
@@ -123,7 +125,7 @@ export async function updateFamilyName(
     return { error: t.account.errorUnauthorized };
   }
 
-  const familyName = (formData.get("familyName") as string)?.trim();
+  const { familyName } = parseFamilyRenameFromForm(formData);
 
   if (!familyName) {
     return { error: t.account.errorFamilyName };

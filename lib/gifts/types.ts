@@ -4,6 +4,8 @@ import {
   GIFT_RECIPIENT_TYPES,
   type GiftRecipientType,
 } from "@/lib/constants/gifts";
+import { COMMON_FORM_FIELD } from "@/lib/form/common-fields";
+import { getFormString, getFormTrimmedString } from "@/lib/form/values";
 
 export interface GiftIdea {
   id: string;
@@ -42,15 +44,24 @@ export function getGiftRecipientFilterKey(
   return `custom:${normalizeRecipientName(entry.recipient_name).toLowerCase()}`;
 }
 
+export const GIFT_FORM_FIELD = {
+  ID: COMMON_FORM_FIELD.ID,
+  RECIPIENT_TYPE: "recipientType",
+  RECIPIENT_MEMBER_ID: "recipientMemberId",
+  RECIPIENT_NAME: "recipientName",
+  CONTENT: "content",
+} as const;
+
 export function parseGiftRecipientFromForm(formData: FormData): {
   recipientType: GiftRecipientType | null;
   recipientMemberId: string | null;
   recipientName: string;
 } {
-  const recipientTypeRaw = (formData.get("recipientType") as string)?.trim();
-  const recipientMemberId = (formData.get("recipientMemberId") as string)?.trim() || null;
+  const recipientTypeRaw = getFormTrimmedString(formData, GIFT_FORM_FIELD.RECIPIENT_TYPE);
+  const recipientMemberId =
+    getFormTrimmedString(formData, GIFT_FORM_FIELD.RECIPIENT_MEMBER_ID) || null;
   const recipientName = normalizeRecipientName(
-    (formData.get("recipientName") as string) ?? ""
+    getFormString(formData, GIFT_FORM_FIELD.RECIPIENT_NAME)
   );
 
   if (!isValidGiftRecipientType(recipientTypeRaw)) {
@@ -70,4 +81,14 @@ export function parseGiftRecipientFromForm(formData: FormData): {
     recipientMemberId: null,
     recipientName,
   };
+}
+
+export function parseGiftContentFromForm(formData: FormData): { content: string } {
+  return {
+    content: getFormTrimmedString(formData, GIFT_FORM_FIELD.CONTENT),
+  };
+}
+
+export function parseGiftIdFromForm(formData: FormData): string {
+  return getFormTrimmedString(formData, GIFT_FORM_FIELD.ID);
 }

@@ -15,8 +15,12 @@ import {
   isValidExpenseDateString,
   isValidExpenseDescription,
   normalizeBudgetName,
-  parseBudgetAmount,
+  parseBudgetExpenseFromForm,
+  parseBudgetExpenseUpdateFromForm,
+  parseBudgetIdFromForm,
   parseBudgetMemberIdsFromForm,
+  parseBudgetNameFromForm,
+  parseBudgetWatchFromForm,
 } from "@/lib/budget/types";
 import { BUDGET_ENTRY_TYPE } from "@/lib/constants/budget";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
@@ -154,7 +158,7 @@ export async function createBudget(
   const { supabase, user } = await requireUser();
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const name = normalizeBudgetName((formData.get("name") as string) ?? "");
+  const name = normalizeBudgetName(parseBudgetNameFromForm(formData).name);
   if (!isValidBudgetName(name)) return { error: t.budget.errorNameRequired };
 
   const profile = await getActorProfile(supabase, user.id);
@@ -216,8 +220,8 @@ export async function updateBudget(
   const { supabase, user } = await requireUser();
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const id = formData.get("id") as string;
-  const name = normalizeBudgetName((formData.get("name") as string) ?? "");
+  const id = parseBudgetIdFromForm(formData);
+  const name = normalizeBudgetName(parseBudgetNameFromForm(formData).name);
   if (!id) return { error: t.budget.errorGeneric };
   if (!isValidBudgetName(name)) return { error: t.budget.errorNameRequired };
 
@@ -279,7 +283,7 @@ export async function deleteBudget(
   const { supabase, user } = await requireUser();
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const id = formData.get("id") as string;
+  const id = parseBudgetIdFromForm(formData);
   if (!id) return { error: t.budget.errorGeneric };
 
   const existing = await getAccessibleBudget(supabase, id);
@@ -331,8 +335,7 @@ export async function toggleBudgetWatch(
   const { supabase, user } = await requireUser();
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const budgetId = formData.get("budgetId") as string;
-  const watch = formData.get("watch") === "true";
+  const { budgetId, watch } = parseBudgetWatchFromForm(formData);
   if (!budgetId) return { error: t.budget.errorGeneric };
 
   const budget = await getAccessibleBudget(supabase, budgetId);
@@ -364,11 +367,8 @@ export async function addBudgetExpense(
   const { supabase, user } = await requireUser();
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const budgetId = formData.get("budgetId") as string;
-  const category = (formData.get("category") as string)?.trim() ?? "";
-  const amount = parseBudgetAmount((formData.get("amount") as string) ?? "");
-  const description = ((formData.get("description") as string) ?? "").trim();
-  const expenseDate = (formData.get("expenseDate") as string)?.trim() ?? "";
+  const { budgetId, category, amount, description, expenseDate } =
+    parseBudgetExpenseFromForm(formData);
 
   if (!budgetId) return { error: t.budget.errorGeneric };
   if (!isValidBudgetExpenseCategory(category)) return { error: t.budget.errorCategory };
@@ -437,11 +437,8 @@ export async function addBudgetIncome(
   const { supabase, user } = await requireUser();
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const budgetId = formData.get("budgetId") as string;
-  const category = (formData.get("category") as string)?.trim() ?? "";
-  const amount = parseBudgetAmount((formData.get("amount") as string) ?? "");
-  const description = ((formData.get("description") as string) ?? "").trim();
-  const expenseDate = (formData.get("expenseDate") as string)?.trim() ?? "";
+  const { budgetId, category, amount, description, expenseDate } =
+    parseBudgetExpenseFromForm(formData);
 
   if (!budgetId) return { error: t.budget.errorGeneric };
   if (!isValidBudgetIncomeCategory(category)) return { error: t.budget.errorIncomeCategory };
@@ -510,8 +507,7 @@ export async function deleteBudgetExpense(
   const { supabase, user } = await requireUser();
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const id = formData.get("id") as string;
-  const budgetId = formData.get("budgetId") as string;
+  const { id, budgetId } = parseBudgetExpenseUpdateFromForm(formData);
   if (!id || !budgetId) return { error: t.budget.errorGeneric };
 
   const budget = await getAccessibleBudget(supabase, budgetId);

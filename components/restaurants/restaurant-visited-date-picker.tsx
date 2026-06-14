@@ -1,5 +1,6 @@
 "use client";
 
+import { RESTAURANT_FORM_FIELD } from "@/lib/restaurants/types";
 import { useT } from "@/lib/lang-context";
 import { DatePickerField } from "@/components/ui/date-picker-field";
 import { dateToRestaurantDateString } from "@/lib/restaurants/types";
@@ -28,7 +29,7 @@ export function RestaurantVisitedDatePicker({
       hiddenInputs={
         <input
           type="hidden"
-          name="visitedAt"
+          name={RESTAURANT_FORM_FIELD.VISITED_AT}
           value={date ? dateToRestaurantDateString(date) : ""}
           required={required}
         />

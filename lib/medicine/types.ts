@@ -8,6 +8,8 @@ import {
   type MedicineAvailability,
   type MedicineFormType,
 } from "@/lib/constants/medicine";
+import { COMMON_FORM_FIELD } from "@/lib/form/common-fields";
+import { getFormString, getFormTrimmedString } from "@/lib/form/values";
 
 export interface MedicineItem {
   id: string;
@@ -85,6 +87,21 @@ export function isValidMedicineExpiryDate(value: string | null | undefined): boo
   return parseMedicineDateString(value) !== undefined;
 }
 
+export const MEDICINE_FORM_FIELD = {
+  ID: COMMON_FORM_FIELD.ID,
+  NAME: "name",
+  FORM_TYPE: "formType",
+  QUANTITY: "quantity",
+  EXPIRY_DATE: "expiryDate",
+  AVAILABILITY: "availability",
+  LOCATION: "location",
+  NOTES: "notes",
+} as const;
+
+export function parseMedicineIdFromForm(formData: FormData): string {
+  return getFormTrimmedString(formData, MEDICINE_FORM_FIELD.ID);
+}
+
 export function parseMedicineItemFromForm(formData: FormData): {
   name: string;
   formType: MedicineFormType | null;
@@ -94,13 +111,14 @@ export function parseMedicineItemFromForm(formData: FormData): {
   location: string;
   notes: string;
 } {
-  const name = normalizeMedicineName((formData.get("name") as string) ?? "");
-  const formTypeRaw = (formData.get("formType") as string)?.trim() ?? "";
-  const quantity = ((formData.get("quantity") as string) ?? "").trim();
-  const expiryDateRaw = (formData.get("expiryDate") as string)?.trim() || null;
-  const availabilityRaw = (formData.get("availability") as string)?.trim() ?? "";
-  const location = ((formData.get("location") as string) ?? "").trim();
-  const notes = ((formData.get("notes") as string) ?? "").trim();
+  const name = normalizeMedicineName(getFormString(formData, MEDICINE_FORM_FIELD.NAME));
+  const formTypeRaw = getFormTrimmedString(formData, MEDICINE_FORM_FIELD.FORM_TYPE);
+  const quantity = getFormTrimmedString(formData, MEDICINE_FORM_FIELD.QUANTITY);
+  const expiryDateRaw =
+    getFormTrimmedString(formData, MEDICINE_FORM_FIELD.EXPIRY_DATE) || null;
+  const availabilityRaw = getFormTrimmedString(formData, MEDICINE_FORM_FIELD.AVAILABILITY);
+  const location = getFormTrimmedString(formData, MEDICINE_FORM_FIELD.LOCATION);
+  const notes = getFormTrimmedString(formData, MEDICINE_FORM_FIELD.NOTES);
 
   return {
     name,

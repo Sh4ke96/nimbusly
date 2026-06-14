@@ -1,5 +1,6 @@
 "use client";
 
+import { WATCHLIST_FORM_FIELD } from "@/lib/watchlist/types";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -42,7 +43,7 @@ export function WatchlistEntryForm({
         <p className="text-xs text-muted-foreground">{t.watchlist.titleHint}</p>
         <Input
           id="watchlist-title"
-          name="title"
+          name={WATCHLIST_FORM_FIELD.TITLE}
           value={title}
           onChange={(e) => onTitleChange(e.target.value)}
           placeholder={t.watchlist.titlePlaceholder}
@@ -71,7 +72,7 @@ export function WatchlistEntryForm({
             </button>
           ))}
         </div>
-        <input type="hidden" name="mediaType" value={mediaType ?? ""} required />
+        <input type="hidden" name={WATCHLIST_FORM_FIELD.MEDIA_TYPE} value={mediaType ?? ""} required />
       </div>
 
       <div className="space-y-1.5">
@@ -94,14 +95,14 @@ export function WatchlistEntryForm({
             </button>
           ))}
         </div>
-        <input type="hidden" name="status" value={status ?? ""} required />
+        <input type="hidden" name={WATCHLIST_FORM_FIELD.STATUS} value={status ?? ""} required />
       </div>
 
       <div className="space-y-1.5">
         <Label htmlFor="watchlist-notes">{t.watchlist.notesLabel}</Label>
         <Textarea
           id="watchlist-notes"
-          name="notes"
+          name={WATCHLIST_FORM_FIELD.NOTES}
           value={notes}
           onChange={(e) => onNotesChange(e.target.value)}
           placeholder={t.watchlist.notesPlaceholder}

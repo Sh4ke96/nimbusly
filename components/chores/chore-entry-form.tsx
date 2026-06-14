@@ -1,5 +1,6 @@
 "use client";
 
+import { CHORE_FORM_FIELD } from "@/lib/chores/types";
 import { ChoreAssigneePicker } from "@/components/chores/chore-assignee-picker";
 import { ChoreDatePicker } from "@/components/chores/chore-date-picker";
 import { Input } from "@/components/ui/input";
@@ -58,14 +59,14 @@ export function ChoreEntryForm({
 
   return (
     <div className="space-y-4">
-      {id && <input type="hidden" name="id" value={id} />}
+      {id && <input type="hidden" name={CHORE_FORM_FIELD.ID} value={id} />}
 
       <div className="space-y-1.5">
         <Label htmlFor={titleId}>{t.chores.titleLabel}</Label>
         <p className="text-xs text-muted-foreground">{t.chores.titleHint}</p>
         <Input
           id={titleId}
-          name="title"
+          name={CHORE_FORM_FIELD.TITLE}
           value={title}
           onChange={(e) => onTitleChange(e.target.value)}
           placeholder={t.chores.titlePlaceholder}
@@ -95,7 +96,7 @@ export function ChoreEntryForm({
             </button>
           ))}
         </div>
-        <input type="hidden" name="status" value={status ?? ""} required />
+        <input type="hidden" name={CHORE_FORM_FIELD.STATUS} value={status ?? ""} required />
       </div>
 
       <ChoreAssigneePicker
@@ -127,14 +128,14 @@ export function ChoreEntryForm({
             </button>
           ))}
         </div>
-        <input type="hidden" name="recurrence" value={recurrence ?? ""} required />
+        <input type="hidden" name={CHORE_FORM_FIELD.RECURRENCE} value={recurrence ?? ""} required />
       </div>
 
       <div className="space-y-1.5">
         <Label htmlFor={notesId}>{t.chores.notesLabel}</Label>
         <Textarea
           id={notesId}
-          name="notes"
+          name={CHORE_FORM_FIELD.NOTES}
           value={notes}
           onChange={(e) => onNotesChange(e.target.value)}
           placeholder={t.chores.notesPlaceholder}

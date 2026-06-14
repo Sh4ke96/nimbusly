@@ -1,5 +1,6 @@
 "use client";
 
+import { BUDGET_FORM_FIELD } from "@/lib/budget/types";
 import { useT } from "@/lib/lang-context";
 import { DatePickerField } from "@/components/ui/date-picker-field";
 import { dateToExpenseDateString } from "@/lib/budget/types";
@@ -27,7 +28,7 @@ export function BudgetDatePicker({
       hiddenInputs={
         <input
           type="hidden"
-          name="expenseDate"
+          name={BUDGET_FORM_FIELD.EXPENSE_DATE}
           required
           value={date ? dateToExpenseDateString(date) : ""}
         />

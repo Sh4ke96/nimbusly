@@ -11,7 +11,9 @@ import {
   isValidWatchlistStatus,
   isValidWatchlistTitle,
   normalizeWatchlistTitle,
+  parseWatchlistIdFromForm,
   parseWatchlistItemFromForm,
+  parseWatchlistStatusFromForm,
 } from "@/lib/watchlist/types";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { NOTIFICATION_TYPE } from "@/lib/constants/notifications";
@@ -119,7 +121,7 @@ export async function updateWatchlistItem(
 
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const id = formData.get("id") as string;
+  const id = parseWatchlistIdFromForm(formData);
   const parsed = parseWatchlistItemFromForm(formData);
   const validationError = validateWatchlistFields(parsed);
 
@@ -204,8 +206,7 @@ export async function setWatchlistItemStatus(
 
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const id = formData.get("id") as string;
-  const statusRaw = (formData.get("status") as string)?.trim() ?? "";
+  const { id, status: statusRaw } = parseWatchlistStatusFromForm(formData);
 
   if (!id || !isValidWatchlistStatus(statusRaw)) {
     return { error: t.watchlist.errorStatusRequired };
@@ -282,7 +283,7 @@ export async function deleteWatchlistItem(
 
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const id = formData.get("id") as string;
+  const id = parseWatchlistIdFromForm(formData);
   if (!id) return { error: t.watchlist.errorGeneric };
 
   const { data: existing } = await supabase

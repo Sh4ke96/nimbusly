@@ -1,5 +1,6 @@
 "use client";
 
+import { RESTAURANT_FORM_FIELD } from "@/lib/restaurants/types";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -63,7 +64,7 @@ export function RestaurantEntryForm({
         <p className="text-xs text-muted-foreground">{t.restaurants.nameHint}</p>
         <Input
           id="restaurant-name"
-          name="name"
+          name={RESTAURANT_FORM_FIELD.NAME}
           value={name}
           onChange={(e) => onNameChange(e.target.value)}
           placeholder={t.restaurants.namePlaceholder}
@@ -92,7 +93,7 @@ export function RestaurantEntryForm({
             </button>
           ))}
         </div>
-        <input type="hidden" name="venueType" value={venueType ?? ""} required />
+        <input type="hidden" name={RESTAURANT_FORM_FIELD.VENUE_TYPE} value={venueType ?? ""} required />
       </div>
 
       <div className="space-y-1.5">
@@ -115,7 +116,7 @@ export function RestaurantEntryForm({
             </button>
           ))}
         </div>
-        <input type="hidden" name="visitStatus" value={visitStatus ?? ""} required />
+        <input type="hidden" name={RESTAURANT_FORM_FIELD.VISIT_STATUS} value={visitStatus ?? ""} required />
       </div>
 
       {isVisited && (
@@ -139,7 +140,7 @@ export function RestaurantEntryForm({
         <p className="text-xs text-muted-foreground">{t.restaurants.addressHint}</p>
         <Input
           id="restaurant-address"
-          name="address"
+          name={RESTAURANT_FORM_FIELD.ADDRESS}
           value={address}
           onChange={(e) => onAddressChange(e.target.value)}
           placeholder={t.restaurants.addressPlaceholder}
@@ -155,7 +156,7 @@ export function RestaurantEntryForm({
         <Label htmlFor="restaurant-comment">{t.restaurants.commentLabel}</Label>
         <Textarea
           id="restaurant-comment"
-          name="comment"
+          name={RESTAURANT_FORM_FIELD.COMMENT}
           value={comment}
           onChange={(e) => onCommentChange(e.target.value)}
           placeholder={t.restaurants.commentPlaceholder}
@@ -169,7 +170,7 @@ export function RestaurantEntryForm({
         <p className="text-xs text-muted-foreground">{t.restaurants.notesHint}</p>
         <Textarea
           id="restaurant-notes"
-          name="notes"
+          name={RESTAURANT_FORM_FIELD.NOTES}
           value={notes}
           onChange={(e) => onNotesChange(e.target.value)}
           placeholder={t.restaurants.notesPlaceholder}

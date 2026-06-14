@@ -7,6 +7,8 @@ import { buildScheduleChangeSummary, formatScheduleNotificationDetail } from "@/
 import {
   isValidEntryDateString,
   isValidScheduleEntryType,
+  parseScheduleEntryFromForm,
+  parseScheduleIdFromForm,
 } from "@/lib/schedule/types";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { NOTIFICATION_TYPE } from "@/lib/constants/notifications";
@@ -56,9 +58,7 @@ export async function createScheduleEntry(
 
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const entryDate = (formData.get("entryDate") as string)?.trim();
-  const entryType = (formData.get("entryType") as string)?.trim();
-  const description = (formData.get("description") as string)?.trim() ?? "";
+  const { entryDate, entryType, description } = parseScheduleEntryFromForm(formData);
 
   if (!entryDate || !isValidEntryDateString(entryDate)) {
     return { error: t.schedule.errorInvalidDate };
@@ -147,10 +147,8 @@ export async function updateScheduleEntry(
 
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const id = formData.get("id") as string;
-  const entryDate = (formData.get("entryDate") as string)?.trim();
-  const entryType = (formData.get("entryType") as string)?.trim();
-  const description = (formData.get("description") as string)?.trim() ?? "";
+  const id = parseScheduleIdFromForm(formData);
+  const { entryDate, entryType, description } = parseScheduleEntryFromForm(formData);
 
   if (!id) return { error: t.schedule.errorGeneric };
   if (!entryDate || !isValidEntryDateString(entryDate)) {
@@ -248,7 +246,7 @@ export async function deleteScheduleEntry(
 
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const id = formData.get("id") as string;
+  const id = parseScheduleIdFromForm(formData);
   if (!id) return { error: t.schedule.errorGeneric };
 
   const { data: existing } = await supabase

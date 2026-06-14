@@ -1,3 +1,10 @@
+import { COMMON_FORM_FIELD } from "@/lib/form/common-fields";
+import {
+  getFormNumber,
+  getFormString,
+  getFormTrimmedString,
+} from "@/lib/form/values";
+
 export interface BirthdayEntry {
   id: string;
   family_id: string | null;
@@ -34,4 +41,30 @@ export function formatBirthdayLabel(entry: Pick<BirthdayEntry, "birth_month" | "
   const day = String(entry.birth_day).padStart(2, "0");
   const month = String(entry.birth_month).padStart(2, "0");
   return `${day}.${month}`;
+}
+
+export const BIRTHDAY_FORM_FIELD = {
+  ID: COMMON_FORM_FIELD.ID,
+  PERSON_NAME: "personName",
+  BIRTH_MONTH: "birthMonth",
+  BIRTH_DAY: "birthDay",
+  DESCRIPTION: "description",
+} as const;
+
+export function parseBirthdayFromForm(formData: FormData): {
+  personName: string;
+  birthMonth: number;
+  birthDay: number;
+  description: string;
+} {
+  return {
+    personName: getFormTrimmedString(formData, BIRTHDAY_FORM_FIELD.PERSON_NAME),
+    birthMonth: getFormNumber(formData, BIRTHDAY_FORM_FIELD.BIRTH_MONTH),
+    birthDay: getFormNumber(formData, BIRTHDAY_FORM_FIELD.BIRTH_DAY),
+    description: getFormTrimmedString(formData, BIRTHDAY_FORM_FIELD.DESCRIPTION),
+  };
+}
+
+export function parseBirthdayIdFromForm(formData: FormData): string {
+  return getFormTrimmedString(formData, BIRTHDAY_FORM_FIELD.ID);
 }

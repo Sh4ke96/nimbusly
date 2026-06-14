@@ -10,16 +10,9 @@ import type { DashboardOverviewCardId } from "@/lib/constants/dashboard-overview
 import { useT } from "@/lib/lang-context";
 import { cn } from "@/lib/utils";
 
-export type OverviewAccent =
-  | "primary"
-  | "orange"
-  | "violet"
-  | "indigo"
-  | "amber"
-  | "rose"
-  | "sky"
-  | "slate"
-  | "emerald";
+import type { OverviewAccent } from "@/lib/constants/overview-accent";
+
+export type { OverviewAccent };
 
 export const overviewAccentStyles: Record<
   OverviewAccent,

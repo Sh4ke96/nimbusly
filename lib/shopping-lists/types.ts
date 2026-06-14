@@ -3,6 +3,13 @@ import {
   SHOPPING_LIST_NAME_MAX_LENGTH,
 } from "@/lib/constants/shopping-lists";
 
+import { COMMON_FORM_FIELD } from "@/lib/form/common-fields";
+import {
+  getFormBooleanTrue,
+  getFormString,
+  getFormTrimmedString,
+} from "@/lib/form/values";
+
 export interface ShoppingList {
   id: string;
   family_id: string | null;
@@ -76,6 +83,96 @@ export function applyItemOrder(
   });
 
   return ordered;
+}
+
+export const SHOPPING_FORM_FIELD = {
+  ID: COMMON_FORM_FIELD.ID,
+  LIST_ID: "listId",
+  NAME: "name",
+  CONTENT: "content",
+  ORDERED_IDS: "orderedIds",
+  WATCH: "watch",
+  CHECKED: "checked",
+} as const;
+
+export function parseShoppingListNameFromForm(formData: FormData): { name: string } {
+  return {
+    name: getFormString(formData, SHOPPING_FORM_FIELD.NAME),
+  };
+}
+
+export function parseShoppingListIdFromForm(formData: FormData): string {
+  return getFormTrimmedString(formData, SHOPPING_FORM_FIELD.ID);
+}
+
+export function parseShoppingListWatchFromForm(formData: FormData): {
+  listId: string;
+  watch: boolean;
+} {
+  return {
+    listId: getFormTrimmedString(formData, SHOPPING_FORM_FIELD.LIST_ID),
+    watch: getFormBooleanTrue(formData, SHOPPING_FORM_FIELD.WATCH),
+  };
+}
+
+export function parseShoppingItemFromForm(formData: FormData): {
+  listId: string;
+  content: string;
+} {
+  return {
+    listId: getFormTrimmedString(formData, SHOPPING_FORM_FIELD.LIST_ID),
+    content: getFormString(formData, SHOPPING_FORM_FIELD.CONTENT),
+  };
+}
+
+export function parseShoppingItemUpdateFromForm(formData: FormData): {
+  id: string;
+  listId: string;
+  content: string | null;
+  checked: boolean | null;
+} {
+  const contentRaw = formData.get(SHOPPING_FORM_FIELD.CONTENT);
+  const checkedRaw = formData.get(SHOPPING_FORM_FIELD.CHECKED);
+
+  return {
+    id: getFormTrimmedString(formData, SHOPPING_FORM_FIELD.ID),
+    listId: getFormTrimmedString(formData, SHOPPING_FORM_FIELD.LIST_ID),
+    content: typeof contentRaw === "string" ? contentRaw : null,
+    checked:
+      checkedRaw === "true" ? true : checkedRaw === "false" ? false : null,
+  };
+}
+
+export function parseShoppingItemIdsFromForm(formData: FormData): {
+  id: string;
+  listId: string;
+} {
+  return {
+    id: getFormTrimmedString(formData, SHOPPING_FORM_FIELD.ID),
+    listId: getFormTrimmedString(formData, SHOPPING_FORM_FIELD.LIST_ID),
+  };
+}
+
+export function parseShoppingReorderFromForm(formData: FormData): {
+  listId: string;
+  orderedIdsRaw: string;
+} {
+  return {
+    listId: getFormTrimmedString(formData, SHOPPING_FORM_FIELD.LIST_ID),
+    orderedIdsRaw: getFormString(formData, SHOPPING_FORM_FIELD.ORDERED_IDS),
+  };
+}
+
+export function parseShoppingCheckedFromForm(formData: FormData): {
+  id: string;
+  listId: string;
+  checked: boolean;
+} {
+  return {
+    id: getFormTrimmedString(formData, SHOPPING_FORM_FIELD.ID),
+    listId: getFormTrimmedString(formData, SHOPPING_FORM_FIELD.LIST_ID),
+    checked: getFormBooleanTrue(formData, SHOPPING_FORM_FIELD.CHECKED),
+  };
 }
 
 export function parseOrderedItemIds(raw: string): string[] | null {

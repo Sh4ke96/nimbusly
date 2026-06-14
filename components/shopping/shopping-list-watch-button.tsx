@@ -1,5 +1,6 @@
 "use client";
 
+import { SHOPPING_FORM_FIELD } from "@/lib/shopping-lists/types";
 import { useActionState, useMemo } from "react";
 import { Bell, BellOff } from "lucide-react";
 import { toggleShoppingListWatch } from "@/app/(app)/shopping/actions";
@@ -41,8 +42,8 @@ export function ShoppingListWatchButton({
 
   return (
     <form action={action} className={className} onClick={(e) => e.stopPropagation()}>
-      <input type="hidden" name="listId" value={listId} />
-      <input type="hidden" name="watch" value={String(!watched)} />
+      <input type="hidden" name={SHOPPING_FORM_FIELD.LIST_ID} value={listId} />
+      <input type="hidden" name={SHOPPING_FORM_FIELD.WATCH} value={String(!watched)} />
       <Tooltip>
         <TooltipTrigger asChild>
           <Button

@@ -1,7 +1,8 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { dict } from "@/lib/i18n";
+import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { executeCreateBirthday } from "@/lib/birthdays/server/create-birthday";
+import { dict } from "@/lib/i18n";
 
 const soloProfileSupabase = {
   from: () => ({
@@ -9,7 +10,7 @@ const soloProfileSupabase = {
       eq: () => ({
         maybeSingle: async () => ({
           data: {
-            account_mode: "solo",
+            account_mode: ACCOUNT_MODE.SOLO,
             family_id: null,
             first_name: "Anna",
             last_name: "Kowalska",

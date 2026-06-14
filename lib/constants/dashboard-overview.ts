@@ -1,32 +1,15 @@
-export const DASHBOARD_OVERVIEW_CARD = {
-  BUDGET: "budget",
-  SHOPPING: "shopping",
-  GIFTS: "gifts",
-  MEDICINE_CABINET: "medicine-cabinet",
-  WATCHLIST: "watchlist",
-  RESTAURANTS: "restaurants",
-  PETS: "pets",
-  CHORES: "chores",
-  BIRTHDAYS: "birthdays",
-  CALENDAR: "calendar",
-  FAMILY: "family",
-} as const;
+import {
+  APP_MODULE,
+  APP_MODULE_IDS,
+  type AppModuleId,
+} from "@/lib/constants/app-modules";
 
-export const DASHBOARD_OVERVIEW_CARDS = [
-  DASHBOARD_OVERVIEW_CARD.BUDGET,
-  DASHBOARD_OVERVIEW_CARD.SHOPPING,
-  DASHBOARD_OVERVIEW_CARD.GIFTS,
-  DASHBOARD_OVERVIEW_CARD.MEDICINE_CABINET,
-  DASHBOARD_OVERVIEW_CARD.WATCHLIST,
-  DASHBOARD_OVERVIEW_CARD.RESTAURANTS,
-  DASHBOARD_OVERVIEW_CARD.PETS,
-  DASHBOARD_OVERVIEW_CARD.CHORES,
-  DASHBOARD_OVERVIEW_CARD.BIRTHDAYS,
-  DASHBOARD_OVERVIEW_CARD.CALENDAR,
-  DASHBOARD_OVERVIEW_CARD.FAMILY,
-] as const;
+/** Overview card ids match {@link AppModuleId}. */
+export const DASHBOARD_OVERVIEW_CARD = APP_MODULE;
 
-export type DashboardOverviewCardId = (typeof DASHBOARD_OVERVIEW_CARDS)[number];
+export const DASHBOARD_OVERVIEW_CARDS = APP_MODULE_IDS;
+
+export type DashboardOverviewCardId = AppModuleId;
 
 export const DEFAULT_DASHBOARD_OVERVIEW_ORDER: DashboardOverviewCardId[] = [
   ...DASHBOARD_OVERVIEW_CARDS,

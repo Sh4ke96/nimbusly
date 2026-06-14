@@ -7,19 +7,24 @@ import { FeaturesSection } from "@/components/landing/features";
 import { StepsSection } from "@/components/landing/steps";
 import { CtaSection } from "@/components/landing/cta";
 import { SiteFooter } from "@/components/landing/site-footer";
+import { AmbientBackground } from "@/components/ui/ambient-background";
 
 export default function Home() {
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground">
-      <SiteNavbar />
-      <main className="flex-1">
-        <HeroSection />
-        <HighlightsSection />
-        <FeaturesSection />
-        <StepsSection />
-        <CtaSection />
-      </main>
-      <SiteFooter />
+    <div className="relative min-h-screen flex flex-col text-foreground">
+      <AmbientBackground variant="landing" />
+
+      <div className="relative z-10 flex min-h-screen flex-col">
+        <SiteNavbar />
+        <main className="flex-1">
+          <HeroSection />
+          <HighlightsSection />
+          <FeaturesSection />
+          <StepsSection />
+          <CtaSection />
+        </main>
+        <SiteFooter />
+      </div>
     </div>
   );
 }

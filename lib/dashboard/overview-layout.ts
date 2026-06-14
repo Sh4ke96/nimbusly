@@ -3,6 +3,7 @@ import {
   DEFAULT_DASHBOARD_OVERVIEW_ORDER,
   type DashboardOverviewCardId,
 } from "@/lib/constants/dashboard-overview";
+import { normalizeAppModuleId } from "@/lib/constants/app-modules";
 
 export interface DashboardOverviewLayout {
   order: DashboardOverviewCardId[];
@@ -14,10 +15,6 @@ const EMPTY_LAYOUT: DashboardOverviewLayout = {
   hidden: [],
 };
 
-function isOverviewCardId(value: string): value is DashboardOverviewCardId {
-  return (DASHBOARD_OVERVIEW_CARDS as readonly string[]).includes(value);
-}
-
 function uniqueValidCardIds(values: unknown): DashboardOverviewCardId[] {
   if (!Array.isArray(values)) return [];
 
@@ -25,11 +22,11 @@ function uniqueValidCardIds(values: unknown): DashboardOverviewCardId[] {
   const result: DashboardOverviewCardId[] = [];
 
   for (const value of values) {
-    if (typeof value !== "string" || !isOverviewCardId(value) || seen.has(value)) {
-      continue;
-    }
-    seen.add(value);
-    result.push(value);
+    if (typeof value !== "string") continue;
+    const cardId = normalizeAppModuleId(value);
+    if (!cardId || seen.has(cardId)) continue;
+    seen.add(cardId);
+    result.push(cardId);
   }
 
   return result;

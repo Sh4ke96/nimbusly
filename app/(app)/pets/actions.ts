@@ -19,6 +19,7 @@ import {
   normalizePetName,
   parsePetCareItemFromForm,
   parsePetFromForm,
+  parsePetIdFromForm,
   validatePetCareFields,
 } from "@/lib/pets/types";
 import { NOTIFICATION_TYPE } from "@/lib/constants/notifications";
@@ -88,7 +89,7 @@ export async function updatePet(
   const { supabase, user } = await requireUser();
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const id = formData.get("id") as string;
+  const id = parsePetIdFromForm(formData);
   const parsed = parsePetFromForm(formData);
   if (!id) return { error: t.pets.errorGeneric };
   if (!isValidPetName(parsed.name)) return { error: t.pets.errorNameRequired };
@@ -127,7 +128,7 @@ export async function deletePet(
   const { supabase, user } = await requireUser();
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const id = formData.get("id") as string;
+  const id = parsePetIdFromForm(formData);
   if (!id) return { error: t.pets.errorGeneric };
 
   const { data: existing } = await supabase
@@ -249,7 +250,7 @@ export async function updatePetCareItem(
   const { supabase, user } = await requireUser();
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const id = formData.get("id") as string;
+  const id = parsePetIdFromForm(formData);
   const parsed = parsePetCareItemFromForm(formData);
   const validationError = validateCareParsed(parsed);
   if (!id) return { error: t.pets.errorGeneric };
@@ -317,7 +318,7 @@ export async function deletePetCareItem(
   const { supabase, user } = await requireUser();
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const id = formData.get("id") as string;
+  const id = parsePetIdFromForm(formData);
   if (!id) return { error: t.pets.errorGeneric };
 
   const { data: existing } = await supabase

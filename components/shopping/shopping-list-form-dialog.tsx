@@ -1,5 +1,6 @@
 "use client";
 
+import { SHOPPING_FORM_FIELD } from "@/lib/shopping-lists/types";
 import { useActionState, useState } from "react";
 import { Plus } from "lucide-react";
 import { createShoppingList } from "@/app/(app)/shopping/actions";
@@ -48,7 +49,7 @@ export function ShoppingListFormDialog({ onSuccess }: ShoppingListFormDialogProp
             <Label htmlFor="shopping-list-name">{t.shoppingLists.nameLabel}</Label>
             <Input
               id="shopping-list-name"
-              name="name"
+              name={SHOPPING_FORM_FIELD.NAME}
               required
               maxLength={SHOPPING_LIST_NAME_MAX_LENGTH}
               placeholder={t.shoppingLists.namePlaceholder}

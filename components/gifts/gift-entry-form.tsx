@@ -1,5 +1,6 @@
 "use client";
 
+import { GIFT_FORM_FIELD } from "@/lib/gifts/types";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -34,7 +35,7 @@ export function GiftEntryForm({
 
   return (
     <>
-      {id && <input type="hidden" name="id" value={id} />}
+      {id && <input type="hidden" name={GIFT_FORM_FIELD.ID} value={id} />}
 
       <GiftRecipientPicker
         profile={profile}
@@ -48,7 +49,7 @@ export function GiftEntryForm({
         <p className="text-xs text-muted-foreground">{t.gifts.contentHint}</p>
         <Textarea
           id={contentId}
-          name="content"
+          name={GIFT_FORM_FIELD.CONTENT}
           value={content}
           onChange={(e) => onContentChange(e.target.value)}
           maxLength={GIFT_CONTENT_MAX_LENGTH}

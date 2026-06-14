@@ -1,6 +1,7 @@
 "use server";
 
 import { getServerT } from "@/lib/i18n/server";
+import { parseEntityIdFromForm } from "@/lib/form/common-fields";
 import type { AccountActionState } from "@/app/(app)/account/actions";
 import { requireUser } from "@/lib/server-actions/require-user";
 
@@ -13,7 +14,7 @@ export async function markNotificationRead(
 
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const id = formData.get("id") as string;
+  const id = parseEntityIdFromForm(formData);
   if (!id) return { error: t.notifications.errorGeneric };
 
   const { error } = await supabase

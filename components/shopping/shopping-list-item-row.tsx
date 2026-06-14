@@ -13,7 +13,10 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
 import { useT } from "@/lib/lang-context";
-import type { ShoppingListItem } from "@/lib/shopping-lists/types";
+import {
+  SHOPPING_FORM_FIELD,
+  type ShoppingListItem,
+} from "@/lib/shopping-lists/types";
 import {
   selectShoppingListItems,
   useShoppingListsStore,
@@ -67,9 +70,9 @@ export function ShoppingListItemRow({
     );
 
     const formData = new FormData();
-    formData.set("id", item.id);
-    formData.set("listId", listId);
-    formData.set("checked", String(checked));
+    formData.set(SHOPPING_FORM_FIELD.ID, item.id);
+    formData.set(SHOPPING_FORM_FIELD.LIST_ID, listId);
+    formData.set(SHOPPING_FORM_FIELD.CHECKED, String(checked));
 
     const result = await toggleShoppingListItemChecked(null, formData);
     if (result && "error" in result) {
@@ -114,8 +117,8 @@ export function ShoppingListItemRow({
       </p>
 
       <form action={deleteAction}>
-        <input type="hidden" name="id" value={item.id} />
-        <input type="hidden" name="listId" value={listId} />
+        <input type="hidden" name={SHOPPING_FORM_FIELD.ID} value={item.id} />
+        <input type="hidden" name={SHOPPING_FORM_FIELD.LIST_ID} value={listId} />
         <Button
           type="submit"
           variant="ghost"

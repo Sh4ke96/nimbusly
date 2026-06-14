@@ -1,5 +1,6 @@
 "use client";
 
+import { MEDICINE_FORM_FIELD } from "@/lib/medicine/types";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -55,7 +56,7 @@ export function MedicineEntryForm({
         <p className="text-xs text-muted-foreground">{t.medicineCabinet.nameHint}</p>
         <Input
           id="medicine-name"
-          name="name"
+          name={MEDICINE_FORM_FIELD.NAME}
           value={name}
           onChange={(e) => onNameChange(e.target.value)}
           placeholder={t.medicineCabinet.namePlaceholder}
@@ -85,14 +86,14 @@ export function MedicineEntryForm({
             </button>
           ))}
         </div>
-        <input type="hidden" name="formType" value={formType ?? ""} required />
+        <input type="hidden" name={MEDICINE_FORM_FIELD.FORM_TYPE} value={formType ?? ""} required />
       </div>
 
       <div className="space-y-1.5">
         <Label htmlFor="medicine-quantity">{t.medicineCabinet.quantityLabel}</Label>
         <Input
           id="medicine-quantity"
-          name="quantity"
+          name={MEDICINE_FORM_FIELD.QUANTITY}
           value={quantity}
           onChange={(e) => onQuantityChange(e.target.value)}
           placeholder={t.medicineCabinet.quantityPlaceholder}
@@ -123,14 +124,14 @@ export function MedicineEntryForm({
             </button>
           ))}
         </div>
-        <input type="hidden" name="availability" value={availability ?? ""} required />
+        <input type="hidden" name={MEDICINE_FORM_FIELD.AVAILABILITY} value={availability ?? ""} required />
       </div>
 
       <div className="space-y-1.5">
         <Label htmlFor="medicine-location">{t.medicineCabinet.locationLabel}</Label>
         <Input
           id="medicine-location"
-          name="location"
+          name={MEDICINE_FORM_FIELD.LOCATION}
           value={location}
           onChange={(e) => onLocationChange(e.target.value)}
           placeholder={t.medicineCabinet.locationPlaceholder}
@@ -143,7 +144,7 @@ export function MedicineEntryForm({
         <Label htmlFor="medicine-notes">{t.medicineCabinet.notesLabel}</Label>
         <Textarea
           id="medicine-notes"
-          name="notes"
+          name={MEDICINE_FORM_FIELD.NOTES}
           value={notes}
           onChange={(e) => onNotesChange(e.target.value)}
           placeholder={t.medicineCabinet.notesPlaceholder}

@@ -1,5 +1,6 @@
 "use client";
 
+import { PROFILE_FORM_FIELD } from "@/lib/profile/form";
 import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -75,13 +76,13 @@ export function OnboardingWizard() {
 
   return (
     <form action={action} className="space-y-8">
-      <input type="hidden" name="avatarColor" value={avatarColor} />
-      <input type="hidden" name="firstName" value={firstName} />
-      <input type="hidden" name="lastName" value={lastName} />
-      <input type="hidden" name="familyIntent" value={familyIntent} />
-      <input type="hidden" name="familyName" value={familyName} />
-      <input type="hidden" name="inviteCode" value={inviteCode} />
-      <input type="hidden" name="inviteToken" value={inviteToken} />
+      <input type="hidden" name={PROFILE_FORM_FIELD.AVATAR_COLOR} value={avatarColor} />
+      <input type="hidden" name={PROFILE_FORM_FIELD.FIRST_NAME} value={firstName} />
+      <input type="hidden" name={PROFILE_FORM_FIELD.LAST_NAME} value={lastName} />
+      <input type="hidden" name={PROFILE_FORM_FIELD.FAMILY_INTENT} value={familyIntent} />
+      <input type="hidden" name={PROFILE_FORM_FIELD.FAMILY_NAME} value={familyName} />
+      <input type="hidden" name={PROFILE_FORM_FIELD.INVITE_CODE} value={inviteCode} />
+      <input type="hidden" name={PROFILE_FORM_FIELD.INVITE_TOKEN} value={inviteToken} />
 
       <div className="flex items-center justify-center gap-2">
         {STEPS.map((s, i) => (

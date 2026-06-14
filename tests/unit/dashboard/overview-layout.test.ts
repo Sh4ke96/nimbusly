@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { DASHBOARD_OVERVIEW_CARD } from "@/lib/constants/dashboard-overview";
+import { LEGACY_MODULE_ID } from "@/lib/constants/app-modules";
 import {
   getVisibleOverviewCardIds,
   normalizeDashboardOverviewLayout,
@@ -25,6 +26,15 @@ describe("parseDashboardOverviewLayout", () => {
     assert.equal(layout.order[1], DASHBOARD_OVERVIEW_CARD.BUDGET);
     assert.ok(layout.order.includes(DASHBOARD_OVERVIEW_CARD.FAMILY));
     assert.deepEqual(layout.hidden, [DASHBOARD_OVERVIEW_CARD.SHOPPING]);
+  });
+
+  it("migrates legacy medicine-cabinet card id", () => {
+    const layout = parseDashboardOverviewLayout({
+      order: [LEGACY_MODULE_ID.MEDICINE_CABINET, DASHBOARD_OVERVIEW_CARD.BUDGET],
+      hidden: [],
+    });
+    assert.ok(layout.order.includes(DASHBOARD_OVERVIEW_CARD.MEDICINE_CABINET));
+    assert.equal(layout.order[0], DASHBOARD_OVERVIEW_CARD.MEDICINE_CABINET);
   });
 });
 

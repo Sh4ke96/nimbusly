@@ -1,5 +1,6 @@
 "use client";
 
+import { CHORE_FORM_FIELD } from "@/lib/chores/types";
 import { useT } from "@/lib/lang-context";
 import { DatePickerField } from "@/components/ui/date-picker-field";
 import { dateToChoreDateString } from "@/lib/chores/types";
@@ -22,7 +23,7 @@ export function ChoreDatePicker({ date, onDateChange }: ChoreDatePickerProps) {
       hiddenInputs={
         <input
           type="hidden"
-          name="dueDate"
+          name={CHORE_FORM_FIELD.DUE_DATE}
           value={date ? dateToChoreDateString(date) : ""}
         />
       }

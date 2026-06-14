@@ -1,5 +1,6 @@
 "use client";
 
+import { WATCHLIST_FORM_FIELD } from "@/lib/watchlist/types";
 import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -69,7 +70,7 @@ function WatchlistEditForm({
 
   return (
     <form action={action} className="space-y-4" onSubmit={onSubmit}>
-      <input type="hidden" name="id" value={item.id} />
+      <input type="hidden" name={WATCHLIST_FORM_FIELD.ID} value={item.id} />
       <WatchlistEntryForm
         title={title}
         onTitleChange={setTitle}

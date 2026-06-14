@@ -1,5 +1,6 @@
 "use client";
 
+import { BUDGET_FORM_FIELD } from "@/lib/budget/types";
 import { useActionState, useState } from "react";
 import { updateBudget } from "@/app/(app)/budget/actions";
 import { BudgetMemberPicker } from "@/components/budget/budget-member-picker";
@@ -51,12 +52,12 @@ function BudgetEditForm({
 
   return (
     <form action={action} className="space-y-4">
-      <input type="hidden" name="id" value={budget.id} />
+      <input type="hidden" name={BUDGET_FORM_FIELD.ID} value={budget.id} />
       <div className="space-y-2">
         <Label htmlFor="budget-edit-name">{t.budget.nameLabel}</Label>
         <Input
           id="budget-edit-name"
-          name="name"
+          name={BUDGET_FORM_FIELD.NAME}
           value={name}
           onChange={(e) => setName(e.target.value)}
           required

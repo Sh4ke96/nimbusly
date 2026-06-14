@@ -14,6 +14,14 @@ import {
   normalizeShoppingItemContent,
   normalizeShoppingListName,
   parseOrderedItemIds,
+  parseShoppingCheckedFromForm,
+  parseShoppingItemFromForm,
+  parseShoppingItemIdsFromForm,
+  parseShoppingItemUpdateFromForm,
+  parseShoppingListIdFromForm,
+  parseShoppingListNameFromForm,
+  parseShoppingListWatchFromForm,
+  parseShoppingReorderFromForm,
 } from "@/lib/shopping-lists/types";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { NOTIFICATION_TYPE, type NotificationType } from "@/lib/constants/notifications";
@@ -103,7 +111,7 @@ export async function createShoppingList(
 
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const name = normalizeShoppingListName((formData.get("name") as string) ?? "");
+  const name = normalizeShoppingListName(parseShoppingListNameFromForm(formData).name);
   if (!isValidShoppingListName(name)) {
     return { error: t.shoppingLists.errorNameRequired };
   }
@@ -172,8 +180,8 @@ export async function updateShoppingList(
 
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const id = formData.get("id") as string;
-  const name = normalizeShoppingListName((formData.get("name") as string) ?? "");
+  const id = parseShoppingListIdFromForm(formData);
+  const name = normalizeShoppingListName(parseShoppingListNameFromForm(formData).name);
 
   if (!id) return { error: t.shoppingLists.errorGeneric };
   if (!isValidShoppingListName(name)) {
@@ -237,7 +245,7 @@ export async function deleteShoppingList(
 
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const id = formData.get("id") as string;
+  const id = parseShoppingListIdFromForm(formData);
   if (!id) return { error: t.shoppingLists.errorGeneric };
 
   const existing = await getAccessibleList(supabase, id);
@@ -299,9 +307,7 @@ export async function toggleShoppingListWatch(
 
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const listId = formData.get("listId") as string;
-  const watchRaw = formData.get("watch");
-  const watch = watchRaw === "true";
+  const { listId, watch } = parseShoppingListWatchFromForm(formData);
 
   if (!listId) return { error: t.shoppingLists.errorGeneric };
 
@@ -337,10 +343,8 @@ export async function addShoppingListItem(
 
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const listId = formData.get("listId") as string;
-  const content = normalizeShoppingItemContent(
-    (formData.get("content") as string) ?? ""
-  );
+  const { listId, content: contentRaw } = parseShoppingItemFromForm(formData);
+  const content = normalizeShoppingItemContent(contentRaw);
 
   if (!listId) return { error: t.shoppingLists.errorGeneric };
   if (!isValidShoppingItemContent(content)) {
@@ -411,10 +415,7 @@ export async function updateShoppingListItem(
 
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const id = formData.get("id") as string;
-  const listId = formData.get("listId") as string;
-  const contentRaw = formData.get("content");
-  const checkedRaw = formData.get("checked");
+  const { id, listId, content: contentRaw, checked } = parseShoppingItemUpdateFromForm(formData);
 
   if (!id || !listId) return { error: t.shoppingLists.errorGeneric };
 
@@ -425,7 +426,7 @@ export async function updateShoppingListItem(
     updated_at: new Date().toISOString(),
   };
 
-  if (typeof contentRaw === "string") {
+  if (contentRaw !== null) {
     const content = normalizeShoppingItemContent(contentRaw);
     if (!isValidShoppingItemContent(content)) {
       return { error: t.shoppingLists.errorItemRequired };
@@ -433,8 +434,8 @@ export async function updateShoppingListItem(
     updates.content = content;
   }
 
-  if (checkedRaw === "true" || checkedRaw === "false") {
-    updates.checked = checkedRaw === "true";
+  if (checked !== null) {
+    updates.checked = checked;
   }
 
   const { error } = await supabase
@@ -462,8 +463,7 @@ export async function deleteShoppingListItem(
 
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const id = formData.get("id") as string;
-  const listId = formData.get("listId") as string;
+  const { id, listId } = parseShoppingItemIdsFromForm(formData);
 
   if (!id || !listId) return { error: t.shoppingLists.errorGeneric };
 
@@ -527,10 +527,8 @@ export async function reorderShoppingListItems(
 
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const listId = formData.get("listId") as string;
-  const orderedIds = parseOrderedItemIds(
-    (formData.get("orderedIds") as string) ?? ""
-  );
+  const { listId, orderedIdsRaw } = parseShoppingReorderFromForm(formData);
+  const orderedIds = parseOrderedItemIds(orderedIdsRaw);
 
   if (!listId || !orderedIds || orderedIds.length === 0) {
     return { error: t.shoppingLists.errorGeneric };
@@ -580,9 +578,7 @@ export async function toggleShoppingListItemChecked(
 
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const id = formData.get("id") as string;
-  const listId = formData.get("listId") as string;
-  const checked = formData.get("checked") === "true";
+  const { id, listId, checked } = parseShoppingCheckedFromForm(formData);
 
   if (!id || !listId) return { error: t.shoppingLists.errorGeneric };
 

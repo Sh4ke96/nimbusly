@@ -1,5 +1,6 @@
 "use client";
 
+import { PET_FORM_FIELD } from "@/lib/pets/types";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -34,7 +35,7 @@ export function PetEntryForm({
         <p className="text-xs text-muted-foreground">{t.pets.nameHint}</p>
         <Input
           id="pet-name"
-          name="name"
+          name={PET_FORM_FIELD.NAME}
           value={name}
           onChange={(e) => onNameChange(e.target.value)}
           placeholder={t.pets.namePlaceholder}
@@ -64,14 +65,14 @@ export function PetEntryForm({
             </button>
           ))}
         </div>
-        <input type="hidden" name="species" value={species ?? ""} required />
+        <input type="hidden" name={PET_FORM_FIELD.SPECIES} value={species ?? ""} required />
       </div>
 
       <div className="space-y-1.5">
         <Label htmlFor="pet-notes">{t.pets.notesLabel}</Label>
         <Textarea
           id="pet-notes"
-          name="notes"
+          name={PET_FORM_FIELD.NOTES}
           value={notes}
           onChange={(e) => onNotesChange(e.target.value)}
           placeholder={t.pets.notesPlaceholder}

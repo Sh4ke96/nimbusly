@@ -1,4 +1,5 @@
 import type { AccountMode, FamilyRole } from "@/lib/constants/account";
+import type { Lang } from "@/lib/constants/lang";
 import type { InvitationStatus } from "@/lib/constants/family-invitation";
 
 export type {
@@ -34,7 +35,7 @@ export type Profile = {
   family_role: FamilyRole | null;
   account_mode: AccountMode;
   onboarding_completed: boolean;
-  preferred_lang?: "pl" | "en";
+  preferred_lang?: Lang;
   dashboard_overview_layout?: unknown;
 };
 

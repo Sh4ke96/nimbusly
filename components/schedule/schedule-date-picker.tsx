@@ -1,5 +1,6 @@
 "use client";
 
+import { SCHEDULE_FORM_FIELD } from "@/lib/schedule/types";
 import { useT } from "@/lib/lang-context";
 import { DatePickerField } from "@/components/ui/date-picker-field";
 import { dateToEntryDateString } from "@/lib/schedule/types";
@@ -22,7 +23,7 @@ export function ScheduleDatePicker({ date, onDateChange }: ScheduleDatePickerPro
       hiddenInputs={
         <input
           type="hidden"
-          name="entryDate"
+          name={SCHEDULE_FORM_FIELD.ENTRY_DATE}
           value={date ? dateToEntryDateString(date) : ""}
         />
       }

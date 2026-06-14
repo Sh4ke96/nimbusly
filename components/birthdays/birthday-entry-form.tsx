@@ -1,5 +1,6 @@
 "use client";
 
+import { BIRTHDAY_FORM_FIELD } from "@/lib/birthdays/types";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { BirthdayDatePicker } from "@/components/birthdays/birthday-date-picker";
@@ -30,13 +31,13 @@ export function BirthdayEntryForm({
 
   return (
     <>
-      {id && <input type="hidden" name="id" value={id} />}
+      {id && <input type="hidden" name={BIRTHDAY_FORM_FIELD.ID} value={id} />}
 
       <div className="space-y-1.5">
         <Label htmlFor={personNameId}>{t.birthdays.personNameLabel}</Label>
         <Input
           id={personNameId}
-          name="personName"
+          name={BIRTHDAY_FORM_FIELD.PERSON_NAME}
           value={personName}
           onChange={(e) => onPersonNameChange(e.target.value)}
           required
@@ -50,7 +51,7 @@ export function BirthdayEntryForm({
         <Label htmlFor={descriptionId}>{t.birthdays.descriptionLabel}</Label>
         <Input
           id={descriptionId}
-          name="description"
+          name={BIRTHDAY_FORM_FIELD.DESCRIPTION}
           value={description}
           onChange={(e) => onDescriptionChange(e.target.value)}
           maxLength={120}

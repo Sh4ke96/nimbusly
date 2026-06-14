@@ -1,5 +1,6 @@
 "use client";
 
+import { PET_FORM_FIELD } from "@/lib/pets/types";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -70,7 +71,7 @@ export function PetCareEntryForm({
           <p className="text-xs text-muted-foreground">{t.pets.petHint}</p>
           <select
             id="pet-care-pet"
-            name="petId"
+            name={PET_FORM_FIELD.PET_ID}
             value={petId}
             onChange={(e) => onPetIdChange(e.target.value)}
             required
@@ -89,14 +90,14 @@ export function PetCareEntryForm({
         </div>
       )}
 
-      {!showPetSelect && <input type="hidden" name="petId" value={petId} />}
+      {!showPetSelect && <input type="hidden" name={PET_FORM_FIELD.PET_ID} value={petId} />}
 
       <div className="space-y-1.5">
         <Label htmlFor="pet-care-name">{t.pets.careNameLabel}</Label>
         <p className="text-xs text-muted-foreground">{t.pets.careNameHint}</p>
         <Input
           id="pet-care-name"
-          name="name"
+          name={PET_FORM_FIELD.NAME}
           value={name}
           onChange={(e) => onNameChange(e.target.value)}
           placeholder={t.pets.careNamePlaceholder}
@@ -126,13 +127,13 @@ export function PetCareEntryForm({
             </button>
           ))}
         </div>
-        <input type="hidden" name="careType" value={careType ?? ""} required />
+        <input type="hidden" name={PET_FORM_FIELD.CARE_TYPE} value={careType ?? ""} required />
       </div>
 
       <PetDatePicker
         date={lastDoneAt}
         onDateChange={onLastDoneAtChange}
-        name="lastDoneAt"
+        name={PET_FORM_FIELD.LAST_DONE_AT}
         label={t.pets.lastDoneLabel}
         hint={t.pets.lastDoneHint}
         pickLabel={t.pets.pickLastDoneDate}
@@ -141,7 +142,7 @@ export function PetCareEntryForm({
       <PetDatePicker
         date={nextDueDate}
         onDateChange={onNextDueDateChange}
-        name="nextDueDate"
+        name={PET_FORM_FIELD.NEXT_DUE_DATE}
         label={t.pets.nextDueLabel}
         hint={t.pets.nextDueHint}
         pickLabel={t.pets.pickNextDueDate}
@@ -169,14 +170,14 @@ export function PetCareEntryForm({
                 </button>
               ))}
             </div>
-            <input type="hidden" name="stockStatus" value={stockStatus ?? ""} required />
+            <input type="hidden" name={PET_FORM_FIELD.STOCK_STATUS} value={stockStatus ?? ""} required />
           </div>
 
           <div className="space-y-1.5">
             <Label htmlFor="pet-care-quantity">{t.pets.quantityLabel}</Label>
             <Input
               id="pet-care-quantity"
-              name="quantity"
+              name={PET_FORM_FIELD.QUANTITY}
               value={quantity}
               onChange={(e) => onQuantityChange(e.target.value)}
               placeholder={t.pets.quantityPlaceholder}
@@ -191,7 +192,7 @@ export function PetCareEntryForm({
         <Label htmlFor="pet-care-notes">{t.pets.careNotesLabel}</Label>
         <Textarea
           id="pet-care-notes"
-          name="notes"
+          name={PET_FORM_FIELD.NOTES}
           value={notes}
           onChange={(e) => onNotesChange(e.target.value)}
           placeholder={t.pets.careNotesPlaceholder}

@@ -2,7 +2,7 @@
 
 import { getServerT } from "@/lib/i18n/server";
 import { buildBirthdayChangeSummary } from "@/lib/birthdays/changes";
-import { isValidBirthDate } from "@/lib/birthdays/types";
+import { isValidBirthDate, parseBirthdayFromForm, parseBirthdayIdFromForm } from "@/lib/birthdays/types";
 import { formatBirthdayLabel } from "@/lib/birthdays/types";
 import { executeCreateBirthday } from "@/lib/birthdays/server/create-birthday";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
@@ -34,11 +34,8 @@ export async function updateBirthday(
 
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const id = formData.get("id") as string;
-  const personName = (formData.get("personName") as string)?.trim();
-  const birthMonth = Number(formData.get("birthMonth"));
-  const birthDay = Number(formData.get("birthDay"));
-  const description = (formData.get("description") as string)?.trim() ?? "";
+  const id = parseBirthdayIdFromForm(formData);
+  const { personName, birthMonth, birthDay, description } = parseBirthdayFromForm(formData);
 
   if (!id) return { error: t.birthdays.errorGeneric };
   if (!personName) return { error: t.birthdays.errorPersonName };
@@ -123,7 +120,7 @@ export async function deleteBirthday(
 
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const id = formData.get("id") as string;
+  const id = parseBirthdayIdFromForm(formData);
   if (!id) return { error: t.birthdays.errorGeneric };
 
   const { data: existing } = await supabase

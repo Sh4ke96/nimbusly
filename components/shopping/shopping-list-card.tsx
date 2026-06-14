@@ -1,5 +1,6 @@
 "use client";
 
+import { SHOPPING_FORM_FIELD } from "@/lib/shopping-lists/types";
 import { useActionState, useMemo } from "react";
 import { Pencil, Trash2 } from "lucide-react";
 import { deleteShoppingList } from "@/app/(app)/shopping/actions";
@@ -95,7 +96,7 @@ export function ShoppingListCard({
               <Pencil className="size-4" />
             </Button>
             <form action={deleteAction}>
-              <input type="hidden" name="id" value={list.id} />
+              <input type="hidden" name={SHOPPING_FORM_FIELD.ID} value={list.id} />
               <Button
                 type="submit"
                 variant="ghost"

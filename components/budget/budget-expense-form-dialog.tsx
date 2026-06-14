@@ -1,5 +1,6 @@
 "use client";
 
+import { BUDGET_FORM_FIELD } from "@/lib/budget/types";
 import { useActionState, useState } from "react";
 import { TrendingDown } from "lucide-react";
 import { addBudgetExpense } from "@/app/(app)/budget/actions";
@@ -73,8 +74,8 @@ export function BudgetExpenseFormDialog({
           <DialogTitle className="font-heading">{t.budget.addExpenseTitle}</DialogTitle>
         </DialogHeader>
         <form action={action} className="space-y-4">
-          <input type="hidden" name="budgetId" value={budgetId} />
-          <input type="hidden" name="category" value={category} />
+          <input type="hidden" name={BUDGET_FORM_FIELD.BUDGET_ID} value={budgetId} />
+          <input type="hidden" name={BUDGET_FORM_FIELD.CATEGORY} value={category} />
 
           <div className="space-y-2">
             <Label>{t.budget.categoryLabel}</Label>
@@ -102,7 +103,7 @@ export function BudgetExpenseFormDialog({
               <Label htmlFor="budget-expense-amount">{t.budget.amountLabel}</Label>
               <Input
                 id="budget-expense-amount"
-                name="amount"
+                name={BUDGET_FORM_FIELD.AMOUNT}
                 type="text"
                 inputMode="decimal"
                 required
@@ -117,7 +118,7 @@ export function BudgetExpenseFormDialog({
             <Label htmlFor="budget-expense-description">{t.budget.descriptionLabel}</Label>
             <Textarea
               id="budget-expense-description"
-              name="description"
+              name={BUDGET_FORM_FIELD.DESCRIPTION}
               maxLength={BUDGET_EXPENSE_DESCRIPTION_MAX_LENGTH}
               placeholder={t.budget.descriptionPlaceholder}
               className="rounded-none min-h-20"

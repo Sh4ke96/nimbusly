@@ -1,5 +1,6 @@
 "use client";
 
+import { WATCHLIST_FORM_FIELD } from "@/lib/watchlist/types";
 import { Film, Pencil, Trash2, Tv } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -96,7 +97,7 @@ export function WatchlistItemCard({
                 <Pencil className="size-4" />
               </Button>
               <form action={deleteAction}>
-                <input type="hidden" name="id" value={item.id} />
+                <input type="hidden" name={WATCHLIST_FORM_FIELD.ID} value={item.id} />
                 <Button
                   type="submit"
                   variant="ghost"
@@ -131,8 +132,8 @@ export function WatchlistItemCard({
           <div className="flex flex-wrap gap-1.5 border-t border-border pt-3">
             {WATCHLIST_STATUSES.map((status) => (
               <form key={status} action={statusAction}>
-                <input type="hidden" name="id" value={item.id} />
-                <input type="hidden" name="status" value={status} />
+                <input type="hidden" name={WATCHLIST_FORM_FIELD.ID} value={item.id} />
+                <input type="hidden" name={WATCHLIST_FORM_FIELD.STATUS} value={status} />
                 <Button
                   type="submit"
                   size="sm"

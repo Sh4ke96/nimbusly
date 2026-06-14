@@ -18,6 +18,8 @@ import {
   isValidChoreTitle,
   normalizeChoreTitle,
   parseChoreDateString,
+  parseChoreIdFromForm,
+  parseChoreStatusFromForm,
   parseChoreTaskFromForm,
 } from "@/lib/chores/types";
 import { NOTIFICATION_TYPE } from "@/lib/constants/notifications";
@@ -152,7 +154,7 @@ export async function updateChoreTask(
   const { supabase, user } = await requireUser();
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const id = formData.get("id") as string;
+  const id = parseChoreIdFromForm(formData);
   const parsed = parseChoreTaskFromForm(formData);
   const validationError = validateChoreFields(parsed);
   if (!id) return { error: t.chores.errorGeneric };
@@ -236,8 +238,7 @@ export async function setChoreTaskStatus(
   const { supabase, user } = await requireUser();
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const id = formData.get("id") as string;
-  const statusRaw = (formData.get("status") as string)?.trim() ?? "";
+  const { id, status: statusRaw } = parseChoreStatusFromForm(formData);
 
   if (!id || !isValidChoreStatus(statusRaw)) {
     return { error: t.chores.errorStatusRequired };
@@ -338,7 +339,7 @@ export async function deleteChoreTask(
   const { supabase, user } = await requireUser();
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const id = formData.get("id") as string;
+  const id = parseChoreIdFromForm(formData);
   if (!id) return { error: t.chores.errorGeneric };
 
   const { data: existing } = await supabase

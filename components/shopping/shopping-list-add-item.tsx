@@ -1,5 +1,6 @@
 "use client";
 
+import { SHOPPING_FORM_FIELD } from "@/lib/shopping-lists/types";
 import { useActionState, useRef } from "react";
 import { addShoppingListItem } from "@/app/(app)/shopping/actions";
 import { Button } from "@/components/ui/button";
@@ -25,9 +26,9 @@ export function ShoppingListAddItem({ listId, onSuccess }: ShoppingListAddItemPr
 
   return (
     <form ref={formRef} action={action} className="flex gap-2">
-      <input type="hidden" name="listId" value={listId} />
+      <input type="hidden" name={SHOPPING_FORM_FIELD.LIST_ID} value={listId} />
       <Input
-        name="content"
+        name={SHOPPING_FORM_FIELD.CONTENT}
         required
         maxLength={SHOPPING_LIST_ITEM_MAX_LENGTH}
         placeholder={t.shoppingLists.itemPlaceholder}

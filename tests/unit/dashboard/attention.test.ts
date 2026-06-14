@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { CHORE_STATUS } from "@/lib/constants/chores";
+import { APP_MODULE, APP_MODULE_ROUTES } from "@/lib/constants/app-modules";
 import { MEDICINE_AVAILABILITY } from "@/lib/constants/medicine";
 import { PET_CARE_TYPE } from "@/lib/constants/pets";
 import { buildAttentionItems } from "@/lib/dashboard/attention";
@@ -56,8 +57,8 @@ describe("buildAttentionItems", () => {
       limit: 10,
     });
 
-    assert.ok(items.some((item) => item.href === "/chores"));
-    assert.ok(items.some((item) => item.href === "/medicine-cabinet"));
+    assert.ok(items.some((item) => item.href === APP_MODULE_ROUTES[APP_MODULE.CHORES]));
+    assert.ok(items.some((item) => item.href === APP_MODULE_ROUTES[APP_MODULE.MEDICINE_CABINET]));
   });
 
   it("includes pet care due soon", () => {

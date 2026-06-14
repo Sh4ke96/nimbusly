@@ -1,5 +1,6 @@
 "use client";
 
+import { PET_FORM_FIELD } from "@/lib/pets/types";
 import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -98,7 +99,7 @@ function PetCareEditForm({
 
   return (
     <form action={action} className="space-y-4" onSubmit={onSubmit}>
-      <input type="hidden" name="id" value={item.id} />
+      <input type="hidden" name={PET_FORM_FIELD.ID} value={item.id} />
       <PetCareEntryForm
         petId={petId}
         name={name}

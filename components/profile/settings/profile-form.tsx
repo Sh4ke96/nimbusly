@@ -1,5 +1,6 @@
 "use client";
 
+import { PROFILE_FORM_FIELD } from "@/lib/profile/form";
 import { useActionState, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -58,7 +59,7 @@ export function ProfileForm() {
         <MemberAvatar name={getDisplayName(profile)} color={displayColor} size="lg" />
       </div>
 
-      <input type="hidden" name="avatarColor" value={displayColor} />
+      <input type="hidden" name={PROFILE_FORM_FIELD.AVATAR_COLOR} value={displayColor} />
 
       <div className="grid grid-cols-7 gap-3">
         {AVATAR_COLORS.map((color) => (
@@ -81,7 +82,7 @@ export function ProfileForm() {
           <Label htmlFor="settings-firstName">{t.account.firstNameLabel}</Label>
           <Input
             id="settings-firstName"
-            name="firstName"
+            name={PROFILE_FORM_FIELD.FIRST_NAME}
             defaultValue={profile.first_name}
             key={profile.first_name}
           />
@@ -90,7 +91,7 @@ export function ProfileForm() {
           <Label htmlFor="settings-lastName">{t.account.lastNameLabel}</Label>
           <Input
             id="settings-lastName"
-            name="lastName"
+            name={PROFILE_FORM_FIELD.LAST_NAME}
             defaultValue={profile.last_name}
             key={profile.last_name}
           />

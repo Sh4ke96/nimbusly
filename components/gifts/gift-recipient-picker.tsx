@@ -1,5 +1,6 @@
 "use client";
 
+import { GIFT_FORM_FIELD } from "@/lib/gifts/types";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { MemberAvatar } from "@/components/member-avatar";
@@ -43,11 +44,11 @@ export function GiftRecipientPicker({
         <p className="text-xs text-muted-foreground">{t.gifts.recipientHint}</p>
       </div>
 
-      <input type="hidden" name="recipientType" value={recipientType} />
-      <input type="hidden" name="recipientMemberId" value={memberId} />
+      <input type="hidden" name={GIFT_FORM_FIELD.RECIPIENT_TYPE} value={recipientType} />
+      <input type="hidden" name={GIFT_FORM_FIELD.RECIPIENT_MEMBER_ID} value={memberId} />
       <input
         type="hidden"
-        name="recipientName"
+        name={GIFT_FORM_FIELD.RECIPIENT_NAME}
         value={
           selection?.type === GIFT_RECIPIENT_TYPE.FAMILY_MEMBER
             ? selection.name

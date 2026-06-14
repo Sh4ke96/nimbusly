@@ -1,5 +1,6 @@
 "use client";
 
+import { BUDGET_FORM_FIELD } from "@/lib/budget/types";
 import { MemberAvatar } from "@/components/member-avatar";
 import { Label } from "@/components/ui/label";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
@@ -64,7 +65,7 @@ export function BudgetMemberPicker({
         })}
       </div>
       {selectedIds.map((id) => (
-        <input key={id} type="hidden" name="memberIds" value={id} />
+        <input key={id} type="hidden" name={BUDGET_FORM_FIELD.MEMBER_IDS} value={id} />
       ))}
     </div>
   );

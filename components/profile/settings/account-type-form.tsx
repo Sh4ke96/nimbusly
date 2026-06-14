@@ -1,5 +1,6 @@
 "use client";
 
+import { PROFILE_FORM_FIELD } from "@/lib/profile/form";
 import { useActionState, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -68,7 +69,7 @@ export function AccountTypeForm() {
 
   return (
     <form action={action} className="space-y-6 max-w-lg">
-      <input type="hidden" name="accountMode" value={accountMode} />
+      <input type="hidden" name={PROFILE_FORM_FIELD.ACCOUNT_MODE} value={accountMode} />
 
       <p className="text-sm text-muted-foreground">{t.account.accountTypeDesc}</p>
 
@@ -113,7 +114,7 @@ export function AccountTypeForm() {
           <Label htmlFor="settings-familyName">{t.account.familyNameLabel}</Label>
           <Input
             id="settings-familyName"
-            name="familyName"
+            name={PROFILE_FORM_FIELD.FAMILY_NAME}
             placeholder={t.account.familyNamePlaceholder}
           />
         </div>

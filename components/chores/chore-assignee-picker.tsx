@@ -1,5 +1,6 @@
 "use client";
 
+import { CHORE_FORM_FIELD } from "@/lib/chores/types";
 import { MemberAvatar } from "@/components/member-avatar";
 import { Label } from "@/components/ui/label";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
@@ -33,7 +34,7 @@ export function ChoreAssigneePicker({
         <p className="text-xs text-muted-foreground">{t.chores.assigneeHint}</p>
       </div>
 
-      <input type="hidden" name="assignedTo" value={assignedTo ?? ""} />
+      <input type="hidden" name={CHORE_FORM_FIELD.ASSIGNED_TO} value={assignedTo ?? ""} />
 
       <div className="grid gap-2 sm:grid-cols-2">
         <button

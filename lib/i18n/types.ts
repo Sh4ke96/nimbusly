@@ -50,6 +50,10 @@ export type Dict = {
     rights: string;
     madeWith: string;
   };
+  authDecor: {
+    headline: string;
+    desc: string;
+  };
   login: {
     title: string;
     subtitle: string;

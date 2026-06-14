@@ -1,5 +1,6 @@
 "use client";
 
+import { AUTH_FORM_FIELD } from "@/lib/auth/form";
 import { useActionState } from "react";
 import { login, type AuthState } from "../actions";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,7 @@ export function LoginForm() {
         <Label htmlFor="email">{t.login.emailLabel}</Label>
         <Input
           id="email"
-          name="email"
+          name={AUTH_FORM_FIELD.EMAIL}
           type="email"
           required
           autoComplete="email"
@@ -32,7 +33,7 @@ export function LoginForm() {
         <Label htmlFor="password">{t.login.passwordLabel}</Label>
         <Input
           id="password"
-          name="password"
+          name={AUTH_FORM_FIELD.PASSWORD}
           type="password"
           required
           autoComplete="current-password"

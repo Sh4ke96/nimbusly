@@ -18,6 +18,7 @@ import {
 } from "@dnd-kit/sortable";
 import { toast } from "sonner";
 import { reorderShoppingListItems } from "@/app/(app)/shopping/actions";
+import { SHOPPING_FORM_FIELD } from "@/lib/shopping-lists/types";
 import { ShoppingListAddItem } from "@/components/shopping/shopping-list-add-item";
 import { ShoppingListItemRow } from "@/components/shopping/shopping-list-item-row";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
@@ -72,8 +73,8 @@ export function ShoppingListItemsPanel({
     setItemsForList(listId, applyItemOrder(items, nextIds));
 
     const formData = new FormData();
-    formData.set("listId", listId);
-    formData.set("orderedIds", JSON.stringify(nextIds));
+    formData.set(SHOPPING_FORM_FIELD.LIST_ID, listId);
+    formData.set(SHOPPING_FORM_FIELD.ORDERED_IDS, JSON.stringify(nextIds));
 
     const result = await reorderShoppingListItems(null, formData);
     if (result && "error" in result) {

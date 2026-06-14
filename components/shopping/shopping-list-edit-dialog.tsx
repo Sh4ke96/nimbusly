@@ -1,5 +1,6 @@
 "use client";
 
+import { SHOPPING_FORM_FIELD } from "@/lib/shopping-lists/types";
 import { useActionState, useState } from "react";
 import { updateShoppingList } from "@/app/(app)/shopping/actions";
 import { Button } from "@/components/ui/button";
@@ -43,12 +44,12 @@ function ShoppingListEditForm({
 
   return (
     <form action={action} className="space-y-4">
-      <input type="hidden" name="id" value={list.id} />
+      <input type="hidden" name={SHOPPING_FORM_FIELD.ID} value={list.id} />
       <div className="space-y-2">
         <Label htmlFor="shopping-list-edit-name">{t.shoppingLists.nameLabel}</Label>
         <Input
           id="shopping-list-edit-name"
-          name="name"
+          name={SHOPPING_FORM_FIELD.NAME}
           value={name}
           onChange={(e) => setName(e.target.value)}
           required

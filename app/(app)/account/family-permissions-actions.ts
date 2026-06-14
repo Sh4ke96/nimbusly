@@ -5,6 +5,7 @@ import { getServerT } from "@/lib/i18n/server";
 import { ACCOUNT_MODE, FAMILY_ROLE, type FamilyRole } from "@/lib/constants/account";
 import { FAMILY_ACCESS_ERROR } from "@/lib/constants/server-error";
 import { isFamilyAdmin } from "@/lib/profile/family-roles";
+import { parseFamilyMemberRoleFromForm } from "@/lib/family/form";
 import type { AccountActionState } from "@/app/(app)/account/actions";
 
 async function requireFamilyAdmin() {
@@ -51,8 +52,7 @@ export async function updateFamilyMemberRole(
     return { error: t.account.errorNotFamilyAdmin };
   }
 
-  const memberId = formData.get("memberId") as string;
-  const role = formData.get("role") as FamilyRole;
+  const { memberId, role } = parseFamilyMemberRoleFromForm(formData);
 
   if (!memberId || (role !== FAMILY_ROLE.ADMIN && role !== FAMILY_ROLE.MEMBER)) {
     return { error: t.account.errorGeneric };

@@ -1,4 +1,4 @@
-import { formatBirthdayLabel, isValidBirthDate } from "@/lib/birthdays/types";
+import { formatBirthdayLabel, isValidBirthDate, parseBirthdayFromForm } from "@/lib/birthdays/types";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import type { NotificationType } from "@/lib/constants/notifications";
 import { NOTIFICATION_TYPE } from "@/lib/constants/notifications";
@@ -35,10 +35,7 @@ export async function executeCreateBirthday(
 ): Promise<AccountActionState> {
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const personName = (formData.get("personName") as string)?.trim();
-  const birthMonth = Number(formData.get("birthMonth"));
-  const birthDay = Number(formData.get("birthDay"));
-  const description = (formData.get("description") as string)?.trim() ?? "";
+  const { personName, birthMonth, birthDay, description } = parseBirthdayFromForm(formData);
 
   if (!personName) return { error: t.birthdays.errorPersonName };
   if (!isValidBirthDate(birthMonth, birthDay)) {

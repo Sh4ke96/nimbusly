@@ -15,6 +15,7 @@ import {
   isValidRestaurantVisitStatus,
   normalizeRestaurantAddress,
   normalizeRestaurantName,
+  parseRestaurantIdFromForm,
   parseRestaurantPlaceFromForm,
   validateRestaurantVisitFields,
 } from "@/lib/restaurants/types";
@@ -153,7 +154,7 @@ export async function updateRestaurantPlace(
 
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const id = formData.get("id") as string;
+  const id = parseRestaurantIdFromForm(formData);
   const parsed = parseRestaurantPlaceFromForm(formData);
   const validationError = validateRestaurantFields(parsed);
 
@@ -234,7 +235,7 @@ export async function deleteRestaurantPlace(
 
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const id = formData.get("id") as string;
+  const id = parseRestaurantIdFromForm(formData);
   if (!id) return { error: t.restaurants.errorGeneric };
 
   const { data: existing } = await supabase

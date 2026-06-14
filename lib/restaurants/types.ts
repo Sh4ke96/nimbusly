@@ -11,6 +11,8 @@ import {
   type RestaurantVenueType,
   type RestaurantVisitStatus,
 } from "@/lib/constants/restaurants";
+import { COMMON_FORM_FIELD } from "@/lib/form/common-fields";
+import { getFormString, getFormTrimmedString } from "@/lib/form/values";
 
 export interface RestaurantPlace {
   id: string;
@@ -122,6 +124,22 @@ export function validateRestaurantVisitFields(
   return null;
 }
 
+export const RESTAURANT_FORM_FIELD = {
+  ID: COMMON_FORM_FIELD.ID,
+  NAME: "name",
+  VENUE_TYPE: "venueType",
+  VISIT_STATUS: "visitStatus",
+  RATING: "rating",
+  COMMENT: "comment",
+  NOTES: "notes",
+  ADDRESS: "address",
+  VISITED_AT: "visitedAt",
+} as const;
+
+export function parseRestaurantIdFromForm(formData: FormData): string {
+  return getFormTrimmedString(formData, RESTAURANT_FORM_FIELD.ID);
+}
+
 export function parseRestaurantPlaceFromForm(formData: FormData): {
   name: string;
   venueType: RestaurantVenueType | null;
@@ -132,19 +150,21 @@ export function parseRestaurantPlaceFromForm(formData: FormData): {
   address: string;
   visitedAt: string | null;
 } {
-  const name = normalizeRestaurantName((formData.get("name") as string) ?? "");
-  const venueTypeRaw = (formData.get("venueType") as string)?.trim() ?? "";
-  const visitStatusRaw = (formData.get("visitStatus") as string)?.trim() ?? "";
-  const ratingInput = ((formData.get("rating") as string) ?? "").trim();
+  const name = normalizeRestaurantName(getFormString(formData, RESTAURANT_FORM_FIELD.NAME));
+  const venueTypeRaw = getFormTrimmedString(formData, RESTAURANT_FORM_FIELD.VENUE_TYPE);
+  const visitStatusRaw = getFormTrimmedString(formData, RESTAURANT_FORM_FIELD.VISIT_STATUS);
+  const ratingInput = getFormTrimmedString(formData, RESTAURANT_FORM_FIELD.RATING);
   let rating: number | null = null;
   if (ratingInput) {
     const parsed = Number(ratingInput);
     rating = Number.isInteger(parsed) ? parsed : null;
   }
-  const comment = ((formData.get("comment") as string) ?? "").trim();
-  const notes = ((formData.get("notes") as string) ?? "").trim();
-  const address = normalizeRestaurantAddress((formData.get("address") as string) ?? "");
-  const visitedAtRaw = ((formData.get("visitedAt") as string) ?? "").trim();
+  const comment = getFormTrimmedString(formData, RESTAURANT_FORM_FIELD.COMMENT);
+  const notes = getFormTrimmedString(formData, RESTAURANT_FORM_FIELD.NOTES);
+  const address = normalizeRestaurantAddress(
+    getFormString(formData, RESTAURANT_FORM_FIELD.ADDRESS)
+  );
+  const visitedAtRaw = getFormTrimmedString(formData, RESTAURANT_FORM_FIELD.VISITED_AT);
 
   return {
     name,

@@ -1,5 +1,6 @@
 "use client";
 
+import { SCHEDULE_FORM_FIELD } from "@/lib/schedule/types";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ScheduleDatePicker } from "@/components/schedule/schedule-date-picker";
@@ -31,7 +32,7 @@ export function ScheduleEntryForm({
 
   return (
     <>
-      {id && <input type="hidden" name="id" value={id} />}
+      {id && <input type="hidden" name={SCHEDULE_FORM_FIELD.ID} value={id} />}
 
       <ScheduleDatePicker date={date} onDateChange={onDateChange} />
 
@@ -41,7 +42,7 @@ export function ScheduleEntryForm({
         <Label htmlFor={descriptionId}>{t.schedule.descriptionLabel}</Label>
         <Input
           id={descriptionId}
-          name="description"
+          name={SCHEDULE_FORM_FIELD.DESCRIPTION}
           value={description}
           onChange={(e) => onDescriptionChange(e.target.value)}
           maxLength={200}

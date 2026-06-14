@@ -8,6 +8,12 @@ import {
   type BudgetExpenseCategory,
   type BudgetIncomeCategory,
 } from "@/lib/constants/budget";
+import { COMMON_FORM_FIELD } from "@/lib/form/common-fields";
+import {
+  getFormBooleanTrue,
+  getFormString,
+  getFormTrimmedString,
+} from "@/lib/form/values";
 
 export interface Budget {
   id: string;
@@ -96,11 +102,70 @@ export function isValidExpenseDateString(value: string): boolean {
   );
 }
 
+export const BUDGET_FORM_FIELD = {
+  ID: COMMON_FORM_FIELD.ID,
+  BUDGET_ID: "budgetId",
+  NAME: "name",
+  MEMBER_IDS: "memberIds",
+  CATEGORY: "category",
+  AMOUNT: "amount",
+  DESCRIPTION: "description",
+  EXPENSE_DATE: "expenseDate",
+  WATCH: "watch",
+} as const;
+
 export function parseBudgetMemberIdsFromForm(formData: FormData): string[] {
-  const raw = formData.getAll("memberIds");
+  const raw = formData.getAll(BUDGET_FORM_FIELD.MEMBER_IDS);
   return raw
     .map((value) => String(value).trim())
     .filter((value) => value.length > 0);
+}
+
+export function parseBudgetNameFromForm(formData: FormData): { name: string } {
+  return {
+    name: getFormString(formData, BUDGET_FORM_FIELD.NAME),
+  };
+}
+
+export function parseBudgetIdFromForm(formData: FormData): string {
+  return getFormTrimmedString(formData, BUDGET_FORM_FIELD.ID);
+}
+
+export function parseBudgetWatchFromForm(formData: FormData): {
+  budgetId: string;
+  watch: boolean;
+} {
+  return {
+    budgetId: getFormTrimmedString(formData, BUDGET_FORM_FIELD.BUDGET_ID),
+    watch: getFormBooleanTrue(formData, BUDGET_FORM_FIELD.WATCH),
+  };
+}
+
+export function parseBudgetExpenseFromForm(formData: FormData): {
+  budgetId: string;
+  category: string;
+  amount: number | null;
+  description: string;
+  expenseDate: string;
+} {
+  const amountRaw = getFormString(formData, BUDGET_FORM_FIELD.AMOUNT);
+  return {
+    budgetId: getFormTrimmedString(formData, BUDGET_FORM_FIELD.BUDGET_ID),
+    category: getFormTrimmedString(formData, BUDGET_FORM_FIELD.CATEGORY),
+    amount: parseBudgetAmount(amountRaw),
+    description: getFormTrimmedString(formData, BUDGET_FORM_FIELD.DESCRIPTION),
+    expenseDate: getFormTrimmedString(formData, BUDGET_FORM_FIELD.EXPENSE_DATE),
+  };
+}
+
+export function parseBudgetExpenseUpdateFromForm(formData: FormData): {
+  id: string;
+  budgetId: string;
+} {
+  return {
+    id: getFormTrimmedString(formData, BUDGET_FORM_FIELD.ID),
+    budgetId: getFormTrimmedString(formData, BUDGET_FORM_FIELD.BUDGET_ID),
+  };
 }
 
 export function dateToExpenseDateString(date: Date): string {

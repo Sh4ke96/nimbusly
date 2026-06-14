@@ -1,5 +1,6 @@
 "use client";
 
+import { SCHEDULE_FORM_FIELD } from "@/lib/schedule/types";
 import { useActionState, useEffect, useMemo, useState } from "react";
 import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
@@ -112,7 +113,7 @@ export function ScheduleView() {
   });
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col">
       <div className="no-print">
         <AppHeader />
       </div>
@@ -234,7 +235,7 @@ export function ScheduleView() {
                               <Pencil className="size-4" />
                             </Button>
                             <form action={deleteAction} onClick={(e) => e.stopPropagation()}>
-                              <input type="hidden" name="id" value={entry.id} />
+                              <input type="hidden" name={SCHEDULE_FORM_FIELD.ID} value={entry.id} />
                               <Button
                                 type="submit"
                                 variant="ghost"

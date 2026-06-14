@@ -7,6 +7,7 @@ import { getServerT } from '@/lib/i18n/server'
 import { getPostAuthRedirectPath } from '@/lib/profile/server'
 import { INVITE_CODE_COOKIE, INVITE_MAX_AGE_SEC } from '@/lib/family/constants'
 import { isValidInviteCodeFormat, normalizeInviteCode } from '@/lib/family/invite'
+import { parseSignInFromForm, parseSignUpFromForm } from '@/lib/auth/form'
 
 export type AuthState = { error: string } | { success: string } | null
 
@@ -14,8 +15,7 @@ export async function login(
   _prevState: AuthState,
   formData: FormData
 ): Promise<AuthState> {
-  const email = formData.get('email') as string
-  const password = formData.get('password') as string
+  const { email, password } = parseSignInFromForm(formData)
   const t = await getServerT()
 
   if (!email || !password) {
@@ -50,10 +50,7 @@ export async function register(
   _prevState: AuthState,
   formData: FormData
 ): Promise<AuthState> {
-  const email = formData.get('email') as string
-  const password = formData.get('password') as string
-  const confirmPassword = formData.get('confirmPassword') as string
-  const inviteCode = (formData.get('inviteCode') as string)?.trim() ?? ''
+  const { email, password, confirmPassword, inviteCode } = parseSignUpFromForm(formData)
   const t = await getServerT()
 
   if (!email || !password) {

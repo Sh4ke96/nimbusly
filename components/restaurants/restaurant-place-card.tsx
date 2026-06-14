@@ -1,5 +1,6 @@
 "use client";
 
+import { RESTAURANT_FORM_FIELD } from "@/lib/restaurants/types";
 import { format } from "date-fns";
 import { Beer, Calendar, MapPin, Pencil, Trash2, Utensils } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -105,7 +106,7 @@ export function RestaurantPlaceCard({
                 <Pencil className="size-4" />
               </Button>
               <form action={deleteAction}>
-                <input type="hidden" name="id" value={place.id} />
+                <input type="hidden" name={RESTAURANT_FORM_FIELD.ID} value={place.id} />
                 <Button
                   type="submit"
                   variant="ghost"

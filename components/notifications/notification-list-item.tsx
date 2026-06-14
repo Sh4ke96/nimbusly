@@ -1,22 +1,16 @@
 "use client";
 
+import { COMMON_FORM_FIELD } from "@/lib/form/common-fields";
 import Link from "next/link";
 import { useActionState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  BIRTHDAY_NOTIFICATION_TYPES,
-  BUDGET_NOTIFICATION_TYPES,
-  GIFT_NOTIFICATION_TYPES,
-  MEDICINE_NOTIFICATION_TYPES,
-  SCHEDULE_NOTIFICATION_TYPES,
-  SHOPPING_LIST_NOTIFICATION_TYPES,
-  WATCHLIST_NOTIFICATION_TYPES,
-  RESTAURANT_NOTIFICATION_TYPES,
-  PET_NOTIFICATION_TYPES,
-  CHORE_NOTIFICATION_TYPES,
-} from "@/lib/constants/notifications";
 import type { AppNotification } from "@/lib/notifications/types";
 import { getNotificationModuleIcon } from "@/lib/notifications/module-icon";
+import {
+  getNotificationModuleHref,
+  getNotificationModuleId,
+  NOTIFICATION_MODULE_LINK_LABEL,
+} from "@/lib/notifications/module-route";
 import { markNotificationRead } from "@/app/(app)/notifications/actions";
 import { useT } from "@/lib/lang-context";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
@@ -45,6 +39,9 @@ export function NotificationListItem({
   const t = useT();
   const [markState, markAction] = useActionState(markNotificationRead, null);
   const ModuleIcon = getNotificationModuleIcon(item.type);
+  const moduleId = getNotificationModuleId(item.type);
+  const moduleHref = getNotificationModuleHref(item.type);
+  const moduleLinkLabel = moduleId ? t.notifications[NOTIFICATION_MODULE_LINK_LABEL[moduleId]] : null;
 
   useActionFeedback(markState, () => {
     onMarkedRead?.();
@@ -68,84 +65,12 @@ export function NotificationListItem({
           </time>
         </div>
         <p className="text-sm text-muted-foreground">{item.body}</p>
-        {(BIRTHDAY_NOTIFICATION_TYPES as string[]).includes(item.type) && (
+        {moduleHref && moduleLinkLabel && (
           <Link
-            href="/birthdays"
+            href={moduleHref}
             className="text-xs font-medium text-primary hover:underline"
           >
-            {t.notifications.openBirthdays}
-          </Link>
-        )}
-        {(SCHEDULE_NOTIFICATION_TYPES as string[]).includes(item.type) && (
-          <Link
-            href="/schedule"
-            className="text-xs font-medium text-primary hover:underline"
-          >
-            {t.notifications.openSchedule}
-          </Link>
-        )}
-        {(GIFT_NOTIFICATION_TYPES as string[]).includes(item.type) && (
-          <Link
-            href="/gifts"
-            className="text-xs font-medium text-primary hover:underline"
-          >
-            {t.notifications.openGifts}
-          </Link>
-        )}
-        {(BUDGET_NOTIFICATION_TYPES as string[]).includes(item.type) && (
-          <Link
-            href="/budget"
-            className="text-xs font-medium text-primary hover:underline"
-          >
-            {t.notifications.openBudget}
-          </Link>
-        )}
-        {(SHOPPING_LIST_NOTIFICATION_TYPES as string[]).includes(item.type) && (
-          <Link
-            href="/shopping"
-            className="text-xs font-medium text-primary hover:underline"
-          >
-            {t.notifications.openShoppingLists}
-          </Link>
-        )}
-        {(MEDICINE_NOTIFICATION_TYPES as string[]).includes(item.type) && (
-          <Link
-            href="/medicine-cabinet"
-            className="text-xs font-medium text-primary hover:underline"
-          >
-            {t.notifications.openMedicineCabinet}
-          </Link>
-        )}
-        {(WATCHLIST_NOTIFICATION_TYPES as string[]).includes(item.type) && (
-          <Link
-            href="/watchlist"
-            className="text-xs font-medium text-primary hover:underline"
-          >
-            {t.notifications.openWatchlist}
-          </Link>
-        )}
-        {(RESTAURANT_NOTIFICATION_TYPES as string[]).includes(item.type) && (
-          <Link
-            href="/restaurants"
-            className="text-xs font-medium text-primary hover:underline"
-          >
-            {t.notifications.openRestaurants}
-          </Link>
-        )}
-        {(PET_NOTIFICATION_TYPES as string[]).includes(item.type) && (
-          <Link
-            href="/pets"
-            className="text-xs font-medium text-primary hover:underline"
-          >
-            {t.notifications.openPets}
-          </Link>
-        )}
-        {(CHORE_NOTIFICATION_TYPES as string[]).includes(item.type) && (
-          <Link
-            href="/chores"
-            className="text-xs font-medium text-primary hover:underline"
-          >
-            {t.notifications.openChores}
+            {moduleLinkLabel}
           </Link>
         )}
       </div>
@@ -154,7 +79,7 @@ export function NotificationListItem({
           action={markAction}
           onSubmit={() => onMarkReadLocally(item.id)}
         >
-          <input type="hidden" name="id" value={item.id} />
+          <input type="hidden" name={COMMON_FORM_FIELD.ID} value={item.id} />
           <Button type="submit" variant="ghost" size="sm" className="shrink-0">
             {t.notifications.markRead}
           </Button>

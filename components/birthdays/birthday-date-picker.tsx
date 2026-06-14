@@ -1,5 +1,6 @@
 "use client";
 
+import { BIRTHDAY_FORM_FIELD } from "@/lib/birthdays/types";
 import { useT } from "@/lib/lang-context";
 import { DatePickerField } from "@/components/ui/date-picker-field";
 
@@ -37,8 +38,8 @@ export function BirthdayDatePicker({ date, onDateChange }: BirthdayDatePickerPro
       }}
       hiddenInputs={
         <>
-          <input type="hidden" name="birthMonth" value={date ? date.getMonth() + 1 : ""} />
-          <input type="hidden" name="birthDay" value={date ? date.getDate() : ""} />
+          <input type="hidden" name={BIRTHDAY_FORM_FIELD.BIRTH_MONTH} value={date ? date.getMonth() + 1 : ""} />
+          <input type="hidden" name={BIRTHDAY_FORM_FIELD.BIRTH_DAY} value={date ? date.getDate() : ""} />
         </>
       }
     />

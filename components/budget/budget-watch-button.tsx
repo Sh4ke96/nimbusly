@@ -1,5 +1,6 @@
 "use client";
 
+import { BUDGET_FORM_FIELD } from "@/lib/budget/types";
 import { useActionState, useMemo, useState } from "react";
 import { Bell, BellOff } from "lucide-react";
 import { toggleBudgetWatch } from "@/app/(app)/budget/actions";
@@ -38,8 +39,8 @@ export function BudgetWatchButton({
 
   return (
     <form action={action} className={className} onClick={(e) => e.stopPropagation()}>
-      <input type="hidden" name="budgetId" value={budgetId} />
-      <input type="hidden" name="watch" value={String(!watched)} />
+      <input type="hidden" name={BUDGET_FORM_FIELD.BUDGET_ID} value={budgetId} />
+      <input type="hidden" name={BUDGET_FORM_FIELD.WATCH} value={String(!watched)} />
       <Tooltip>
         <TooltipTrigger asChild>
           <Button

@@ -12,6 +12,8 @@ import {
   type PetSpecies,
   type PetStockStatus,
 } from "@/lib/constants/pets";
+import { COMMON_FORM_FIELD } from "@/lib/form/common-fields";
+import { getFormString, getFormTrimmedString } from "@/lib/form/values";
 
 export interface Pet {
   id: string;
@@ -123,14 +125,31 @@ export function validatePetCareFields(
   return null;
 }
 
+export const PET_FORM_FIELD = {
+  ID: COMMON_FORM_FIELD.ID,
+  NAME: "name",
+  SPECIES: "species",
+  NOTES: "notes",
+  PET_ID: "petId",
+  CARE_TYPE: "careType",
+  LAST_DONE_AT: "lastDoneAt",
+  NEXT_DUE_DATE: "nextDueDate",
+  STOCK_STATUS: "stockStatus",
+  QUANTITY: "quantity",
+} as const;
+
+export function parsePetIdFromForm(formData: FormData): string {
+  return getFormTrimmedString(formData, PET_FORM_FIELD.ID);
+}
+
 export function parsePetFromForm(formData: FormData): {
   name: string;
   species: PetSpecies | null;
   notes: string;
 } {
-  const name = normalizePetName((formData.get("name") as string) ?? "");
-  const speciesRaw = (formData.get("species") as string)?.trim() ?? "";
-  const notes = ((formData.get("notes") as string) ?? "").trim();
+  const name = normalizePetName(getFormString(formData, PET_FORM_FIELD.NAME));
+  const speciesRaw = getFormTrimmedString(formData, PET_FORM_FIELD.SPECIES);
+  const notes = getFormTrimmedString(formData, PET_FORM_FIELD.NOTES);
 
   return {
     name,
@@ -149,14 +168,14 @@ export function parsePetCareItemFromForm(formData: FormData): {
   quantity: string;
   notes: string;
 } {
-  const petId = ((formData.get("petId") as string) ?? "").trim();
-  const name = normalizePetName((formData.get("name") as string) ?? "");
-  const careTypeRaw = (formData.get("careType") as string)?.trim() ?? "";
-  const lastDoneRaw = ((formData.get("lastDoneAt") as string) ?? "").trim();
-  const nextDueRaw = ((formData.get("nextDueDate") as string) ?? "").trim();
-  const stockRaw = ((formData.get("stockStatus") as string) ?? "").trim();
-  const quantity = ((formData.get("quantity") as string) ?? "").trim();
-  const notes = ((formData.get("notes") as string) ?? "").trim();
+  const petId = getFormTrimmedString(formData, PET_FORM_FIELD.PET_ID);
+  const name = normalizePetName(getFormString(formData, PET_FORM_FIELD.NAME));
+  const careTypeRaw = getFormTrimmedString(formData, PET_FORM_FIELD.CARE_TYPE);
+  const lastDoneRaw = getFormTrimmedString(formData, PET_FORM_FIELD.LAST_DONE_AT);
+  const nextDueRaw = getFormTrimmedString(formData, PET_FORM_FIELD.NEXT_DUE_DATE);
+  const stockRaw = getFormTrimmedString(formData, PET_FORM_FIELD.STOCK_STATUS);
+  const quantity = getFormTrimmedString(formData, PET_FORM_FIELD.QUANTITY);
+  const notes = getFormTrimmedString(formData, PET_FORM_FIELD.NOTES);
 
   return {
     petId,

@@ -1,6 +1,7 @@
 "use server";
 
 import { getServerT } from "@/lib/i18n/server";
+import { parseDashboardLayoutFromForm } from "@/lib/dashboard/form";
 import {
   parseDashboardOverviewLayout,
   serializeDashboardOverviewLayout,
@@ -18,7 +19,7 @@ export async function updateDashboardOverviewLayout(
 
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const layoutRaw = (formData.get("layout") as string)?.trim() ?? "";
+  const layoutRaw = parseDashboardLayoutFromForm(formData);
   if (!layoutRaw) return { error: t.dashboard.errorOverviewLayoutInvalid };
 
   let layout: DashboardOverviewLayout;
