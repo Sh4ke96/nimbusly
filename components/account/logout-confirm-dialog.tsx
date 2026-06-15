@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useT } from "@/lib/lang-context";
 import { logout } from "@/app/(app)/actions";
+import { resetAllClientStores } from "@/lib/stores/reset-all-client-stores";
 
 interface LogoutConfirmDialogProps {
   open: boolean;
@@ -39,6 +40,7 @@ export function LogoutConfirmDialog({ open, onOpenChange }: LogoutConfirmDialogP
           <form
             action={logout}
             onSubmit={() => {
+              resetAllClientStores();
               onOpenChange(false);
             }}
           >

@@ -6,6 +6,7 @@ import { LangProvider } from "@/lib/lang-context";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { VersionBadge } from "@/components/app/version-badge";
+import { AuthSessionSync } from "@/components/auth/auth-session-sync";
 import { LANG, LANG_COOKIE, type Lang } from "@/lib/constants/lang";
 import { dict } from "@/lib/i18n";
 import "./globals.css";
@@ -86,6 +87,7 @@ export default async function RootLayout({
         >
           <LangProvider initialLang={lang}>
             <TooltipProvider>
+              <AuthSessionSync />
               {children}
               <VersionBadge />
               <Toaster closeButton position="top-right" />

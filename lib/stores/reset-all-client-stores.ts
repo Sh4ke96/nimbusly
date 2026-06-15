@@ -13,8 +13,10 @@ import { useScheduleStore } from "@/lib/stores/schedule-store";
 import { useShoppingListsStore } from "@/lib/stores/shopping-lists-store";
 import { useShoppingCategoriesStore } from "@/lib/stores/shopping-categories-store";
 import { useWatchlistStore } from "@/lib/stores/watchlist-store";
+import { clearDedupeAsync } from "@/lib/stores/dedupe-async";
 
 export function resetAllClientStores() {
+  clearDedupeAsync();
   useProfileStore.getState().reset();
   useNotificationsStore.getState().reset();
   useGiftsStore.getState().reset();

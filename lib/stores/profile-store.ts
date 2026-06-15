@@ -75,7 +75,14 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
   ...initialState,
 
   fetchSession: async (force = false) => {
-    if (!force && get().loaded && !get().loading && !get().error) return;
+    const state = get();
+    if (!force && state.loaded && !state.loading && !state.error) {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (user?.id === state.user?.id) return;
+    }
 
     return dedupeAsync("profile:session", async () => {
       set({ loading: true, error: false });
