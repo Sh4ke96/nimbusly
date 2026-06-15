@@ -8,6 +8,7 @@ import {
   parseDashboardOverviewLayout,
   reorderOverviewCards,
   setOverviewCardHidden,
+  toggleAttentionItemPin,
 } from "@/lib/dashboard/overview-layout";
 
 describe("parseDashboardOverviewLayout", () => {
@@ -96,5 +97,26 @@ describe("setOverviewCardHidden", () => {
       false
     );
     assert.equal(shown.hidden.includes(DASHBOARD_OVERVIEW_CARD.CALENDAR), false);
+  });
+});
+
+describe("toggleAttentionItemPin", () => {
+  it("adds and removes pin keys", () => {
+    const initial = parseDashboardOverviewLayout({});
+    const pinned = toggleAttentionItemPin(initial, "chore_overdue:1");
+    assert.deepEqual(pinned.attentionPinned, ["chore_overdue:1"]);
+
+    const unpinned = toggleAttentionItemPin(pinned, "chore_overdue:1");
+    assert.deepEqual(unpinned.attentionPinned, []);
+  });
+
+  it("preserves pins when reordering cards", () => {
+    const initial = toggleAttentionItemPin(parseDashboardOverviewLayout({}), "note_urgent:n1");
+    const reordered = reorderOverviewCards(
+      initial,
+      DASHBOARD_OVERVIEW_CARD.GIFTS,
+      DASHBOARD_OVERVIEW_CARD.BUDGET
+    );
+    assert.deepEqual(reordered.attentionPinned, ["note_urgent:n1"]);
   });
 });

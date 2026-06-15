@@ -471,3 +471,7 @@
     display: none !important;
   }
 }
+
+html[data-scroll-behavior="smooth"] {
+  scroll-behavior: smooth;
+}

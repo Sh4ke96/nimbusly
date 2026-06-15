@@ -9,7 +9,7 @@ export function CtaSection() {
   const t = useT();
 
   return (
-    <section id={t.nav.forFamilySlug} className="pb-24">
+    <section id={t.nav.forFamilySlug} className="scroll-mt-20 pb-24">
       <div className="mx-auto max-w-4xl px-4">
         <div className="rounded-none bg-primary p-10 md:p-14 text-center space-y-6">
           <h2 className="font-heading font-bold text-3xl sm:text-4xl text-primary-foreground tracking-tight text-balance">

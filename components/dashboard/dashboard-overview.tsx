@@ -9,7 +9,7 @@ import { LayoutGrid } from "lucide-react";
 import { toast } from "sonner";
 import { DashboardOverviewControls } from "@/components/dashboard/dashboard-overview-controls";
 import { sortBirthdaysByUpcoming } from "@/lib/dashboard/birthdays";
-import { buildAttentionItems } from "@/lib/dashboard/attention";
+import { buildAttentionItems, sortAttentionItems } from "@/lib/dashboard/attention";
 import { formatMessage } from "@/lib/i18n/format";
 import { DashboardAttentionBanner } from "@/components/dashboard/dashboard-attention-banner";
 import {
@@ -45,6 +45,7 @@ import {
   type DashboardOverviewLayout,
   getVisibleOverviewCardIds,
   normalizeDashboardOverviewLayout,
+  toggleAttentionItemPin,
 } from "@/lib/dashboard/overview-layout";
 import { useLang, useT } from "@/lib/lang-context";
 import { useBudgetStore } from "@/lib/stores/budget-store";
@@ -479,50 +480,55 @@ export function DashboardOverview() {
     [expensesByBudgetId]
   );
 
-  const attentionItems = useMemo(
-    () =>
-      buildAttentionItems({
-        choreTasks,
-        medicineItems,
-        careItems,
-        pets,
-        birthdays,
-        budgetExpenses: allBudgetExpenses,
-        scheduleEntries,
-        notes,
-        labels: {
-          choreOverdue: (title) =>
-            formatMessage(t.dashboard.attentionChoreOverdue, { title }),
-          medicineExpiring: (name) =>
-            formatMessage(t.dashboard.attentionMedicineExpiring, { name }),
-          petCareDue: (pet, item) =>
-            formatMessage(t.dashboard.attentionPetCareDue, { pet, item }),
-          birthdaySoon: (name, when) =>
-            formatMessage(t.dashboard.attentionBirthdaySoon, { name, when }),
-          birthdayToday: t.dashboard.birthdayToday,
-          birthdayInDays: (count) =>
-            formatMessage(t.dashboard.birthdayInDays, { count }),
-          budgetPaymentDue: (description) =>
-            formatMessage(t.dashboard.attentionBudgetPaymentDue, { description }),
-          scheduleEnding: (description) =>
-            formatMessage(t.dashboard.attentionScheduleEnding, { description }),
-          noteUrgent: (title) =>
-            formatMessage(t.dashboard.attentionNoteUrgent, { title }),
-        },
-        limit: undefined,
-      }),
-    [
+  const attentionItems = useMemo(() => {
+    const items = buildAttentionItems({
       choreTasks,
       medicineItems,
       careItems,
       pets,
       birthdays,
-      allBudgetExpenses,
+      budgetExpenses: allBudgetExpenses,
       scheduleEntries,
       notes,
-      t.dashboard,
-    ]
-  );
+      labels: {
+        choreOverdue: (title) =>
+          formatMessage(t.dashboard.attentionChoreOverdue, { title }),
+        medicineExpiring: (name) =>
+          formatMessage(t.dashboard.attentionMedicineExpiring, { name }),
+        petCareDue: (pet, item) =>
+          formatMessage(t.dashboard.attentionPetCareDue, { pet, item }),
+        birthdaySoon: (name, when) =>
+          formatMessage(t.dashboard.attentionBirthdaySoon, { name, when }),
+        birthdayToday: t.dashboard.birthdayToday,
+        birthdayInDays: (count) =>
+          formatMessage(t.dashboard.birthdayInDays, { count }),
+        budgetPaymentDue: (description) =>
+          formatMessage(t.dashboard.attentionBudgetPaymentDue, { description }),
+        scheduleEnding: (description) =>
+          formatMessage(t.dashboard.attentionScheduleEnding, { description }),
+        noteUrgent: (title) =>
+          formatMessage(t.dashboard.attentionNoteUrgent, { title }),
+      },
+      limit: 100,
+    });
+
+    const pinnedKeys = (layout.attentionPinned ?? []).filter((pinKey) =>
+      items.some((item) => item.pinKey === pinKey)
+    );
+
+    return sortAttentionItems(items, pinnedKeys);
+  }, [
+    choreTasks,
+    medicineItems,
+    careItems,
+    pets,
+    birthdays,
+    allBudgetExpenses,
+    scheduleEntries,
+    notes,
+    layout.attentionPinned,
+    t.dashboard,
+  ]);
 
   const cardErrorById = useMemo(
     (): Record<DashboardOverviewCardId, boolean> => ({
@@ -725,10 +731,20 @@ export function DashboardOverview() {
     await persistLayout(next, previous);
   }
 
+  async function handleToggleAttentionPin(pinKey: string) {
+    const previous = layoutRef.current;
+    const next = toggleAttentionItemPin(previous, pinKey);
+    await persistLayout(next, previous);
+  }
+
   return (
     <section className="space-y-4">
       <div data-nimbus-tour={NIMBUS_TOUR_TARGET.DASHBOARD_ATTENTION}>
-        <DashboardAttentionBanner items={attentionItems} />
+        <DashboardAttentionBanner
+          items={attentionItems}
+          pinnedKeys={layout.attentionPinned ?? []}
+          onTogglePin={(pinKey) => void handleToggleAttentionPin(pinKey)}
+        />
       </div>
 
       <DashboardOverviewControls

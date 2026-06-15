@@ -8,11 +8,13 @@ import { normalizeAppModuleId } from "@/lib/constants/app-modules";
 export interface DashboardOverviewLayout {
   order: DashboardOverviewCardId[];
   hidden: DashboardOverviewCardId[];
+  attentionPinned?: string[];
 }
 
 const EMPTY_LAYOUT: DashboardOverviewLayout = {
   order: [...DEFAULT_DASHBOARD_OVERVIEW_ORDER],
   hidden: [],
+  attentionPinned: [],
 };
 
 function uniqueValidCardIds(values: unknown): DashboardOverviewCardId[] {
@@ -27,6 +29,23 @@ function uniqueValidCardIds(values: unknown): DashboardOverviewCardId[] {
     if (!cardId || seen.has(cardId)) continue;
     seen.add(cardId);
     result.push(cardId);
+  }
+
+  return result;
+}
+
+function uniquePinKeys(values: unknown): string[] {
+  if (!Array.isArray(values)) return [];
+
+  const seen = new Set<string>();
+  const result: string[] = [];
+
+  for (const value of values) {
+    if (typeof value !== "string") continue;
+    const pinKey = value.trim();
+    if (!pinKey || seen.has(pinKey)) continue;
+    seen.add(pinKey);
+    result.push(pinKey);
   }
 
   return result;
@@ -48,6 +67,7 @@ export function normalizeDashboardOverviewLayout(
   return {
     order,
     hidden: DASHBOARD_OVERVIEW_CARDS.filter((id) => hiddenSet.has(id)),
+    attentionPinned: uniquePinKeys(layout.attentionPinned),
   };
 }
 
@@ -60,6 +80,7 @@ export function parseDashboardOverviewLayout(raw: unknown): DashboardOverviewLay
   return normalizeDashboardOverviewLayout({
     order: uniqueValidCardIds(record.order),
     hidden: uniqueValidCardIds(record.hidden),
+    attentionPinned: uniquePinKeys(record.attentionPinned),
   });
 }
 
@@ -104,6 +125,7 @@ export function reorderOverviewCards(
   return normalizeDashboardOverviewLayout({
     order: nextOrder,
     hidden: [...hiddenSet],
+    attentionPinned: normalized.attentionPinned,
   });
 }
 
@@ -124,6 +146,27 @@ export function setOverviewCardHidden(
   return normalizeDashboardOverviewLayout({
     order: normalized.order,
     hidden: [...hiddenSet],
+    attentionPinned: normalized.attentionPinned,
+  });
+}
+
+export function toggleAttentionItemPin(
+  layout: DashboardOverviewLayout,
+  pinKey: string
+): DashboardOverviewLayout {
+  const normalized = normalizeDashboardOverviewLayout(layout);
+  const pinned = [...(normalized.attentionPinned ?? [])];
+  const index = pinned.indexOf(pinKey);
+
+  if (index >= 0) {
+    pinned.splice(index, 1);
+  } else {
+    pinned.unshift(pinKey);
+  }
+
+  return normalizeDashboardOverviewLayout({
+    ...normalized,
+    attentionPinned: pinned,
   });
 }
 

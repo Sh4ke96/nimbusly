@@ -394,6 +394,8 @@ export type Dict = {
     attentionNoteUrgent: string;
     attentionPinnedBadge: string;
     attentionPinnedNote: string;
+    attentionPin: string;
+    attentionUnpin: string;
     attentionShowMore: string;
     attentionShowLess: string;
     customizeOverviewBtn: string;
@@ -1368,6 +1370,8 @@ export type Dict = {
     firstVisitTourOffer: string;
     attentionHint: string;
     searchFirstUseHint: string;
+    sessionGreetings: string[];
+    jokes: string[];
     hints: [
       string,
       string,
@@ -1433,6 +1437,7 @@ export type Dict = {
       notifications: { q: string; a: string };
       globalSearch: { q: string; a: string };
       dashboardLayout: { q: string; a: string };
+      attentionPin: { q: string; a: string };
       exportCsv: { q: string; a: string };
       watchDashboard: { q: string; a: string };
       shoppingCategories: { q: string; a: string };

@@ -5,7 +5,6 @@ import Link from "next/link";
 import { AlertTriangle, ChevronDown, ChevronUp, Pin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
-  ATTENTION_KIND,
   ATTENTION_KIND_ICON,
   isPinnedAttentionItem,
   type AttentionItem,
@@ -23,9 +22,15 @@ function AttentionModuleIcon({ kind }: { kind: AttentionItem["kind"] }) {
 
 interface DashboardAttentionBannerProps {
   items: AttentionItem[];
+  pinnedKeys: string[];
+  onTogglePin: (pinKey: string) => void;
 }
 
-export function DashboardAttentionBanner({ items }: DashboardAttentionBannerProps) {
+export function DashboardAttentionBanner({
+  items,
+  pinnedKeys,
+  onTogglePin,
+}: DashboardAttentionBannerProps) {
   const t = useT();
   const [expanded, setExpanded] = useState<boolean>(false);
 
@@ -49,14 +54,14 @@ export function DashboardAttentionBanner({ items }: DashboardAttentionBannerProp
         </span>
       </div>
       <ul className="space-y-1.5">
-        {visibleItems.map((item, index) => {
-          const pinned = isPinnedAttentionItem(item.kind);
+        {visibleItems.map((item) => {
+          const pinned = isPinnedAttentionItem(item, pinnedKeys);
           return (
-            <li key={`${item.kind}-${item.label}-${index}`}>
+            <li key={item.pinKey} className="flex items-stretch gap-1">
               <Link
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-2 rounded-none border px-3 py-2 text-sm transition-colors",
+                  "flex min-w-0 flex-1 items-center gap-2 rounded-none border px-3 py-2 text-sm transition-colors",
                   pinned
                     ? "border-attention/50 bg-attention/15 ring-1 ring-attention/30 hover:bg-attention/20"
                     : "border-border bg-background/80 hover:border-attention/35 hover:bg-background"
@@ -65,8 +70,8 @@ export function DashboardAttentionBanner({ items }: DashboardAttentionBannerProp
                 <AttentionModuleIcon kind={item.kind} />
                 {pinned && (
                   <Pin
-                    className="size-3.5 shrink-0 text-attention"
-                    aria-label={t.dashboard.attentionPinnedNote}
+                    className="size-3.5 shrink-0 fill-current text-attention"
+                    aria-hidden
                   />
                 )}
                 <span
@@ -77,12 +82,26 @@ export function DashboardAttentionBanner({ items }: DashboardAttentionBannerProp
                 >
                   {item.label}
                 </span>
-                {pinned && item.kind === ATTENTION_KIND.NOTE_URGENT && (
+                {pinned && (
                   <span className="ml-auto shrink-0 text-[10px] font-semibold uppercase tracking-wide text-attention">
                     {t.dashboard.attentionPinnedBadge}
                   </span>
                 )}
               </Link>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className={cn(
+                  "size-9 shrink-0 rounded-none",
+                  pinned && "text-attention hover:text-attention"
+                )}
+                onClick={() => onTogglePin(item.pinKey)}
+                aria-label={pinned ? t.dashboard.attentionUnpin : t.dashboard.attentionPin}
+                aria-pressed={pinned}
+              >
+                <Pin className={cn("size-4", pinned && "fill-current")} />
+              </Button>
             </li>
           );
         })}

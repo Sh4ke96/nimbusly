@@ -6,7 +6,7 @@ export function StepsSection() {
   const t = useT();
 
   return (
-    <section id={t.nav.howItWorksSlug} className="py-24">
+    <section id={t.nav.howItWorksSlug} className="scroll-mt-20 py-24">
       <div className="mx-auto max-w-6xl px-4">
         <div className="text-center mb-16">
           <h2 className="font-heading font-bold text-3xl sm:text-4xl tracking-tight text-balance">

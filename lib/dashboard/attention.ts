@@ -57,6 +57,11 @@ export interface AttentionItem {
   href: string;
   label: string;
   detail?: string;
+  pinKey: string;
+}
+
+export function getAttentionPinKey(kind: AttentionKind, sourceId: string): string {
+  return `${kind}:${sourceId}`;
 }
 
 const BIRTHDAY_ATTENTION_DAYS = 14;
@@ -92,6 +97,7 @@ export function buildAttentionItems(params: {
       kind: ATTENTION_KIND.CHORE_OVERDUE,
       href: APP_MODULE_ROUTES[APP_MODULE.CHORES],
       label: params.labels.choreOverdue(task.title),
+      pinKey: getAttentionPinKey(ATTENTION_KIND.CHORE_OVERDUE, task.id),
     });
   }
 
@@ -101,6 +107,7 @@ export function buildAttentionItems(params: {
       kind: ATTENTION_KIND.MEDICINE_EXPIRING,
       href: APP_MODULE_ROUTES[APP_MODULE.MEDICINE_CABINET],
       label: params.labels.medicineExpiring(medicine.name),
+      pinKey: getAttentionPinKey(ATTENTION_KIND.MEDICINE_EXPIRING, medicine.id),
     });
   }
 
@@ -111,6 +118,7 @@ export function buildAttentionItems(params: {
       kind: ATTENTION_KIND.PET_CARE_DUE,
       href: APP_MODULE_ROUTES[APP_MODULE.PETS],
       label: params.labels.petCareDue(petName, care.name),
+      pinKey: getAttentionPinKey(ATTENTION_KIND.PET_CARE_DUE, care.id),
     });
   }
 
@@ -125,6 +133,7 @@ export function buildAttentionItems(params: {
       kind: ATTENTION_KIND.BIRTHDAY_SOON,
       href: APP_MODULE_ROUTES[APP_MODULE.BIRTHDAYS],
       label: params.labels.birthdaySoon(birthday.person_name, when),
+      pinKey: getAttentionPinKey(ATTENTION_KIND.BIRTHDAY_SOON, birthday.id),
     });
   }
 
@@ -135,6 +144,7 @@ export function buildAttentionItems(params: {
       kind: ATTENTION_KIND.BUDGET_PAYMENT_DUE,
       href: APP_MODULE_ROUTES[APP_MODULE.BUDGET],
       label: params.labels.budgetPaymentDue(description),
+      pinKey: getAttentionPinKey(ATTENTION_KIND.BUDGET_PAYMENT_DUE, expense.id),
     });
   }
 
@@ -145,6 +155,7 @@ export function buildAttentionItems(params: {
       kind: ATTENTION_KIND.SCHEDULE_ENDING,
       href: APP_MODULE_ROUTES[APP_MODULE.CALENDAR],
       label: params.labels.scheduleEnding(description),
+      pinKey: getAttentionPinKey(ATTENTION_KIND.SCHEDULE_ENDING, entry.id),
     });
   }
 
@@ -154,12 +165,34 @@ export function buildAttentionItems(params: {
       kind: ATTENTION_KIND.NOTE_URGENT,
       href: APP_MODULE_ROUTES[APP_MODULE.NOTES],
       label: params.labels.noteUrgent(formatUrgentNoteTitle(note.title)),
+      pinKey: getAttentionPinKey(ATTENTION_KIND.NOTE_URGENT, note.id),
     });
   }
 
-  return items.sort(
-    (a, b) => getAttentionPriority(a.kind) - getAttentionPriority(b.kind)
-  ).slice(0, limit);
+  return items
+    .sort((a, b) => getAttentionPriority(a.kind) - getAttentionPriority(b.kind))
+    .slice(0, limit);
+}
+
+export function sortAttentionItems(
+  items: AttentionItem[],
+  pinnedKeys: string[]
+): AttentionItem[] {
+  const pinnedSet = new Set(pinnedKeys);
+  const pinOrder = new Map(pinnedKeys.map((key, index) => [key, index]));
+
+  return [...items].sort((a, b) => {
+    const aPinned = pinnedSet.has(a.pinKey);
+    const bPinned = pinnedSet.has(b.pinKey);
+
+    if (aPinned && bPinned) {
+      return (pinOrder.get(a.pinKey) ?? 0) - (pinOrder.get(b.pinKey) ?? 0);
+    }
+    if (aPinned) return -1;
+    if (bPinned) return 1;
+
+    return getAttentionPriority(a.kind) - getAttentionPriority(b.kind);
+  });
 }
 
 const ATTENTION_PRIORITY: Record<AttentionKind, number> = {
@@ -176,8 +209,11 @@ export function getAttentionPriority(kind: AttentionKind): number {
   return ATTENTION_PRIORITY[kind];
 }
 
-export function isPinnedAttentionItem(kind: AttentionKind): boolean {
-  return kind === ATTENTION_KIND.NOTE_URGENT;
+export function isPinnedAttentionItem(
+  item: AttentionItem,
+  pinnedKeys: string[]
+): boolean {
+  return pinnedKeys.includes(item.pinKey);
 }
 
 export function countAttentionItems(items: AttentionItem[]): number {

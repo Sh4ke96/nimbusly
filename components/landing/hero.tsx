@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { HeroModulePills } from "@/components/landing/hero-module-pills";
+import { scrollToLandingSection } from "@/lib/landing/scroll-to-section";
 import { useT } from "@/lib/lang-context";
 import { ArrowRight, CheckCircle2, Sparkles } from "lucide-react";
 
@@ -48,7 +49,16 @@ export function HeroSection() {
                 </Link>
               </Button>
               <Button variant="outline" size="lg" asChild>
-                <Link href={`#${t.nav.featuresSlug}`}>{t.hero.ctaSecondary}</Link>
+                <Link
+                  href={`#${t.nav.featuresSlug}`}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    scrollToLandingSection(t.nav.featuresSlug);
+                    window.history.replaceState(null, "", `/#${t.nav.featuresSlug}`);
+                  }}
+                >
+                  {t.hero.ctaSecondary}
+                </Link>
               </Button>
             </div>
 

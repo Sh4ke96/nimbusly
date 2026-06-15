@@ -23,7 +23,14 @@ const INITIAL_TOUR_LAYOUT: NimbusTourLayout = {
   syncing: false,
 };
 
-export type NimbusHintKind = "random" | "context" | "suggestion" | "celebration" | "attention";
+export type NimbusHintKind =
+  | "random"
+  | "context"
+  | "suggestion"
+  | "celebration"
+  | "attention"
+  | "greeting"
+  | "joke";
 
 export interface NimbusHintAction {
   tourId?: NimbusTourId;

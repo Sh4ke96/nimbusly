@@ -12,9 +12,12 @@ import {
   NIMBUS_HINT_INTERVAL_MS,
   NIMBUS_IDLE_FIDGET_MAX_MS,
   NIMBUS_IDLE_FIDGET_MIN_MS,
+  NIMBUS_JOKE_CHANCE,
+  NIMBUS_SESSION_GREETING_DELAY_MS,
 } from "@/lib/constants/nimbus";
 import { NIMBUS_TOUR_ID, getModuleTourIdForPath } from "@/lib/constants/nimbus-tour";
 import { countAttentionFromSnapshot } from "@/lib/nimbus/attention-count";
+import { formatNimbusSessionGreeting, pickRandomNimbusJoke } from "@/lib/nimbus/banter";
 import { getNimbusContextHintKey } from "@/lib/nimbus/context-hints";
 import { detectNimbusSuggestions, type NimbusSuggestionId } from "@/lib/nimbus/suggestions";
 import { filterSuppressedSuggestions } from "@/lib/nimbus/suggestion-suppress";
@@ -22,6 +25,10 @@ import { NIMBUS_SUGGESTION_HREF } from "@/lib/nimbus/suggestion-links";
 import { isFirstModuleVisit, markModuleVisited } from "@/lib/nimbus/first-visit";
 import { markIntroTourOffered, shouldOfferIntroTour } from "@/lib/nimbus/onboarding-offer";
 import { isNimbusHintsSnoozed } from "@/lib/nimbus/snooze";
+import {
+  markSessionGreetingShown,
+  shouldShowSessionGreeting,
+} from "@/lib/nimbus/session-greeting";
 import { readSearchStoresSnapshot } from "@/lib/search/search-stores-snapshot";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { useProfileStore } from "@/lib/stores/profile-store";
@@ -58,6 +65,7 @@ export function NimbusCompanionHost() {
   const announceCustomHint = useNimbusStore((s) => s.announceCustomHint);
   const setNpcCalling = useNimbusStore((s) => s.setNpcCalling);
   const onboardingOffered = useRef(false);
+  const sessionGreetingOffered = useRef(false);
 
   const enabled = profile?.nimbus_companion_enabled !== false;
   const quiet = profile?.nimbus_companion_quiet === true;
@@ -66,6 +74,39 @@ export function NimbusCompanionHost() {
     !!profile?.onboarding_completed &&
     enabled &&
     pathname !== "/onboarding";
+
+  useEffect(() => {
+    if (!visible || quiet || tourActive || menuOpen) return;
+    if (!shouldShowSessionGreeting() || sessionGreetingOffered.current) return;
+    if (hintIndex !== null || hintMessage !== null) return;
+
+    sessionGreetingOffered.current = true;
+    const timer = window.setTimeout(() => {
+      if (isNimbusHintsSnoozed()) return;
+      if (!shouldShowSessionGreeting()) return;
+
+      const greeting = formatNimbusSessionGreeting(
+        t.companion.sessionGreetings,
+        profile?.display_name
+      );
+      if (!greeting) return;
+
+      markSessionGreetingShown();
+      announceCustomHint(greeting, "greeting");
+    }, NIMBUS_SESSION_GREETING_DELAY_MS);
+
+    return () => window.clearTimeout(timer);
+  }, [
+    visible,
+    quiet,
+    tourActive,
+    menuOpen,
+    hintIndex,
+    hintMessage,
+    profile?.display_name,
+    announceCustomHint,
+    t,
+  ]);
 
   useEffect(() => {
     if (!visible || quiet || tourActive || menuOpen) return;
@@ -170,6 +211,14 @@ export function NimbusCompanionHost() {
           href: NIMBUS_SUGGESTION_HREF[id],
         });
         return;
+      }
+
+      if (Math.random() < NIMBUS_JOKE_CHANCE) {
+        const joke = pickRandomNimbusJoke(t.companion.jokes);
+        if (joke) {
+          announceCustomHint(joke, "joke");
+          return;
+        }
       }
 
       announceHint(Math.floor(Math.random() * NIMBUS_HINT_COUNT));

@@ -35,7 +35,7 @@ export function FeaturesSection() {
   const t = useT();
 
   return (
-    <section id={t.nav.featuresSlug} className="bg-muted/30 py-24">
+    <section id={t.nav.featuresSlug} className="scroll-mt-20 bg-muted/30 py-24">
       <div className="mx-auto max-w-6xl px-4">
         <div className="text-center mb-16 space-y-3">
           <h2 className="font-heading font-bold text-3xl sm:text-4xl tracking-tight text-balance">

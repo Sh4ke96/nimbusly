@@ -23,7 +23,7 @@ const introPl = {
   ),
   dashboardAttention: step(
     "Wymaga uwagi",
-    "Gdy coś zbliża się terminowo — obowiązki, leki, płatności, notatki — pojawi się tu na pierwszy plan."
+    "Gdy coś zbliża się terminowo — obowiązki, leki, płatności, notatki — pojawi się tu na pierwszy plan. Kliknij pinezkę przy wpisie, żeby przypiąć go na samej górze listy."
   ),
   dashboardOverview: step(
     "Karty podsumowania",
@@ -62,7 +62,7 @@ const introEn = {
   ),
   dashboardAttention: step(
     "Needs attention",
-    "When something is due soon — chores, medicine, payments, notes — it surfaces here first."
+    "When something is due soon — chores, medicine, payments, notes — it surfaces here first. Click the pin next to an item to keep it at the very top."
   ),
   dashboardOverview: step(
     "Overview cards",
@@ -345,7 +345,7 @@ export const nimbusCompanionExtraPl = {
   suppressSuggestion: "Nie pokazuj ponownie",
   onboardingIntroOffer: "Witaj w Nimbusly! Chcesz krótki przewodnik po aplikacji?",
   firstVisitTourOffer: "Pierwszy raz tutaj? Mogę pokazać Ci ten moduł krok po kroku.",
-  attentionHint: "Masz {count} rzeczy w „Wymaga uwagi” — warto rzucić okiem na dashboard.",
+  attentionHint: "Masz {count} rzeczy w „Wymaga uwagi” — warto rzucić okiem na dashboard. Najważniejsze możesz przypiąć pinezką.",
   searchFirstUseHint: "Wyszukiwarka Ctrl+K znajdzie moduły i dane w całej aplikacji.",
   moduleTourAction: "Pokaż mi ten moduł",
   moduleTourActionDesc: "Przewodnik po tej stronie",
@@ -379,7 +379,23 @@ export const nimbusCompanionExtraPl = {
   backToMenu: "Wróć do menu",
   quietSettingLabel: "Tryb cichy Nimbusa",
   quietSettingDesc:
-    "Bez losowych podpowiedzi i animacji — Nimbus reaguje tylko na menu i przewodniki.",
+    "Bez losowych podpowiedzi, żartów i powitań — Nimbus reaguje tylko na menu i przewodniki.",
+  sessionGreetings: [
+    "Cześć, {name}! Miło Cię widzieć w Nimbusly.",
+    "Witaj z powrotem, {name}! Chmura jest na posterunku.",
+    "Hej, {name}! Gotowy na domowy porządek?",
+    "Dzień dobry, {name}! Nimbus melduje się do służby.",
+  ],
+  jokes: [
+    "Wiem, że jestem chmurą — ale listę zakupów i tak trzymam na tacy, nie w powietrzu.",
+    "Mówią, że niebo nie ma limitu danych. Ja mam — za dużo obowiązków na raz.",
+    "Gdyby budżet domowy miał skrzydła, leciałby… no właśnie — jestem chmurą, mogę pomóc go ogarnąć.",
+    "Nie jestem pogodą — ale przewiduję burzę, gdy apteczka ma leki po terminie.",
+    "Zero-jedynkowo: albo odhaczasz zakupy, albo ja znowu przypomnę za trzy minuty.",
+    "Mój ulubiony moduł? Ten, w którym właśnie jesteś. (Tak, mówię to do każdego modułu.)",
+    "Jestem chmurą, nie magią — hasła do WiFi nadal trzeba zapisać w notatkach.",
+    "Domowe życie bez Nimbusly? Też działa. Ale kto wtedy pilnuje terminu na śmieci?",
+  ],
   celebrations: {
     firstChore: "Pierwszy obowiązek za Tobą! Tak trzymaj.",
     firstShoppingList: "Pierwsza lista zakupów gotowa — miłych zakupów!",
@@ -446,7 +462,7 @@ export const nimbusCompanionExtraPl = {
     },
     quietMode: {
       q: "Co to jest tryb cichy?",
-      a: "W profilu włącz tryb cichy — Nimbus nie wysyła losowych podpowiedzi, tylko reaguje na menu i przewodniki.",
+      a: "W profilu włącz tryb cichy — Nimbus nie wysyła losowych podpowiedzi, żartów ani powitań, tylko reaguje na menu i przewodniki.",
     },
     familyRealtime: {
       q: "Jak działa współdzielenie w rodzinie?",
@@ -475,6 +491,10 @@ export const nimbusCompanionExtraPl = {
     dashboardLayout: {
       q: "Jak dostosować dashboard?",
       a: "Na zakładce Podsumowanie włącz tryb edycji układu i wybierz karty modułów do wyświetlenia.",
+    },
+    attentionPin: {
+      q: "Jak przypiąć pozycję w „Wymaga uwagi”?",
+      a: "Na dashboardzie kliknij ikonę pinezki przy wpisie — trafi na samą górę listy. Kolejność zapisuje się razem z układem podsumowania.",
     },
     exportCsv: {
       q: "Jak wyeksportować dane do CSV?",
@@ -519,7 +539,7 @@ export const nimbusCompanionExtraEn = {
   suppressSuggestion: "Don't show again",
   onboardingIntroOffer: "Welcome to Nimbusly! Want a quick app tour?",
   firstVisitTourOffer: "First time here? I can walk you through this module step by step.",
-  attentionHint: "You have {count} items in Needs attention — worth a look on the dashboard.",
+  attentionHint: "You have {count} items in Needs attention — worth a look on the dashboard. Pin the most important ones to keep them on top.",
   searchFirstUseHint: "Press Ctrl+K to search modules and data across the app.",
   moduleTourAction: "Show me this module",
   moduleTourActionDesc: "Tour of this page",
@@ -553,7 +573,23 @@ export const nimbusCompanionExtraEn = {
   backToMenu: "Back to menu",
   quietSettingLabel: "Nimbus quiet mode",
   quietSettingDesc:
-    "No random hints or idle animations — Nimbus only responds to menu and tours.",
+    "No random hints, jokes, or greetings — Nimbus only responds to menu and tours.",
+  sessionGreetings: [
+    "Hi, {name}! Good to see you in Nimbusly.",
+    "Welcome back, {name}! Your cloud is on duty.",
+    "Hey, {name}! Ready to keep the home in order?",
+    "Good day, {name}! Nimbus reporting for service.",
+  ],
+  jokes: [
+    "Yes, I'm a cloud — but I keep your shopping list on a tray, not floating in the sky.",
+    "They say the sky has unlimited storage. I disagree — too many chores at once.",
+    "If a household budget had wings, it would fly… well, I'm a cloud, I can help you track it.",
+    "I'm not the weather — but I sense a storm when the medicine cabinet has expired items.",
+    "Binary choice: check off groceries, or I'll remind you again in three minutes.",
+    "Favorite module? The one you're in right now. (Yes, I say that to every module.)",
+    "I'm a cloud, not magic — WiFi passwords still belong in notes.",
+    "Home life without Nimbusly? Sure. But who watches the trash day deadline?",
+  ],
   celebrations: {
     firstChore: "First chore done! Nice work.",
     firstShoppingList: "Your first shopping list is ready — happy shopping!",
@@ -620,7 +656,7 @@ export const nimbusCompanionExtraEn = {
     },
     quietMode: {
       q: "What is quiet mode?",
-      a: "Enable quiet mode in profile — Nimbus won't send random hints, only menu and tours.",
+      a: "Enable quiet mode in profile — Nimbus won't send random hints, jokes, or greetings, only menu and tours.",
     },
     familyRealtime: {
       q: "How does family sharing work?",
@@ -649,6 +685,10 @@ export const nimbusCompanionExtraEn = {
     dashboardLayout: {
       q: "How do I customize the dashboard?",
       a: "On the Summary tab, enable layout edit mode and pick which module cards to show.",
+    },
+    attentionPin: {
+      q: "How do I pin a Needs attention item?",
+      a: "On the dashboard, click the pin icon next to an item — it moves to the top of the list. Pin order is saved with your overview layout.",
     },
     exportCsv: {
       q: "How do I export data to CSV?",

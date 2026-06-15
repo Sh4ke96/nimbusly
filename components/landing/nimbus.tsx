@@ -30,7 +30,7 @@ export function NimbusLandingSection() {
   return (
     <section
       id={t.nav.nimbusSlug}
-      className="relative border-y border-border/60 bg-gradient-to-b from-primary/5 via-background to-muted/20 py-24"
+      className="scroll-mt-20 relative border-y border-border/60 bg-gradient-to-b from-primary/5 via-background to-muted/20 py-24"
     >
       <div className="mx-auto max-w-6xl px-4">
         <div className="grid items-start gap-12 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">

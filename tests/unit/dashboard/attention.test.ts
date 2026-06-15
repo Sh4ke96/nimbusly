@@ -4,7 +4,7 @@ import { CHORE_STATUS } from "@/lib/constants/chores";
 import { APP_MODULE, APP_MODULE_ROUTES } from "@/lib/constants/app-modules";
 import { MEDICINE_AVAILABILITY } from "@/lib/constants/medicine";
 import { PET_CARE_TYPE } from "@/lib/constants/pets";
-import { buildAttentionItems } from "@/lib/dashboard/attention";
+import { buildAttentionItems, sortAttentionItems, ATTENTION_KIND, getAttentionPinKey } from "@/lib/dashboard/attention";
 
 const labels = {
   choreOverdue: (title: string) => `chore:${title}`,
@@ -159,5 +159,61 @@ describe("buildAttentionItems", () => {
 
     assert.equal(items.length, 1);
     assert.equal(items[0].href, "/pets");
+  });
+});
+
+describe("sortAttentionItems", () => {
+  it("places manually pinned items before others", () => {
+    const items = buildAttentionItems({
+      choreTasks: [
+        {
+          id: "1",
+          family_id: null,
+          title: "Śmieci",
+          notes: "",
+          icon_emoji: null,
+          completed_dates: [],
+          status: CHORE_STATUS.PENDING,
+          assigned_to: null,
+          due_date: "2026-06-01",
+          recurrence: "none",
+          recurrence_interval_days: null,
+          recurrence_end_date: null,
+          recurrence_duration: null,
+          recurrence_start_date: null,
+          completed_at: null,
+          created_by: "u1",
+          created_at: "2026-01-01",
+          updated_at: "2026-01-01",
+        },
+      ],
+      medicineItems: [
+        {
+          id: "m1",
+          family_id: null,
+          name: "Apap",
+          form_type: "tablets",
+          quantity: "",
+          expiry_date: "2026-06-20",
+          availability: MEDICINE_AVAILABILITY.IN_STOCK,
+          taken_by: null,
+          location: "",
+          notes: "",
+          created_by: "u1",
+          created_at: "2026-01-01",
+          updated_at: "2026-01-01",
+        },
+      ],
+      careItems: [],
+      pets: [],
+      birthdays: [],
+      labels,
+      limit: 10,
+    });
+
+    const chorePinKey = getAttentionPinKey(ATTENTION_KIND.CHORE_OVERDUE, "1");
+    const sorted = sortAttentionItems(items, [chorePinKey]);
+
+    assert.equal(sorted[0]?.pinKey, chorePinKey);
   });
 });
