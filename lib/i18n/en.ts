@@ -546,6 +546,8 @@ export const en: Dict = {
     notesEmpty: "No notes yet",
     attentionHeading: "Needs attention",
     attentionCount: "({count})",
+    attentionEmptyTourHint:
+      "When something is due soon, items will show up here — you can pin them with the pin button.",
     attentionChoreOverdue: "Overdue chore: {title}",
     attentionMedicineExpiring: "Medicine expiring soon: {name}",
     attentionPetCareDue: "Pet care due: {pet} — {item}",

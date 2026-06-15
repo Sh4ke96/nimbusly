@@ -79,7 +79,7 @@ export function GlobalSearchDialog() {
   return (
     <>
       <div
-        className="inline-flex"
+        className="flex w-full min-w-0 items-center gap-1 sm:inline-flex"
         data-nimbus-tour={NIMBUS_TOUR_TARGET.GLOBAL_SEARCH_TRIGGER}
       >
         <Button

@@ -739,13 +739,11 @@ export function DashboardOverview() {
 
   return (
     <section className="space-y-4">
-      <div data-nimbus-tour={NIMBUS_TOUR_TARGET.DASHBOARD_ATTENTION}>
-        <DashboardAttentionBanner
-          items={attentionItems}
-          pinnedKeys={layout.attentionPinned ?? []}
-          onTogglePin={(pinKey) => void handleToggleAttentionPin(pinKey)}
-        />
-      </div>
+      <DashboardAttentionBanner
+        items={attentionItems}
+        pinnedKeys={layout.attentionPinned ?? []}
+        onTogglePin={(pinKey) => void handleToggleAttentionPin(pinKey)}
+      />
 
       <DashboardOverviewControls
         editMode={editMode}

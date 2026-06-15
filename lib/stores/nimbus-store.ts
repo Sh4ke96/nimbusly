@@ -202,7 +202,11 @@ export const useNimbusStore = create<NimbusStore>((set, get) => ({
   },
 
   startTour: (tourId = NIMBUS_TOUR_ID.INTRO, options) => {
-    const stepIndex = options?.stepIndex ?? 0;
+    const steps = getNimbusTourSteps(tourId);
+    if (steps.length === 0) return;
+
+    const requestedIndex = options?.stepIndex ?? 0;
+    const stepIndex = Math.min(Math.max(0, requestedIndex), steps.length - 1);
     if (stepIndex === 0) clearTourResume();
     set({
       menuOpen: false,

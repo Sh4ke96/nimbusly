@@ -29,6 +29,11 @@ export function NimbusTourSync() {
 
   const steps = activeTourId ? getNimbusTourSteps(activeTourId) : [];
   const step = steps[tourStepIndex];
+  const stepId = step?.id;
+  const stepRoute = step?.route;
+  const stepTarget = step?.target;
+  const stepPrepare = step?.prepare;
+  const stepVariant = step?.variant;
 
   useEffect(() => {
     if (!tourActive) {
@@ -37,26 +42,27 @@ export function NimbusTourSync() {
   }, [tourActive]);
 
   useEffect(() => {
-    if (!tourActive || !step) return;
+    if (!tourActive || !activeTourId || !step || !stepRoute || !stepTarget) return;
 
     let cancelled = false;
 
     const timeoutId = window.setTimeout(() => {
       void (async () => {
         patchTourLayout({ syncing: true, targetMissing: false });
-        prepareTourStep(step.prepare);
-        await sleep(NIMBUS_TOUR_PREPARE_MS);
-        if (cancelled) return;
 
-        if (pathname !== step.route) {
-          router.push(step.route);
+        if (pathname !== stepRoute) {
+          router.push(stepRoute);
           return;
         }
+
+        prepareTourStep(stepPrepare);
+        await sleep(NIMBUS_TOUR_PREPARE_MS);
+        if (cancelled) return;
 
         await sleep(NIMBUS_TOUR_ROUTE_SETTLE_MS);
         if (cancelled) return;
 
-        if (step.variant === "summary") {
+        if (stepVariant === "summary") {
           clearTourHighlightTarget();
           setTourLayout({
             rect: null,
@@ -66,7 +72,7 @@ export function NimbusTourSync() {
           return;
         }
 
-        const element = await waitForTourTarget(step.target);
+        const element = await waitForTourTarget(stepTarget);
         if (cancelled) return;
 
         if (!element) {
@@ -95,7 +101,7 @@ export function NimbusTourSync() {
     function onResize() {
       window.setTimeout(() => {
         const element = document.querySelector<HTMLElement>(
-          `[data-nimbus-tour="${step.target}"]`
+          `[data-nimbus-tour="${stepTarget}"]`
         );
         if (!element) return;
         setTourLayout({
@@ -115,7 +121,21 @@ export function NimbusTourSync() {
       window.removeEventListener("resize", onResize);
       window.removeEventListener("scroll", onResize, true);
     };
-  }, [tourActive, tourStepIndex, pathname, router, setTourLayout, patchTourLayout, step]);
+  }, [
+    tourActive,
+    activeTourId,
+    tourStepIndex,
+    pathname,
+    router,
+    setTourLayout,
+    patchTourLayout,
+    stepId,
+    stepRoute,
+    stepTarget,
+    stepPrepare,
+    stepVariant,
+    step,
+  ]);
 
   return null;
 }

@@ -35,14 +35,46 @@ export function DashboardAttentionBanner({
   const t = useT();
   const [expanded, setExpanded] = useState<boolean>(false);
 
-  if (items.length === 0) return null;
+  if (items.length === 0) {
+    return (
+      <section
+        className="border border-dashed border-attention/25 bg-attention/5 px-4 py-4 space-y-2"
+        data-nimbus-tour={NIMBUS_TOUR_TARGET.DASHBOARD_ATTENTION}
+      >
+        <div className="flex items-center gap-2">
+          <AlertTriangle className="size-4 text-attention/70" />
+          <h2 className="font-heading text-sm font-semibold tracking-tight text-attention/90">
+            {t.dashboard.attentionHeading}
+          </h2>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            disabled
+            tabIndex={-1}
+            aria-hidden
+            data-nimbus-tour={NIMBUS_TOUR_TARGET.DASHBOARD_ATTENTION_PIN}
+            className="ml-auto size-9 shrink-0 rounded-none text-attention/70 pointer-events-none"
+          >
+            <Pin className="size-4" />
+          </Button>
+        </div>
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          {t.dashboard.attentionEmptyTourHint}
+        </p>
+      </section>
+    );
+  }
 
   const hasMore = items.length > ATTENTION_PREVIEW_LIMIT;
   const visibleItems = expanded ? items : items.slice(0, ATTENTION_PREVIEW_LIMIT);
   const hiddenCount = items.length - ATTENTION_PREVIEW_LIMIT;
 
   return (
-    <section className="border border-attention/30 bg-attention/8 px-4 py-4 space-y-3">
+    <section
+      className="border border-attention/30 bg-attention/8 px-4 py-4 space-y-3"
+      data-nimbus-tour={NIMBUS_TOUR_TARGET.DASHBOARD_ATTENTION}
+    >
       <div className="flex items-center gap-2">
         <AlertTriangle className="size-4 text-attention" />
         <h2 className="font-heading text-sm font-semibold tracking-tight text-attention">

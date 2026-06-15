@@ -387,6 +387,7 @@ export type Dict = {
     notesEmpty: string;
     attentionHeading: string;
     attentionCount: string;
+    attentionEmptyTourHint: string;
     attentionChoreOverdue: string;
     attentionMedicineExpiring: string;
     attentionPetCareDue: string;

@@ -546,6 +546,8 @@ export const pl: Dict = {
     notesEmpty: "Brak notatek",
     attentionHeading: "Wymaga uwagi",
     attentionCount: "({count})",
+    attentionEmptyTourHint:
+      "Gdy coś zbliża się terminowo, wpisy pojawią się tutaj — możesz je przypinać pinezką.",
     attentionChoreOverdue: "Obowiązek po terminie: {title}",
     attentionMedicineExpiring: "Lek wkrótce traci ważność: {name}",
     attentionPetCareDue: "Termin opieki: {pet} — {item}",
