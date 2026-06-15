@@ -5,11 +5,17 @@ import {
   buildReminderEmailSubject,
   formatAttentionItemsAsLines,
 } from "@/lib/notifications/reminder-digest";
+import { ATTENTION_KIND, getAttentionPinKey } from "@/lib/dashboard/attention";
 
 describe("formatAttentionItemsAsLines", () => {
   it("maps labels from attention items", () => {
     const lines = formatAttentionItemsAsLines([
-      { kind: "chore_overdue", href: "/chores", label: "Overdue chore" },
+      {
+        kind: ATTENTION_KIND.CHORE_OVERDUE,
+        href: "/chores",
+        label: "Overdue chore",
+        pinKey: getAttentionPinKey(ATTENTION_KIND.CHORE_OVERDUE, "1"),
+      },
     ]);
     assert.deepEqual(lines, ["Overdue chore"]);
   });

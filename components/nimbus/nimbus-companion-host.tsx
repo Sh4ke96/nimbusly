@@ -31,6 +31,7 @@ import {
 } from "@/lib/nimbus/session-greeting";
 import { readSearchStoresSnapshot } from "@/lib/search/search-stores-snapshot";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
+import { getDisplayName } from "@/lib/profile";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useNimbusStore } from "@/lib/stores/nimbus-store";
 import { useT } from "@/lib/lang-context";
@@ -87,7 +88,7 @@ export function NimbusCompanionHost() {
 
       const greeting = formatNimbusSessionGreeting(
         t.companion.sessionGreetings,
-        profile?.display_name
+        profile ? getDisplayName(profile) : null
       );
       if (!greeting) return;
 
@@ -103,7 +104,8 @@ export function NimbusCompanionHost() {
     menuOpen,
     hintIndex,
     hintMessage,
-    profile?.display_name,
+    profile?.first_name,
+    profile?.last_name,
     announceCustomHint,
     t,
   ]);
