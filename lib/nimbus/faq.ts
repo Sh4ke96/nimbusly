@@ -17,6 +17,10 @@ export const NIMBUS_FAQ_ID = {
   WATCH_DASHBOARD: "watchDashboard",
   SHOPPING_CATEGORIES: "shoppingCategories",
   JOIN_FAMILY: "joinFamily",
+  CREATE_FAMILY: "createFamily",
+  LEAVE_FAMILY: "leaveFamily",
+  MANAGE_FAMILY_ROLES: "manageFamilyRoles",
+  ACCOUNT_TYPE_SETUP: "accountTypeSetup",
 } as const;
 
 export type NimbusFaqId = (typeof NIMBUS_FAQ_ID)[keyof typeof NIMBUS_FAQ_ID];
@@ -41,7 +45,11 @@ export const NIMBUS_FAQ_HREF: Record<NimbusFaqId, string> = {
   [NIMBUS_FAQ_ID.EXPORT_CSV]: "/budget",
   [NIMBUS_FAQ_ID.WATCH_DASHBOARD]: "/dashboard",
   [NIMBUS_FAQ_ID.SHOPPING_CATEGORIES]: "/profile/settings?tab=shopping-categories",
-  [NIMBUS_FAQ_ID.JOIN_FAMILY]: "/profile/settings?tab=family",
+  [NIMBUS_FAQ_ID.JOIN_FAMILY]: "/profile/settings?tab=account#join-family",
+  [NIMBUS_FAQ_ID.CREATE_FAMILY]: "/profile/settings?tab=account",
+  [NIMBUS_FAQ_ID.LEAVE_FAMILY]: "/profile/settings?tab=family",
+  [NIMBUS_FAQ_ID.MANAGE_FAMILY_ROLES]: "/profile/settings?tab=family",
+  [NIMBUS_FAQ_ID.ACCOUNT_TYPE_SETUP]: "/profile/settings?tab=account",
 };
 
 export const NIMBUS_FAQ_MODULE_LABEL_KEY: Record<
@@ -74,4 +82,8 @@ export const NIMBUS_FAQ_MODULE_LABEL_KEY: Record<
   [NIMBUS_FAQ_ID.WATCH_DASHBOARD]: "dashboard",
   [NIMBUS_FAQ_ID.SHOPPING_CATEGORIES]: "settings",
   [NIMBUS_FAQ_ID.JOIN_FAMILY]: "settings",
+  [NIMBUS_FAQ_ID.CREATE_FAMILY]: "settings",
+  [NIMBUS_FAQ_ID.LEAVE_FAMILY]: "settings",
+  [NIMBUS_FAQ_ID.MANAGE_FAMILY_ROLES]: "settings",
+  [NIMBUS_FAQ_ID.ACCOUNT_TYPE_SETUP]: "settings",
 };

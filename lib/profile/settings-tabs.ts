@@ -8,6 +8,9 @@ import {
 export type { SettingsTab };
 
 export function parseSettingsTab(value: string | null): SettingsTab {
+  if (value === SETTINGS_TAB.PERMISSIONS) {
+    return SETTINGS_TAB.FAMILY;
+  }
   if (value && SETTINGS_TABS.includes(value as SettingsTab)) {
     return value as SettingsTab;
   }

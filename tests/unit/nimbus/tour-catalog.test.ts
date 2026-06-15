@@ -25,6 +25,18 @@ describe("nimbus tour catalog", () => {
     assert.equal(last?.id, "summary");
   });
 
+  it("deepens family tour with roles and leave steps", () => {
+    const ids = getNimbusTourSteps(NIMBUS_TOUR_ID.FAMILY).map((step) => step.id);
+    assert.ok(ids.includes("member-roles"));
+    assert.ok(ids.includes("leave-family"));
+  });
+
+  it("solo settings tour opens account tab steps", () => {
+    const ids = getNimbusTourSteps(NIMBUS_TOUR_ID.SETTINGS_SOLO).map((step) => step.id);
+    assert.ok(ids.includes("account-type"));
+    assert.ok(ids.includes("create-family"));
+  });
+
   it("deepens budget tour with income and watch steps", () => {
     const ids = getNimbusTourSteps(NIMBUS_TOUR_ID.BUDGET).map((step) => step.id);
     assert.ok(ids.includes("income"));

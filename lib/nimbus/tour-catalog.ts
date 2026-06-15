@@ -4,8 +4,9 @@ export const NIMBUS_TOUR_PREPARE = {
   DASHBOARD_SUMMARY: "dashboard-summary",
   DASHBOARD_MODULES: "dashboard-modules",
   SETTINGS_PROFILE: "settings-profile",
+  SETTINGS_ACCOUNT: "settings-account",
   SETTINGS_FAMILY: "settings-family",
-  SETTINGS_PERMISSIONS: "settings-permissions",
+  SETTINGS_PERMISSIONS: "settings-family",
   SETTINGS_PASSWORD: "settings-password",
 } as const;
 
@@ -115,18 +116,25 @@ const INTRO_TOUR: NimbusTourStep[] = [
 
 const SETTINGS_SOLO_TOUR: NimbusTourStep[] = [
   {
-    id: "join-family",
-    route: "/profile/settings",
-    target: NIMBUS_TOUR_TARGET.SETTINGS_JOIN_FAMILY,
-    copyKey: "settingsSolo.joinFamily",
-    prepare: NIMBUS_TOUR_PREPARE.SETTINGS_PROFILE,
-  },
-  {
     id: "account-type",
     route: "/profile/settings",
     target: NIMBUS_TOUR_TARGET.SETTINGS_ACCOUNT_TYPE,
     copyKey: "settingsSolo.accountType",
-    prepare: NIMBUS_TOUR_PREPARE.SETTINGS_PROFILE,
+    prepare: NIMBUS_TOUR_PREPARE.SETTINGS_ACCOUNT,
+  },
+  {
+    id: "join-family",
+    route: "/profile/settings",
+    target: NIMBUS_TOUR_TARGET.SETTINGS_JOIN_FAMILY,
+    copyKey: "settingsSolo.joinFamily",
+    prepare: NIMBUS_TOUR_PREPARE.SETTINGS_ACCOUNT,
+  },
+  {
+    id: "create-family",
+    route: "/profile/settings",
+    target: NIMBUS_TOUR_TARGET.SETTINGS_CREATE_FAMILY,
+    copyKey: "settingsSolo.createFamily",
+    prepare: NIMBUS_TOUR_PREPARE.SETTINGS_ACCOUNT,
   },
   {
     id: "password",
@@ -166,11 +174,18 @@ const FAMILY_TOUR: NimbusTourStep[] = [
     prepare: NIMBUS_TOUR_PREPARE.SETTINGS_FAMILY,
   },
   {
-    id: "permissions",
+    id: "member-roles",
     route: "/profile/settings",
     target: NIMBUS_TOUR_TARGET.FAMILY_PERMISSIONS,
-    copyKey: "family.permissions",
-    prepare: NIMBUS_TOUR_PREPARE.SETTINGS_PERMISSIONS,
+    copyKey: "family.memberRoles",
+    prepare: NIMBUS_TOUR_PREPARE.SETTINGS_FAMILY,
+  },
+  {
+    id: "leave-family",
+    route: "/profile/settings",
+    target: NIMBUS_TOUR_TARGET.FAMILY_LEAVE,
+    copyKey: "family.leaveFamily",
+    prepare: NIMBUS_TOUR_PREPARE.SETTINGS_FAMILY,
   },
   {
     id: "realtime",

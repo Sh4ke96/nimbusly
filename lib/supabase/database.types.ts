@@ -1137,6 +1137,18 @@ export type Database = {
         Args: { p_role: string; p_target_user_id: string }
         Returns: undefined
       }
+      leave_family: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      remove_family_member: {
+        Args: { p_target_user_id: string }
+        Returns: undefined
+      }
+      transfer_family_ownership: {
+        Args: { p_new_founder_id: string }
+        Returns: undefined
+      }
       user_can_access_budget: {
         Args: { p_budget_id: string }
         Returns: boolean

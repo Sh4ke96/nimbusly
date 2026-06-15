@@ -11,6 +11,7 @@ import { useProfileStore } from "@/lib/stores/profile-store";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
 import { joinFamilyWithInviteCode } from "@/app/(app)/account/family-invite-actions";
 import { Ticket } from "lucide-react";
+import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus-tour";
 
 export function JoinFamilyForm() {
   const t = useT();
@@ -33,6 +34,7 @@ export function JoinFamilyForm() {
     <form
       id="join-family"
       action={action}
+      data-nimbus-tour={NIMBUS_TOUR_TARGET.SETTINGS_JOIN_FAMILY}
       className="space-y-4 max-w-lg rounded-none border border-border bg-muted/30 p-4"
     >
       <div className="flex items-start gap-3">

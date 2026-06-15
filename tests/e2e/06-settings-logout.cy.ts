@@ -34,12 +34,13 @@ describe("Ustawienia konta", () => {
     });
   });
 
-  it("wyświetla wszystkie zakładki w sidebarze", () => {
+  it("nie pokazuje osobnej zakładki uprawnień", () => {
     cy.get('[data-slot="tabs-trigger"]').as("tabs");
     cy.get("@tabs").contains(t.account.menuProfile).should("be.visible");
     cy.get("@tabs").contains(t.account.menuAccountType).should("be.visible");
     cy.get("@tabs").contains(t.account.menuFamily).should("be.visible");
     cy.get("@tabs").contains(t.account.menuPassword).should("be.visible");
+    cy.get("@tabs").contains(t.account.menuPermissions).should("not.exist");
   });
 
   it("przełącza zakładki przez sidebar", () => {
@@ -61,15 +62,24 @@ describe("Ustawienia konta", () => {
     cy.expectToast(t.account.profileSaved);
   });
 
-  it("pokazuje formularz typu konta", () => {
+  it("pokazuje typ konta (tylko podgląd)", () => {
     cy.visit(`/profile/settings?tab=${SETTINGS_TAB.ACCOUNT}`);
-    cy.contains("button", t.onboarding.familyTitle).should("be.visible");
-    cy.contains("button", t.onboarding.soloTitle).should("be.visible");
+    cy.contains(t.onboarding.familyTitle).should("be.visible");
+    cy.contains(t.onboarding.soloTitle).should("be.visible");
+    cy.contains(t.account.accountTypeFixedDesc).should("be.visible");
   });
 
-  it("pokazuje sekcję rodziny z nazwą", () => {
+  it("pokazuje scaloną sekcję rodziny z członkami i uprawnieniami", () => {
     cy.visit(`/profile/settings?tab=${SETTINGS_TAB.FAMILY}`);
     cy.get("#settings-family-name").should("have.value", "Rodzina Ustawień");
+    cy.contains("h3", t.account.permissionsMembersTitle).should("be.visible");
+    cy.contains("button", t.account.leaveFamilyBtn).should("be.visible");
+  });
+
+  it("przekierowuje legacy zakładkę permissions na family", () => {
+    cy.visit(`/profile/settings?tab=${SETTINGS_TAB.PERMISSIONS}`);
+    cy.url().should("include", `tab=${SETTINGS_TAB.FAMILY}`);
+    cy.contains("h3", t.account.permissionsMembersTitle).should("be.visible");
   });
 
   it("wysyła prośbę o reset hasła", () => {

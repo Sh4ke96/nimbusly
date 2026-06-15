@@ -34,7 +34,6 @@ import {
   KeyRound,
   LogOut,
   Palette,
-  ShieldCheck,
   Ticket,
   User,
   Users,
@@ -160,18 +159,6 @@ export function AccountMenu() {
                 >
                   <Users className="size-4 text-primary" />
                   {t.account.menuFamily}
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link
-                  href={settingsTabHref(SETTINGS_TAB.PERMISSIONS)}
-                  onClick={(e) =>
-                    navigateSettingsTab(SETTINGS_TAB.PERMISSIONS, pathname) && e.preventDefault()
-                  }
-                  className="flex items-center gap-2"
-                >
-                  <ShieldCheck className="size-4 text-primary" />
-                  {t.account.menuPermissions}
                 </Link>
               </DropdownMenuItem>
               {isFamilyFounder(family, user?.id) ? (

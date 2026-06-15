@@ -43,7 +43,7 @@ const introPl = {
   ),
   settingsNav: step(
     "Ustawienia konta",
-    "W profilu zarządzasz awatarem, typem konta, rodziną i hasłem."
+    "W profilu zarządzasz awatarem i Nimbusem. W Typ konta dołączysz lub założysz rodzinę. W Zarządzaj rodziną — członkami, rolami i zaproszeniami."
   ),
   settingsProfile: step(
     "Profil i Nimbus",
@@ -82,7 +82,7 @@ const introEn = {
   ),
   settingsNav: step(
     "Account settings",
-    "Manage your avatar, account type, family, and password."
+    "Manage your avatar and Nimbus in Profile. In Account type, join or create a family. In Manage family — members, roles, and invites."
   ),
   settingsProfile: step(
     "Profile and Nimbus",
@@ -182,8 +182,12 @@ const modulesPl = {
     list: step("Lista powiadomień", "Kliknij wpis, by przejść do modułu lub oznaczyć jako przeczytane."),
   },
   settingsSolo: {
-    joinFamily: step("Dołączenie do rodziny", "Wpisz kod zaproszenia lub poczekaj na zaproszenie od założyciela rodziny."),
-    accountType: step("Typ konta", "Przełącz między kontem solo a rodzinnym — decydujesz o współdzieleniu danych."),
+    accountType: step(
+      "Typ konta",
+      "Typ wybierasz przy rejestracji — tutaj tylko podgląd. Aby wejść do rodziny, użyj formularzy poniżej."
+    ),
+    joinFamily: step("Dołączenie do rodziny", "Wpisz kod zaproszenia od założyciela rodziny."),
+    createFamily: step("Załóż rodzinę", "Możesz też utworzyć własną rodzinę — zostaniesz jej administratorem."),
     password: step("Hasło", "Zmień hasło regularnie — bezpieczeństwo konta zaczyna się tutaj."),
   },
 };
@@ -280,8 +284,12 @@ const modulesEn: Record<string, Record<string, StepCopy>> = {
     list: step("Notification list", "Click an entry to open the module or mark as read."),
   },
   settingsSolo: {
-    joinFamily: step("Join a family", "Enter an invite code or wait for an invitation from the family founder."),
-    accountType: step("Account type", "Switch between solo and family — you decide what to share."),
+    accountType: step(
+      "Account type",
+      "You choose your type at sign-up — this screen is read-only. To join a family, use the forms below."
+    ),
+    joinFamily: step("Join a family", "Enter an invite code from the family founder."),
+    createFamily: step("Create a family", "You can also start your own family — you'll become its administrator."),
     password: step("Password", "Change your password regularly — account security starts here."),
   },
 };
@@ -342,9 +350,9 @@ export const nimbusCompanionExtraPl = {
   moduleTourAction: "Pokaż mi ten moduł",
   moduleTourActionDesc: "Przewodnik po tej stronie",
   familyTourAction: "Konto rodzinne",
-  familyTourActionDesc: "Członkowie, uprawnienia i sync",
+  familyTourActionDesc: "Zaproszenia, role, opuszczenie i sync",
   settingsSoloTourAction: "Konto solo",
-  settingsSoloTourActionDesc: "Rodzina, typ konta i hasło",
+  settingsSoloTourActionDesc: "Dołącz, załóż rodzinę i hasło",
   askNimbus: "Zapytaj Nimbusa",
   askNimbusDesc: "Pytania i szybkie odpowiedzi",
   faqSearchPlaceholder: "Szukaj w pytaniach…",
@@ -414,7 +422,7 @@ export const nimbusCompanionExtraPl = {
   faq: {
     addFamilyMember: {
       q: "Jak dodać członka rodziny?",
-      a: "W ustawieniach → Rodzina wyślesz zaproszenie mailem lub podasz kod zaproszenia.",
+      a: "Zarządzaj rodziną → wyślij zaproszenie mailem lub udostępnij kod zaproszenia.",
     },
     changeAvatar: {
       q: "Jak zmienić avatar?",
@@ -482,7 +490,23 @@ export const nimbusCompanionExtraPl = {
     },
     joinFamily: {
       q: "Jak dołączyć do rodziny?",
-      a: "Na koncie solo w ustawieniach wpisz kod zaproszenia od założyciela rodziny.",
+      a: "Na koncie solo: Typ konta → wpisz kod zaproszenia od założyciela rodziny.",
+    },
+    createFamily: {
+      q: "Jak założyć własną rodzinę?",
+      a: "Na koncie solo: Typ konta → Załóż rodzinę, podaj nazwę i zapisz. Zostaniesz administratorem.",
+    },
+    leaveFamily: {
+      q: "Jak opuścić rodzinę?",
+      a: "Zarządzaj rodziną → Opuść rodzinę. Założyciel musi najpierw przekazać rolę innemu członkowi.",
+    },
+    manageFamilyRoles: {
+      q: "Jak zarządzać rolami i członkami?",
+      a: "W Zarządzaj rodziną administrator nadaje role, usuwa członków, a założyciel może przekazać swoją rolę.",
+    },
+    accountTypeSetup: {
+      q: "Czy mogę zmienić typ konta po rejestracji?",
+      a: "Typ (solo / rodzinne) wybierasz przy zakładaniu konta. Później dołączasz do rodziny, zakładasz własną lub opuszczasz grupę — bez przełącznika typu.",
     },
   },
 };
@@ -500,9 +524,9 @@ export const nimbusCompanionExtraEn = {
   moduleTourAction: "Show me this module",
   moduleTourActionDesc: "Tour of this page",
   familyTourAction: "Family account",
-  familyTourActionDesc: "Members, permissions, and sync",
+  familyTourActionDesc: "Invites, roles, leaving, and sync",
   settingsSoloTourAction: "Solo account",
-  settingsSoloTourActionDesc: "Family, account type, and password",
+  settingsSoloTourActionDesc: "Join, create a family, and password",
   askNimbus: "Ask Nimbus",
   askNimbusDesc: "Questions and quick answers",
   faqSearchPlaceholder: "Search questions…",
@@ -572,7 +596,7 @@ export const nimbusCompanionExtraEn = {
   faq: {
     addFamilyMember: {
       q: "How do I add a family member?",
-      a: "Settings → Family: send an email invite or share your invite code.",
+      a: "Manage family → send an email invite or share your invite code.",
     },
     changeAvatar: {
       q: "How do I change my avatar?",
@@ -640,7 +664,23 @@ export const nimbusCompanionExtraEn = {
     },
     joinFamily: {
       q: "How do I join a family?",
-      a: "On a solo account in Settings, enter the invite code from the family founder.",
+      a: "On a solo account: Account type → enter the invite code from the family founder.",
+    },
+    createFamily: {
+      q: "How do I create my own family?",
+      a: "On a solo account: Account type → Create family, enter a name, and save. You become the administrator.",
+    },
+    leaveFamily: {
+      q: "How do I leave a family?",
+      a: "Manage family → Leave family. The founder must transfer founder role to another member first.",
+    },
+    manageFamilyRoles: {
+      q: "How do I manage roles and members?",
+      a: "In Manage family, admins assign roles and remove members; the founder can transfer founder ownership.",
+    },
+    accountTypeSetup: {
+      q: "Can I change account type after sign-up?",
+      a: "You choose solo or family at sign-up. Later you join, create, or leave a family — there is no account-type toggle.",
     },
   },
 };

@@ -29,6 +29,7 @@ export const NIMBUS_TOUR_TARGET = {
   SETTINGS_NAV: "settings-nav",
   SETTINGS_PROFILE: "settings-profile",
   SETTINGS_JOIN_FAMILY: "settings-join-family",
+  SETTINGS_CREATE_FAMILY: "settings-create-family",
   SETTINGS_ACCOUNT_TYPE: "settings-account-type",
   SETTINGS_SHOPPING_CATEGORIES: "settings-shopping-categories",
   SETTINGS_PASSWORD: "settings-password",
@@ -102,6 +103,7 @@ export const NIMBUS_TOUR_TARGET = {
   FAMILY_SETTINGS_TAB: "family-settings-tab",
   FAMILY_MEMBERS: "family-members",
   FAMILY_PERMISSIONS: "family-permissions",
+  FAMILY_LEAVE: "family-leave",
   FAMILY_REALTIME: "family-realtime",
 } as const;
 

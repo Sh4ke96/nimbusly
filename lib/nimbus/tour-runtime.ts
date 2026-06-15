@@ -36,11 +36,14 @@ export function prepareTourStep(prepare: NimbusTourPrepare | undefined) {
     case NIMBUS_TOUR_PREPARE.SETTINGS_PROFILE:
       dispatchSettingsTab(SETTINGS_TAB.PROFILE);
       break;
+    case NIMBUS_TOUR_PREPARE.SETTINGS_ACCOUNT:
+      dispatchSettingsTab(SETTINGS_TAB.ACCOUNT);
+      break;
     case NIMBUS_TOUR_PREPARE.SETTINGS_FAMILY:
       dispatchSettingsTab(SETTINGS_TAB.FAMILY);
       break;
     case NIMBUS_TOUR_PREPARE.SETTINGS_PERMISSIONS:
-      dispatchSettingsTab(SETTINGS_TAB.PERMISSIONS);
+      dispatchSettingsTab(SETTINGS_TAB.FAMILY);
       break;
     case NIMBUS_TOUR_PREPARE.SETTINGS_PASSWORD:
       dispatchSettingsTab(SETTINGS_TAB.PASSWORD);

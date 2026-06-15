@@ -33,3 +33,9 @@ export function parseFamilyMemberRoleFromForm(formData: FormData): {
     role: getFormTrimmedString(formData, FAMILY_FORM_FIELD.ROLE),
   };
 }
+
+export function parseFamilyMemberIdFromForm(formData: FormData): { memberId: string } {
+  return {
+    memberId: getFormTrimmedString(formData, FAMILY_FORM_FIELD.MEMBER_ID),
+  };
+}

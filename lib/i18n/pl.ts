@@ -141,7 +141,7 @@ export const pl: Dict = {
       },
       {
         title: "Odpowiada jak człowiek",
-        desc: "W menu „Zapytaj Nimbusa” znajdziesz FAQ po polsku i angielsku — od zaproszeń do rodziny, przez CSV i watch na dashboardzie, po skrót Ctrl+K wyszukiwarki.",
+        desc: "W menu „Zapytaj Nimbusa” znajdziesz FAQ po polsku i angielsku — zaproszenia, role rodziny, opuszczenie grupy, CSV, watch na dashboardzie i skrót Ctrl+K.",
       },
     ],
     asideTitle: "Co zobaczysz po zalogowaniu",
@@ -164,7 +164,7 @@ export const pl: Dict = {
       },
       {
         title: "FAQ w menu",
-        desc: "Ponad dziewiętnaście pytań z linkami do właściwych ekranów — bez szukania w dokumentacji.",
+        desc: "Ponad dwadzieścia pytań z linkami do właściwych ekranów — role rodziny, opuszczenie grupy i typ konta włączone.",
       },
       {
         title: "Celebracje",
@@ -329,6 +329,39 @@ export const pl: Dict = {
     profileTitle: "Twój profil",
     accountTypeTitle: "Typ konta",
     accountTypeDesc: "Wybierz, czy korzystasz solo, czy z rodziną.",
+    accountTypeFixedDesc:
+      "Typ konta wybierasz przy zakładaniu konta. Aby dołączyć do rodziny lub założyć własną, skorzystaj z opcji poniżej. Aby opuścić rodzinę, przejdź do zakładki „Zarządzaj rodziną”.",
+    createFamilyTitle: "Załóż rodzinę",
+    createFamilyDesc: "Utwórz nową rodzinę i zostań jej administratorem.",
+    createFamilySubmit: "Załóż rodzinę",
+    createFamilySuccess: "Rodzina została utworzona. Zakładki rodzinne są już dostępne w ustawieniach.",
+    leaveFamilyTitle: "Opuść rodzinę",
+    leaveFamilyDesc:
+      "Wrócisz na konto solo i stracisz dostęp do współdzielonych danych rodzinnych w aplikacji.",
+    leaveFamilyBtn: "Opuść rodzinę",
+    leaveFamilySuccess: "Opuściłeś rodzinę. Twoje konto jest teraz solo.",
+    leaveFamilyFounderBlockedDesc:
+      "Jako założyciel musisz najpierw przekazać rolę założyciela innemu członkowi rodziny. Użyj przycisku „Przekaż założyciela” przy wybranym członku.",
+    leaveFamilyDialogTitle: "Opuścić rodzinę?",
+    leaveFamilyDialogDesc:
+      "Stracisz dostęp do współdzielonych modułów rodzinnych. Tej operacji nie można cofnąć z poziomu aplikacji.",
+    leaveFamilyDialogConfirm: "Tak, opuść rodzinę",
+    removeMemberBtn: "Usuń",
+    removeMemberSuccess: "Członek został usunięty z rodziny.",
+    removeMemberDialogTitle: "Usunąć z rodziny?",
+    removeMemberDialogDesc:
+      "{name} straci dostęp do współdzielonych danych rodzinnych i przejdzie na konto solo.",
+    removeMemberDialogConfirm: "Tak, usuń z rodziny",
+    transferFounderBtn: "Przekaż założyciela",
+    transferFounderSuccess: "Rola założyciela została przekazana.",
+    transferFounderDialogTitle: "Przekazać rolę założyciela?",
+    transferFounderDialogDesc:
+      "{name} stanie się założycielem rodziny z pełnymi uprawnieniami. Ty pozostaniesz administratorem.",
+    transferFounderDialogConfirm: "Tak, przekaż założyciela",
+    errorFounderMustTransfer: "Najpierw przekaż rolę założyciela innemu członkowi rodziny.",
+    errorCannotRemoveFounder: "Nie można usunąć założyciela rodziny. Przekaż najpierw rolę założyciela.",
+    errorUseLeaveFamily: "Aby opuścić rodzinę, użyj opcji „Opuść rodzinę”.",
+    errorAlreadyFounder: "Już jesteś założycielem tej rodziny.",
     familyTitle: "Twoja rodzina",
     familyNameLabel: "Nazwa rodziny",
     familyNamePlaceholder: "Rodzina Kowalskich",
@@ -365,7 +398,7 @@ export const pl: Dict = {
     errorCannotDemoteFounder: "Nie można odebrać uprawnień założycielowi rodziny.",
     errorCannotDemoteSelf: "Nie możesz odebrać sobie roli administratora.",
     permissionsDesc:
-      "Administratorzy mogą nadawać uprawnienia członkom rodziny. Założyciel rodziny zawsze pozostaje administratorem.",
+      "Administratorzy mogą nadawać role, usuwać członków i zarządzać rodziną. Założyciel może przekazać rolę założyciela innemu członkowi przed opuszczeniem rodziny.",
     permissionsMembersTitle: "Członkowie i role",
     permissionsYou: "Ty",
     permissionsFounder: "Założyciel",
@@ -381,6 +414,19 @@ export const pl: Dict = {
     permissionsPromotedSuccess: "Nadano uprawnienia administratora.",
     permissionsDemotedSuccess: "Odebrano uprawnienia administratora.",
     soloWarning: "Przejście na konto solo odłączy Cię od rodziny. Inni członkowie pozostaną w grupie.",
+    accountTypeChangeRequiresConfirm:
+      "Zmiana typu konta wymaga potwierdzenia — przeczytaj konsekwencje i zaznacz pole poniżej przed zapisem.",
+    accountTypeConfirmLabel: "Rozumiem konsekwencje i chcę zmienić typ konta",
+    accountTypeToFamilyConsequences:
+      "Konto rodzinne umożliwia współdzielenie modułów, zapraszanie bliskich i wspólne zarządzanie domem. Zostaniesz przy obecnej rodzinie.",
+    accountTypeToFamilyCreateConsequences:
+      "Utworzysz nową rodzinę i zostaniesz jej administratorem. Zyskasz dostęp do zaproszeń, uprawnień i współdzielonych modułów z bliskimi.",
+    accountTypeToSoloConsequences:
+      "Przejście na konto solo odłączy Cię od rodziny. Inni członkowie pozostaną w grupie, a Ty stracisz dostęp do współdzielonych danych rodzinnych w aplikacji.",
+    accountTypeConfirmRequired: "Zaznacz potwierdzenie, aby zapisać zmianę typu konta.",
+    accountTypeConfirmDialogTitle: "Zmienić typ konta?",
+    accountTypeConfirmDialogConfirm: "Tak, zmień typ konta",
+    accountTypeConfirmDialogCancel: "Anuluj",
     joinFamilyTitle: "Dołącz do rodziny",
     joinFamilyDesc: "Masz kod zaproszenia? Wpisz go tutaj, aby dołączyć do istniejącej rodziny.",
     joinFamilySubmit: "Dołącz do rodziny",
@@ -403,7 +449,7 @@ export const pl: Dict = {
     changePasswordSuccessMessage: "Wysłaliśmy link do zmiany hasła. Kliknij go w mailu, aby ustawić nowe hasło.",
     changePasswordBack: "Wróć do panelu",
     settingsTitle: "Ustawienia konta",
-    settingsSubtitle: "Zarządzaj profilem, typem konta i rodziną.",
+    settingsSubtitle: "Zarządzaj profilem, rodziną i bezpieczeństwem konta.",
     settingsBack: "Wróć do panelu",
     breadcrumbDashboard: "Panel",
     errorUnauthorized: "Musisz być zalogowany.",

@@ -24,16 +24,6 @@ export function parseProfileNamesFromForm(formData: FormData): {
   };
 }
 
-export function parseAccountModeSetupFromForm(formData: FormData): {
-  accountMode: string;
-  familyName: string;
-} {
-  return {
-    accountMode: getFormString(formData, PROFILE_FORM_FIELD.ACCOUNT_MODE),
-    familyName: getFormTrimmedString(formData, PROFILE_FORM_FIELD.FAMILY_NAME),
-  };
-}
-
 export function parseFamilyRenameFromForm(formData: FormData): { familyName: string } {
   return {
     familyName: getFormTrimmedString(formData, PROFILE_FORM_FIELD.FAMILY_NAME),

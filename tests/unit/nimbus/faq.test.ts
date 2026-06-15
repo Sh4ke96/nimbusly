@@ -15,6 +15,14 @@ describe("nimbus faq", () => {
     }
   });
 
+  it("links join family faq to account tab", () => {
+    assert.equal(
+      NIMBUS_FAQ_HREF[NIMBUS_FAQ_ID.JOIN_FAMILY],
+      "/profile/settings?tab=account#join-family"
+    );
+    assert.equal(NIMBUS_FAQ_HREF[NIMBUS_FAQ_ID.LEAVE_FAMILY], "/profile/settings?tab=family");
+  });
+
   it("links notifications and search faq to relevant routes", () => {
     assert.equal(NIMBUS_FAQ_HREF[NIMBUS_FAQ_ID.NOTIFICATIONS], "/notifications");
     assert.equal(NIMBUS_FAQ_HREF[NIMBUS_FAQ_ID.GLOBAL_SEARCH], "/dashboard");

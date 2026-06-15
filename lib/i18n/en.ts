@@ -164,7 +164,7 @@ export const en: Dict = {
       },
       {
         title: "FAQ in the menu",
-        desc: "Nineteen-plus questions with links to the right screens — no hunting through docs.",
+        desc: "Questions in Polish and English with links to the right screens — family invites, roles, leaving a group, CSV, dashboard watch, and Ctrl+K.",
       },
       {
         title: "Celebrations",
@@ -329,6 +329,39 @@ export const en: Dict = {
     profileTitle: "Your profile",
     accountTypeTitle: "Account type",
     accountTypeDesc: "Choose whether you use Nimbusly solo or with a family.",
+    accountTypeFixedDesc:
+      "Your account type is chosen during setup. To join or create a family, use the options below. To leave a family, go to the “Manage family” tab.",
+    createFamilyTitle: "Create a family",
+    createFamilyDesc: "Start a new family and become its administrator.",
+    createFamilySubmit: "Create family",
+    createFamilySuccess: "Family created. Family settings tabs are now available.",
+    leaveFamilyTitle: "Leave family",
+    leaveFamilyDesc:
+      "You will switch to a solo account and lose access to shared family data in the app.",
+    leaveFamilyBtn: "Leave family",
+    leaveFamilySuccess: "You left the family. Your account is now solo.",
+    leaveFamilyFounderBlockedDesc:
+      "As the founder, you must transfer founder ownership to another member first. Use “Transfer founder” next to the chosen member.",
+    leaveFamilyDialogTitle: "Leave the family?",
+    leaveFamilyDialogDesc:
+      "You will lose access to shared family modules. This cannot be undone from within the app.",
+    leaveFamilyDialogConfirm: "Yes, leave family",
+    removeMemberBtn: "Remove",
+    removeMemberSuccess: "Member removed from the family.",
+    removeMemberDialogTitle: "Remove from family?",
+    removeMemberDialogDesc:
+      "{name} will lose access to shared family data and switch to a solo account.",
+    removeMemberDialogConfirm: "Yes, remove from family",
+    transferFounderBtn: "Transfer founder",
+    transferFounderSuccess: "Founder ownership transferred.",
+    transferFounderDialogTitle: "Transfer founder role?",
+    transferFounderDialogDesc:
+      "{name} will become the family founder with full permissions. You will remain an admin.",
+    transferFounderDialogConfirm: "Yes, transfer founder",
+    errorFounderMustTransfer: "Transfer founder ownership to another member first.",
+    errorCannotRemoveFounder: "The family founder cannot be removed. Transfer founder role first.",
+    errorUseLeaveFamily: "Use “Leave family” to remove yourself from the family.",
+    errorAlreadyFounder: "You are already the founder of this family.",
     familyTitle: "Your family",
     familyNameLabel: "Family name",
     familyNamePlaceholder: "The Smith Family",
@@ -365,7 +398,7 @@ export const en: Dict = {
     errorCannotDemoteFounder: "The family founder cannot be demoted.",
     errorCannotDemoteSelf: "You cannot remove your own admin role.",
     permissionsDesc:
-      "Admins can grant permissions to family members. The family founder always remains an admin.",
+      "Admins can assign roles, remove members, and manage the family. The founder can transfer founder ownership to another member before leaving.",
     permissionsMembersTitle: "Members and roles",
     permissionsYou: "You",
     permissionsFounder: "Founder",
@@ -381,6 +414,19 @@ export const en: Dict = {
     permissionsPromotedSuccess: "Admin permissions granted.",
     permissionsDemotedSuccess: "Admin permissions removed.",
     soloWarning: "Switching to solo will disconnect you from the family. Other members will stay in the group.",
+    accountTypeChangeRequiresConfirm:
+      "Changing account type requires confirmation — read the consequences below and check the box before saving.",
+    accountTypeConfirmLabel: "I understand the consequences and want to change my account type",
+    accountTypeToFamilyConsequences:
+      "A family account lets you share modules, invite loved ones, and manage the household together. You will stay in your current family.",
+    accountTypeToFamilyCreateConsequences:
+      "You will create a new family and become its administrator. You will get access to invites, permissions, and shared modules with loved ones.",
+    accountTypeToSoloConsequences:
+      "Switching to solo will disconnect you from the family. Other members will stay in the group, and you will lose access to shared family data in the app.",
+    accountTypeConfirmRequired: "Check the confirmation box to save the account type change.",
+    accountTypeConfirmDialogTitle: "Change account type?",
+    accountTypeConfirmDialogConfirm: "Yes, change account type",
+    accountTypeConfirmDialogCancel: "Cancel",
     joinFamilyTitle: "Join a family",
     joinFamilyDesc: "Have an invite code? Enter it here to join an existing family.",
     joinFamilySubmit: "Join family",
@@ -403,7 +449,7 @@ export const en: Dict = {
     changePasswordSuccessMessage: "We sent a password reset link. Click it in the email to set your new password.",
     changePasswordBack: "Back to dashboard",
     settingsTitle: "Account settings",
-    settingsSubtitle: "Manage your profile, account type, and family.",
+    settingsSubtitle: "Manage your profile, family, and account security.",
     settingsBack: "Back to dashboard",
     breadcrumbDashboard: "Dashboard",
     errorUnauthorized: "You must be signed in.",

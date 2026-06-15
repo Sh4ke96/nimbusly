@@ -22,6 +22,7 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
       pl: [
         "Nimbus w prawym dolnym rogu: menu, toury, FAQ, podpowiedzi i tryb cichy",
         "Przewodniki po aplikacji, każdym module (12), koncie rodzinnym, powiadomieniach i ustawieniach solo",
+        "Zaktualizowane toury i FAQ: scalone zarządzanie rodziną, typ konta tylko przy rejestracji",
         "Hinty kontekstowe, sugestie cross-modułowe z przyciskami „Pokaż tour” / „Przejdź”, celebracje pierwszych akcji",
         "Wznowienie touru (Esc), wyciszenie sugestii, reakcja na panel „Wymaga uwagi”, skrót Ctrl+K w navbarze",
         "Sekcja o Nimbusie na stronie głównej oraz testy jednostkowe modułu Nimbus",
@@ -29,6 +30,7 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
       en: [
         "Nimbus in the bottom-right: menu, tours, FAQ, hints, and quiet mode",
         "Guides for the app, all 12 modules, family account, notifications, and solo settings",
+        "Updated tours and FAQ: merged family management, account type chosen at sign-up only",
         "Context hints, cross-module suggestions with Show tour / Go actions, first-action celebrations",
         "Tour resume (Esc), dismiss suggestions, Needs attention awareness, Ctrl+K shortcut in the navbar",
         "Nimbus section on the landing page and unit tests for the companion module",

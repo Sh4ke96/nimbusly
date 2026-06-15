@@ -182,15 +182,15 @@ export const nimbusModuleSummariesPl: Record<string, SummaryCopy> = {
   ),
   settingsSolo: summary(
     "Konto solo — podsumowanie",
-    "Ustawienia konta indywidualnego — rodzina, typ konta i bezpieczeństwo.",
+    "Ustawienia konta indywidualnego — dołączenie do rodziny, założenie własnej i bezpieczeństwo.",
     [
-      "Kod zaproszenia łączy Cię z rodziną założyciela.",
-      "Typ konta decyduje o współdzieleniu danych.",
+      "Typ konta wybierasz przy rejestracji — później tylko podgląd.",
+      "Kod zaproszenia lub formularz „Załóż rodzinę” w zakładce Typ konta.",
       "Hasło zmieniasz w dedykowanej sekcji.",
     ],
     [
-      "Rozważ dołączenie do rodziny lub założenie własnej.",
-      "Po przejściu na rodzinę uruchom tour konta rodzinnego.",
+      "Dołącz do rodziny kodem lub załóż własną grupę.",
+      "Po wejściu w rodzinę uruchom tour konta rodzinnego.",
       "Włącz tryb cichy Nimbusa, jeśli wolisz mniej podpowiedzi.",
     ]
   ),
@@ -367,15 +367,15 @@ export const nimbusModuleSummariesEn: Record<string, SummaryCopy> = {
   ),
   settingsSolo: summary(
     "Solo account — summary",
-    "Individual account settings — family, account type, and security.",
+    "Individual account settings — joining a family, creating your own, and security.",
     [
-      "An invite code connects you to the founder's family.",
-      "Account type decides what you share.",
+      "Account type is chosen at sign-up — later it's read-only.",
+      "Invite code or Create family form on the Account type tab.",
       "Change your password in the dedicated section.",
     ],
     [
-      "Consider joining a family or starting your own.",
-      "After switching to family, run the family account tour.",
+      "Join a family with a code or start your own group.",
+      "After joining a family, run the family account tour.",
       "Enable Nimbus quiet mode if you prefer fewer hints.",
     ]
   ),
@@ -383,16 +383,20 @@ export const nimbusModuleSummariesEn: Record<string, SummaryCopy> = {
 
 export const nimbusFamilyTourPl: Dict["nimbusTour"]["family"] = {
   familyTab: {
-    title: "Zakładka Rodzina",
-    body: "Tu zarządzasz nazwą rodziny, członkami i zaproszeniami.",
+    title: "Zarządzaj rodziną",
+    body: "Jedna zakładka na wszystko: nazwa, zaproszenia, członkowie, role i opuszczenie grupy.",
   },
   members: {
-    title: "Członkowie i zaproszenia",
-    body: "Wysyłaj zaproszenia mailem lub udostępnij kod — nowi członkowie dołączą do wspólnego konta.",
+    title: "Zaproszenia i nazwa",
+    body: "Zmień nazwę rodziny, wyślij zaproszenie mailem lub udostępnij kod — nowi członkowie dołączą do wspólnego konta.",
   },
-  permissions: {
-    title: "Uprawnienia",
-    body: "Founder ustala, kto może edytować moduły współdzielone — np. listy zakupów czy notatki.",
+  memberRoles: {
+    title: "Członkowie i role",
+    body: "Administrator nadaje role i usuwa członków. Założyciel może przekazać swoją rolę innemu — wtedy może opuścić rodzinę.",
+  },
+  leaveFamily: {
+    title: "Opuść rodzinę",
+    body: "Wrócisz na konto solo. Założyciel z innymi członkami musi najpierw przekazać rolę założyciela.",
   },
   realtime: {
     title: "Współdzielenie na żywo",
@@ -400,15 +404,15 @@ export const nimbusFamilyTourPl: Dict["nimbusTour"]["family"] = {
   },
   summary: {
     title: "Konto rodzinne — podsumowanie",
-    body: "Wspólne konto to współdzielone moduły, uprawnienia i synchronizacja na żywo.",
+    body: "Wspólne konto to współdzielone moduły, zarządzanie członkami i synchronizacja na żywo.",
     learned: [
-      "Rodzina zarządza członkami i zaproszeniami w ustawieniach.",
-      "Uprawnienia kontrolują, kto może edytować wspólne dane.",
+      "Zarządzaj rodziną łączy zaproszenia, role i członków w jednym miejscu.",
+      "Administratorzy kontrolują role; założyciel przekazuje własność przed opuszczeniem.",
       "Listy, notatki i obowiązki aktualizują się w czasie rzeczywistym.",
     ],
     next: [
       "Zaproś brakujących członków rodziny.",
-      "Ustaw uprawnienia pod swój model współpracy.",
+      "Ustal role pod swój model współpracy.",
       "Zacznij od wspólnej listy zakupów lub obowiązków.",
     ],
   },
@@ -416,16 +420,20 @@ export const nimbusFamilyTourPl: Dict["nimbusTour"]["family"] = {
 
 export const nimbusFamilyTourEn: Dict["nimbusTour"]["family"] = {
   familyTab: {
-    title: "Family tab",
-    body: "Manage your family name, members, and invitations here.",
+    title: "Manage family",
+    body: "One tab for everything: name, invites, members, roles, and leaving the group.",
   },
   members: {
-    title: "Members and invites",
-    body: "Send email invites or share your code — new members join the shared account.",
+    title: "Invites and name",
+    body: "Rename the family, send email invites, or share your code — new members join the shared account.",
   },
-  permissions: {
-    title: "Permissions",
-    body: "The founder decides who can edit shared modules — e.g. shopping lists or notes.",
+  memberRoles: {
+    title: "Members and roles",
+    body: "Admins assign roles and remove members. The founder can transfer ownership — then leave the family.",
+  },
+  leaveFamily: {
+    title: "Leave family",
+    body: "You'll return to a solo account. A founder with other members must transfer founder role first.",
   },
   realtime: {
     title: "Live sharing",
@@ -433,15 +441,15 @@ export const nimbusFamilyTourEn: Dict["nimbusTour"]["family"] = {
   },
   summary: {
     title: "Family account — summary",
-    body: "A family account means shared modules, permissions, and live sync.",
+    body: "A family account means shared modules, member management, and live sync.",
     learned: [
-      "Family settings manage members and invitations.",
-      "Permissions control who can edit shared data.",
+      "Manage family combines invites, roles, and members in one place.",
+      "Admins control roles; the founder transfers ownership before leaving.",
       "Lists, notes, and chores update in real time.",
     ],
     next: [
       "Invite any missing family members.",
-      "Set permissions for how you collaborate.",
+      "Set roles for how you collaborate.",
       "Start with a shared shopping list or chores.",
     ],
   },

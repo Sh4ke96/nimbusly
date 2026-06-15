@@ -2,13 +2,7 @@
 
 import { getServerT } from "@/lib/i18n/server";
 import { isAvatarColor } from "@/lib/avatar-colors";
-import { ACCOUNT_MODE, FAMILY_ROLE, type FamilyRole } from "@/lib/constants/account";
-import { familyInsertPayload } from "@/lib/supabase/row-mappers";
-import {
-  parseAccountModeSetupFromForm,
-  parseFamilyRenameFromForm,
-  parseProfileNamesFromForm,
-} from "@/lib/profile/form";
+import { parseFamilyRenameFromForm, parseProfileNamesFromForm } from "@/lib/profile/form";
 import { requireUser } from "@/lib/server-actions/require-user";
 
 export type AccountActionState = { error: string } | { success: string } | null;
@@ -43,76 +37,6 @@ export async function updateProfile(
   if (error) return { error: t.account.errorGeneric };
 
   return { success: t.account.profileSaved };
-}
-
-export async function updateAccountMode(
-  _prev: AccountActionState,
-  formData: FormData
-): Promise<AccountActionState> {
-  const t = await getServerT();
-  const { supabase, user } = await requireUser();
-
-  if (!user) {
-    return { error: t.account.errorUnauthorized };
-  }
-
-  const { accountMode, familyName } = parseAccountModeSetupFromForm(formData);
-
-  if (accountMode !== ACCOUNT_MODE.FAMILY && accountMode !== ACCOUNT_MODE.SOLO) {
-    return { error: t.account.errorGeneric };
-  }
-
-  if (accountMode === ACCOUNT_MODE.FAMILY && !familyName) {
-    return { error: t.account.errorFamilyName };
-  }
-
-  let familyId: string | null = null;
-  let familyRole: FamilyRole | null = null;
-
-  if (accountMode === ACCOUNT_MODE.FAMILY) {
-    const { data: existingProfile } = await supabase
-      .from("profiles")
-      .select("family_id, family_role")
-      .eq("id", user.id)
-      .maybeSingle();
-
-    if (existingProfile?.family_id) {
-      familyId = existingProfile.family_id;
-      familyRole = existingProfile.family_role as FamilyRole | null;
-    } else {
-      const { data: family, error: familyError } = await supabase
-        .from("families")
-        .insert(familyInsertPayload({ name: familyName, created_by: user.id }))
-        .select("id")
-        .single();
-
-      if (familyError || !family) {
-        return { error: t.account.errorGeneric };
-      }
-
-      familyId = family.id;
-      familyRole = FAMILY_ROLE.ADMIN;
-    }
-  }
-
-  const { error } = await supabase
-    .from("profiles")
-    .update({
-      account_mode: accountMode,
-      family_id: familyId,
-      family_role: accountMode === ACCOUNT_MODE.SOLO ? null : familyRole,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", user.id);
-
-  if (error) return { error: t.account.errorGeneric };
-
-  return {
-    success:
-      accountMode === ACCOUNT_MODE.FAMILY
-        ? t.account.accountModeFamilySaved
-        : t.account.accountModeSoloSaved,
-  };
 }
 
 export async function updateFamilyName(

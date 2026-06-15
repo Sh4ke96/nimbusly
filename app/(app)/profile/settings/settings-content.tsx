@@ -2,17 +2,15 @@
 
 import { Fragment, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { KeyRound, ListChecks, Palette, ShieldCheck, User, Users, type LucideIcon } from "lucide-react";
+import { KeyRound, ListChecks, Palette, User, Users, type LucideIcon } from "lucide-react";
 import { AppHeader } from "@/components/app/app-header";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProfileForm } from "@/components/profile/settings/profile-form";
-import { AccountTypeForm } from "@/components/profile/settings/account-type-form";
-import { JoinFamilyForm } from "@/components/profile/settings/join-family-form";
+import { AccountSection } from "@/components/profile/settings/account-section";
 import { FamilySection } from "@/components/profile/settings/family-section";
-import { FamilyPermissionsSection } from "@/components/profile/settings/family-permissions-section";
 import { NimbusTourToolbarAnchor } from "@/components/nimbus/nimbus-tour-toolbar-anchor";
 import { ShoppingCategoriesSection } from "@/components/profile/settings/shopping-categories-section";
 import { PasswordSection } from "@/components/profile/settings/password-section";
@@ -49,7 +47,6 @@ export default function ProfileSettingsPage() {
 
   const showFamily = profile?.account_mode === ACCOUNT_MODE.FAMILY && !!profile.family_id;
   const showShoppingCategories = showFamily && isFamilyFounder(family, user?.id);
-  const showJoinFamily = profile?.account_mode === ACCOUNT_MODE.SOLO && !profile.family_id;
 
   const urlTab = parseSettingsTab(searchParams.get("tab"));
   const [tab, setTab] = useState<SettingsTab>(urlTab);
@@ -58,10 +55,7 @@ export default function ProfileSettingsPage() {
     { value: SETTINGS_TAB.PROFILE, icon: Palette, label: t.account.menuProfile },
     { value: SETTINGS_TAB.ACCOUNT, icon: User, label: t.account.menuAccountType },
     ...(showFamily
-      ? [
-          { value: SETTINGS_TAB.FAMILY, icon: Users, label: t.account.menuFamily },
-          { value: SETTINGS_TAB.PERMISSIONS, icon: ShieldCheck, label: t.account.menuPermissions },
-        ]
+      ? [{ value: SETTINGS_TAB.FAMILY, icon: Users, label: t.account.menuFamily }]
       : []),
     ...(showShoppingCategories
       ? [
@@ -83,10 +77,16 @@ export default function ProfileSettingsPage() {
 
   useEffect(() => {
     if (!loaded) return;
+    const rawTab = searchParams.get("tab");
+    if (rawTab === SETTINGS_TAB.PERMISSIONS) {
+      window.history.replaceState(window.history.state, "", settingsTabHref(SETTINGS_TAB.FAMILY));
+    }
+  }, [loaded, searchParams]);
+
+  useEffect(() => {
+    if (!loaded) return;
     if (
-      (tab === SETTINGS_TAB.FAMILY ||
-        tab === SETTINGS_TAB.PERMISSIONS ||
-        tab === SETTINGS_TAB.SHOPPING_CATEGORIES) &&
+      (tab === SETTINGS_TAB.FAMILY || tab === SETTINGS_TAB.SHOPPING_CATEGORIES) &&
       !showFamily
     ) {
       setTab(SETTINGS_TAB.PROFILE);
@@ -189,25 +189,14 @@ export default function ProfileSettingsPage() {
                     <ProfileForm />
                   </TabsContent>
 
-                  <TabsContent value={SETTINGS_TAB.ACCOUNT} className="mt-0 outline-none space-y-8">
-                    <div data-nimbus-tour={NIMBUS_TOUR_TARGET.SETTINGS_ACCOUNT_TYPE}>
-                      <AccountTypeForm />
-                    </div>
-                    <NimbusTourToolbarAnchor
-                      tourTarget={NIMBUS_TOUR_TARGET.SETTINGS_JOIN_FAMILY}
-                      visible={showJoinFamily}
-                    >
-                      {showJoinFamily ? <JoinFamilyForm /> : null}
-                    </NimbusTourToolbarAnchor>
+                  <TabsContent value={SETTINGS_TAB.ACCOUNT} className="mt-0 outline-none">
+                    <AccountSection />
                   </TabsContent>
 
                   {showFamily && (
                     <>
                       <TabsContent value={SETTINGS_TAB.FAMILY} className="mt-0 outline-none">
                         <FamilySection />
-                      </TabsContent>
-                      <TabsContent value={SETTINGS_TAB.PERMISSIONS} className="mt-0 outline-none">
-                        <FamilyPermissionsSection />
                       </TabsContent>
                       {showShoppingCategories ? (
                         <TabsContent
