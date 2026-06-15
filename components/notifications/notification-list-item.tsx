@@ -14,6 +14,7 @@ import {
 import { markNotificationRead } from "@/app/(app)/notifications/actions";
 import { useT } from "@/lib/lang-context";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
+import { useNimbusCelebration } from "@/lib/hooks/use-nimbus-celebration";
 import { cn } from "@/lib/utils";
 
 function formatWhen(iso: string, locale: string) {
@@ -38,11 +39,13 @@ export function NotificationListItem({
 }: NotificationListItemProps) {
   const t = useT();
   const [markState, markAction] = useActionState(markNotificationRead, null);
+  const celebrate = useNimbusCelebration();
   const moduleId = getNotificationModuleId(item.type);
   const moduleHref = getNotificationModuleHref(item.type);
   const moduleLinkLabel = moduleId ? t.notifications[NOTIFICATION_MODULE_LINK_LABEL[moduleId]] : null;
 
   useActionFeedback(markState, () => {
+    celebrate("firstNotification");
     onMarkedRead?.();
   });
 

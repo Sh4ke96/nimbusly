@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { AlertTriangle, ChevronDown, ChevronUp, Pin } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus-tour";
 import {
   ATTENTION_KIND_ICON,
   isPinnedAttentionItem,
@@ -54,7 +55,7 @@ export function DashboardAttentionBanner({
         </span>
       </div>
       <ul className="space-y-1.5">
-        {visibleItems.map((item) => {
+        {visibleItems.map((item, index) => {
           const pinned = isPinnedAttentionItem(item, pinnedKeys);
           return (
             <li key={item.pinKey} className="flex items-stretch gap-1">
@@ -92,6 +93,7 @@ export function DashboardAttentionBanner({
                 type="button"
                 variant="ghost"
                 size="icon"
+                data-nimbus-tour={index === 0 ? NIMBUS_TOUR_TARGET.DASHBOARD_ATTENTION_PIN : undefined}
                 className={cn(
                   "size-9 shrink-0 rounded-none",
                   pinned && "text-attention hover:text-attention"

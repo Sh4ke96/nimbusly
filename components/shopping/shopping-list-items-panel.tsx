@@ -101,7 +101,7 @@ export function ShoppingListItemsPanel({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="w-full min-w-0 space-y-4">
       <div data-nimbus-tour={NIMBUS_TOUR_TARGET.SHOPPING_ADD_ITEM}>
         <ShoppingListAddItem
           listId={listId}
@@ -119,6 +119,7 @@ export function ShoppingListItemsPanel({
           <NimbusTourToolbarAnchor
             tourTarget={NIMBUS_TOUR_TARGET.SHOPPING_CATEGORIES}
             visible={useCategories && categoriesLoaded}
+            className="flex w-full min-w-0 flex-col"
           >
             {useCategories && categoriesLoaded ? (
               <ShoppingListCategorizedItems

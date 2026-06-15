@@ -1,18 +1,20 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { Logo } from "@/components/logo";
+import { LogoutConfirmDialog } from "@/components/account/logout-confirm-dialog";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageToggle } from "@/components/language-toggle";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useT } from "@/lib/lang-context";
-import { logout } from "@/app/(app)/actions";
 import { LogOut } from "lucide-react";
 import { OnboardingWizard } from "./onboarding-wizard";
 
 export function OnboardingView() {
   const t = useT();
+  const [logoutOpen, setLogoutOpen] = useState(false);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -21,14 +23,20 @@ export function OnboardingView() {
         <div className="flex items-center gap-2">
           <LanguageToggle />
           <ThemeToggle />
-          <form action={logout}>
-            <Button type="submit" variant="outline" size="sm" className="gap-1.5">
-              <LogOut className="size-4" />
-              <span className="hidden sm:inline">{t.onboarding.logout}</span>
-            </Button>
-          </form>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="cursor-pointer gap-1.5"
+            onClick={() => setLogoutOpen(true)}
+          >
+            <LogOut className="size-4" />
+            <span className="hidden sm:inline">{t.onboarding.logout}</span>
+          </Button>
         </div>
       </header>
+
+      <LogoutConfirmDialog open={logoutOpen} onOpenChange={setLogoutOpen} />
 
       <main className="flex flex-1 items-center justify-center px-4 py-12">
         <div className="w-full max-w-lg">

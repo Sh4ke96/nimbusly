@@ -1,18 +1,26 @@
 "use client";
 
 import { useActionState } from "react";
-import { Pencil, Trash2 } from "lucide-react";
-import { NoteCategoryBadge } from "@/components/notes/note-category-badge";
+import { Pencil, StickyNote, Trash2 } from "lucide-react";
 import { NOTE_FORM_FIELD } from "@/lib/notes/types";
 import type { Note, NoteCategory } from "@/lib/notes/types";
 import { isNoteVisibleToAllMembers } from "@/lib/notes/visibility";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
-import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardHeaderActionButton,
+  CardHeaderActions,
+  CardTitle,
+  CARD_TITLE_ROW_CLASSNAME,
+} from "@/components/ui/card";
 import { deleteNote } from "@/app/(app)/notes/actions";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
 import { useT } from "@/lib/lang-context";
 import { getDisplayName, type FamilyMember, type Profile } from "@/lib/profile";
-import { selectionListRowClasses } from "@/lib/ui/selection-styles";
+import { selectionCardClasses } from "@/lib/ui/selection-styles";
 import { cn } from "@/lib/utils";
 
 interface NoteCardProps {
@@ -65,35 +73,79 @@ export function NoteCard({
   const isOwner = note.created_by === userId;
   const creator = resolveCreatorName(note.created_by, userId, profile, members);
   const visibleMemberNames = resolveVisibleMemberNames(note.visible_to_member_ids, members);
+  const category = note.category_id
+    ? categories.find((item) => item.id === note.category_id)
+    : null;
+  const categoryEmoji = category?.icon_emoji ?? null;
+  const categoryName = category?.name ?? t.notes.uncategorizedLabel;
 
   const [deleteState, deleteAction, deletePending] = useActionState(deleteNote, null);
   useActionFeedback(deleteState, () => onChanged?.(), deletePending);
 
   return (
-    <li className="flex items-start gap-2 p-3 transition-colors">
-      <button
-        type="button"
-        onClick={onSelect}
-        className={cn(
-          "min-w-0 flex-1 cursor-pointer rounded-sm border-l-2 text-left transition-all duration-150",
-          "hover:bg-muted/60 -my-1 py-2 pl-3 pr-2",
-          selectionListRowClasses(isSelected)
+    <Card
+      className={cn(
+        "rounded-none py-0 shadow-sm transition-all duration-150",
+        selectionCardClasses(isSelected),
+        onSelect && "cursor-pointer hover:shadow-md"
+      )}
+      onClick={onSelect}
+      onKeyDown={
+        onSelect
+          ? (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              onSelect();
+            }
+          }
+          : undefined
+      }
+      role={onSelect ? "button" : undefined}
+      tabIndex={onSelect ? 0 : undefined}
+    >
+      <CardHeader>
+        <CardTitle className={CARD_TITLE_ROW_CLASSNAME}>
+          {categoryEmoji ? (
+            <span
+              className="inline-flex size-9 shrink-0 items-center justify-center rounded-none bg-muted/50 text-2xl leading-none"
+              aria-hidden
+            >
+              {categoryEmoji}
+            </span>
+          ) : (
+            <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-none bg-primary/10 text-primary">
+              <StickyNote className="size-4" aria-hidden />
+            </span>
+          )}
+          <span className="min-w-0 flex-1 wrap-break-word">{note.title}</span>
+        </CardTitle>
+        <CardDescription>{categoryName}</CardDescription>
+        {isOwner && (
+          <CardHeaderActions onClick={(e) => e.stopPropagation()}>
+            <CardHeaderActionButton onClick={onEdit} aria-label={t.notes.editBtn}>
+              <Pencil className="size-4" />
+            </CardHeaderActionButton>
+            <form action={deleteAction} className="border-l border-border">
+              <input type="hidden" name={NOTE_FORM_FIELD.ID} value={note.id} />
+              <CardHeaderActionButton
+                type="submit"
+                destructive
+                disabled={deletePending}
+                aria-label={t.notes.deleteBtn}
+              >
+                <Trash2 className="size-4" />
+              </CardHeaderActionButton>
+            </form>
+          </CardHeaderActions>
         )}
-      >
-        <div className="flex flex-wrap items-center gap-2">
-          <NoteCategoryBadge
-            categoryId={note.category_id}
-            categories={categories}
-            uncategorizedLabel={t.notes.uncategorizedLabel}
-          />
-          <span className="text-sm font-medium leading-snug">{note.title}</span>
-        </div>
+      </CardHeader>
+      <CardContent className="p-4">
         {note.content.trim() && (
-          <p className="mt-1 text-xs text-muted-foreground line-clamp-2 whitespace-pre-wrap">
+          <p className="text-sm leading-relaxed text-foreground whitespace-pre-wrap line-clamp-4">
             {note.content}
           </p>
         )}
-        <div className="mt-1 space-y-0.5 text-[11px] text-muted-foreground">
+        <div className="mt-3 space-y-0.5 text-[11px] text-muted-foreground">
           {isFamily && !isNoteVisibleToAllMembers(note.visible_to_member_ids) && (
             <p>
               {t.notes.visibleTo}: {visibleMemberNames.join(", ")}
@@ -105,34 +157,7 @@ export function NoteCard({
             </p>
           )}
         </div>
-      </button>
-      {isOwner && (
-        <div className="flex shrink-0 gap-0.5">
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="cursor-pointer text-muted-foreground hover:text-foreground"
-            onClick={onEdit}
-            aria-label={t.notes.editBtn}
-          >
-            <Pencil className="size-4" />
-          </Button>
-          <form action={deleteAction} onClick={(e) => e.stopPropagation()}>
-            <input type="hidden" name={NOTE_FORM_FIELD.ID} value={note.id} />
-            <Button
-              type="submit"
-              variant="ghost"
-              size="icon"
-              disabled={deletePending}
-              className="cursor-pointer text-destructive hover:text-destructive"
-              aria-label={t.notes.deleteBtn}
-            >
-              <Trash2 className="size-4" />
-            </Button>
-          </form>
-        </div>
-      )}
-    </li>
+      </CardContent>
+    </Card>
   );
 }

@@ -477,6 +477,8 @@ export const pl: Dict = {
     modules: "Moduły",
     moduleComingSoon: "Wkrótce dostępne",
     logout: "Wyloguj",
+    logoutConfirmTitle: "Wylogować się?",
+    logoutConfirmDesc: "Na pewno chcesz się wylogować z Nimbusly?",
     moduleLabels: {
       budget: "Budżet",
       shopping: "Zakupy",
@@ -604,6 +606,7 @@ export const pl: Dict = {
     changeSummaryDescription: "zaktualizowano opis",
     changeSummaryEmpty: "brak zmian",
     changeSummarySeparator: "; ",
+    calendarAddOnDay: "Dodaj urodziny na dzień {day}",
     calendarMonths: [
       "Styczeń",
       "Luty",
@@ -658,6 +661,7 @@ export const pl: Dict = {
     changeSummaryEmpty: "brak zmian",
     changeSummarySeparator: "; ",
     notificationDetailSeparator: " · ",
+    calendarAddOnDay: "Dodaj wpis na dzień {day}",
     calendarMonths: [
       "Styczeń",
       "Luty",
@@ -1099,6 +1103,7 @@ export const pl: Dict = {
     viewList: "Lista",
     viewCalendar: "Kalendarz",
     calendarNextDue: "Najbliższy termin",
+    calendarAddOnDay: "Dodaj obowiązek na dzień {day}",
     completedDaysProgress: "{done} z {total} dni",
     completedOccurrenceSuccess: "Ten dzień oznaczony jako zrobiony.",
     occurrenceCompletedLabel: "Ten dzień ukończony",

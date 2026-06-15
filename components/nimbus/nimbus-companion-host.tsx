@@ -6,7 +6,6 @@ import { NimbusCompanion } from "@/components/nimbus/nimbus-companion";
 import { NimbusTourOverlay } from "@/components/nimbus/nimbus-tour-overlay";
 import { NimbusTourSync } from "@/components/nimbus/nimbus-tour-sync";
 import {
-  NIMBUS_CALLING_LEAD_MS,
   NIMBUS_HINT_COUNT,
   NIMBUS_HINT_FIRST_DELAY_MS,
   NIMBUS_HINT_INTERVAL_MS,
@@ -15,10 +14,23 @@ import {
   NIMBUS_JOKE_CHANCE,
   NIMBUS_SESSION_GREETING_DELAY_MS,
 } from "@/lib/constants/nimbus";
-import { NIMBUS_TOUR_ID, getModuleTourIdForPath } from "@/lib/constants/nimbus-tour";
+import { NIMBUS_TOUR_ID, NIMBUS_TOUR_TARGET, getModuleTourIdForPath } from "@/lib/constants/nimbus-tour";
 import { countAttentionFromSnapshot } from "@/lib/nimbus/attention-count";
 import { formatNimbusSessionGreeting, pickRandomNimbusJoke } from "@/lib/nimbus/banter";
+import { buildChangelogHintMessage } from "@/lib/nimbus/changelog-hint";
+import { markChangelogSeen, shouldShowChangelogHint } from "@/lib/nimbus/changelog-seen";
 import { getNimbusContextHintKey } from "@/lib/nimbus/context-hints";
+import {
+  markContextHintShown,
+  shouldShowContextHint,
+} from "@/lib/nimbus/hint-frequency";
+import {
+  clearNimbusMessageQueue,
+  enqueueNimbusAttentionHint,
+  enqueueNimbusMessage,
+  initNimbusMessageDispatcher,
+  NIMBUS_MESSAGE_PRIORITY,
+} from "@/lib/nimbus/message-dispatcher";
 import { detectNimbusSuggestions, type NimbusSuggestionId } from "@/lib/nimbus/suggestions";
 import { filterSuppressedSuggestions } from "@/lib/nimbus/suggestion-suppress";
 import { NIMBUS_SUGGESTION_HREF } from "@/lib/nimbus/suggestion-links";
@@ -34,7 +46,7 @@ import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { getDisplayName } from "@/lib/profile";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useNimbusStore } from "@/lib/stores/nimbus-store";
-import { useT } from "@/lib/lang-context";
+import { useLang, useT } from "@/lib/lang-context";
 
 const ATTENTION_HINT_KEY = "nimbusly:attention-hint-date";
 
@@ -55,18 +67,16 @@ function markAttentionHintShownToday() {
 
 export function NimbusCompanionHost() {
   const t = useT();
+  const { lang } = useLang();
   const pathname = usePathname();
   const loaded = useProfileStore((s) => s.loaded);
   const profile = useProfileStore((s) => s.profile);
   const tourActive = useNimbusStore((s) => s.tourActive);
   const menuOpen = useNimbusStore((s) => s.menuOpen);
-  const hintIndex = useNimbusStore((s) => s.hintIndex);
-  const hintMessage = useNimbusStore((s) => s.hintMessage);
-  const announceHint = useNimbusStore((s) => s.announceHint);
-  const announceCustomHint = useNimbusStore((s) => s.announceCustomHint);
   const setNpcCalling = useNimbusStore((s) => s.setNpcCalling);
   const onboardingOffered = useRef(false);
   const sessionGreetingOffered = useRef(false);
+  const changelogOffered = useRef(false);
 
   const enabled = profile?.nimbus_companion_enabled !== false;
   const quiet = profile?.nimbus_companion_quiet === true;
@@ -77,121 +87,142 @@ export function NimbusCompanionHost() {
     pathname !== "/onboarding";
 
   useEffect(() => {
-    if (!visible || quiet || tourActive || menuOpen) return;
+    initNimbusMessageDispatcher();
+  }, []);
+
+  useEffect(() => {
+    if (tourActive || menuOpen) {
+      clearNimbusMessageQueue();
+    }
+  }, [tourActive, menuOpen]);
+
+  useEffect(() => {
+    if (!visible || quiet || tourActive || menuOpen || isNimbusHintsSnoozed()) return;
     if (!shouldShowSessionGreeting() || sessionGreetingOffered.current) return;
-    if (hintIndex !== null || hintMessage !== null) return;
+
+    const greeting = formatNimbusSessionGreeting(
+      t.companion.sessionGreetings,
+      profile ? getDisplayName(profile) : null
+    );
+    if (!greeting) return;
 
     sessionGreetingOffered.current = true;
-    const timer = window.setTimeout(() => {
-      if (isNimbusHintsSnoozed()) return;
-      if (!shouldShowSessionGreeting()) return;
+    enqueueNimbusMessage({
+      id: "session-greeting",
+      priority: NIMBUS_MESSAGE_PRIORITY.greeting,
+      kind: "greeting",
+      delayMs: NIMBUS_SESSION_GREETING_DELAY_MS,
+      onConsumed: () => {
+        if (!shouldShowSessionGreeting()) return;
+        markSessionGreetingShown();
+      },
+      message: greeting,
+    });
+  }, [visible, quiet, tourActive, menuOpen, profile?.first_name, profile?.last_name, t]);
 
-      const greeting = formatNimbusSessionGreeting(
-        t.companion.sessionGreetings,
-        profile ? getDisplayName(profile) : null
-      );
-      if (!greeting) return;
+  useEffect(() => {
+    if (!visible || quiet || tourActive || menuOpen || isNimbusHintsSnoozed()) return;
+    if (!shouldShowChangelogHint() || changelogOffered.current) return;
 
-      markSessionGreetingShown();
-      announceCustomHint(greeting, "greeting");
-    }, NIMBUS_SESSION_GREETING_DELAY_MS);
+    const message = buildChangelogHintMessage(
+      lang,
+      t.companion.changelogHintIntro,
+      t.companion.changelogHintOutro
+    );
+    if (!message) return;
 
-    return () => window.clearTimeout(timer);
-  }, [
-    visible,
-    quiet,
-    tourActive,
-    menuOpen,
-    hintIndex,
-    hintMessage,
-    profile?.first_name,
-    profile?.last_name,
-    announceCustomHint,
-    t,
-  ]);
+    changelogOffered.current = true;
+    enqueueNimbusMessage({
+      id: "changelog-version",
+      priority: NIMBUS_MESSAGE_PRIORITY.changelog,
+      kind: "changelog",
+      delayMs: 10_000,
+      message,
+      action: {
+        href: "/change-log",
+        actionLabel: "go",
+        changelog: true,
+      },
+      onConsumed: () => markChangelogSeen(),
+    });
+  }, [visible, quiet, tourActive, menuOpen, lang, t]);
 
   useEffect(() => {
     if (!visible || quiet || tourActive || menuOpen) return;
     if (!shouldOfferIntroTour() || onboardingOffered.current) return;
 
     onboardingOffered.current = true;
-    const timer = window.setTimeout(() => {
-      if (isNimbusHintsSnoozed()) return;
-      markIntroTourOffered();
-      announceCustomHint(t.companion.onboardingIntroOffer, "context", {
-        tourId: NIMBUS_TOUR_ID.INTRO,
-      });
-    }, 8_000);
-
-    return () => window.clearTimeout(timer);
-  }, [visible, quiet, tourActive, menuOpen, announceCustomHint, t]);
+    enqueueNimbusMessage({
+      id: "intro-tour-offer",
+      priority: NIMBUS_MESSAGE_PRIORITY.context,
+      kind: "context",
+      delayMs: 8_000,
+      message: t.companion.onboardingIntroOffer,
+      action: { tourId: NIMBUS_TOUR_ID.INTRO, actionLabel: "tour" },
+      onConsumed: markIntroTourOffered,
+    });
+  }, [visible, quiet, tourActive, menuOpen, t]);
 
   useEffect(() => {
     if (!visible || quiet || tourActive || menuOpen || isNimbusHintsSnoozed()) return;
-    if (hintIndex !== null || hintMessage !== null) return;
 
     const moduleTourId = getModuleTourIdForPath(pathname);
     if (moduleTourId && isFirstModuleVisit(pathname)) {
-      const timer = window.setTimeout(() => {
-        markModuleVisited(pathname);
-        announceCustomHint(t.companion.firstVisitTourOffer, "context", {
-          tourId: moduleTourId,
-        });
-      }, 6_000);
-      return () => window.clearTimeout(timer);
+      enqueueNimbusMessage({
+        id: `first-visit-${pathname}`,
+        priority: NIMBUS_MESSAGE_PRIORITY.context,
+        kind: "context",
+        delayMs: 6_000,
+        message: t.companion.firstVisitTourOffer,
+        action: { tourId: moduleTourId, actionLabel: "tour" },
+        onConsumed: () => markModuleVisited(pathname),
+      });
+      return;
     }
 
     const contextKey = getNimbusContextHintKey(pathname);
-    if (contextKey) {
-      const timer = window.setTimeout(() => {
-        if (isNimbusHintsSnoozed()) return;
-        const tourId = getModuleTourIdForPath(pathname) ?? undefined;
-        announceCustomHint(
-          t.companion.context[contextKey],
-          "context",
-          tourId ? { tourId } : undefined
-        );
-      }, 12_000);
-      return () => window.clearTimeout(timer);
-    }
-  }, [visible, quiet, tourActive, menuOpen, pathname, hintIndex, hintMessage, announceCustomHint, t]);
+    if (!contextKey || !shouldShowContextHint(contextKey)) return;
+
+    const tourId = getModuleTourIdForPath(pathname) ?? undefined;
+    enqueueNimbusMessage({
+      id: `context-${contextKey}`,
+      priority: NIMBUS_MESSAGE_PRIORITY.context,
+      kind: "context",
+      delayMs: 12_000,
+      message: t.companion.context[contextKey],
+      action: tourId
+        ? { tourId, actionLabel: "tour", contextKey }
+        : { contextKey },
+      onConsumed: () => markContextHintShown(contextKey),
+    });
+  }, [visible, quiet, tourActive, menuOpen, pathname, t]);
 
   useEffect(() => {
     if (!visible || quiet || tourActive || menuOpen || isNimbusHintsSnoozed()) return;
     if (pathname !== "/dashboard") return;
-    if (hintIndex !== null || hintMessage !== null) return;
     if (!shouldShowAttentionHintToday()) return;
 
     const snapshot = readSearchStoresSnapshot();
     const count = countAttentionFromSnapshot(snapshot, t);
     if (count === 0) return;
 
-    const timer = window.setTimeout(() => {
-      markAttentionHintShownToday();
-      setNpcCalling(true);
-      window.setTimeout(() => {
-        setNpcCalling(false);
-        announceCustomHint(
-          t.companion.attentionHint.replace("{count}", String(count)),
-          "attention",
-          { href: "/dashboard" }
-        );
-      }, NIMBUS_CALLING_LEAD_MS);
-    }, 5_000);
+    const message =
+      count > 3
+        ? t.companion.attentionHintMany.replace("{count}", String(count))
+        : t.companion.attentionHint.replace("{count}", String(count));
 
-    return () => window.clearTimeout(timer);
-  }, [
-    visible,
-    quiet,
-    tourActive,
-    menuOpen,
-    pathname,
-    hintIndex,
-    hintMessage,
-    announceCustomHint,
-    setNpcCalling,
-    t,
-  ]);
+    enqueueNimbusAttentionHint(
+      message,
+      {
+        scrollTarget: NIMBUS_TOUR_TARGET.DASHBOARD_ATTENTION,
+        actionLabel: "show",
+      },
+      {
+        delayMs: 5_000,
+        onConsumed: markAttentionHintShownToday,
+      }
+    );
+  }, [visible, quiet, tourActive, menuOpen, pathname, t]);
 
   useEffect(() => {
     if (!visible || quiet || tourActive || menuOpen || isNimbusHintsSnoozed()) return;
@@ -208,9 +239,15 @@ export function NimbusCompanionHost() {
 
       if (suggestions.length > 0 && Math.random() < 0.45) {
         const id = suggestions[Math.floor(Math.random() * suggestions.length)] as NimbusSuggestionId;
-        announceCustomHint(t.companion.suggestions[id], "suggestion", {
-          suggestionId: id,
-          href: NIMBUS_SUGGESTION_HREF[id],
+        enqueueNimbusMessage({
+          priority: NIMBUS_MESSAGE_PRIORITY.suggestion,
+          kind: "suggestion",
+          message: t.companion.suggestions[id],
+          action: {
+            suggestionId: id,
+            href: NIMBUS_SUGGESTION_HREF[id],
+            actionLabel: "go",
+          },
         });
         return;
       }
@@ -218,12 +255,20 @@ export function NimbusCompanionHost() {
       if (Math.random() < NIMBUS_JOKE_CHANCE) {
         const joke = pickRandomNimbusJoke(t.companion.jokes);
         if (joke) {
-          announceCustomHint(joke, "joke");
+          enqueueNimbusMessage({
+            priority: NIMBUS_MESSAGE_PRIORITY.joke,
+            kind: "joke",
+            message: joke,
+          });
           return;
         }
       }
 
-      announceHint(Math.floor(Math.random() * NIMBUS_HINT_COUNT));
+      enqueueNimbusMessage({
+        priority: NIMBUS_MESSAGE_PRIORITY.random,
+        kind: "random",
+        hintIndex: Math.floor(Math.random() * NIMBUS_HINT_COUNT),
+      });
     };
 
     let intervalId: number | undefined;
@@ -236,11 +281,14 @@ export function NimbusCompanionHost() {
       window.clearTimeout(timeoutId);
       if (intervalId !== undefined) window.clearInterval(intervalId);
     };
-  }, [visible, quiet, tourActive, menuOpen, announceHint, announceCustomHint, profile, t]);
+  }, [visible, quiet, tourActive, menuOpen, profile, t]);
 
   useEffect(() => {
-    if (!visible || quiet || tourActive || menuOpen || hintIndex !== null || hintMessage !== null) return;
+    if (!visible || quiet || tourActive || menuOpen) return;
     if (isNimbusHintsSnoozed()) return;
+
+    const state = useNimbusStore.getState();
+    if (state.hintMessage !== null || state.hintIndex !== null) return;
 
     let timeoutId: number | undefined;
 
@@ -259,7 +307,7 @@ export function NimbusCompanionHost() {
     return () => {
       if (timeoutId !== undefined) window.clearTimeout(timeoutId);
     };
-  }, [visible, quiet, tourActive, menuOpen, hintIndex, hintMessage, setNpcCalling]);
+  }, [visible, quiet, tourActive, menuOpen, setNpcCalling]);
 
   if (!visible) return null;
 

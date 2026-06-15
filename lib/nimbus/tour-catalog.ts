@@ -72,6 +72,13 @@ const INTRO_TOUR: NimbusTourStep[] = [
     prepare: NIMBUS_TOUR_PREPARE.DASHBOARD_SUMMARY,
   },
   {
+    id: "dashboard-attention-pin",
+    route: "/dashboard",
+    target: NIMBUS_TOUR_TARGET.DASHBOARD_ATTENTION_PIN,
+    copyKey: "intro.dashboardAttentionPin",
+    prepare: NIMBUS_TOUR_PREPARE.DASHBOARD_SUMMARY,
+  },
+  {
     id: "dashboard-overview",
     route: "/dashboard",
     target: NIMBUS_TOUR_TARGET.DASHBOARD_OVERVIEW,

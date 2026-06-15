@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/tooltip";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { useT } from "@/lib/lang-context";
+import { formatMessage } from "@/lib/i18n/format";
 import { buildMonthGrid, getMonthName, getWeekdayLabels, shiftMonth } from "@/lib/birthdays/calendar";
 import { birthdayDateKey, formatBirthdayLabel, type BirthdayEntry } from "@/lib/birthdays/types";
 import { getDisplayName } from "@/lib/profile";
@@ -29,6 +30,7 @@ interface BirthdayCalendarProps {
   focusedEntryId?: string | null;
   onMonthChange: (year: number, month: number) => void;
   onEntrySelect?: (entry: BirthdayEntry) => void;
+  onDayClick?: (day: number) => void;
 }
 
 function resolveCreatorName(
@@ -54,6 +56,7 @@ export function BirthdayCalendar({
   focusedEntryId,
   onMonthChange,
   onEntrySelect,
+  onDayClick,
 }: BirthdayCalendarProps) {
   const t = useT();
   const isFamily = profile?.account_mode === ACCOUNT_MODE.FAMILY && !!profile.family_id;
@@ -125,21 +128,33 @@ export function BirthdayCalendar({
               return <div key={`empty-${index}`} className="min-h-24 bg-background" />;
             }
 
-            const dayEntries = entriesByDay.get(birthdayDateKey(month, cell.day)) ?? [];
-            const isFocusedDay = focusedDay === cell.day;
+            const day = cell.day;
+            const dayEntries = entriesByDay.get(birthdayDateKey(month, day)) ?? [];
+            const isFocusedDay = focusedDay === day;
             const hasFocusedEntry = dayEntries.some((e) => e.id === focusedEntryId);
 
             return (
               <div
-                key={`${month}-${cell.day}`}
-                data-birthday-day={cell.day}
+                key={`${month}-${day}`}
+                data-birthday-day={day}
                 className={cn(
-                  "min-h-24 bg-background p-2 transition-all duration-200",
+                  "relative min-h-24 bg-background p-2 transition-all duration-200",
                   cell.isToday && !isFocusedDay && "shadow-[inset_0_0_0_1px] shadow-primary/30",
                   isFocusedDay &&
                   "bg-primary/4 shadow-[inset_0_0_0_2px] shadow-primary/50"
                 )}
               >
+                {onDayClick && (
+                  <button
+                    type="button"
+                    className="absolute inset-0 z-0 cursor-pointer hover:bg-muted/25"
+                    aria-label={formatMessage(t.birthdays.calendarAddOnDay, {
+                      day: String(day),
+                    })}
+                    onClick={() => onDayClick(day)}
+                  />
+                )}
+                <div className="relative z-10 pointer-events-none">
                 <span
                   className={cn(
                     "inline-flex size-6 items-center justify-center text-xs font-medium transition-colors",
@@ -150,9 +165,9 @@ export function BirthdayCalendar({
                         : "text-muted-foreground"
                   )}
                 >
-                  {cell.day}
+                  {day}
                 </span>
-                <div className="mt-1 space-y-1">
+                <div className="mt-1 space-y-1 pointer-events-auto">
                   {dayEntries.map((entry) => {
                     const isSelected = entry.id === focusedEntryId;
                     const creator = resolveCreatorName(entry.created_by, userId, profile, members);
@@ -189,6 +204,7 @@ export function BirthdayCalendar({
                       </Tooltip>
                     );
                   })}
+                </div>
                 </div>
               </div>
             );

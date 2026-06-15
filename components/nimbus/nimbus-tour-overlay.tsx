@@ -98,7 +98,7 @@ export function NimbusTourOverlay() {
   const progress = steps.length > 0 ? ((tourStepIndex + 1) / steps.length) * 100 : 0;
 
   return createPortal(
-    <div className="nimbus-tour-overlay fixed inset-0 z-[200]">
+    <div className="nimbus-tour-overlay fixed inset-0 z-200">
       {!isSummary && !rect && (
         <div
           className="absolute inset-0 bg-foreground/40 pointer-events-auto"
@@ -119,7 +119,7 @@ export function NimbusTourOverlay() {
         <NimbusTourSpotlight rect={rect} dimmed={syncing} onDismiss={endTour} />
       )}
 
-      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-[201] p-4 pb-6 sm:p-6 sm:pb-8">
+      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-201 p-4 pb-6 sm:p-6 sm:pb-8">
         <div
           className={cn(
             "pointer-events-auto mx-auto w-full border border-border bg-card/98 shadow-xl backdrop-blur-sm",

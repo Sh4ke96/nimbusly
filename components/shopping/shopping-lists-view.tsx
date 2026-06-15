@@ -166,7 +166,7 @@ export function ShoppingListsView() {
               </div>
             </section>
 
-            <section className="space-y-3" data-nimbus-tour={NIMBUS_TOUR_TARGET.SHOPPING_ITEMS}>
+            <section className="min-w-0 w-full space-y-3" data-nimbus-tour={NIMBUS_TOUR_TARGET.SHOPPING_ITEMS}>
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <ModuleSectionHeading icon={ShoppingBag}>
                   {activeList?.name ?? t.shoppingLists.itemsHeading}

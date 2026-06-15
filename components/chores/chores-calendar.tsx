@@ -23,6 +23,7 @@ import type { ChoreTask } from "@/lib/chores/types";
 import { parseChoreDateString } from "@/lib/chores/types";
 import { buildMonthGrid, getMonthName, getWeekdayLabels, shiftMonth } from "@/lib/birthdays/calendar";
 import { getDateFnsLocale } from "@/lib/i18n/date-fns-locale";
+import { formatMessage } from "@/lib/i18n/format";
 import { useLang, useT } from "@/lib/lang-context";
 import type { Profile } from "@/lib/profile";
 import { selectionPillClasses } from "@/lib/ui/selection-styles";
@@ -38,6 +39,7 @@ interface ChoresCalendarProps {
   focusedTaskId?: string | null;
   onMonthChange: (year: number, month: number) => void;
   onOccurrenceSelect?: (occurrence: ChoreCalendarOccurrence) => void;
+  onDayClick?: (day: number) => void;
   onChanged?: () => void;
 }
 
@@ -70,6 +72,7 @@ export function ChoresCalendar({
   focusedTaskId,
   onMonthChange,
   onOccurrenceSelect,
+  onDayClick,
   onChanged,
 }: ChoresCalendarProps) {
   const t = useT();
@@ -142,20 +145,32 @@ export function ChoresCalendar({
               return <div key={`empty-${index}`} className="min-h-24 bg-background" />;
             }
 
-            const dayOccurrences = occurrencesByDay.get(cell.day) ?? [];
-            const isFocusedDay = focusedDay === cell.day;
+            const day = cell.day;
+            const dayOccurrences = occurrencesByDay.get(day) ?? [];
+            const isFocusedDay = focusedDay === day;
             const hasFocusedTask = dayOccurrences.some((o) => o.taskId === focusedTaskId);
 
             return (
               <div
-                key={choreDateKey(year, month, cell.day)}
-                data-chore-day={cell.day}
+                key={choreDateKey(year, month, day)}
+                data-chore-day={day}
                 className={cn(
-                  "min-h-24 bg-background p-1.5 transition-all duration-200",
+                  "relative min-h-24 bg-background p-1.5 transition-all duration-200",
                   cell.isToday && !isFocusedDay && "shadow-[inset_0_0_0_1px] shadow-primary/30",
                   isFocusedDay && "bg-primary/4 shadow-[inset_0_0_0_2px] shadow-primary/50"
                 )}
               >
+                {onDayClick && (
+                  <button
+                    type="button"
+                    className="absolute inset-0 z-0 cursor-pointer hover:bg-muted/25"
+                    aria-label={formatMessage(t.chores.calendarAddOnDay, {
+                      day: String(day),
+                    })}
+                    onClick={() => onDayClick(day)}
+                  />
+                )}
+                <div className="relative z-10 pointer-events-none">
                 <span
                   className={cn(
                     "inline-flex size-6 items-center justify-center text-xs font-medium transition-colors",
@@ -166,9 +181,9 @@ export function ChoresCalendar({
                         : "text-muted-foreground"
                   )}
                 >
-                  {cell.day}
+                  {day}
                 </span>
-                <div className="mt-0.5 space-y-0.5">
+                <div className="mt-0.5 space-y-0.5 pointer-events-auto">
                   {dayOccurrences.map((occurrence) => {
                     const task = tasks.find((item) => item.id === occurrence.taskId);
                     const isSelected = occurrence.taskId === focusedTaskId;
@@ -212,8 +227,8 @@ export function ChoresCalendar({
                               {occurrence.iconEmoji ? `${occurrence.iconEmoji} ` : ""}
                               {occurrence.title}
                             </p>
-                            {schedule && <p className="text-xs">{schedule}</p>}
-                            <p className="text-xs text-background/70">
+                            {schedule && <p className="text-xs opacity-90">{schedule}</p>}
+                            <p className="text-xs opacity-80">
                               {formatIsoDate(occurrence.date, locale)}
                             </p>
                             {occurrence.isCompleted && (
@@ -222,14 +237,14 @@ export function ChoresCalendar({
                               </p>
                             )}
                             {occurrence.isNextDue && !occurrence.isCompleted && (
-                              <p className="text-xs text-background/80">{t.chores.calendarNextDue}</p>
+                              <p className="text-xs opacity-90">{t.chores.calendarNextDue}</p>
                             )}
                             {canComplete && !occurrence.isCompleted && (
                               <div onClick={(e) => e.stopPropagation()}>
                                 <ChoreOccurrenceCompleteButton
                                   taskId={occurrence.taskId}
                                   occurrenceDate={occurrence.date}
-                                  variant="default"
+                                  appearance="inline"
                                   onSuccess={onChanged}
                                 />
                               </div>
@@ -239,6 +254,7 @@ export function ChoresCalendar({
                       </Tooltip>
                     );
                   })}
+                </div>
                 </div>
               </div>
             );

@@ -318,6 +318,8 @@ export type Dict = {
     modules: string;
     moduleComingSoon: string;
     logout: string;
+    logoutConfirmTitle: string;
+    logoutConfirmDesc: string;
     moduleLabels: {
       budget: string;
       shopping: string;
@@ -445,6 +447,7 @@ export type Dict = {
     changeSummaryDescription: string;
     changeSummaryEmpty: string;
     changeSummarySeparator: string;
+    calendarAddOnDay: string;
     calendarMonths: string[];
     calendarWeekdays: string[];
   };
@@ -486,6 +489,7 @@ export type Dict = {
     changeSummaryEmpty: string;
     changeSummarySeparator: string;
     notificationDetailSeparator: string;
+    calendarAddOnDay: string;
     calendarMonths: string[];
     calendarWeekdays: string[];
     typeLabels: {
@@ -914,6 +918,7 @@ export type Dict = {
     viewList: string;
     viewCalendar: string;
     calendarNextDue: string;
+    calendarAddOnDay: string;
     completedDaysProgress: string;
     completedOccurrenceSuccess: string;
     occurrenceCompletedLabel: string;
@@ -1365,10 +1370,15 @@ export type Dict = {
     resumeTourActionDesc: string;
     hintActionTour: string;
     hintActionGo: string;
+    hintActionShow: string;
     suppressSuggestion: string;
+    suppressContextHint: string;
     onboardingIntroOffer: string;
     firstVisitTourOffer: string;
     attentionHint: string;
+    attentionHintMany: string;
+    changelogHintIntro: string;
+    changelogHintOutro: string;
     searchFirstUseHint: string;
     sessionGreetings: string[];
     jokes: string[];
@@ -1393,6 +1403,10 @@ export type Dict = {
       firstBirthday: string;
       firstPet: string;
       firstScheduleEntry: string;
+      firstGift: string;
+      firstWatchlistItem: string;
+      firstFamilyInvite: string;
+      firstNotification: string;
     };
     context: {
       dashboard: string;

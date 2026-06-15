@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import type { DateRange } from "react-day-picker";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,23 +29,51 @@ import { toast } from "sonner";
 interface ScheduleFormDialogProps {
   entries: ScheduleEntry[];
   onSuccess: () => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  initialDate?: Date;
+  onTriggerClick?: () => void;
 }
 
-export function ScheduleFormDialog({ entries, onSuccess }: ScheduleFormDialogProps) {
+export function ScheduleFormDialog({
+  entries,
+  onSuccess,
+  open: controlledOpen,
+  onOpenChange,
+  initialDate,
+  onTriggerClick,
+}: ScheduleFormDialogProps) {
   const t = useT();
   const celebrate = useNimbusCelebration();
-  const [open, setOpen] = useState<boolean>(false);
+  const [internalOpen, setInternalOpen] = useState<boolean>(false);
+  const isControlled = onOpenChange !== undefined;
+  const open = isControlled ? (controlledOpen ?? false) : internalOpen;
   const [range, setRange] = useState<DateRange | undefined>();
   const [entryType, setEntryType] = useState<ScheduleEntryType | "">("");
   const [description, setDescription] = useState<string>("");
   const [state, action, pending] = useActionState(createScheduleEntry, null);
 
+  function handleOpenChange(next: boolean) {
+    if (isControlled) {
+      onOpenChange?.(next);
+    } else {
+      setInternalOpen(next);
+    }
+    if (!next) {
+      setRange(undefined);
+      setEntryType("");
+      setDescription("");
+    }
+  }
+
+  useEffect(() => {
+    if (!open || !initialDate) return;
+    setRange({ from: initialDate, to: initialDate });
+  }, [open, initialDate]);
+
   useActionFeedback(state, () => {
     celebrate("firstScheduleEntry");
-    setOpen(false);
-    setRange(undefined);
-    setEntryType("");
-    setDescription("");
+    handleOpenChange(false);
     onSuccess();
   });
 
@@ -82,9 +110,14 @@ export function ScheduleFormDialog({ entries, onSuccess }: ScheduleFormDialogPro
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button>
+        <Button
+          type="button"
+          onClick={() => {
+            onTriggerClick?.();
+          }}
+        >
           <Plus className="size-4" />
           {t.schedule.addBtn}
         </Button>

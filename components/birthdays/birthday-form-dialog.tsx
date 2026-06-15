@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -19,23 +19,50 @@ import { toast } from "sonner";
 
 interface BirthdayFormDialogProps {
   onSuccess: () => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  initialDate?: Date;
+  onTriggerClick?: () => void;
 }
 
-export function BirthdayFormDialog({ onSuccess }: BirthdayFormDialogProps) {
+export function BirthdayFormDialog({
+  onSuccess,
+  open: controlledOpen,
+  onOpenChange,
+  initialDate,
+  onTriggerClick,
+}: BirthdayFormDialogProps) {
   const t = useT();
   const celebrate = useNimbusCelebration();
-  const [open, setOpen] = useState<boolean>(false);
+  const [internalOpen, setInternalOpen] = useState<boolean>(false);
+  const isControlled = onOpenChange !== undefined;
+  const open = isControlled ? (controlledOpen ?? false) : internalOpen;
   const [personName, setPersonName] = useState<string>("");
   const [date, setDate] = useState<Date | undefined>();
   const [description, setDescription] = useState<string>("");
   const [state, action, pending] = useActionState(createBirthday, null);
 
+  function handleOpenChange(next: boolean) {
+    if (isControlled) {
+      onOpenChange?.(next);
+    } else {
+      setInternalOpen(next);
+    }
+    if (!next) {
+      setPersonName("");
+      setDate(undefined);
+      setDescription("");
+    }
+  }
+
+  useEffect(() => {
+    if (!open || !initialDate) return;
+    setDate(initialDate);
+  }, [open, initialDate]);
+
   useActionFeedback(state, () => {
     celebrate("firstBirthday");
-    setOpen(false);
-    setPersonName("");
-    setDate(undefined);
-    setDescription("");
+    handleOpenChange(false);
     onSuccess();
   });
 
@@ -47,9 +74,14 @@ export function BirthdayFormDialog({ onSuccess }: BirthdayFormDialogProps) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button>
+        <Button
+          type="button"
+          onClick={() => {
+            onTriggerClick?.();
+          }}
+        >
           <Plus className="size-4" />
           {t.birthdays.addBtn}
         </Button>

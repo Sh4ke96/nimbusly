@@ -7,6 +7,10 @@ const CELEBRATION_KEYS = {
   FIRST_BIRTHDAY: "nimbusly:celebrated-first-birthday",
   FIRST_PET: "nimbusly:celebrated-first-pet",
   FIRST_SCHEDULE_ENTRY: "nimbusly:celebrated-first-schedule-entry",
+  FIRST_GIFT: "nimbusly:celebrated-first-gift",
+  FIRST_WATCHLIST_ITEM: "nimbusly:celebrated-first-watchlist-item",
+  FIRST_FAMILY_INVITE: "nimbusly:celebrated-first-family-invite",
+  FIRST_NOTIFICATION: "nimbusly:celebrated-first-notification",
 } as const;
 
 function hasCelebrated(key: string): boolean {
@@ -27,7 +31,11 @@ export type NimbusCelebrationId =
   | "firstUrgentNote"
   | "firstBirthday"
   | "firstPet"
-  | "firstScheduleEntry";
+  | "firstScheduleEntry"
+  | "firstGift"
+  | "firstWatchlistItem"
+  | "firstFamilyInvite"
+  | "firstNotification";
 
 const CELEBRATION_KEY_BY_ID: Record<NimbusCelebrationId, string> = {
   firstChore: CELEBRATION_KEYS.FIRST_CHORE,
@@ -38,6 +46,10 @@ const CELEBRATION_KEY_BY_ID: Record<NimbusCelebrationId, string> = {
   firstBirthday: CELEBRATION_KEYS.FIRST_BIRTHDAY,
   firstPet: CELEBRATION_KEYS.FIRST_PET,
   firstScheduleEntry: CELEBRATION_KEYS.FIRST_SCHEDULE_ENTRY,
+  firstGift: CELEBRATION_KEYS.FIRST_GIFT,
+  firstWatchlistItem: CELEBRATION_KEYS.FIRST_WATCHLIST_ITEM,
+  firstFamilyInvite: CELEBRATION_KEYS.FIRST_FAMILY_INVITE,
+  firstNotification: CELEBRATION_KEYS.FIRST_NOTIFICATION,
 };
 
 export function tryTriggerCelebration(id: NimbusCelebrationId): boolean {

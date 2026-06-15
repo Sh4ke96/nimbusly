@@ -26,6 +26,7 @@ import {
   NIMBUS_FAQ_MODULE_LABEL_KEY,
   type NimbusFaqId,
 } from "@/lib/nimbus/faq";
+import { sortFaqIdsForPath } from "@/lib/nimbus/faq-sort";
 import {
   NIMBUS_SNOOZE_24H_MS,
   NIMBUS_SNOOZE_WEEK_MS,
@@ -71,12 +72,14 @@ export function NimbusCompanionMenu({ onClose }: NimbusCompanionMenuProps) {
 
   const filteredFaqIds = useMemo(() => {
     const q = faqQuery.trim().toLowerCase();
-    if (!q) return NIMBUS_FAQ_IDS;
-    return NIMBUS_FAQ_IDS.filter((id) => {
-      const item = t.companion.faq[id];
-      return item.q.toLowerCase().includes(q) || item.a.toLowerCase().includes(q);
-    });
-  }, [faqQuery, t]);
+    const base = !q
+      ? NIMBUS_FAQ_IDS
+      : NIMBUS_FAQ_IDS.filter((id) => {
+          const item = t.companion.faq[id];
+          return item.q.toLowerCase().includes(q) || item.a.toLowerCase().includes(q);
+        });
+    return sortFaqIdsForPath(base, pathname);
+  }, [faqQuery, pathname, t]);
 
   function handleSnooze(durationMs: number) {
     snoozeNimbusHints(durationMs);

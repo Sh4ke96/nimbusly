@@ -22,6 +22,7 @@ export const NIMBUS_TOUR_TARGET = {
   DASHBOARD_GREETING: "dashboard-greeting",
   DASHBOARD_VIEW_TABS: "dashboard-view-tabs",
   DASHBOARD_ATTENTION: "dashboard-attention",
+  DASHBOARD_ATTENTION_PIN: "dashboard-attention-pin",
   DASHBOARD_OVERVIEW: "dashboard-overview",
   DASHBOARD_LAYOUT_EDIT: "dashboard-layout-edit",
   DASHBOARD_MODULES: "dashboard-modules",

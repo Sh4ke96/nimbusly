@@ -30,6 +30,7 @@ export const t = {
     greeting: "Dzień dobry",
     modules: "Moduły",
     logout: "Wyloguj",
+    logoutConfirmTitle: "Wylogować się?",
     moduleLabels: [
       "Budżet",
       "Zakupy",

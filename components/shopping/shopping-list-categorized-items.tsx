@@ -90,11 +90,11 @@ function SortableCategorySection({
       ref={isSortableCategory ? sortable.setNodeRef : undefined}
       style={isSortableCategory ? style : undefined}
       className={cn(
-        "border border-border bg-card shadow-sm",
+        "w-full min-w-0 border border-border bg-card shadow-sm",
         sortable.isDragging && "z-10 opacity-90 ring-2 ring-primary/30"
       )}
     >
-      <div className="flex items-center gap-2 border-b border-border px-2 py-2">
+      <div className="flex w-full min-w-0 items-center gap-2 border-b border-border px-2 py-2">
         {isSortableCategory ? (
           <button
             type="button"
@@ -144,7 +144,7 @@ function SortableCategorySection({
       </div>
 
       {expanded && (
-        <div className="p-2">
+        <div className="w-full p-2">
           {group.items.length === 0 ? (
             <p className="text-xs text-muted-foreground px-2 py-3 text-center">
               {t.shoppingLists.emptyCategory}
@@ -156,7 +156,7 @@ function SortableCategorySection({
               onDragEnd={(event) => onItemDragEnd(group.key, event)}
             >
               <SortableContext items={itemIds} strategy={verticalListSortingStrategy}>
-                <div className="space-y-2">
+                <div className="flex w-full flex-col gap-2">
                   {group.items.map((item) => (
                     <ShoppingListItemRow
                       key={item.id}
@@ -282,7 +282,7 @@ export function ShoppingListCategorizedItems({
       onDragEnd={(event) => void handleCategoryDragEnd(event)}
     >
       <SortableContext items={categorySortableIds} strategy={verticalListSortingStrategy}>
-        <div className="space-y-3">
+        <div className="flex w-full min-w-0 flex-col gap-3">
           {groups.map((group) => (
             <SortableCategorySection
               key={group.key}

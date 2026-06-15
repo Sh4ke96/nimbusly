@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -35,13 +35,25 @@ import { createChoreTask } from "@/app/(app)/chores/actions";
 
 interface ChoreFormDialogProps {
   onSuccess: () => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  initialDueDate?: Date;
+  onTriggerClick?: () => void;
 }
 
-export function ChoreFormDialog({ onSuccess }: ChoreFormDialogProps) {
+export function ChoreFormDialog({
+  onSuccess,
+  open: controlledOpen,
+  onOpenChange,
+  initialDueDate,
+  onTriggerClick,
+}: ChoreFormDialogProps) {
   const t = useT();
   const profile = useProfileStore((s) => s.profile);
   const members = useProfileStore((s) => s.members);
-  const [open, setOpen] = useState<boolean>(false);
+  const [internalOpen, setInternalOpen] = useState<boolean>(false);
+  const isControlled = onOpenChange !== undefined;
+  const open = isControlled ? (controlledOpen ?? false) : internalOpen;
   const [title, setTitle] = useState<string>("");
   const [iconEmoji, setIconEmoji] = useState<string | null>(null);
   const [notes, setNotes] = useState<string>("");
@@ -54,6 +66,20 @@ export function ChoreFormDialog({ onSuccess }: ChoreFormDialogProps) {
     CHORE_RECURRENCE_DURATION.MONTH
   );
   const [state, action, pending] = useActionState(createChoreTask, null);
+
+  function handleOpenChange(next: boolean) {
+    if (isControlled) {
+      onOpenChange?.(next);
+    } else {
+      setInternalOpen(next);
+    }
+    if (!next) resetForm();
+  }
+
+  useEffect(() => {
+    if (!open || !initialDueDate) return;
+    setDueDate(initialDueDate);
+  }, [open, initialDueDate]);
 
   function resetForm() {
     setTitle("");
@@ -84,8 +110,7 @@ export function ChoreFormDialog({ onSuccess }: ChoreFormDialogProps) {
   useActionFeedback(
     state,
     () => {
-      setOpen(false);
-      resetForm();
+      handleOpenChange(false);
       onSuccess();
     },
     pending
@@ -132,9 +157,14 @@ export function ChoreFormDialog({ onSuccess }: ChoreFormDialogProps) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button>
+        <Button
+          type="button"
+          onClick={() => {
+            onTriggerClick?.();
+          }}
+        >
           <Plus className="size-4" />
           {t.chores.addBtn}
         </Button>

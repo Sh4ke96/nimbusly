@@ -15,6 +15,7 @@ import { GIFT_RECIPIENT_TYPE } from "@/lib/constants/gifts";
 import { useT } from "@/lib/lang-context";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
+import { useNimbusCelebration } from "@/lib/hooks/use-nimbus-celebration";
 import { createGiftIdea } from "@/app/(app)/gifts/actions";
 import { isValidGiftContent, isValidRecipientName } from "@/lib/gifts/types";
 import { isValidGiftLinkUrl, normalizeGiftLinkUrl } from "@/lib/gifts/url";
@@ -42,8 +43,10 @@ export function GiftFormDialog({ onSuccess }: GiftFormDialogProps) {
     memberIds: [],
   });
   const [state, action, pending] = useActionState(createGiftIdea, null);
+  const celebrate = useNimbusCelebration();
 
   useActionFeedback(state, () => {
+    celebrate("firstGift");
     setOpen(false);
     setRecipient(null);
     setContent("");

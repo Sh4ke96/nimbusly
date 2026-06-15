@@ -22,6 +22,7 @@ import { familyRoleLabel, isFamilyAdmin, isFamilyFounder } from "@/lib/profile/f
 import { useT } from "@/lib/lang-context";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
+import { useNimbusCelebration } from "@/lib/hooks/use-nimbus-celebration";
 import { SettingsFormFooter } from "@/components/profile/settings/settings-form-footer";
 import {
   ensureFamilyInviteCode,
@@ -70,6 +71,7 @@ export function FamilySection() {
   const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(null);
   const [targetMemberId, setTargetMemberId] = useState<string | null>(null);
   const ensuringCodeRef = useRef(false);
+  const celebrate = useNimbusCelebration();
 
   const isOwner = family?.created_by === user?.id;
   const canManage = isFamilyAdmin(profile, family, user?.id);
@@ -89,7 +91,10 @@ export function FamilySection() {
     leavePending;
 
   useActionFeedback(nameState, () => void refreshFamily());
-  useActionFeedback(inviteState, () => void refreshFamily());
+  useActionFeedback(inviteState, () => {
+    celebrate("firstFamilyInvite");
+    void refreshFamily();
+  });
   useActionFeedback(revokeState, () => void refreshFamily());
   useActionFeedback(roleState, () => {
     void refreshFamily();

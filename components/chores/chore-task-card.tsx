@@ -189,18 +189,18 @@ export function ChoreTaskCard({
           className={cn(
             CARD_TITLE_ROW_CLASSNAME,
             isCompleted &&
-              "text-foreground/80 line-through decoration-primary/50 decoration-2"
+            "text-foreground/80 line-through decoration-primary/50 decoration-2"
           )}
         >
           {task.icon_emoji && (
             <span
-              className="inline-flex h-[1.375rem] w-[1.375rem] shrink-0 items-center justify-center text-[1.25rem] leading-none"
+              className="inline-flex h-5.5 w-5.5 shrink-0 items-center justify-center text-[1.25rem] leading-none"
               aria-hidden
             >
               {task.icon_emoji}
             </span>
           )}
-          <span className="min-w-0 flex-1 break-words">{task.title}</span>
+          <span className="min-w-0 flex-1 wrap-break-word">{task.title}</span>
         </CardTitle>
         {isOwner && (
           <CardHeaderActions>

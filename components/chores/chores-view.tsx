@@ -62,6 +62,8 @@ export function ChoresView() {
   const [assigneeFilter, setAssigneeFilter] = useState<string>(CHORE_FILTER_ALL);
   const [editingTask, setEditingTask] = useState<ChoreTask | null>(null);
   const [editOpen, setEditOpen] = useState<boolean>(false);
+  const [formOpen, setFormOpen] = useState<boolean>(false);
+  const [formInitialDate, setFormInitialDate] = useState<Date | undefined>();
 
   useStoreBootstrap(loaded, error, fetchTasks);
   const onTasksChanged = useModuleRefresh(fetchTasks);
@@ -84,11 +86,6 @@ export function ChoresView() {
     return sortChoresForDisplay(byAssignee);
   }, [tasks, statusFilter, assigneeFilter]);
 
-  function openEdit(task: ChoreTask) {
-    setEditingTask(task);
-    setEditOpen(true);
-  }
-
   function focusOccurrence(occurrence: ChoreCalendarOccurrence) {
     const parsed = parseChoreDateString(occurrence.date);
     if (!parsed) return;
@@ -98,6 +95,21 @@ export function ChoresView() {
     setFocusedTaskId(occurrence.taskId);
     const task = tasks.find((item) => item.id === occurrence.taskId);
     if (task) openEdit(task);
+  }
+
+  function openEdit(task: ChoreTask) {
+    setEditingTask(task);
+    setEditOpen(true);
+  }
+
+  function openFormForDay(day: number) {
+    setFormInitialDate(new Date(year, month - 1, day));
+    setFormOpen(true);
+  }
+
+  function handleFormOpenChange(next: boolean) {
+    setFormOpen(next);
+    if (!next) setFormInitialDate(undefined);
   }
 
   const hasActiveFilter =
@@ -121,7 +133,7 @@ export function ChoresView() {
           <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
             <NimbusTourToolbarAnchor
               tourTarget={NIMBUS_TOUR_TARGET.CHORES_VIEW_TOGGLE}
-              visible={!loading && tasks.length > 0}
+              visible={!loading}
             >
               <div className="inline-flex rounded-none border border-border">
                 <Button
@@ -161,7 +173,13 @@ export function ChoresView() {
               />
             </NimbusTourToolbarAnchor>
             <div data-nimbus-tour={NIMBUS_TOUR_TARGET.CHORES_ADD}>
-              <ChoreFormDialog onSuccess={onTasksChanged} />
+              <ChoreFormDialog
+                onSuccess={onTasksChanged}
+                open={formOpen}
+                onOpenChange={handleFormOpenChange}
+                initialDueDate={formInitialDate}
+                onTriggerClick={() => setFormInitialDate(undefined)}
+              />
             </div>
           </div>
         </div>
@@ -175,7 +193,7 @@ export function ChoresView() {
             <Skeleton className="h-44 w-full rounded-none" />
             <Skeleton className="h-44 w-full rounded-none" />
           </div>
-        ) : filteredTasks.length === 0 ? (
+        ) : filteredTasks.length === 0 && viewMode === "list" ? (
           <p className="text-sm text-muted-foreground text-center py-16 border border-dashed border-border">
             {tasks.length === 0
               ? t.chores.empty
@@ -205,6 +223,7 @@ export function ChoresView() {
                   setFocusedTaskId(null);
                 }}
                 onOccurrenceSelect={focusOccurrence}
+                onDayClick={openFormForDay}
                 onChanged={onTasksChanged}
               />
             </CardContent>

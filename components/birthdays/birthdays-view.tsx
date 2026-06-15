@@ -41,6 +41,8 @@ export function BirthdaysView() {
   const [focusedEntryId, setFocusedEntryId] = useState<string | null>(null);
   const [editingEntry, setEditingEntry] = useState<BirthdayEntry | null>(null);
   const [editOpen, setEditOpen] = useState<boolean>(false);
+  const [formOpen, setFormOpen] = useState<boolean>(false);
+  const [formInitialDate, setFormInitialDate] = useState<Date | undefined>();
   const [deleteState, deleteAction, deletePending] = useActionState(deleteBirthday, null);
 
   useStoreBootstrap(loaded, error, fetchEntries);
@@ -66,6 +68,16 @@ export function BirthdaysView() {
     setEditOpen(true);
   }
 
+  function openFormForDay(day: number) {
+    setFormInitialDate(new Date(year, month - 1, day));
+    setFormOpen(true);
+  }
+
+  function handleFormOpenChange(next: boolean) {
+    setFormOpen(next);
+    if (!next) setFormInitialDate(undefined);
+  }
+
   return (
     <div className="min-h-screen flex flex-col">
       <AppHeader />
@@ -79,7 +91,13 @@ export function BirthdaysView() {
             <p className="text-sm text-muted-foreground">{t.birthdays.subtitle}</p>
           </div>
           <div data-nimbus-tour={NIMBUS_TOUR_TARGET.BIRTHDAYS_ADD}>
-            <BirthdayFormDialog onSuccess={onBirthdayChanged} />
+            <BirthdayFormDialog
+              onSuccess={onBirthdayChanged}
+              open={formOpen}
+              onOpenChange={handleFormOpenChange}
+              initialDate={formInitialDate}
+              onTriggerClick={() => setFormInitialDate(undefined)}
+            />
           </div>
         </div>
 
@@ -112,6 +130,7 @@ export function BirthdaysView() {
                     setFocusedEntryId(null);
                   }}
                   onEntrySelect={focusBirthday}
+                  onDayClick={openFormForDay}
                 />
               )}
             </CardContent>

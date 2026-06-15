@@ -5,6 +5,9 @@ import { getNimbusTourSteps } from "@/lib/nimbus/tour-catalog";
 import { clearTourResume, saveTourResume } from "@/lib/nimbus/tour-resume";
 import type { NimbusSuggestionId } from "@/lib/nimbus/suggestions";
 import { suppressSuggestion } from "@/lib/nimbus/suggestion-suppress";
+import { dismissContextHint } from "@/lib/nimbus/hint-frequency";
+import { markChangelogSeen } from "@/lib/nimbus/changelog-seen";
+import type { NimbusContextHintKey } from "@/lib/nimbus/context-hints";
 
 export interface NimbusTourLayout {
   rect: {
@@ -30,12 +33,17 @@ export type NimbusHintKind =
   | "celebration"
   | "attention"
   | "greeting"
-  | "joke";
+  | "joke"
+  | "changelog";
 
 export interface NimbusHintAction {
   tourId?: NimbusTourId;
   href?: string;
   suggestionId?: NimbusSuggestionId;
+  contextKey?: string;
+  scrollTarget?: string;
+  actionLabel?: "go" | "show" | "tour";
+  changelog?: boolean;
 }
 
 interface NimbusStore {
@@ -67,7 +75,11 @@ interface NimbusStore {
     kind?: NimbusHintKind,
     action?: NimbusHintAction
   ) => void;
-  dismissHint: (options?: { suppressSuggestion?: NimbusSuggestionId }) => void;
+  dismissHint: (options?: {
+    suppressSuggestion?: NimbusSuggestionId;
+    suppressContextKey?: string;
+    markChangelogSeen?: boolean;
+  }) => void;
   startTour: (tourId?: NimbusTourId, options?: { stepIndex?: number }) => void;
   nextTourStep: () => boolean;
   prevTourStep: () => void;
@@ -173,6 +185,12 @@ export const useNimbusStore = create<NimbusStore>((set, get) => ({
   dismissHint: (options) => {
     if (options?.suppressSuggestion) {
       suppressSuggestion(options.suppressSuggestion);
+    }
+    if (options?.suppressContextKey) {
+      dismissContextHint(options.suppressContextKey as NimbusContextHintKey);
+    }
+    if (options?.markChangelogSeen) {
+      markChangelogSeen();
     }
     set({
       hintIndex: null,

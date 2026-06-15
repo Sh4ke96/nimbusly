@@ -23,7 +23,11 @@ const introPl = {
   ),
   dashboardAttention: step(
     "Wymaga uwagi",
-    "Gdy coś zbliża się terminowo — obowiązki, leki, płatności, notatki — pojawi się tu na pierwszy plan. Kliknij pinezkę przy wpisie, żeby przypiąć go na samej górze listy."
+    "Gdy coś zbliża się terminowo — obowiązki, leki, płatności, notatki — pojawi się tu na pierwszy plan."
+  ),
+  dashboardAttentionPin: step(
+    "Przypinanie wpisów",
+    "Kliknij pinezkę przy wpisie — zostanie na samej górze listy, dopóki go nie odpińiesz."
   ),
   dashboardOverview: step(
     "Karty podsumowania",
@@ -62,7 +66,11 @@ const introEn = {
   ),
   dashboardAttention: step(
     "Needs attention",
-    "When something is due soon — chores, medicine, payments, notes — it surfaces here first. Click the pin next to an item to keep it at the very top."
+    "When something is due soon — chores, medicine, payments, notes — it surfaces here first."
+  ),
+  dashboardAttentionPin: step(
+    "Pin items",
+    "Click the pin next to an item to keep it at the very top until you unpin it."
   ),
   dashboardOverview: step(
     "Overview cards",
@@ -342,10 +350,16 @@ export const nimbusCompanionExtraPl = {
   resumeTourActionDesc: "Kontynuuj od ostatniego kroku",
   hintActionTour: "Pokaż tour",
   hintActionGo: "Przejdź",
+  hintActionShow: "Pokaż",
   suppressSuggestion: "Nie pokazuj ponownie",
+  suppressContextHint: "Nie przypominaj w tym module",
   onboardingIntroOffer: "Witaj w Nimbusly! Chcesz krótki przewodnik po aplikacji?",
   firstVisitTourOffer: "Pierwszy raz tutaj? Mogę pokazać Ci ten moduł krok po kroku.",
-  attentionHint: "Masz {count} rzeczy w „Wymaga uwagi” — warto rzucić okiem na dashboard. Najważniejsze możesz przypiąć pinezką.",
+  attentionHint: "Masz {count} rzeczy w „Wymaga uwagi” — warto rzucić okiem.",
+  attentionHintMany:
+    "Masz {count} rzeczy w „Wymaga uwagi” — sporo tego! Kliknij „Pokaż”, a najważniejsze przypnij pinezką na górze listy.",
+  changelogHintIntro: "Nowa wersja {version}! Co nowego:",
+  changelogHintOutro: "Pełna lista zmian jest na stronie historii wersji.",
   searchFirstUseHint: "Wyszukiwarka Ctrl+K znajdzie moduły i dane w całej aplikacji.",
   moduleTourAction: "Pokaż mi ten moduł",
   moduleTourActionDesc: "Przewodnik po tej stronie",
@@ -405,6 +419,10 @@ export const nimbusCompanionExtraPl = {
     firstBirthday: "Pierwsze urodziny w kalendarzu — przypomnę na czas!",
     firstPet: "Pupil dodany — opieka pod kontrolą.",
     firstScheduleEntry: "Pierwszy wpis w grafiku — plan nabiera kształtu!",
+    firstGift: "Pierwszy pomysł na prezent — lista prezentów rusza!",
+    firstWatchlistItem: "Pierwsza pozycja na watchliście — miłego oglądania!",
+    firstFamilyInvite: "Pierwsze zaproszenie wysłane — rodzina rośnie!",
+    firstNotification: "Pierwsze powiadomienie przeczytane — jesteś na bieżąco!",
   },
   context: {
     dashboard: "Na dashboardzie masz skróty do wszystkich modułów. Mogę Cię też przeprowadzić po aplikacji.",
@@ -536,10 +554,16 @@ export const nimbusCompanionExtraEn = {
   resumeTourActionDesc: "Continue from the last step",
   hintActionTour: "Show tour",
   hintActionGo: "Go",
+  hintActionShow: "Show",
   suppressSuggestion: "Don't show again",
+  suppressContextHint: "Don't remind in this module",
   onboardingIntroOffer: "Welcome to Nimbusly! Want a quick app tour?",
   firstVisitTourOffer: "First time here? I can walk you through this module step by step.",
-  attentionHint: "You have {count} items in Needs attention — worth a look on the dashboard. Pin the most important ones to keep them on top.",
+  attentionHint: "You have {count} items in Needs attention — worth a look.",
+  attentionHintMany:
+    "You have {count} items in Needs attention — quite a list! Tap Show, then pin the most important ones to the top.",
+  changelogHintIntro: "New version {version}! What's new:",
+  changelogHintOutro: "See the full changelog for all details.",
   searchFirstUseHint: "Press Ctrl+K to search modules and data across the app.",
   moduleTourAction: "Show me this module",
   moduleTourActionDesc: "Tour of this page",
@@ -599,6 +623,10 @@ export const nimbusCompanionExtraEn = {
     firstBirthday: "First birthday in the calendar — I'll remind you in time!",
     firstPet: "Pet added — care tasks are ready to go.",
     firstScheduleEntry: "First schedule entry — your plan is taking shape!",
+    firstGift: "First gift idea saved — your gift list is rolling!",
+    firstWatchlistItem: "First watchlist item — happy watching!",
+    firstFamilyInvite: "First invite sent — your family is growing!",
+    firstNotification: "First notification read — you're all caught up!",
   },
   context: {
     dashboard: "The dashboard shortcuts lead to every module. I can also walk you through the app.",

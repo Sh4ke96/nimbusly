@@ -87,7 +87,7 @@ export function ShoppingListItemRow({
       ref={setNodeRef}
       style={style}
       className={cn(
-        "flex items-center gap-2 border border-border bg-card px-2 py-2 shadow-sm",
+        "flex w-full items-center gap-2 border border-border bg-card px-2 py-2 shadow-sm",
         isDragging && "z-10 opacity-80 ring-2 ring-primary/30"
       )}
     >

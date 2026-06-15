@@ -74,7 +74,7 @@ export function ShoppingListItemsSortable({
       onDragEnd={(event) => void handleDragEnd(event)}
     >
       <SortableContext items={itemIds} strategy={verticalListSortingStrategy}>
-        <div className="space-y-2">
+        <div className="flex w-full flex-col gap-2">
           {items.map((item) => (
             <ShoppingListItemRow
               key={item.id}

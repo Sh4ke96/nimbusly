@@ -3,7 +3,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus-tour";
 import { isSearchFirstUse, markSearchUsed } from "@/lib/nimbus/search-first-use";
-import { useNimbusStore } from "@/lib/stores/nimbus-store";
+import {
+  enqueueNimbusMessage,
+  NIMBUS_MESSAGE_PRIORITY,
+} from "@/lib/nimbus/message-dispatcher";
 import { useRouter } from "next/navigation";
 import { Loader2, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -31,7 +34,6 @@ export function GlobalSearchDialog() {
   const [query, setQuery] = useState<string>("");
   const [hydrating, setHydrating] = useState<boolean>(false);
   const snapshot = useSearchStoresSnapshot();
-  const announceCustomHint = useNimbusStore((s) => s.announceCustomHint);
   const isMac = useIsMac();
 
   const handleOpen = useCallback(() => {
@@ -41,9 +43,13 @@ export function GlobalSearchDialog() {
     setHydrating(true);
     void prefetchSearchStores().finally(() => setHydrating(false));
     if (firstUse) {
-      announceCustomHint(t.companion.searchFirstUseHint, "context");
+      enqueueNimbusMessage({
+        priority: NIMBUS_MESSAGE_PRIORITY.context,
+        kind: "context",
+        message: t.companion.searchFirstUseHint,
+      });
     }
-  }, [announceCustomHint, t]);
+  }, [t]);
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {

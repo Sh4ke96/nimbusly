@@ -23,6 +23,7 @@ import {
 } from "@/lib/watchlist/types";
 import { useT } from "@/lib/lang-context";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
+import { useNimbusCelebration } from "@/lib/hooks/use-nimbus-celebration";
 import { createWatchlistItem } from "@/app/(app)/watchlist/actions";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
@@ -40,8 +41,10 @@ export function WatchlistFormDialog({ onSuccess }: WatchlistFormDialogProps) {
   const [notes, setNotes] = useState<string>("");
   const [streamingPlatforms, setStreamingPlatforms] = useState<StreamingPlatform[]>([]);
   const [state, action, pending] = useActionState(createWatchlistItem, null);
+  const celebrate = useNimbusCelebration();
 
   useActionFeedback(state, () => {
+    celebrate("firstWatchlistItem");
     setOpen(false);
     setTitle("");
     setMediaType(null);

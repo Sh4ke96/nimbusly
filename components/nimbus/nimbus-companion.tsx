@@ -43,12 +43,14 @@ export function NimbusCompanion() {
     if (open) dismissHint();
   }
 
-  function handleDismissHint(options?: { suppress?: boolean }) {
-    dismissHint(
-      options?.suppress && hintAction?.suggestionId
-        ? { suppressSuggestion: hintAction.suggestionId }
-        : undefined
-    );
+  function handleDismissHint(options?: { suppress?: boolean; markChangelogSeen?: boolean }) {
+    dismissHint({
+      suppressSuggestion:
+        options?.suppress && hintAction?.suggestionId ? hintAction.suggestionId : undefined,
+      suppressContextKey:
+        options?.suppress && hintAction?.contextKey ? hintAction.contextKey : undefined,
+      markChangelogSeen: options?.markChangelogSeen ?? hintAction?.changelog,
+    });
   }
 
   if (tourActive) return null;

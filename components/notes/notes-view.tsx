@@ -12,7 +12,6 @@ import { NoteCategoryFormDialog } from "@/components/notes/note-category-form-di
 import { NotesFilters } from "@/components/notes/notes-filters";
 import { NoteCard } from "@/components/notes/note-card";
 import { NimbusTourToolbarAnchor } from "@/components/nimbus/nimbus-tour-toolbar-anchor";
-import { Card, CardContent, CardHeader, CardTitle, CARD_TITLE_ROW_CLASSNAME } from "@/components/ui/card";
 import { FamilyRealtimeHint } from "@/components/ui/family-realtime-hint";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -125,44 +124,32 @@ export function NotesView() {
 
         {error ? (
           <ModuleFetchError onRetry={() => void fetchNotes(true)} />
+        ) : loading && !loaded ? (
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Skeleton className="h-40 w-full rounded-none" />
+            <Skeleton className="h-40 w-full rounded-none" />
+          </div>
+        ) : filteredNotes.length === 0 ? (
+          <p className="text-sm text-muted-foreground text-center py-16 border border-dashed border-border">
+            {hasActiveFilter ? t.notes.emptyFiltered : t.notes.empty}
+          </p>
         ) : (
-          <Card
-            className="rounded-none py-0 shadow-sm h-fit gap-0"
-            data-nimbus-tour={NIMBUS_TOUR_TARGET.NOTES_LIST}
-          >
-            <CardHeader>
-              <CardTitle className={CARD_TITLE_ROW_CLASSNAME}>{t.notes.listTitle}</CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              {loading && !loaded ? (
-                <div className="space-y-2 p-4">
-                  <Skeleton className="h-10 w-full rounded-none" />
-                  <Skeleton className="h-10 w-full rounded-none" />
-                </div>
-              ) : filteredNotes.length === 0 ? (
-                <p className="p-4 text-sm text-muted-foreground">
-                  {hasActiveFilter ? t.notes.emptyFiltered : t.notes.empty}
-                </p>
-              ) : (
-                <ul className="divide-y divide-border">
-                  {filteredNotes.map((note) => (
-                    <NoteCard
-                      key={note.id}
-                      note={note}
-                      categories={categories}
-                      profile={profile}
-                      members={members}
-                      userId={user?.id}
-                      isSelected={focusedId === note.id}
-                      onSelect={() => setFocusedId(note.id)}
-                      onEdit={() => openEdit(note)}
-                      onChanged={onNotesChanged}
-                    />
-                  ))}
-                </ul>
-              )}
-            </CardContent>
-          </Card>
+          <div className="grid gap-4 sm:grid-cols-2" data-nimbus-tour={NIMBUS_TOUR_TARGET.NOTES_LIST}>
+            {filteredNotes.map((note) => (
+              <NoteCard
+                key={note.id}
+                note={note}
+                categories={categories}
+                profile={profile}
+                members={members}
+                userId={user?.id}
+                isSelected={focusedId === note.id}
+                onSelect={() => setFocusedId(note.id)}
+                onEdit={() => openEdit(note)}
+                onChanged={onNotesChanged}
+              />
+            ))}
+          </div>
         )}
       </main>
 

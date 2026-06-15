@@ -89,6 +89,8 @@ describe("Onboarding — wylogowanie", () => {
     cy.login(testUser.email, testUser.password);
     cy.visit("/onboarding");
     cy.contains("button", t.dashboard.logout).click();
+    cy.contains(t.dashboard.logoutConfirmTitle).should("be.visible");
+    cy.get('[data-testid="logout-confirm-submit"]').click();
     cy.url().should("include", "/login");
   });
 });

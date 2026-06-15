@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -17,6 +18,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { MemberAvatar } from "@/components/member-avatar";
+import { LogoutConfirmDialog } from "@/components/account/logout-confirm-dialog";
 import { AppModuleNav } from "@/components/app/app-module-nav";
 import { getDisplayName } from "@/lib/profile";
 import { useT } from "@/lib/lang-context";
@@ -26,7 +28,6 @@ import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { navigateSettingsTab, settingsTabHref, SETTINGS_TAB } from "@/lib/profile/settings-tabs";
 import { isFamilyFounder } from "@/lib/profile/family-roles";
 import { useProfileStore } from "@/lib/stores/profile-store";
-import { logout } from "@/app/(app)/actions";
 import {
   Bell,
   ChevronDown,
@@ -45,6 +46,7 @@ export function AccountMenu() {
   const user = useProfileStore((s) => s.user);
   const profile = useProfileStore((s) => s.profile);
   const family = useProfileStore((s) => s.family);
+  const [logoutOpen, setLogoutOpen] = useState(false);
 
   const displayName = profile
     ? getDisplayName(profile)
@@ -193,16 +195,21 @@ export function AccountMenu() {
 
           <DropdownMenuSeparator />
 
-          <DropdownMenuItem variant="destructive" asChild>
-            <form action={logout} className="w-full">
-              <button type="submit" className="flex w-full items-center gap-2">
-                <LogOut className="size-4" />
-                {t.dashboard.logout}
-              </button>
-            </form>
+          <DropdownMenuItem
+            variant="destructive"
+            className="cursor-pointer"
+            onSelect={(event) => {
+              event.preventDefault();
+              setLogoutOpen(true);
+            }}
+          >
+            <LogOut className="size-4" />
+            {t.dashboard.logout}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
+      <LogoutConfirmDialog open={logoutOpen} onOpenChange={setLogoutOpen} />
     </div>
   );
 }

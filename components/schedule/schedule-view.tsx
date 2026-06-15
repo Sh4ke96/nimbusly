@@ -57,6 +57,8 @@ export function ScheduleView() {
   const [focusedEntryId, setFocusedEntryId] = useState<string | null>(null);
   const [editingEntry, setEditingEntry] = useState<ScheduleEntry | null>(null);
   const [editOpen, setEditOpen] = useState<boolean>(false);
+  const [formOpen, setFormOpen] = useState<boolean>(false);
+  const [formInitialDate, setFormInitialDate] = useState<Date | undefined>();
   const [deleteState, deleteAction, deletePending] = useActionState(deleteScheduleEntry, null);
 
   useStoreBootstrap(loaded, error, fetchEntries);
@@ -84,6 +86,16 @@ export function ScheduleView() {
   function openEdit(entry: ScheduleEntry) {
     setEditingEntry(entry);
     setEditOpen(true);
+  }
+
+  function openFormForDay(day: number) {
+    setFormInitialDate(new Date(year, month - 1, day));
+    setFormOpen(true);
+  }
+
+  function handleFormOpenChange(next: boolean) {
+    setFormOpen(next);
+    if (!next) setFormInitialDate(undefined);
   }
 
   function handlePrint() {
@@ -138,7 +150,14 @@ export function ScheduleView() {
               </Button>
             </div>
             <div data-nimbus-tour={NIMBUS_TOUR_TARGET.SCHEDULE_ADD}>
-              <ScheduleFormDialog entries={entries} onSuccess={onScheduleChanged} />
+              <ScheduleFormDialog
+                entries={entries}
+                onSuccess={onScheduleChanged}
+                open={formOpen}
+                onOpenChange={handleFormOpenChange}
+                initialDate={formInitialDate}
+                onTriggerClick={() => setFormInitialDate(undefined)}
+              />
             </div>
           </div>
         </div>
@@ -172,6 +191,7 @@ export function ScheduleView() {
                     setFocusedEntryId(null);
                   }}
                   onEntrySelect={focusEntry}
+                  onDayClick={openFormForDay}
                 />
               )}
             </CardContent>

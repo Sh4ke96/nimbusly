@@ -1,17 +1,23 @@
 "use client";
 
 import { tryTriggerCelebration, type NimbusCelebrationId } from "@/lib/nimbus/celebrations";
-import { useNimbusStore } from "@/lib/stores/nimbus-store";
+import {
+  enqueueNimbusMessage,
+  NIMBUS_MESSAGE_PRIORITY,
+} from "@/lib/nimbus/message-dispatcher";
 import { useT } from "@/lib/lang-context";
 
 export function useNimbusCelebration() {
   const t = useT();
-  const announceCustomHint = useNimbusStore((s) => s.announceCustomHint);
 
   return function celebrate(id: NimbusCelebrationId) {
     if (!tryTriggerCelebration(id)) return;
     const message = t.companion.celebrations[id];
     if (!message) return;
-    announceCustomHint(message, "celebration");
+    enqueueNimbusMessage({
+      priority: NIMBUS_MESSAGE_PRIORITY.celebration,
+      kind: "celebration",
+      message,
+    });
   };
 }
