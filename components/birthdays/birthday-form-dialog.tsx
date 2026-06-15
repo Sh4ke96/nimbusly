@@ -12,6 +12,7 @@ import {
 import { BirthdayEntryForm } from "@/components/birthdays/birthday-entry-form";
 import { useT } from "@/lib/lang-context";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
+import { useNimbusCelebration } from "@/lib/hooks/use-nimbus-celebration";
 import { createBirthday } from "@/app/(app)/birthdays/actions";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
@@ -22,6 +23,7 @@ interface BirthdayFormDialogProps {
 
 export function BirthdayFormDialog({ onSuccess }: BirthdayFormDialogProps) {
   const t = useT();
+  const celebrate = useNimbusCelebration();
   const [open, setOpen] = useState<boolean>(false);
   const [personName, setPersonName] = useState<string>("");
   const [date, setDate] = useState<Date | undefined>();
@@ -29,6 +31,7 @@ export function BirthdayFormDialog({ onSuccess }: BirthdayFormDialogProps) {
   const [state, action, pending] = useActionState(createBirthday, null);
 
   useActionFeedback(state, () => {
+    celebrate("firstBirthday");
     setOpen(false);
     setPersonName("");
     setDate(undefined);

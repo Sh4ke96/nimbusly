@@ -19,6 +19,7 @@ import {
   sendFamilyInvitation,
 } from "@/app/(app)/account/family-invite-actions";
 import { updateFamilyName } from "@/app/(app)/account/actions";
+import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus";
 import { Copy, X } from "lucide-react";
 import { toast } from "sonner";
 
@@ -67,7 +68,7 @@ export function FamilySection() {
   }
 
   return (
-    <div className="space-y-8 max-w-lg">
+    <div className="space-y-8 max-w-lg" data-nimbus-tour={NIMBUS_TOUR_TARGET.FAMILY_MEMBERS}>
       {isOwner ? (
         <form action={nameAction} className="space-y-4">
           <div className="space-y-1.5">

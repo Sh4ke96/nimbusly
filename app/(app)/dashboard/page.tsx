@@ -12,6 +12,7 @@ import {
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useT } from "@/lib/lang-context";
 import { getDisplayName } from "@/lib/profile";
+import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus";
 
 export default function DashboardPage() {
   const t = useT();
@@ -35,7 +36,7 @@ export default function DashboardPage() {
       <AppHeader />
 
       <main className="flex-1 mx-auto w-full max-w-7xl px-4 py-10 space-y-6">
-        <div className="animate-rise">
+        <div className="animate-rise" data-nimbus-tour={NIMBUS_TOUR_TARGET.DASHBOARD_GREETING}>
           <h1 className="font-heading font-bold text-3xl tracking-tight">
             {t.dashboard.greeting}, {displayName} 👋
           </h1>

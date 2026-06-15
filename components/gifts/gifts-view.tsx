@@ -10,10 +10,12 @@ import { GiftEditDialog } from "@/components/gifts/gift-edit-dialog";
 import { GiftFormDialog } from "@/components/gifts/gift-form-dialog";
 import { GiftsFilters } from "@/components/gifts/gifts-filters";
 import { GiftNoteCard } from "@/components/gifts/gift-note-card";
+import { NimbusTourToolbarAnchor } from "@/components/nimbus/nimbus-tour-toolbar-anchor";
 import { FamilyRealtimeHint } from "@/components/ui/family-realtime-hint";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
 import { Skeleton } from "@/components/ui/skeleton";
 import { GIFT_FILTER_ALL } from "@/lib/constants/gifts";
+import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { countActiveFilters } from "@/lib/filters/active-count";
 import { filterGiftIdeasByRecipient } from "@/lib/gifts/recipients";
@@ -78,20 +80,25 @@ export function GiftsView() {
         <AccountBreadcrumbs current={t.gifts.title} />
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="space-y-1">
+          <div className="space-y-1" data-nimbus-tour={NIMBUS_TOUR_TARGET.GIFTS_HEADER}>
             <h1 className="font-heading font-bold text-2xl tracking-tight">{t.gifts.title}</h1>
             <p className="text-sm text-muted-foreground">{t.gifts.subtitle}</p>
           </div>
           <div className="flex items-center gap-2 self-start sm:self-auto">
-            {!loading && ideas.length > 0 && (
+            <NimbusTourToolbarAnchor
+              tourTarget={NIMBUS_TOUR_TARGET.GIFTS_FILTERS}
+              visible={!loading && ideas.length > 0}
+            >
               <GiftsFilters
                 ideas={ideas}
                 members={members}
                 value={filterKey}
                 onChange={setFilterKey}
               />
-            )}
-            <GiftFormDialog onSuccess={onGiftsChanged} />
+            </NimbusTourToolbarAnchor>
+            <div data-nimbus-tour={NIMBUS_TOUR_TARGET.GIFTS_ADD}>
+              <GiftFormDialog onSuccess={onGiftsChanged} />
+            </div>
           </div>
         </div>
 
@@ -109,7 +116,7 @@ export function GiftsView() {
             {filterKey === GIFT_FILTER_ALL ? t.gifts.empty : hasActiveFilter ? t.gifts.emptyFiltered : t.gifts.empty}
           </p>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2" data-nimbus-tour={NIMBUS_TOUR_TARGET.GIFTS_LIST}>
             {filteredIdeas.map((idea) => (
               <GiftNoteCard
                 key={idea.id}

@@ -15,6 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useT } from "@/lib/lang-context";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useBirthdaysStore } from "@/lib/stores/birthdays-store";
+import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus";
 import { formatBirthdayLabel, type BirthdayEntry, BIRTHDAY_FORM_FIELD } from "@/lib/birthdays/types";
 import { selectionListRowClasses } from "@/lib/ui/selection-styles";
 import { cn } from "@/lib/utils";
@@ -73,18 +74,24 @@ export function BirthdaysView() {
         <AccountBreadcrumbs current={t.birthdays.title} />
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="space-y-1">
+          <div className="space-y-1" data-nimbus-tour={NIMBUS_TOUR_TARGET.BIRTHDAYS_HEADER}>
             <h1 className="font-heading font-bold text-2xl tracking-tight">{t.birthdays.title}</h1>
             <p className="text-sm text-muted-foreground">{t.birthdays.subtitle}</p>
           </div>
-          <BirthdayFormDialog onSuccess={onBirthdayChanged} />
+          <div data-nimbus-tour={NIMBUS_TOUR_TARGET.BIRTHDAYS_ADD}>
+            <BirthdayFormDialog onSuccess={onBirthdayChanged} />
+          </div>
         </div>
 
         {error ? (
           <ModuleFetchError onRetry={() => void fetchEntries(true)} />
         ) : (
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
-          <Card id="birthday-calendar" className="rounded-none py-0 shadow-sm scroll-mt-24">
+          <Card
+            id="birthday-calendar"
+            className="rounded-none py-0 shadow-sm scroll-mt-24"
+            data-nimbus-tour={NIMBUS_TOUR_TARGET.BIRTHDAYS_CALENDAR}
+          >
             <CardContent className="p-4 md:p-6">
               {loading && !loaded ? (
                 <Skeleton className="h-112 w-full rounded-none" />
@@ -110,7 +117,10 @@ export function BirthdaysView() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-none py-0 shadow-sm h-fit gap-0">
+          <Card
+            className="rounded-none py-0 shadow-sm h-fit gap-0"
+            data-nimbus-tour={NIMBUS_TOUR_TARGET.BIRTHDAYS_LIST}
+          >
             <CardHeader>
               <CardTitle className={CARD_TITLE_ROW_CLASSNAME}>{t.birthdays.listTitle}</CardTitle>
             </CardHeader>

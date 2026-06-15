@@ -2,6 +2,7 @@
 
 import { CHORE_FORM_FIELD } from "@/lib/chores/types";
 import { ChoreAssigneePicker } from "@/components/chores/chore-assignee-picker";
+import { NimbusTourToolbarAnchor } from "@/components/nimbus/nimbus-tour-toolbar-anchor";
 import { ChoreCustomRecurrenceFields } from "@/components/chores/chore-custom-recurrence-fields";
 import { ChoreRecurrenceDurationFields } from "@/components/chores/chore-recurrence-duration-fields";
 import { ChoreDatePicker } from "@/components/chores/chore-date-picker";
@@ -19,6 +20,8 @@ import {
   type ChoreRecurrenceDuration,
   type ChoreStatus,
 } from "@/lib/constants/chores";
+import { ACCOUNT_MODE } from "@/lib/constants/account";
+import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus-tour";
 import type { FamilyMember, Profile } from "@/lib/profile";
 import { selectionPickerTileButtonClasses } from "@/lib/ui/selection-styles";
 import { useT } from "@/lib/lang-context";
@@ -73,6 +76,8 @@ export function ChoreEntryForm({
   const t = useT();
   const titleId = id ? `${id}-title` : "chore-title";
   const notesId = id ? `${id}-notes` : "chore-notes";
+  const isFamily =
+    profile?.account_mode === ACCOUNT_MODE.FAMILY && !!profile.family_id && members.length > 0;
 
   return (
     <div className="space-y-4">
@@ -113,16 +118,21 @@ export function ChoreEntryForm({
         <input type="hidden" name={CHORE_FORM_FIELD.STATUS} value={status ?? ""} required />
       </div>
 
-      <ChoreAssigneePicker
-        profile={profile}
-        members={members}
-        assignedTo={assignedTo}
-        onAssigneeChange={onAssigneeChange}
-      />
+      <NimbusTourToolbarAnchor
+        tourTarget={NIMBUS_TOUR_TARGET.CHORES_ASSIGN}
+        visible={isFamily}
+      >
+        <ChoreAssigneePicker
+          profile={profile}
+          members={members}
+          assignedTo={assignedTo}
+          onAssigneeChange={onAssigneeChange}
+        />
+      </NimbusTourToolbarAnchor>
 
       <ChoreDatePicker date={dueDate} onDateChange={onDueDateChange} recurrence={recurrence} />
 
-      <div className="space-y-1.5">
+      <div className="space-y-1.5" data-nimbus-tour={NIMBUS_TOUR_TARGET.CHORES_RECURRENCE}>
         <Label>{t.chores.recurrenceLabel}</Label>
         <p className="text-xs text-muted-foreground">{t.chores.recurrenceHint}</p>
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
@@ -138,21 +148,21 @@ export function ChoreEntryForm({
           ))}
         </div>
         <input type="hidden" name={CHORE_FORM_FIELD.RECURRENCE} value={recurrence ?? ""} required />
+
+        {recurrence === CHORE_RECURRENCE.CUSTOM && (
+          <ChoreCustomRecurrenceFields
+            intervalDays={recurrenceIntervalDays}
+            onIntervalDaysChange={onRecurrenceIntervalDaysChange}
+          />
+        )}
+
+        {recurrence && recurrence !== CHORE_RECURRENCE.NONE && (
+          <ChoreRecurrenceDurationFields
+            duration={recurrenceDuration}
+            onDurationChange={onRecurrenceDurationChange}
+          />
+        )}
       </div>
-
-      {recurrence === CHORE_RECURRENCE.CUSTOM && (
-        <ChoreCustomRecurrenceFields
-          intervalDays={recurrenceIntervalDays}
-          onIntervalDaysChange={onRecurrenceIntervalDaysChange}
-        />
-      )}
-
-      {recurrence && recurrence !== CHORE_RECURRENCE.NONE && (
-        <ChoreRecurrenceDurationFields
-          duration={recurrenceDuration}
-          onDurationChange={onRecurrenceDurationChange}
-        />
-      )}
 
       <div className="space-y-1.5">
         <Label htmlFor={notesId}>{t.chores.notesLabel}</Label>

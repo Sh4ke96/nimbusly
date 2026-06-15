@@ -306,6 +306,43 @@ Reference: `tests/unit/family/invite.test.ts`.
 
 ---
 
+## Nimbus companion (mandatory when module UX changes)
+
+Nimbus helps users discover and learn the app. **Any new module, meaningful module change, or new user-facing screen** must include a Nimbus update in the same PR — do not defer.
+
+### New module checklist
+
+- [ ] `NIMBUS_TOUR_ID` + steps in `lib/nimbus/tour-catalog.ts`
+- [ ] `NIMBUS_TOUR_TARGET.*` in `lib/constants/nimbus-tour.ts` + `data-nimbus-tour` on view components
+- [ ] Tour step copy PL/EN in `lib/i18n/nimbus-messages.ts` (`modules.<id>.*`)
+- [ ] Module summary in `lib/i18n/nimbus-tour-summaries.ts`
+- [ ] `NIMBUS_PATH_TOUR` entry for `/your-route`
+- [ ] Context hint: `lib/nimbus/context-hints.ts` + `companion.context.<key>`
+- [ ] FAQ entry if users commonly ask “how do I…?” → `lib/nimbus/faq.ts` + `companion.faq`
+- [ ] Cross-module suggestion rules if applicable → `lib/nimbus/suggestions.ts` + `suggestion-links.ts`
+- [ ] Celebration hook if “first X” is meaningful → `lib/nimbus/celebrations.ts` + form dialog
+- [ ] Unit tests in `tests/unit/nimbus/` (tour catalog, suggestions, faq hrefs, etc.)
+
+### Changing an existing module
+
+- [ ] Add/rename/remove tour steps when UI layout changes
+- [ ] Update `data-nimbus-tour` anchors when buttons or sections move
+- [ ] Refresh FAQ or hints if behaviour changed
+- [ ] Extend tests when detection rules or tour ids change
+
+### Key paths
+
+```
+lib/nimbus/           tours, hints, suggestions, faq, celebrations
+lib/constants/nimbus-tour.ts
+lib/i18n/nimbus-messages.ts
+lib/i18n/nimbus-tour-summaries.ts
+components/nimbus/    companion UI, overlay, menu
+tests/unit/nimbus/
+```
+
+---
+
 ## Quick Reference — Existing Modules
 
 | Module | Route | Store | Actions |
@@ -327,4 +364,4 @@ Reference: `tests/unit/family/invite.test.ts`.
 | Notes | `/notes` | `notes-store` | `notes/actions.ts` |
 | Notifications | `/notifications` | `notifications-store` | `notifications/actions.ts` |
 
-When adding a module, mirror the closest row above.
+When adding a module, mirror the closest row above and complete the **Nimbus companion** checklist in this file.

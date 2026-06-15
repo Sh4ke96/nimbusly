@@ -18,6 +18,7 @@ import { useLang, useT } from "@/lib/lang-context";
 import { formatMessage } from "@/lib/i18n/format";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useScheduleStore } from "@/lib/stores/schedule-store";
+import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus-tour";
 import {
   formatScheduleDateRangeLabel,
   parseEntryDateParts,
@@ -125,16 +126,20 @@ export function ScheduleView() {
         </div>
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between no-print">
-          <div className="space-y-1">
+          <div className="space-y-1" data-nimbus-tour={NIMBUS_TOUR_TARGET.SCHEDULE_HEADER}>
             <h1 className="font-heading font-bold text-2xl tracking-tight">{t.schedule.title}</h1>
             <p className="text-sm text-muted-foreground">{t.schedule.subtitle}</p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Button type="button" variant="outline" onClick={handlePrint}>
-              <Printer className="size-4" />
-              {t.schedule.printBtn}
-            </Button>
-            <ScheduleFormDialog entries={entries} onSuccess={onScheduleChanged} />
+            <div data-nimbus-tour={NIMBUS_TOUR_TARGET.SCHEDULE_PRINT}>
+              <Button type="button" variant="outline" onClick={handlePrint}>
+                <Printer className="size-4" />
+                {t.schedule.printBtn}
+              </Button>
+            </div>
+            <div data-nimbus-tour={NIMBUS_TOUR_TARGET.SCHEDULE_ADD}>
+              <ScheduleFormDialog entries={entries} onSuccess={onScheduleChanged} />
+            </div>
           </div>
         </div>
 
@@ -142,7 +147,11 @@ export function ScheduleView() {
           <ModuleFetchError onRetry={() => void fetchEntries(true)} />
         ) : (
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
-          <Card id="schedule-calendar" className="rounded-none py-0 shadow-sm scroll-mt-24">
+          <Card
+            id="schedule-calendar"
+            className="rounded-none py-0 shadow-sm scroll-mt-24"
+            data-nimbus-tour={NIMBUS_TOUR_TARGET.SCHEDULE_CALENDAR}
+          >
             <CardContent className="p-4 md:p-6">
               {loading && !loaded ? (
                 <Skeleton className="h-112 w-full rounded-none no-print" />
@@ -168,7 +177,10 @@ export function ScheduleView() {
             </CardContent>
           </Card>
 
-          <Card className="rounded-none py-0 shadow-sm h-fit gap-0 no-print">
+          <Card
+            className="rounded-none py-0 shadow-sm h-fit gap-0 no-print"
+            data-nimbus-tour={NIMBUS_TOUR_TARGET.SCHEDULE_LIST}
+          >
             <CardHeader>
               <CardTitle className={CARD_TITLE_ROW_CLASSNAME}>{t.schedule.listTitle}</CardTitle>
             </CardHeader>

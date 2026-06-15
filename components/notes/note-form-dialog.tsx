@@ -19,6 +19,7 @@ import type { NoteCategory } from "@/lib/notes/types";
 import type { FamilyMember, Profile } from "@/lib/profile";
 import { useT } from "@/lib/lang-context";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
+import { useNimbusCelebration } from "@/lib/hooks/use-nimbus-celebration";
 import { createNote } from "@/app/(app)/notes/actions";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
@@ -37,6 +38,7 @@ export function NoteFormDialog({
   onSuccess,
 }: NoteFormDialogProps) {
   const t = useT();
+  const celebrate = useNimbusCelebration();
   const isFamily =
     profile?.account_mode === ACCOUNT_MODE.FAMILY && !!profile.family_id;
   const [open, setOpen] = useState<boolean>(false);
@@ -50,6 +52,9 @@ export function NoteFormDialog({
   const [state, action, pending] = useActionState(createNote, null);
 
   useActionFeedback(state, () => {
+    if (title.startsWith("!")) {
+      celebrate("firstUrgentNote");
+    }
     setOpen(false);
     setTitle("");
     setContent("");

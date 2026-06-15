@@ -1,4 +1,8 @@
 import type { Dict } from "@/lib/i18n/types";
+import {
+  nimbusCompanionExtraEn,
+  nimbusTourMessagesEn,
+} from "./nimbus-messages";
 
 export const en: Dict = {
   meta: {
@@ -23,6 +27,8 @@ export const en: Dict = {
     howItWorksSlug: "how-it-works",
     forFamily: "For families",
     forFamilySlug: "for-family",
+    nimbus: "Nimbus",
+    nimbusSlug: "nimbus",
     login: "Sign in",
     getStarted: "Get started free",
     dashboard: "Dashboard",
@@ -114,6 +120,75 @@ export const en: Dict = {
         desc: "Solo or up to 6 people with roles. Invites, permissions, and shared change notifications.",
       },
     ],
+  },
+  nimbusLanding: {
+    badge: "In-app companion",
+    heading: "Nimbus — a guide that knows your home",
+    intro:
+      "Nimbus is the character in the bottom-right corner of Nimbusly. He is not decoration — he helps you after onboarding, walks you through every module tour, answers questions in FAQ, and nudges you toward what to do next. He reacts to your family's progress: first shopping lists, budgets, urgent notes, and items in Needs attention on the dashboard.",
+    pillars: [
+      {
+        title: "Never leaves you alone",
+        desc: "After your first sign-in he offers a quick app tour. On your first visit to a module he shows where the key buttons and filters live.",
+      },
+      {
+        title: "Knows family context",
+        desc: "He suggests next steps: a budget without entries, an empty watchlist, expiring medicine, or missing birthdays on a family account. Every suggestion can be dismissed permanently.",
+      },
+      {
+        title: "Respects your pace",
+        desc: "Quiet mode turns off random hints. Snooze for 24 hours or a week when you need focus. Press Esc to pause a tour and resume from the menu later.",
+      },
+      {
+        title: "Answers like a human",
+        desc: "Ask Nimbus in the menu — FAQ in Polish and English, from family invites to CSV export, dashboard watches, and the Ctrl+K search shortcut.",
+      },
+    ],
+    asideTitle: "What you get after sign-in",
+    asideBullets: [
+      "Tours for the app, each module, and family accounts",
+      "Context hints on the page you are currently viewing",
+      "Celebrations for first wins — budget, list, chore, pet",
+      "A daily nudge when Needs attention has items on the dashboard",
+      "Show tour and Go buttons right inside hint bubbles",
+    ],
+    capabilitiesHeading: "What Nimbus can do",
+    capabilities: [
+      {
+        title: "Module tours",
+        desc: "Step-by-step through budget, shopping, notes, schedule, medicine cabinet, and more — each ends with a summary.",
+      },
+      {
+        title: "App tour",
+        desc: "Dashboard, card layout, Ctrl+K search, profile settings, and Nimbus preferences — a full start in minutes.",
+      },
+      {
+        title: "FAQ in the menu",
+        desc: "Nineteen-plus questions with links to the right screens — no hunting through docs.",
+      },
+      {
+        title: "Celebrations",
+        desc: "First budget, entry, urgent note, birthday, pet, or schedule entry — Nimbus cheers your progress.",
+      },
+      {
+        title: "Needs attention",
+        desc: "When overdue chores, medicine, or payments appear on the dashboard — a once-daily reminder.",
+      },
+      {
+        title: "Global search",
+        desc: "Ctrl+K (Cmd+K on Mac) shown in the navbar — Nimbus hints on first use.",
+      },
+      {
+        title: "Quiet mode",
+        desc: "In profile or the menu — no random hints or idle animations; tours and menu stay on demand.",
+      },
+      {
+        title: "Resume tours",
+        desc: "Esc saves progress. The menu picks up exactly where you left off.",
+      },
+    ],
+    footnote:
+      "You can hide Nimbus in profile settings. By default he stays with the whole family — each member has their own snooze state and tour progress on their device.",
   },
   steps: {
     heading: "Three steps to family order",
@@ -1406,4 +1481,29 @@ export const en: Dict = {
     empty: "No results for this query",
     loading: "Loading data…",
   },
+  companion: {
+    name: "Nimbus",
+    menuSubtitle: "Your in-app companion",
+    openMenuAria: "Open Nimbus menu",
+    closeMenuAria: "Close Nimbus menu",
+    hoverHint: "Click me — I'll help you find your way",
+    tourAction: "Show me the app",
+    tourActionDesc: "Dashboard and profile settings",
+    settingLabel: "Show Nimbus in the app",
+    settingDesc: "Character in the bottom-right corner who occasionally nudges you with tips.",
+    hints: [
+      "Need a tip? Click me — I'll walk you through the app.",
+      "From the home screen to modules — I can show you where to start.",
+      "Profile, avatar, or family? It's all in settings — I can take you there.",
+      "New to Nimbusly? I'll show you the essentials in about a minute.",
+      "If you get stuck, I'm right nearby. Bottom-right corner.",
+      "Ctrl+K opens search — modules, notes, and lists in one place.",
+      "Needs attention on the dashboard collects due dates and urgent items.",
+      "Quiet mode in profile turns off random hints — menu and tours stay.",
+      "Every module has its own tour — click me on a module page.",
+      "Esc during a tour saves progress — resume from the Nimbus menu.",
+    ],
+    ...nimbusCompanionExtraEn,
+  },
+  nimbusTour: nimbusTourMessagesEn,
 };

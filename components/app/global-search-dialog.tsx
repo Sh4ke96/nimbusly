@@ -1,9 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus-tour";
+import { isSearchFirstUse, markSearchUsed } from "@/lib/nimbus/search-first-use";
+import { useNimbusStore } from "@/lib/stores/nimbus-store";
 import { useRouter } from "next/navigation";
 import { Loader2, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Kbd, KbdGroup } from "@/components/ui/kbd";
 import {
   Dialog,
   DialogContent,
@@ -12,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useSearchStoresSnapshot } from "@/lib/hooks/use-search-stores-snapshot";
+import { useIsMac } from "@/lib/hooks/use-is-mac";
 import { useT } from "@/lib/lang-context";
 import { buildSearchIndexInput } from "@/lib/search/collect-search-index";
 import { buildSearchIndex, filterSearchResults } from "@/lib/search/global-search";
@@ -26,12 +31,31 @@ export function GlobalSearchDialog() {
   const [query, setQuery] = useState<string>("");
   const [hydrating, setHydrating] = useState<boolean>(false);
   const snapshot = useSearchStoresSnapshot();
+  const announceCustomHint = useNimbusStore((s) => s.announceCustomHint);
+  const isMac = useIsMac();
 
-  function handleOpen() {
+  const handleOpen = useCallback(() => {
+    const firstUse = isSearchFirstUse();
+    markSearchUsed();
     setOpen(true);
     setHydrating(true);
     void prefetchSearchStores().finally(() => setHydrating(false));
-  }
+    if (firstUse) {
+      announceCustomHint(t.companion.searchFirstUseHint, "context");
+    }
+  }, [announceCustomHint, t]);
+
+  useEffect(() => {
+    function onKeyDown(event: KeyboardEvent) {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        handleOpen();
+      }
+    }
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [handleOpen]);
 
   const results = useMemo(() => {
     const index = buildSearchIndex(
@@ -48,30 +72,41 @@ export function GlobalSearchDialog() {
 
   return (
     <>
-      <Button
-        type="button"
-        variant="outline"
-        size="sm"
-        className={cn(
-          HEADER_CONTROL_HEIGHT,
-          "hidden sm:inline-flex max-w-52 justify-start gap-2 rounded-none border-border bg-muted/40 px-2.5 text-muted-foreground font-normal"
-        )}
-        onClick={handleOpen}
-        aria-label={t.search.triggerLabel}
+      <div
+        className="inline-flex"
+        data-nimbus-tour={NIMBUS_TOUR_TARGET.GLOBAL_SEARCH_TRIGGER}
       >
-        <Search className="size-4 shrink-0" />
-        <span className="truncate">{t.search.triggerLabel}</span>
-      </Button>
-      <Button
-        type="button"
-        variant="outline"
-        size="icon"
-        className={cn(HEADER_CONTROL_HEIGHT, "w-8 sm:hidden rounded-none shrink-0")}
-        onClick={handleOpen}
-        aria-label={t.search.triggerLabel}
-      >
-        <Search className="size-4" />
-      </Button>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          className={cn(
+            HEADER_CONTROL_HEIGHT,
+            "hidden sm:inline-flex w-52 justify-between gap-2 rounded-none border-border bg-muted/40 px-2.5 text-muted-foreground font-normal"
+          )}
+          onClick={handleOpen}
+          aria-label={t.search.triggerLabel}
+        >
+          <span className="inline-flex min-w-0 items-center gap-2">
+            <Search className="size-4 shrink-0" />
+            <span className="truncate">{t.search.triggerLabel}</span>
+          </span>
+          <KbdGroup className="shrink-0" aria-hidden>
+            {isMac ? <Kbd>⌘</Kbd> : <Kbd>Ctrl</Kbd>}
+            <Kbd>K</Kbd>
+          </KbdGroup>
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          className={cn(HEADER_CONTROL_HEIGHT, "w-8 sm:hidden rounded-none shrink-0")}
+          onClick={handleOpen}
+          aria-label={t.search.triggerLabel}
+        >
+          <Search className="size-4" />
+        </Button>
+      </div>
 
       <Dialog
         open={open}

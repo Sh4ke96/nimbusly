@@ -1,0 +1,448 @@
+import type { Dict } from "@/lib/i18n/types";
+
+type SummaryCopy = Dict["nimbusTour"]["modules"][string]["summary"];
+
+function summary(
+  title: string,
+  body: string,
+  learned: string[],
+  next: string[]
+): SummaryCopy {
+  return { title, body, learned, next };
+}
+
+export const nimbusModuleSummariesPl: Record<string, SummaryCopy> = {
+  budget: summary(
+    "Budżet — podsumowanie",
+    "Masz już obraz modułu budżetu. Oto skrót tego, co warto zapamiętać.",
+    [
+      "Tworzysz osobne budżety i wybierasz aktywny z listy.",
+      "Wpisy miesięczne pokazują przychody, wydatki i saldo.",
+      "Filtry pomagają szybko znaleźć konkretne transakcje.",
+    ],
+    [
+      "Dodaj pierwszy budżet i wpisy na bieżący miesiąc.",
+      "Ustaw daty ważności leków w apteczce — uzupełni to domowy obraz finansów i zdrowia.",
+      "Wróć do Nimbusa po krótki przewodnik po innym module.",
+    ]
+  ),
+  shopping: summary(
+    "Zakupy — podsumowanie",
+    "Listy zakupów są gotowe do użycia — solo lub w rodzinie na żywo.",
+    [
+      "Każda lista ma własne produkty do odhaczania.",
+      "Rodzina widzi zmiany na liście w czasie rzeczywistym.",
+      "Eksport CSV pomaga zabrać listę poza aplikację.",
+    ],
+    [
+      "Utwórz listę i dodaj kilka produktów.",
+      "Spróbuj obowiązków domowych, by dzielić zadania z rodziną.",
+      "Przypnij listę do obserwowanych z dashboardu.",
+    ]
+  ),
+  gifts: summary(
+    "Prezenty — podsumowanie",
+    "Moduł prezentów zbiera pomysły, zanim znikną z pamięci.",
+    [
+      "Pomysły można filtrować po odbiorcy.",
+      "Notatki i linki trzymasz przy każdym pomyśle.",
+      "Rodzina może współtworzyć listę prezentów.",
+    ],
+    [
+      "Dodaj pierwszy pomysł z odbiorcą.",
+      "Uzupełnij urodziny bliskich — łatwiej planować sezon prezentowy.",
+      "Oznaczaj kupione prezenty, gdy sezon ruszy.",
+    ]
+  ),
+  birthdays: summary(
+    "Urodziny — podsumowanie",
+    "Daty urodzin są pod kontrolą — kalendarz i lista nadchodzących.",
+    [
+      "Kalendarz pokazuje urodziny w kontekście miesiąca.",
+      "Lista po prawej sortuje najbliższe daty.",
+      "Przypomnienia pojawią się na dashboardzie.",
+    ],
+    [
+      "Dodaj urodziny najbliższych osób.",
+      "Połącz z modułem prezentów na pomysły upominków.",
+      "Sprawdź harmonogram — unikniesz kolizji z wydarzeniami.",
+    ]
+  ),
+  schedule: summary(
+    "Grafik — podsumowanie",
+    "Harmonogram łączy wydarzenia jedno- i wielodniowe w jednym kalendarzu.",
+    [
+      "Kalendarz i lista miesiąca uzupełniają się nawzajem.",
+      "Wpisy mogą mieć zakres dat i opis.",
+      "Wydruk miesiąca pomaga na spotkaniach rodzinnych.",
+    ],
+    [
+      "Dodaj najbliższe wydarzenie lub wyjazd.",
+      "Uzupełnij urodziny — łatwiej planować wspólny czas.",
+      "Sprawdź panel „Wymaga uwagi” na dashboardzie.",
+    ]
+  ),
+  medicine: summary(
+    "Apteczka — podsumowanie",
+    "Domowa apteczka z datami ważności i filtrowaniem.",
+    [
+      "Każdy lek ma formę, ilość i termin ważności.",
+      "Filtry ułatwiają szukanie po lokalizacji lub stanie.",
+      "Zbliżające się terminy trafiają do „Wymaga uwagi”.",
+    ],
+    [
+      "Dodaj podstawowe leki z datami ważności.",
+      "Połącz z budżetem na śledzenie wydatków zdrowotnych.",
+      "Aktualizuj ilości po zużyciu opakowań.",
+    ]
+  ),
+  watchlist: summary(
+    "Watchlista — podsumowanie",
+    "Filmy i seriale w jednej liście — solo lub wspólnie.",
+    [
+      "Status obejrzane / do obejrzenia trzyma porządek.",
+      "Filtry platform pomagają przy wyborze wieczoru.",
+      "Rodzina może dopisywać tytuły na wspólną listę.",
+    ],
+    [
+      "Dodaj tytuł, który chcesz obejrzeć w tym tygodniu.",
+      "Oznacz obejrzane po seansie.",
+      "Użyj restauracji, by zapisać miejsce na wieczór filmowy.",
+    ]
+  ),
+  restaurants: summary(
+    "Restauracje — podsumowanie",
+    "Zapisuj lokale do odwiedzenia i notatki po wizycie.",
+    [
+      "Filtry sortują po typie lokalu i statusie wizyty.",
+      "Adres i notatki są przy każdym miejscu.",
+      "Lista działa też jako pamiętnik kulinarnych odkryć.",
+    ],
+    [
+      "Dodaj miejsce, które chcesz odwiedzić.",
+      "Po wizycie uzupełnij notatki i ocenę.",
+      "Połącz z watchlistą na wieczór w mieście.",
+    ]
+  ),
+  pets: summary(
+    "Zwierzęta — podsumowanie",
+    "Opieka nad pupilem — zwierzęta, zadania i terminy.",
+    [
+      "Każde zwierzę ma własne zadania opieki.",
+      "Szczepienia i wizyty weterynaryjne mają terminy.",
+      "Filtry pomagają skupić się na jednym pupilu.",
+    ],
+    [
+      "Dodaj pupila i pierwsze zadanie opieki.",
+      "Uzupełnij apteczkę na podstawowe leki weterynaryjne.",
+      "Sprawdź zaległe terminy na dashboardzie.",
+    ]
+  ),
+  chores: summary(
+    "Obowiązki — podsumowanie",
+    "Domowe zadania z przypisaniem i powtarzalnością.",
+    [
+      "Zadania można przypisać członkom rodziny.",
+      "Lista i kalendarz pokazują to samo z innej perspektywy.",
+      "Odhaczenie wykonania jest jednym kliknięciem.",
+    ],
+    [
+      "Dodaj pierwszy obowiązek z terminem.",
+      "Przypisz zadanie konkretnej osobie w rodzinie.",
+      "Połącz z listą zakupów na wspólne zaopatrzenie.",
+    ]
+  ),
+  notes: summary(
+    "Notatki — podsumowanie",
+    "Wspólne notatki z kategoriami i pilnością.",
+    [
+      "Kategorie porządkują notatki kolorem.",
+      "Tytuł z ! trafia do „Wymaga uwagi”.",
+      "Rodzina widzi notatki na żywo.",
+    ],
+    [
+      "Utwórz kategorię i pierwszą notatkę.",
+      "Użyj ! przy pilnych sprawach domowych.",
+      "Przypnij ważne notatki na górze listy.",
+    ]
+  ),
+  notifications: summary(
+    "Powiadomienia — podsumowanie",
+    "Skrzynka aktywności rodziny i aplikacji w jednym miejscu.",
+    [
+      "Filtry dzielą wpisy na wszystkie, nieprzeczytane i przeczytane.",
+      "Kliknięcie prowadzi do modułu źródłowego.",
+      "Możesz oznaczyć wszystkie jako przeczytane.",
+    ],
+    [
+      "Sprawdzaj nieprzeczytane po logowaniu.",
+      "Włącz powiadomienia w przeglądarce, jeśli chcesz alerty poza aplikacją.",
+      "Wróć do dashboardu — „Wymaga uwagi” pokazuje terminy.",
+    ]
+  ),
+  settingsSolo: summary(
+    "Konto solo — podsumowanie",
+    "Ustawienia konta indywidualnego — rodzina, typ konta i bezpieczeństwo.",
+    [
+      "Kod zaproszenia łączy Cię z rodziną założyciela.",
+      "Typ konta decyduje o współdzieleniu danych.",
+      "Hasło zmieniasz w dedykowanej sekcji.",
+    ],
+    [
+      "Rozważ dołączenie do rodziny lub założenie własnej.",
+      "Po przejściu na rodzinę uruchom tour konta rodzinnego.",
+      "Włącz tryb cichy Nimbusa, jeśli wolisz mniej podpowiedzi.",
+    ]
+  ),
+};
+
+export const nimbusModuleSummariesEn: Record<string, SummaryCopy> = {
+  budget: summary(
+    "Budget — summary",
+    "You now know the budget module. Here's what to remember.",
+    [
+      "Create separate budgets and pick the active one from the list.",
+      "Monthly entries show income, expenses, and balance.",
+      "Filters help you find specific transactions quickly.",
+    ],
+    [
+      "Add your first budget and entries for this month.",
+      "Set medicine expiry dates in the cabinet — it completes the household picture.",
+      "Ask Nimbus for a tour of another module anytime.",
+    ]
+  ),
+  shopping: summary(
+    "Shopping — summary",
+    "Shopping lists are ready — solo or live with family.",
+    [
+      "Each list has its own items to check off.",
+      "Family sees list changes in real time.",
+      "CSV export takes the list outside the app.",
+    ],
+    [
+      "Create a list and add a few products.",
+      "Try chores to split household tasks in the family.",
+      "Watch a list from the dashboard for quick access.",
+    ]
+  ),
+  gifts: summary(
+    "Gifts — summary",
+    "The gifts module collects ideas before they slip away.",
+    [
+      "Filter ideas by recipient.",
+      "Keep notes and links with each idea.",
+      "Family can co-manage the gift list.",
+    ],
+    [
+      "Add your first idea with a recipient.",
+      "Fill in birthdays — easier gift season planning.",
+      "Mark bought gifts when the season starts.",
+    ]
+  ),
+  birthdays: summary(
+    "Birthdays — summary",
+    "Birthday dates are under control — calendar and upcoming list.",
+    [
+      "The calendar shows birthdays in month context.",
+      "The side list sorts nearest dates.",
+      "Reminders surface on the dashboard.",
+    ],
+    [
+      "Add birthdays for close family and friends.",
+      "Link with gifts for present ideas.",
+      "Check schedule to avoid event clashes.",
+    ]
+  ),
+  schedule: summary(
+    "Schedule — summary",
+    "The schedule combines single- and multi-day events in one calendar.",
+    [
+      "Calendar and month list complement each other.",
+      "Entries can have date ranges and descriptions.",
+      "Print the month for family planning meetings.",
+    ],
+    [
+      "Add your next event or trip.",
+      "Add birthdays — easier to plan shared time.",
+      "Check Needs attention on the dashboard.",
+    ]
+  ),
+  medicine: summary(
+    "Medicine cabinet — summary",
+    "Home medicine tracking with expiry dates and filters.",
+    [
+      "Each medicine has form, quantity, and expiry.",
+      "Filters help by location or availability.",
+      "Upcoming expiries appear in Needs attention.",
+    ],
+    [
+      "Add basic medicines with expiry dates.",
+      "Link with budget for health spending.",
+      "Update quantities when packages run out.",
+    ]
+  ),
+  watchlist: summary(
+    "Watchlist — summary",
+    "Movies and series in one list — solo or shared.",
+    [
+      "Watched / to-watch status keeps things tidy.",
+      "Platform filters help pick a evening show.",
+      "Family can add titles to a shared list.",
+    ],
+    [
+      "Add a title you want to watch this week.",
+      "Mark watched after viewing.",
+      "Use restaurants to save a spot for movie night.",
+    ]
+  ),
+  restaurants: summary(
+    "Restaurants — summary",
+    "Save places to visit and notes after dining.",
+    [
+      "Filters sort by venue type and visit status.",
+      "Address and notes stay with each place.",
+      "The list works as a food discovery journal.",
+    ],
+    [
+      "Add a place you want to try.",
+      "Update notes and rating after your visit.",
+      "Pair with the watchlist for a night out.",
+    ]
+  ),
+  pets: summary(
+    "Pets — summary",
+    "Pet care — animals, tasks, and due dates.",
+    [
+      "Each pet has its own care tasks.",
+      "Vaccines and vet visits have due dates.",
+      "Filters focus on one pet at a time.",
+    ],
+    [
+      "Add your pet and first care task.",
+      "Fill the medicine cabinet for basic vet supplies.",
+      "Check overdue items on the dashboard.",
+    ]
+  ),
+  chores: summary(
+    "Chores — summary",
+    "Household tasks with assignment and recurrence.",
+    [
+      "Tasks can be assigned to family members.",
+      "List and calendar show the same data differently.",
+      "Completing a task takes one click.",
+    ],
+    [
+      "Add your first chore with a due date.",
+      "Assign a task to a family member.",
+      "Pair with shopping lists for shared supplies.",
+    ]
+  ),
+  notes: summary(
+    "Notes — summary",
+    "Shared notes with categories and urgency.",
+    [
+      "Categories organize notes by color.",
+      "A ! title prefix sends notes to Needs attention.",
+      "Family sees notes live.",
+    ],
+    [
+      "Create a category and your first note.",
+      "Use ! for urgent household matters.",
+      "Pin important notes to the top.",
+    ]
+  ),
+  notifications: summary(
+    "Notifications — summary",
+    "Family and app activity inbox in one place.",
+    [
+      "Filters split all, unread, and read entries.",
+      "Clicking opens the source module.",
+      "You can mark all as read.",
+    ],
+    [
+      "Check unread after sign-in.",
+      "Enable browser notifications if you want alerts outside the app.",
+      "Return to the dashboard — Needs attention shows due items.",
+    ]
+  ),
+  settingsSolo: summary(
+    "Solo account — summary",
+    "Individual account settings — family, account type, and security.",
+    [
+      "An invite code connects you to the founder's family.",
+      "Account type decides what you share.",
+      "Change your password in the dedicated section.",
+    ],
+    [
+      "Consider joining a family or starting your own.",
+      "After switching to family, run the family account tour.",
+      "Enable Nimbus quiet mode if you prefer fewer hints.",
+    ]
+  ),
+};
+
+export const nimbusFamilyTourPl: Dict["nimbusTour"]["family"] = {
+  familyTab: {
+    title: "Zakładka Rodzina",
+    body: "Tu zarządzasz nazwą rodziny, członkami i zaproszeniami.",
+  },
+  members: {
+    title: "Członkowie i zaproszenia",
+    body: "Wysyłaj zaproszenia mailem lub udostępnij kod — nowi członkowie dołączą do wspólnego konta.",
+  },
+  permissions: {
+    title: "Uprawnienia",
+    body: "Founder ustala, kto może edytować moduły współdzielone — np. listy zakupów czy notatki.",
+  },
+  realtime: {
+    title: "Współdzielenie na żywo",
+    body: "W modułach rodzinnych zmiany synchronizują się od razu — np. lista zakupów przy telefonie i komputerze.",
+  },
+  summary: {
+    title: "Konto rodzinne — podsumowanie",
+    body: "Wspólne konto to współdzielone moduły, uprawnienia i synchronizacja na żywo.",
+    learned: [
+      "Rodzina zarządza członkami i zaproszeniami w ustawieniach.",
+      "Uprawnienia kontrolują, kto może edytować wspólne dane.",
+      "Listy, notatki i obowiązki aktualizują się w czasie rzeczywistym.",
+    ],
+    next: [
+      "Zaproś brakujących członków rodziny.",
+      "Ustaw uprawnienia pod swój model współpracy.",
+      "Zacznij od wspólnej listy zakupów lub obowiązków.",
+    ],
+  },
+};
+
+export const nimbusFamilyTourEn: Dict["nimbusTour"]["family"] = {
+  familyTab: {
+    title: "Family tab",
+    body: "Manage your family name, members, and invitations here.",
+  },
+  members: {
+    title: "Members and invites",
+    body: "Send email invites or share your code — new members join the shared account.",
+  },
+  permissions: {
+    title: "Permissions",
+    body: "The founder decides who can edit shared modules — e.g. shopping lists or notes.",
+  },
+  realtime: {
+    title: "Live sharing",
+    body: "Family modules sync instantly — e.g. a shopping list on phone and desktop.",
+  },
+  summary: {
+    title: "Family account — summary",
+    body: "A family account means shared modules, permissions, and live sync.",
+    learned: [
+      "Family settings manage members and invitations.",
+      "Permissions control who can edit shared data.",
+      "Lists, notes, and chores update in real time.",
+    ],
+    next: [
+      "Invite any missing family members.",
+      "Set permissions for how you collaborate.",
+      "Start with a shared shopping list or chores.",
+    ],
+  },
+};

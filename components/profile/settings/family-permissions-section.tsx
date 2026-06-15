@@ -11,6 +11,7 @@ import { useT } from "@/lib/lang-context";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
 import { updateFamilyMemberRole } from "@/app/(app)/account/family-permissions-actions";
+import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus";
 import { cn } from "@/lib/utils";
 import { Shield, ShieldCheck, UserRound } from "lucide-react";
 
@@ -40,7 +41,7 @@ export function FamilyPermissionsSection() {
   }, [refreshFamily]);
 
   return (
-    <div className="space-y-8 max-w-2xl">
+    <div className="space-y-8 max-w-2xl" data-nimbus-tour={NIMBUS_TOUR_TARGET.FAMILY_PERMISSIONS}>
       <p className="text-sm text-muted-foreground">{t.account.permissionsDesc}</p>
 
       <div className="space-y-3">

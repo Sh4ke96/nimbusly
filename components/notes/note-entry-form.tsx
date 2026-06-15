@@ -1,9 +1,11 @@
 "use client";
 
 import { ACCOUNT_MODE } from "@/lib/constants/account";
+import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus-tour";
 import { NOTE_ATTENTION_TITLE_PREFIX } from "@/lib/constants/notes";
 import { NOTE_FORM_FIELD, type NoteCategory } from "@/lib/notes/types";
 import { NoteCategoryPicker } from "@/components/notes/note-category-picker";
+import { NimbusTourToolbarAnchor } from "@/components/nimbus/nimbus-tour-toolbar-anchor";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -55,7 +57,7 @@ export function NoteEntryForm({
     <>
       {id && <input type="hidden" name={NOTE_FORM_FIELD.ID} value={id} />}
 
-      <div className="space-y-2 pt-2">
+      <div className="space-y-2 pt-2" data-nimbus-tour={NIMBUS_TOUR_TARGET.NOTES_PIN}>
         <div className="flex gap-2.5 border border-attention/30 bg-attention/8 px-3 py-2.5">
           <Pin className="mt-0.5 size-4 shrink-0 text-attention" aria-hidden />
           <p className="text-xs leading-relaxed text-muted-foreground">
@@ -96,13 +98,18 @@ export function NoteEntryForm({
         categories={categories}
       />
 
-      {isFamily && (
-        <NoteVisibilityPicker
-          members={members}
-          value={visibility}
-          onChange={onVisibilityChange}
-        />
-      )}
+      <NimbusTourToolbarAnchor
+        tourTarget={NIMBUS_TOUR_TARGET.NOTES_VISIBILITY}
+        visible={isFamily}
+      >
+        {isFamily ? (
+          <NoteVisibilityPicker
+            members={members}
+            value={visibility}
+            onChange={onVisibilityChange}
+          />
+        ) : null}
+      </NimbusTourToolbarAnchor>
     </>
   );
 }

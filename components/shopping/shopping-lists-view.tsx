@@ -18,6 +18,8 @@ import { useShoppingListsRealtime } from "@/lib/hooks/use-shopping-lists-realtim
 import { downloadShoppingListCsv } from "@/lib/shopping-lists/export-csv";
 import { useT } from "@/lib/lang-context";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
+import { NimbusTourToolbarAnchor } from "@/components/nimbus/nimbus-tour-toolbar-anchor";
+import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus-tour";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import {
   EMPTY_SHOPPING_LIST_ITEMS,
@@ -119,13 +121,15 @@ export function ShoppingListsView() {
         <AccountBreadcrumbs current={t.shoppingLists.title} />
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="space-y-1">
+          <div className="space-y-1" data-nimbus-tour={NIMBUS_TOUR_TARGET.SHOPPING_HEADER}>
             <h1 className="font-heading font-bold text-2xl tracking-tight">
               {t.shoppingLists.title}
             </h1>
             <p className="text-sm text-muted-foreground">{t.shoppingLists.subtitle}</p>
           </div>
-          <ShoppingListFormDialog onSuccess={onListsChanged} />
+          <div data-nimbus-tour={NIMBUS_TOUR_TARGET.SHOPPING_ADD}>
+            <ShoppingListFormDialog onSuccess={onListsChanged} />
+          </div>
         </div>
 
         {familyId ? <FamilyRealtimeHint /> : null}
@@ -143,7 +147,7 @@ export function ShoppingListsView() {
           </p>
         ) : (
           <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
-            <section className="space-y-3">
+            <section className="space-y-3" data-nimbus-tour={NIMBUS_TOUR_TARGET.SHOPPING_LISTS}>
               <ModuleSectionHeading icon={ClipboardList}>
                 {t.shoppingLists.listsHeading}
               </ModuleSectionHeading>
@@ -162,7 +166,7 @@ export function ShoppingListsView() {
               </div>
             </section>
 
-            <section className="space-y-3">
+            <section className="space-y-3" data-nimbus-tour={NIMBUS_TOUR_TARGET.SHOPPING_ITEMS}>
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <ModuleSectionHeading icon={ShoppingBag}>
                   {activeList?.name ?? t.shoppingLists.itemsHeading}
@@ -180,10 +184,15 @@ export function ShoppingListsView() {
                       {t.module.exportCsv}
                     </Button>
                     {activeListId ? (
-                      <ShoppingListWatchButton
-                        listId={activeListId}
-                        onChanged={onWatchChanged}
-                      />
+                      <NimbusTourToolbarAnchor
+                        tourTarget={NIMBUS_TOUR_TARGET.SHOPPING_WATCH}
+                        visible={!!activeListId}
+                      >
+                        <ShoppingListWatchButton
+                          listId={activeListId}
+                          onChanged={onWatchChanged}
+                        />
+                      </NimbusTourToolbarAnchor>
                     ) : null}
                   </div>
                 ) : null}

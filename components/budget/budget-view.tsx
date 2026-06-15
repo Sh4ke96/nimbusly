@@ -17,6 +17,8 @@ import { BudgetExpensesList } from "@/components/budget/budget-expenses-list";
 import { BudgetFormDialog } from "@/components/budget/budget-form-dialog";
 import { BudgetMonthPicker } from "@/components/budget/budget-month-picker";
 import { BudgetWatchButton } from "@/components/budget/budget-watch-button";
+import { NimbusTourToolbarAnchor } from "@/components/nimbus/nimbus-tour-toolbar-anchor";
+import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus-tour";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -251,11 +253,13 @@ export function BudgetView() {
         <AccountBreadcrumbs current={t.budget.title} />
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between no-print">
-          <div className="space-y-1">
+          <div className="space-y-1" data-nimbus-tour={NIMBUS_TOUR_TARGET.BUDGET_HEADER}>
             <h1 className="font-heading font-bold text-2xl tracking-tight">{t.budget.title}</h1>
             <p className="text-sm text-muted-foreground">{t.budget.subtitle}</p>
           </div>
-          <BudgetFormDialog onSuccess={onDataChanged} />
+          <div data-nimbus-tour={NIMBUS_TOUR_TARGET.BUDGET_ADD}>
+            <BudgetFormDialog onSuccess={onDataChanged} />
+          </div>
         </div>
 
         {error ? (
@@ -286,27 +290,32 @@ export function BudgetView() {
           </div>
         ) : (
           <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
-            <section className="space-y-3 no-print">
+            <section className="space-y-3 no-print" data-nimbus-tour={NIMBUS_TOUR_TARGET.BUDGET_LISTS}>
               <div className="flex items-center justify-between gap-2">
                 <ModuleSectionHeading icon={Wallet}>
                   {t.budget.budgetsHeading}
                 </ModuleSectionHeading>
-                {hiddenBudgetCount > 0 || showHiddenBudgets ? (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="cursor-pointer shrink-0"
-                    onClick={() => setShowHiddenBudgets((value) => !value)}
-                  >
-                    {showHiddenBudgets ? (
-                      <EyeOff className="size-4" />
-                    ) : (
-                      <Eye className="size-4" />
-                    )}
-                    {showHiddenBudgets ? t.budget.hideHiddenBtn : t.budget.showHiddenBtn}
-                  </Button>
-                ) : null}
+                <NimbusTourToolbarAnchor
+                  tourTarget={NIMBUS_TOUR_TARGET.BUDGET_HIDDEN}
+                  visible={hiddenBudgetCount > 0 || showHiddenBudgets}
+                >
+                  {hiddenBudgetCount > 0 || showHiddenBudgets ? (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="cursor-pointer shrink-0"
+                      onClick={() => setShowHiddenBudgets((value) => !value)}
+                    >
+                      {showHiddenBudgets ? (
+                        <EyeOff className="size-4" />
+                      ) : (
+                        <Eye className="size-4" />
+                      )}
+                      {showHiddenBudgets ? t.budget.hideHiddenBtn : t.budget.showHiddenBtn}
+                    </Button>
+                  ) : null}
+                </NimbusTourToolbarAnchor>
               </div>
               <div className="space-y-3">
                 {visibleBudgets.map((budget) => (
@@ -324,7 +333,7 @@ export function BudgetView() {
               </div>
             </section>
 
-            <section className="space-y-4">
+            <section className="space-y-4" data-nimbus-tour={NIMBUS_TOUR_TARGET.BUDGET_DETAIL}>
               <div className="space-y-4 no-print">
                 <ModuleSectionHeading icon={BarChart3}>
                   {activeBudget?.name ?? t.budget.detailsHeading}
@@ -398,29 +407,40 @@ export function BudgetView() {
                         budgetId={activeBudgetId}
                         onSuccess={onDataChanged}
                       />
-                      <BudgetIncomeFormDialog
-                        budgetId={activeBudgetId}
-                        onSuccess={onDataChanged}
-                      />
+                      <div data-nimbus-tour={NIMBUS_TOUR_TARGET.BUDGET_INCOME}>
+                        <BudgetIncomeFormDialog
+                          budgetId={activeBudgetId}
+                          onSuccess={onDataChanged}
+                        />
+                      </div>
                     </div>
                     <div className="flex items-center gap-2 overflow-x-auto">
-                      <BudgetFilters
-                        entries={monthlyEntries}
-                        typeFilter={typeFilter}
-                        categoryFilter={categoryFilter}
-                        onTypeChange={handleTypeFilterChange}
-                        onCategoryChange={setCategoryFilter}
-                      />
-                      <BudgetWatchButton budgetId={activeBudgetId} onChanged={onWatchChanged} />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="cursor-pointer shrink-0"
-                        onClick={handleExportCsv}
+                      <NimbusTourToolbarAnchor
+                        tourTarget={NIMBUS_TOUR_TARGET.BUDGET_FILTERS}
+                        visible={!!activeBudgetId}
                       >
-                        <Download className="size-4" />
-                        {t.module.exportCsv}
-                      </Button>
+                        <BudgetFilters
+                          entries={monthlyEntries}
+                          typeFilter={typeFilter}
+                          categoryFilter={categoryFilter}
+                          onTypeChange={handleTypeFilterChange}
+                          onCategoryChange={setCategoryFilter}
+                        />
+                      </NimbusTourToolbarAnchor>
+                      <div data-nimbus-tour={NIMBUS_TOUR_TARGET.BUDGET_WATCH}>
+                        <BudgetWatchButton budgetId={activeBudgetId} onChanged={onWatchChanged} />
+                      </div>
+                      <div data-nimbus-tour={NIMBUS_TOUR_TARGET.BUDGET_EXPORT}>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="cursor-pointer shrink-0"
+                          onClick={handleExportCsv}
+                        >
+                          <Download className="size-4" />
+                          {t.module.exportCsv}
+                        </Button>
+                      </div>
                       <Button
                         type="button"
                         variant="outline"

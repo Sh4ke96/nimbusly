@@ -8,6 +8,7 @@ import { CHORE_STATUS } from "@/lib/constants/chores";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { completeChoreOccurrence } from "@/app/(app)/chores/actions";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
+import { useNimbusCelebration } from "@/lib/hooks/use-nimbus-celebration";
 import { useT } from "@/lib/lang-context";
 
 interface ChoreOccurrenceCompleteButtonProps {
@@ -30,9 +31,13 @@ export function ChoreOccurrenceCompleteButton({
   onSuccess,
 }: ChoreOccurrenceCompleteButtonProps) {
   const t = useT();
+  const celebrate = useNimbusCelebration();
   const [state, action, pending] = useActionState(completeChoreOccurrence, null);
 
-  useActionFeedback(state, () => onSuccess?.(), pending);
+  useActionFeedback(state, () => {
+    celebrate("firstChore");
+    onSuccess?.();
+  }, pending);
 
   return (
     <form action={action} className={className}>

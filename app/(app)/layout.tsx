@@ -1,4 +1,5 @@
 import { ProfileBootstrap } from "@/components/profile/profile-bootstrap";
+import { NimbusCompanionHost } from "@/components/nimbus/nimbus-companion-host";
 import { AmbientBackground } from "@/components/ui/ambient-background";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -7,6 +8,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <div className="relative min-h-screen">
         <AmbientBackground variant="app" />
         <div className="relative z-10">{children}</div>
+        <NimbusCompanionHost />
       </div>
     </ProfileBootstrap>
   );

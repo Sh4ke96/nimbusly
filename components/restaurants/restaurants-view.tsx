@@ -9,9 +9,11 @@ import { RestaurantEditDialog } from "@/components/restaurants/restaurant-edit-d
 import { RestaurantFormDialog } from "@/components/restaurants/restaurant-form-dialog";
 import { RestaurantsFilters } from "@/components/restaurants/restaurants-filters";
 import { RestaurantPlaceCard } from "@/components/restaurants/restaurant-place-card";
+import { NimbusTourToolbarAnchor } from "@/components/nimbus/nimbus-tour-toolbar-anchor";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
 import { Skeleton } from "@/components/ui/skeleton";
 import { RESTAURANT_FILTER_ALL } from "@/lib/constants/restaurants";
+import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus";
 import {
   filterRestaurantsByVenueType,
   filterRestaurantsByVisitStatus,
@@ -63,14 +65,17 @@ export function RestaurantsView() {
         <AccountBreadcrumbs current={t.restaurants.title} />
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="space-y-1">
+          <div className="space-y-1" data-nimbus-tour={NIMBUS_TOUR_TARGET.RESTAURANTS_HEADER}>
             <h1 className="font-heading font-bold text-2xl tracking-tight">
               {t.restaurants.title}
             </h1>
             <p className="text-sm text-muted-foreground">{t.restaurants.subtitle}</p>
           </div>
           <div className="flex items-center gap-2 self-start sm:self-auto">
-            {!loading && places.length > 0 && (
+            <NimbusTourToolbarAnchor
+              tourTarget={NIMBUS_TOUR_TARGET.RESTAURANTS_FILTERS}
+              visible={!loading && places.length > 0}
+            >
               <RestaurantsFilters
                 places={places}
                 visitFilter={visitFilter}
@@ -78,8 +83,10 @@ export function RestaurantsView() {
                 onVisitChange={setVisitFilter}
                 onVenueChange={setVenueFilter}
               />
-            )}
-            <RestaurantFormDialog onSuccess={onPlacesChanged} />
+            </NimbusTourToolbarAnchor>
+            <div data-nimbus-tour={NIMBUS_TOUR_TARGET.RESTAURANTS_ADD}>
+              <RestaurantFormDialog onSuccess={onPlacesChanged} />
+            </div>
           </div>
         </div>
 
@@ -99,7 +106,7 @@ export function RestaurantsView() {
                 : t.restaurants.empty}
           </p>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2" data-nimbus-tour={NIMBUS_TOUR_TARGET.RESTAURANTS_LIST}>
             {filteredPlaces.map((place) => (
               <RestaurantPlaceCard
                 key={place.id}

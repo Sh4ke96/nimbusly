@@ -14,6 +14,7 @@ import type { PetSpecies } from "@/lib/constants/pets";
 import { isValidPetName, isValidPetSpecies } from "@/lib/pets/types";
 import { useT } from "@/lib/lang-context";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
+import { useNimbusCelebration } from "@/lib/hooks/use-nimbus-celebration";
 import { createPet } from "@/app/(app)/pets/actions";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
@@ -24,6 +25,7 @@ interface PetFormDialogProps {
 
 export function PetFormDialog({ onSuccess }: PetFormDialogProps) {
   const t = useT();
+  const celebrate = useNimbusCelebration();
   const [open, setOpen] = useState<boolean>(false);
   const [name, setName] = useState<string>("");
   const [species, setSpecies] = useState<PetSpecies | null>(null);
@@ -31,6 +33,7 @@ export function PetFormDialog({ onSuccess }: PetFormDialogProps) {
   const [state, action, pending] = useActionState(createPet, null);
 
   useActionFeedback(state, () => {
+    celebrate("firstPet");
     setOpen(false);
     setName("");
     setSpecies(null);

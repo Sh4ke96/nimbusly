@@ -15,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
+import { useNimbusCelebration } from "@/lib/hooks/use-nimbus-celebration";
 import { useT } from "@/lib/lang-context";
 import { SHOPPING_LIST_NAME_MAX_LENGTH } from "@/lib/constants/shopping-lists";
 
@@ -24,11 +25,13 @@ interface ShoppingListFormDialogProps {
 
 export function ShoppingListFormDialog({ onSuccess }: ShoppingListFormDialogProps) {
   const t = useT();
+  const celebrate = useNimbusCelebration();
   const [open, setOpen] = useState<boolean>(false);
   const [state, action, pending] = useActionState(createShoppingList, null);
 
   useActionFeedback(state, () => {
     setOpen(false);
+    celebrate("firstShoppingList");
     onSuccess?.();
   });
 

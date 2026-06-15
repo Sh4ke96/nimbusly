@@ -163,6 +163,142 @@
     animation: nimbus-float 3s ease-in-out infinite;
   }
 
+  @keyframes nimbus-companion-pulse {
+    0%, 100% {
+      transform: translateY(0) scale(1);
+      box-shadow: 0 4px 14px rgba(43, 87, 72, 0.2);
+    }
+    50% {
+      transform: translateY(-5px) scale(1.04);
+      box-shadow: 0 10px 24px rgba(97, 135, 100, 0.35);
+    }
+  }
+  .nimbus-companion-float {
+    animation: nimbus-companion-pulse 2.6s ease-in-out infinite;
+  }
+
+  /* Nimbus NPC companion */
+  @keyframes nimbus-npc-bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+  @keyframes nimbus-npc-wave {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-16deg); }
+    75% { transform: rotate(22deg); }
+  }
+  @keyframes nimbus-npc-callout {
+    0%, 100% { transform: translateY(0) scale(1); }
+    30% { transform: translateY(-10px) scale(1.06) rotate(-2deg); }
+    60% { transform: translateY(-6px) scale(1.04) rotate(2deg); }
+  }
+  @keyframes nimbus-npc-blink {
+    0%, 46%, 52%, 100% { transform: scaleY(1); }
+    49% { transform: scaleY(0.12); }
+  }
+  @keyframes nimbus-npc-ping {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.15); opacity: 0.85; }
+  }
+  @keyframes nimbus-npc-speech-pop {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+  }
+  @keyframes nimbus-npc-ground-pulse {
+    0%, 100% { transform: translateX(-50%) scaleX(1); opacity: 0.55; }
+    50% { transform: translateX(-50%) scaleX(1.15); opacity: 0.75; }
+  }
+
+  .nimbus-npc-trigger {
+    cursor: pointer;
+  }
+  .nimbus-npc-trigger:hover {
+    cursor: pointer;
+  }
+
+  .nimbus-npc-idle {
+    animation: nimbus-npc-bob 3.2s ease-in-out infinite;
+  }
+  .nimbus-npc-idle .nimbus-npc-eyes {
+    transform-origin: center;
+    animation: nimbus-npc-blink 5.5s ease-in-out infinite;
+  }
+  .nimbus-npc-arm-right {
+    transform-origin: 64px 52px;
+  }
+  .nimbus-npc-hover {
+    animation: nimbus-npc-bob 2.2s ease-in-out infinite;
+    filter: drop-shadow(0 8px 16px rgba(97, 135, 100, 0.35));
+  }
+  .nimbus-npc-hover .nimbus-npc-arm-right {
+    animation: nimbus-npc-wave 0.9s ease-in-out infinite;
+  }
+  .nimbus-npc-calling {
+    animation: nimbus-npc-callout 0.85s ease-in-out infinite;
+    filter: drop-shadow(0 10px 20px rgba(97, 135, 100, 0.45));
+  }
+  .nimbus-npc-calling .nimbus-npc-arm-right {
+    animation: nimbus-npc-wave 0.55s ease-in-out infinite;
+  }
+  .nimbus-npc-ping {
+    animation: nimbus-npc-ping 1s ease-in-out infinite;
+  }
+  .nimbus-npc-speech {
+    animation: nimbus-npc-speech-pop 2s ease-in-out infinite;
+  }
+  .nimbus-npc-ground-calling {
+    animation: nimbus-npc-ground-pulse 0.85s ease-in-out infinite;
+  }
+
+  /* Nimbus guided tour */
+  .nimbus-tour-dim {
+    fill: color-mix(in srgb, var(--foreground) 48%, transparent);
+  }
+  .nimbus-tour-mask-hole {
+    transition:
+      x 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+      y 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+      width 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+      height 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .nimbus-tour-ring {
+    border: 3px solid var(--primary);
+    background: transparent;
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--primary) 45%, transparent),
+      0 0 0 6px color-mix(in srgb, var(--primary) 22%, transparent),
+      0 8px 28px color-mix(in srgb, var(--primary) 26%, transparent);
+    transition:
+      top 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+      left 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+      width 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+      height 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .nimbus-tour-target-active {
+    position: relative;
+    z-index: 199;
+  }
+  .nimbus-tour-panel {
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
+  .nimbus-tour-panel-syncing {
+    opacity: 0.92;
+  }
+  @keyframes nimbus-tour-step-fade {
+    0% { opacity: 0; transform: translateY(6px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  .nimbus-tour-step-copy {
+    animation: nimbus-tour-step-fade 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @keyframes nimbus-tour-overlay-in {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  .nimbus-tour-overlay {
+    animation: nimbus-tour-overlay-in 0.35s ease both;
+  }
+
   /* Spring pop entrance */
   @keyframes nimbus-pop {
     0% { opacity: 0; transform: scale(0.85); }

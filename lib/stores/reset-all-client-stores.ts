@@ -1,5 +1,6 @@
 import { useBirthdaysStore } from "@/lib/stores/birthdays-store";
 import { useNotesStore } from "@/lib/stores/notes-store";
+import { useNimbusStore } from "@/lib/stores/nimbus-store";
 import { useBudgetStore } from "@/lib/stores/budget-store";
 import { useChoresStore } from "@/lib/stores/chores-store";
 import { useGiftsStore } from "@/lib/stores/gifts-store";
@@ -28,4 +29,17 @@ export function resetAllClientStores() {
   useScheduleStore.getState().reset();
   useBirthdaysStore.getState().reset();
   useNotesStore.getState().reset();
+  useNimbusStore.setState({
+    menuOpen: false,
+    menuView: "main",
+    tourActive: false,
+    activeTourId: null,
+    tourStepIndex: 0,
+    tourLayout: { rect: null, targetMissing: false, syncing: false },
+    hintIndex: null,
+    hintMessage: null,
+    hintKind: null,
+    hintAction: null,
+    npcCalling: false,
+  });
 }

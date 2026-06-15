@@ -1,4 +1,8 @@
 import type { Dict } from "./types";
+import {
+  nimbusCompanionExtraPl,
+  nimbusTourMessagesPl,
+} from "./nimbus-messages";
 
 export const pl: Dict = {
   meta: {
@@ -23,6 +27,8 @@ export const pl: Dict = {
     howItWorksSlug: "jak-to-dziala",
     forFamily: "Dla rodziny",
     forFamilySlug: "dla-rodziny",
+    nimbus: "Nimbus",
+    nimbusSlug: "nimbus",
     login: "Zaloguj się",
       getStarted: "Zacznij za darmo",
       dashboard: "Panel",
@@ -114,6 +120,75 @@ export const pl: Dict = {
         desc: "Solo lub do 6 osób z rolami. Zaproszenia, uprawnienia i wspólne powiadomienia o zmianach.",
       },
     ],
+  },
+  nimbusLanding: {
+    badge: "Towarzysz w aplikacji",
+    heading: "Nimbus — przewodnik, który zna Twój dom",
+    intro:
+      "Nimbus to postać w prawym dolnym rogu Nimbusly. Nie jest ozdobą — pomaga wejść w aplikację po onboardingu, prowadzi toury po każdym module, odpowiada na pytania w FAQ i podpowiada, co warto zrobić dalej. Reaguje na to, co dzieje się w rodzinie: pierwsze listy zakupów, budżety, pilne notatki czy wpisy w „Wymaga uwagi” na dashboardzie.",
+    pillars: [
+      {
+        title: "Nie zostawia Cię samego",
+        desc: "Po pierwszym logowaniu zaproponuje krótki tour aplikacji. Gdy wejdziesz w moduł po raz pierwszy — pokaże, gdzie są najważniejsze przyciski i filtry.",
+      },
+      {
+        title: "Zna kontekst rodziny",
+        desc: "Sugeruje kolejne kroki: budżet bez wpisów, pusta watchlista, wygasające leki albo brak urodzin na koncie rodzinnym. Każdą sugestię możesz wyciszyć.",
+      },
+      {
+        title: "Szanuje Twój rytm",
+        desc: "Tryb cichy wyłącza losowe podpowiedzi. Wyciszenie na 24 h lub 7 dni — gdy potrzebujesz skupienia. Tour przerwiesz klawiszem Esc i wznowisz z menu.",
+      },
+      {
+        title: "Odpowiada jak człowiek",
+        desc: "W menu „Zapytaj Nimbusa” znajdziesz FAQ po polsku i angielsku — od zaproszeń do rodziny, przez CSV i watch na dashboardzie, po skrót Ctrl+K wyszukiwarki.",
+      },
+    ],
+    asideTitle: "Co zobaczysz po zalogowaniu",
+    asideBullets: [
+      "Przewodniki po aplikacji, każdym module i koncie rodzinnym",
+      "Podpowiedzi kontekstowe na stronie, w której właśnie jesteś",
+      "Celebracje pierwszych sukcesów — budżet, lista, obowiązek, pupil",
+      "Dzienny sygnał, gdy coś wymaga uwagi na dashboardzie",
+      "Przyciski „Pokaż tour” i „Przejdź” bezpośrednio w dymku podpowiedzi",
+    ],
+    capabilitiesHeading: "Co potrafi Nimbus",
+    capabilities: [
+      {
+        title: "Toury modułów",
+        desc: "Krok po kroku przez budżet, zakupy, notatki, grafik, apteczkę i pozostałe moduły — z podsumowaniem na końcu.",
+      },
+      {
+        title: "Tour aplikacji",
+        desc: "Dashboard, układ kart, wyszukiwarka Ctrl+K, ustawienia profilu i Nimbusa — pełny start w kilka minut.",
+      },
+      {
+        title: "FAQ w menu",
+        desc: "Ponad dziewiętnaście pytań z linkami do właściwych ekranów — bez szukania w dokumentacji.",
+      },
+      {
+        title: "Celebracje",
+        desc: "Pierwszy budżet, wpis, pilna notatka, urodziny, pupil czy wpis w grafiku — Nimbus docenia postęp.",
+      },
+      {
+        title: "Wymaga uwagi",
+        desc: "Gdy na dashboardzie pojawią się zaległe obowiązki, leki lub płatności — raz dziennie przypomni o panelu.",
+      },
+      {
+        title: "Wyszukiwarka",
+        desc: "Skrót Ctrl+K (Cmd+K na Macu) widoczny w navbarze — Nimbus podpowie przy pierwszym użyciu.",
+      },
+      {
+        title: "Tryb cichy",
+        desc: "W profilu lub menu — bez losowych hintów i animacji; zostają toury i menu na żądanie.",
+      },
+      {
+        title: "Wznowienie touru",
+        desc: "Esc zapisuje postęp. W menu wracasz dokładnie tam, gdzie skończyłeś.",
+      },
+    ],
+    footnote:
+      "Nimbusa możesz ukryć w ustawieniach profilu. Domyślnie towarzyszy całej rodzinie — każdy członek ma własne wyciszenia i postęp tourów na swoim urządzeniu.",
   },
   steps: {
     heading: "Trzy kroki do rodzinnego porządku",
@@ -1406,4 +1481,29 @@ export const pl: Dict = {
     empty: "Brak wyników dla tego zapytania",
     loading: "Ładowanie danych…",
   },
+  companion: {
+    name: "Nimbus",
+    menuSubtitle: "Twój towarzysz po aplikacji",
+    openMenuAria: "Otwórz menu Nimbusa",
+    closeMenuAria: "Zamknij menu Nimbusa",
+    hoverHint: "Kliknij — pomogę Ci się rozejrzeć",
+    tourAction: "Pokaż mi aplikację",
+    tourActionDesc: "Panel główny i ustawienia profilu",
+    settingLabel: "Pokaż Nimbusa w aplikacji",
+    settingDesc: "Postać w prawym dolnym rogu, która od czasu do czasu podpowie, co dalej.",
+    hints: [
+      "Potrzebujesz podpowiedzi? Kliknij we mnie — przeprowadzę Cię po aplikacji.",
+      "Od ekranu głównego po moduły — pokażę Ci, od czego warto zacząć.",
+      "Profil, avatar albo rodzina? W ustawieniach znajdziesz to wszystko — mogę Cię tam zaprowadzić.",
+      "Pierwszy raz w Nimbusly? W minutę pokażę najważniejsze miejsca.",
+      "Jak utkniesz, jestem tuż obok. Dosłownie — w prawym dolnym rogu.",
+      "Ctrl+K otwiera wyszukiwarkę — moduły, notatki i listy w jednym miejscu.",
+      "Na dashboardzie sekcja „Wymaga uwagi” zbiera terminy i pilne sprawy.",
+      "Tryb cichy w profilu wyłącza losowe podpowiedzi — zostają menu i przewodniki.",
+      "Każdy moduł ma własny przewodnik — kliknij mnie na stronie modułu.",
+      "Esc w trakcie touru zapisze postęp — wznowisz go z menu Nimbusa.",
+    ],
+    ...nimbusCompanionExtraPl,
+  },
+  nimbusTour: nimbusTourMessagesPl,
 };

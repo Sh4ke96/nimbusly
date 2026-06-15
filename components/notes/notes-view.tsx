@@ -11,6 +11,7 @@ import { NoteFormDialog } from "@/components/notes/note-form-dialog";
 import { NoteCategoryFormDialog } from "@/components/notes/note-category-form-dialog";
 import { NotesFilters } from "@/components/notes/notes-filters";
 import { NoteCard } from "@/components/notes/note-card";
+import { NimbusTourToolbarAnchor } from "@/components/nimbus/nimbus-tour-toolbar-anchor";
 import { Card, CardContent, CardHeader, CardTitle, CARD_TITLE_ROW_CLASSNAME } from "@/components/ui/card";
 import { FamilyRealtimeHint } from "@/components/ui/family-realtime-hint";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
@@ -19,6 +20,7 @@ import { NOTE_FILTER_ALL } from "@/lib/notes/types";
 import { filterNotesByCategory } from "@/lib/notes/types";
 import type { Note } from "@/lib/notes/types";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
+import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus";
 import { countActiveFilters } from "@/lib/filters/active-count";
 import { useT } from "@/lib/lang-context";
 import { useProfileStore } from "@/lib/stores/profile-store";
@@ -89,26 +91,33 @@ export function NotesView() {
         <AccountBreadcrumbs current={t.notes.title} />
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="space-y-1">
+          <div className="space-y-1" data-nimbus-tour={NIMBUS_TOUR_TARGET.NOTES_HEADER}>
             <h1 className="font-heading font-bold text-2xl tracking-tight">{t.notes.title}</h1>
             <p className="text-sm text-muted-foreground">{t.notes.subtitle}</p>
           </div>
           <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
-            {!loading && (notes.length > 0 || categories.length > 0) && (
+            <NimbusTourToolbarAnchor
+              tourTarget={NIMBUS_TOUR_TARGET.NOTES_FILTERS}
+              visible={!loading && (notes.length > 0 || categories.length > 0)}
+            >
               <NotesFilters
                 notes={notes}
                 categories={categories}
                 value={filterKey}
                 onChange={setFilterKey}
               />
-            )}
-            <NoteCategoryFormDialog onSuccess={onNotesChanged} />
-            <NoteFormDialog
-              categories={categories}
-              profile={profile}
-              members={members}
-              onSuccess={onNotesChanged}
-            />
+            </NimbusTourToolbarAnchor>
+            <div data-nimbus-tour={NIMBUS_TOUR_TARGET.NOTES_CATEGORY}>
+              <NoteCategoryFormDialog onSuccess={onNotesChanged} />
+            </div>
+            <div data-nimbus-tour={NIMBUS_TOUR_TARGET.NOTES_ADD}>
+              <NoteFormDialog
+                categories={categories}
+                profile={profile}
+                members={members}
+                onSuccess={onNotesChanged}
+              />
+            </div>
           </div>
         </div>
 
@@ -117,7 +126,10 @@ export function NotesView() {
         {error ? (
           <ModuleFetchError onRetry={() => void fetchNotes(true)} />
         ) : (
-          <Card className="rounded-none py-0 shadow-sm h-fit gap-0">
+          <Card
+            className="rounded-none py-0 shadow-sm h-fit gap-0"
+            data-nimbus-tour={NIMBUS_TOUR_TARGET.NOTES_LIST}
+          >
             <CardHeader>
               <CardTitle className={CARD_TITLE_ROW_CLASSNAME}>{t.notes.listTitle}</CardTitle>
             </CardHeader>

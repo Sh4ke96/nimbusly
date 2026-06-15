@@ -9,9 +9,11 @@ import { WatchlistEditDialog } from "@/components/watchlist/watchlist-edit-dialo
 import { WatchlistFilters } from "@/components/watchlist/watchlist-filters";
 import { WatchlistFormDialog } from "@/components/watchlist/watchlist-form-dialog";
 import { WatchlistItemCard } from "@/components/watchlist/watchlist-item-card";
+import { NimbusTourToolbarAnchor } from "@/components/nimbus/nimbus-tour-toolbar-anchor";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
 import { Skeleton } from "@/components/ui/skeleton";
 import { WATCHLIST_FILTER_ALL } from "@/lib/constants/watchlist";
+import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus";
 import {
   filterWatchlistByMediaType,
   filterWatchlistByStatus,
@@ -66,14 +68,17 @@ export function WatchlistView() {
         <AccountBreadcrumbs current={t.watchlist.title} />
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="space-y-1">
+          <div className="space-y-1" data-nimbus-tour={NIMBUS_TOUR_TARGET.WATCHLIST_HEADER}>
             <h1 className="font-heading font-bold text-2xl tracking-tight">
               {t.watchlist.title}
             </h1>
             <p className="text-sm text-muted-foreground">{t.watchlist.subtitle}</p>
           </div>
           <div className="flex items-center gap-2 self-start sm:self-auto">
-            {!loading && items.length > 0 && (
+            <NimbusTourToolbarAnchor
+              tourTarget={NIMBUS_TOUR_TARGET.WATCHLIST_FILTERS}
+              visible={!loading && items.length > 0}
+            >
               <WatchlistFilters
                 items={items}
                 statusFilter={statusFilter}
@@ -83,8 +88,10 @@ export function WatchlistView() {
                 onMediaChange={setMediaFilter}
                 onPlatformChange={setPlatformFilter}
               />
-            )}
-            <WatchlistFormDialog onSuccess={onItemsChanged} />
+            </NimbusTourToolbarAnchor>
+            <div data-nimbus-tour={NIMBUS_TOUR_TARGET.WATCHLIST_ADD}>
+              <WatchlistFormDialog onSuccess={onItemsChanged} />
+            </div>
           </div>
         </div>
 
@@ -104,7 +111,7 @@ export function WatchlistView() {
                 : t.watchlist.empty}
           </p>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2" data-nimbus-tour={NIMBUS_TOUR_TARGET.WATCHLIST_LIST}>
             {filteredItems.map((item) => (
               <WatchlistItemCard
                 key={item.id}

@@ -15,6 +15,7 @@ import { type ScheduleEntryType, SCHEDULE_MAX_ENTRIES_PER_DAY } from "@/lib/cons
 import { useT } from "@/lib/lang-context";
 import { formatMessage } from "@/lib/i18n/format";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
+import { useNimbusCelebration } from "@/lib/hooks/use-nimbus-celebration";
 import { createScheduleEntry } from "@/app/(app)/schedule/actions";
 import {
   dateToEntryDateString,
@@ -32,6 +33,7 @@ interface ScheduleFormDialogProps {
 
 export function ScheduleFormDialog({ entries, onSuccess }: ScheduleFormDialogProps) {
   const t = useT();
+  const celebrate = useNimbusCelebration();
   const [open, setOpen] = useState<boolean>(false);
   const [range, setRange] = useState<DateRange | undefined>();
   const [entryType, setEntryType] = useState<ScheduleEntryType | "">("");
@@ -39,6 +41,7 @@ export function ScheduleFormDialog({ entries, onSuccess }: ScheduleFormDialogPro
   const [state, action, pending] = useActionState(createScheduleEntry, null);
 
   useActionFeedback(state, () => {
+    celebrate("firstScheduleEntry");
     setOpen(false);
     setRange(undefined);
     setEntryType("");

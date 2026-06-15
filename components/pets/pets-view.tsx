@@ -12,10 +12,12 @@ import { PetCareItemCard } from "@/components/pets/pet-care-item-card";
 import { PetsFilters } from "@/components/pets/pets-filters";
 import { PetEditDialog } from "@/components/pets/pet-edit-dialog";
 import { PetFormDialog } from "@/components/pets/pet-form-dialog";
+import { NimbusTourToolbarAnchor } from "@/components/nimbus/nimbus-tour-toolbar-anchor";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PET_FILTER_ALL } from "@/lib/constants/pets";
+import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus";
 import {
   filterPetCareByPet,
   filterPetCareByType,
@@ -77,14 +79,17 @@ export function PetsView() {
         <AccountBreadcrumbs current={t.pets.title} />
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="space-y-1">
+          <div className="space-y-1" data-nimbus-tour={NIMBUS_TOUR_TARGET.PETS_HEADER}>
             <h1 className="font-heading font-bold text-2xl tracking-tight">
               {t.pets.title}
             </h1>
             <p className="text-sm text-muted-foreground">{t.pets.subtitle}</p>
           </div>
           <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
-            {!loading && careItems.length > 0 && (
+            <NimbusTourToolbarAnchor
+              tourTarget={NIMBUS_TOUR_TARGET.PETS_FILTERS}
+              visible={!loading && careItems.length > 0}
+            >
               <PetsFilters
                 pets={pets}
                 items={careItems}
@@ -93,9 +98,13 @@ export function PetsView() {
                 onPetChange={setPetFilter}
                 onTypeChange={setTypeFilter}
               />
-            )}
-            <PetFormDialog onSuccess={onDataChanged} />
-            <PetCareFormDialog pets={pets} onSuccess={onDataChanged} />
+            </NimbusTourToolbarAnchor>
+            <div data-nimbus-tour={NIMBUS_TOUR_TARGET.PETS_ADD}>
+              <PetFormDialog onSuccess={onDataChanged} />
+            </div>
+            <div data-nimbus-tour={NIMBUS_TOUR_TARGET.PETS_CARE}>
+              <PetCareFormDialog pets={pets} onSuccess={onDataChanged} />
+            </div>
           </div>
         </div>
 
@@ -152,7 +161,7 @@ export function PetsView() {
                 : t.pets.empty}
           </p>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2" data-nimbus-tour={NIMBUS_TOUR_TARGET.PETS_LIST}>
             {filteredItems.map((item) => (
               <PetCareItemCard
                 key={item.id}

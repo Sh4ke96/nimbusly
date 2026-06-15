@@ -13,6 +13,7 @@ import { AccountTypeForm } from "@/components/profile/settings/account-type-form
 import { JoinFamilyForm } from "@/components/profile/settings/join-family-form";
 import { FamilySection } from "@/components/profile/settings/family-section";
 import { FamilyPermissionsSection } from "@/components/profile/settings/family-permissions-section";
+import { NimbusTourToolbarAnchor } from "@/components/nimbus/nimbus-tour-toolbar-anchor";
 import { ShoppingCategoriesSection } from "@/components/profile/settings/shopping-categories-section";
 import { PasswordSection } from "@/components/profile/settings/password-section";
 import { SettingsTabHeader } from "@/components/profile/settings/settings-tab-header";
@@ -28,6 +29,7 @@ import {
   SETTINGS_TAB,
   type SettingsTab,
 } from "@/lib/profile/settings-tabs";
+import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus-tour";
 
 const SIDEBAR_TRIGGER_CLASS = cn(
   "w-full flex-none justify-start gap-3 rounded-none border border-transparent px-4 py-3.5",
@@ -152,7 +154,10 @@ export default function ProfileSettingsPage() {
               className="w-full"
             >
               <div className="grid grid-cols-1 md:grid-cols-[15rem_minmax(0,1fr)]">
-                <aside className="border-b border-border bg-muted/30 md:border-b-0 md:border-r">
+                <aside
+                  className="border-b border-border bg-muted/30 md:border-b-0 md:border-r"
+                  data-nimbus-tour={NIMBUS_TOUR_TARGET.SETTINGS_NAV}
+                >
                   <TabsList
                     variant="line"
                     className="flex h-auto w-full flex-col items-stretch gap-0 rounded-none border-0 bg-transparent p-2"
@@ -160,7 +165,15 @@ export default function ProfileSettingsPage() {
                     {navItems.map(({ value, icon: Icon, label }, index) => (
                       <Fragment key={value}>
                         {index > 0 && <Separator />}
-                        <TabsTrigger value={value} className={SIDEBAR_TRIGGER_CLASS}>
+                        <TabsTrigger
+                          value={value}
+                          className={SIDEBAR_TRIGGER_CLASS}
+                          data-nimbus-tour={
+                            value === SETTINGS_TAB.FAMILY
+                              ? NIMBUS_TOUR_TARGET.FAMILY_SETTINGS_TAB
+                              : undefined
+                          }
+                        >
                           <Icon className="size-5 shrink-0" />
                           <span className="text-left">{label}</span>
                         </TabsTrigger>
@@ -177,8 +190,15 @@ export default function ProfileSettingsPage() {
                   </TabsContent>
 
                   <TabsContent value={SETTINGS_TAB.ACCOUNT} className="mt-0 outline-none space-y-8">
-                    <AccountTypeForm />
-                    {showJoinFamily && <JoinFamilyForm />}
+                    <div data-nimbus-tour={NIMBUS_TOUR_TARGET.SETTINGS_ACCOUNT_TYPE}>
+                      <AccountTypeForm />
+                    </div>
+                    <NimbusTourToolbarAnchor
+                      tourTarget={NIMBUS_TOUR_TARGET.SETTINGS_JOIN_FAMILY}
+                      visible={showJoinFamily}
+                    >
+                      {showJoinFamily ? <JoinFamilyForm /> : null}
+                    </NimbusTourToolbarAnchor>
                   </TabsContent>
 
                   {showFamily && (
@@ -194,13 +214,22 @@ export default function ProfileSettingsPage() {
                           value={SETTINGS_TAB.SHOPPING_CATEGORIES}
                           className="mt-0 outline-none"
                         >
-                          <ShoppingCategoriesSection />
+                          <NimbusTourToolbarAnchor
+                            tourTarget={NIMBUS_TOUR_TARGET.SETTINGS_SHOPPING_CATEGORIES}
+                            visible={showShoppingCategories}
+                          >
+                            <ShoppingCategoriesSection />
+                          </NimbusTourToolbarAnchor>
                         </TabsContent>
                       ) : null}
                     </>
                   )}
 
-                  <TabsContent value={SETTINGS_TAB.PASSWORD} className="mt-0 outline-none">
+                  <TabsContent
+                    value={SETTINGS_TAB.PASSWORD}
+                    className="mt-0 outline-none"
+                    data-nimbus-tour={NIMBUS_TOUR_TARGET.SETTINGS_PASSWORD}
+                  >
                     <PasswordSection />
                   </TabsContent>
                 </div>

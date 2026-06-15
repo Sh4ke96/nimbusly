@@ -20,6 +20,8 @@ interface ProfileStore {
   refreshProfile: () => Promise<void>;
   refreshFamily: () => Promise<void>;
   patchDashboardOverviewLayout: (layout: unknown) => void;
+  patchNimbusCompanionEnabled: (enabled: boolean) => void;
+  patchNimbusCompanionQuiet: (quiet: boolean) => void;
   reset: () => void;
 }
 
@@ -197,6 +199,28 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
       profile: {
         ...profile,
         dashboard_overview_layout: layout,
+      },
+    });
+  },
+
+  patchNimbusCompanionEnabled: (enabled: boolean) => {
+    const profile = get().profile;
+    if (!profile) return;
+    set({
+      profile: {
+        ...profile,
+        nimbus_companion_enabled: enabled,
+      },
+    });
+  },
+
+  patchNimbusCompanionQuiet: (quiet: boolean) => {
+    const profile = get().profile;
+    if (!profile) return;
+    set({
+      profile: {
+        ...profile,
+        nimbus_companion_quiet: quiet,
       },
     });
   },

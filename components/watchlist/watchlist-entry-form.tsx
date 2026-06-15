@@ -10,6 +10,7 @@ import {
   type WatchlistMediaType,
   type WatchlistStatus,
 } from "@/lib/constants/watchlist";
+import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus-tour";
 import { StreamingPlatformPicker } from "@/components/watchlist/streaming-platform-picker";
 import type { StreamingPlatform } from "@/lib/constants/watchlist-streaming";
 import { selectionPickerTileButtonClasses } from "@/lib/ui/selection-styles";
@@ -76,7 +77,7 @@ export function WatchlistEntryForm({
         <input type="hidden" name={WATCHLIST_FORM_FIELD.MEDIA_TYPE} value={mediaType ?? ""} required />
       </div>
 
-      <div className="space-y-1.5">
+      <div className="space-y-1.5" data-nimbus-tour={NIMBUS_TOUR_TARGET.WATCHLIST_STATUS}>
         <Label>{t.watchlist.statusLabel}</Label>
         <p className="text-xs text-muted-foreground">{t.watchlist.statusHint}</p>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
@@ -94,10 +95,12 @@ export function WatchlistEntryForm({
         <input type="hidden" name={WATCHLIST_FORM_FIELD.STATUS} value={status ?? ""} required />
       </div>
 
-      <StreamingPlatformPicker
-        value={streamingPlatforms}
-        onChange={onStreamingPlatformsChange}
-      />
+      <div data-nimbus-tour={NIMBUS_TOUR_TARGET.WATCHLIST_PLATFORMS}>
+        <StreamingPlatformPicker
+          value={streamingPlatforms}
+          onChange={onStreamingPlatformsChange}
+        />
+      </div>
 
       <div className="space-y-1.5">
         <Label htmlFor="watchlist-notes">{t.watchlist.notesLabel}</Label>

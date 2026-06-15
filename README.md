@@ -4,7 +4,7 @@
 
 Nimbusly is a family hub web app: shared budget, shopping, gifts, birthdays, schedule, medicine cabinet, watchlist, restaurants, pets, household chores, notes, and family account management. Each member has their own profile; family data stays in sync.
 
-Available in **Polish** and **English**. Current version: **0.2.0** — see `/change-log` or the in-app version badge.
+Available in **Polish** and **English**. Current version: **0.3.0** — see `/change-log` or the in-app version badge.
 
 ---
 
@@ -27,8 +27,9 @@ Available in **Polish** and **English**. Current version: **0.2.0** — see `/ch
 
 Additional:
 
+- **Nimbus** — in-app companion (bottom-right): guided tours for the app and every module, contextual hints, FAQ, cross-module suggestions, celebrations, quiet mode, tour resume (Esc), and Needs attention awareness
 - **Dashboard** (`/dashboard`) — Summary / Modules tabs, customizable overview cards, brown “needs attention” banner
-- **Global search** — quick jump to modules, lists, budgets, notes, chores, and more (header shortcut)
+- **Global search** — quick jump to modules, lists, budgets, notes, chores, and more (`Ctrl+K` / `Cmd+K` in the navbar)
 - **Notifications** (`/notifications`) — in-app family activity feed
 - **Change log** (`/change-log`) — public release history (no login required)
 - **Onboarding** — guided setup for new accounts
@@ -151,8 +152,8 @@ Authorization: Bearer <CRON_SECRET>
 
 ```
 app/              Next.js App Router (auth, app routes, API, Server Actions)
-components/       UI (shadcn, feature views, layout)
-lib/              Domain logic, stores, i18n, Supabase helpers
+components/       UI (shadcn, feature views, layout, nimbus companion)
+lib/              Domain logic, stores, i18n, Supabase helpers, nimbus/
 supabase/         SQL migrations
 tests/            Unit tests (`tests/unit/`) and E2E (`tests/e2e/`)
 ```
@@ -160,6 +161,22 @@ tests/            Unit tests (`tests/unit/`) and E2E (`tests/e2e/`)
 Developer guidelines: [`AGENTS.md`](AGENTS.md) and [`.cursor/rules/`](.cursor/rules/).
 
 When shipping a release, bump `version` in `package.json` and add an entry to `lib/changelog/entries.ts`.
+
+### Nimbus companion (`lib/nimbus/`, `components/nimbus/`)
+
+When you **add a module**, **change user-facing flows**, or **rename routes/UI targets**, update Nimbus in the same PR:
+
+| Area | Files |
+|------|--------|
+| Module tour steps | `lib/nimbus/tour-catalog.ts`, `lib/constants/nimbus-tour.ts`, `data-nimbus-tour` on views |
+| Tour copy (PL + EN) | `lib/i18n/nimbus-messages.ts`, `lib/i18n/nimbus-tour-summaries.ts` |
+| Context hints | `lib/nimbus/context-hints.ts`, `companion.context` in `nimbus-messages.ts` |
+| FAQ | `lib/nimbus/faq.ts`, `companion.faq` in `nimbus-messages.ts` |
+| Suggestions | `lib/nimbus/suggestions.ts`, `suggestion-links.ts`, `companion.suggestions` |
+| Celebrations | `lib/nimbus/celebrations.ts`, form hooks via `useNimbusCelebration` |
+| Tests | `tests/unit/nimbus/*.test.ts` |
+
+See [`.cursor/rules/new-module-or-change.instructions.md`](.cursor/rules/new-module-or-change.instructions.md) for the full checklist.
 
 ---
 
@@ -171,7 +188,7 @@ When shipping a release, bump `version` in `package.json` and add an entry to `l
 npm test
 ```
 
-Covers domain logic (budget, chores, notes, search, changelog, etc.).
+Covers domain logic (budget, chores, notes, search, changelog, nimbus, etc.).
 
 **E2E (requires Supabase service role in `.env.local` for full flows)**
 

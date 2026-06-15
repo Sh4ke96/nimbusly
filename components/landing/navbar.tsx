@@ -8,7 +8,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageToggle } from "@/components/language-toggle";
 import { useT } from "@/lib/lang-context";
 import { createClient } from "@/lib/supabase/client";
-import { Sparkles, Zap, Heart, LayoutDashboard } from "lucide-react";
+import { Sparkles, Zap, Heart, LayoutDashboard, Cloud } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 
 export function SiteNavbar() {
@@ -46,6 +46,13 @@ export function SiteNavbar() {
           >
             <Zap className="size-3.5 text-primary" />
             {t.nav.howItWorks}
+          </Link>
+          <Link
+            href={`#${t.nav.nimbusSlug}`}
+            className="flex items-center gap-1.5 rounded-none px-3.5 py-2 text-muted-foreground hover:text-foreground hover:bg-muted/70 transition-all"
+          >
+            <Cloud className="size-3.5 text-primary" />
+            {t.nav.nimbus}
           </Link>
           <Link
             href={`#${t.nav.forFamilySlug}`}

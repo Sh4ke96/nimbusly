@@ -2,7 +2,7 @@
 
 import { CHORE_FORM_FIELD } from "@/lib/chores/types";
 import { format } from "date-fns";
-import { useActionState } from "react";
+import { useActionState, useRef } from "react";
 import {
   AlertTriangle,
   Calendar,
@@ -45,6 +45,7 @@ import {
   setChoreTaskStatus,
 } from "@/app/(app)/chores/actions";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
+import { useNimbusCelebration } from "@/lib/hooks/use-nimbus-celebration";
 
 interface ChoreTaskCardProps {
   task: ChoreTask;
@@ -142,12 +143,18 @@ export function ChoreTaskCard({
 
   const [deleteState, deleteAction, deletePending] = useActionState(deleteChoreTask, null);
   const [statusState, statusAction, statusPending] = useActionState(setChoreTaskStatus, null);
+  const pendingStatusRef = useRef<string | null>(null);
+  const celebrate = useNimbusCelebration();
 
   useActionFeedback(deleteState, () => {
     onChanged?.();
   }, deletePending);
 
   useActionFeedback(statusState, () => {
+    if (pendingStatusRef.current === CHORE_STATUS.COMPLETED) {
+      celebrate("firstChore");
+    }
+    pendingStatusRef.current = null;
     onChanged?.();
   }, statusPending);
 
@@ -318,6 +325,9 @@ export function ChoreTaskCard({
                     variant={task.status === status ? "default" : "outline"}
                     disabled={statusPending || task.status === status}
                     className="cursor-pointer rounded-none h-8 text-xs gap-1.5 px-2.5"
+                    onClick={() => {
+                      pendingStatusRef.current = status;
+                    }}
                   >
                     <ChoreStatusIcon status={status} className="size-3.5" />
                     {t.chores.statusLabels[status]}

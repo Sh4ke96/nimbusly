@@ -28,6 +28,7 @@ import { useNotificationsStore } from "@/lib/stores/notifications-store";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
 import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { markAllNotificationsRead } from "@/app/(app)/notifications/actions";
+import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus-tour";
 import { cn } from "@/lib/utils";
 
 const FILTER_TAB_TRIGGER_CLASS = cn(
@@ -142,7 +143,10 @@ export function NotificationsView() {
       <main className="flex-1 mx-auto w-full max-w-4xl px-4 py-10 space-y-6">
         <AccountBreadcrumbs current={t.notifications.title} />
 
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div
+          className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+          data-nimbus-tour={NIMBUS_TOUR_TARGET.NOTIFICATIONS_HEADER}
+        >
           <div className="space-y-1">
             <h1 className="font-heading font-bold text-2xl tracking-tight">
               {t.notifications.title}
@@ -172,7 +176,10 @@ export function NotificationsView() {
               className="w-full"
             >
               <div className="grid grid-cols-1 md:grid-cols-[15rem_minmax(0,1fr)]">
-                <aside className="border-b border-border bg-muted/30 md:border-b-0 md:border-r">
+                <aside
+                  className="border-b border-border bg-muted/30 md:border-b-0 md:border-r"
+                  data-nimbus-tour={NIMBUS_TOUR_TARGET.NOTIFICATIONS_FILTERS}
+                >
                   <TabsList
                     variant="line"
                     className="flex h-auto w-full flex-col items-stretch gap-0 rounded-none border-0 bg-transparent p-2"
@@ -196,7 +203,10 @@ export function NotificationsView() {
                   </TabsList>
                 </aside>
 
-                <div className="min-w-0 p-6 md:p-8">
+                <div
+                  className="min-w-0 p-6 md:p-8"
+                  data-nimbus-tour={NIMBUS_TOUR_TARGET.NOTIFICATIONS_LIST}
+                >
                   <SettingsTabHeader
                     icon={activeFilter.icon}
                     title={activeFilter.label}

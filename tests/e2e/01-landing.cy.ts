@@ -3,6 +3,7 @@ describe("Strona główna", () => {
     cy.visit("/");
     cy.contains("Wszystko, co dzieje się w domu").should("be.visible");
     cy.contains("Dwanaście modułów pod jednym dachem").should("be.visible");
+    cy.contains("Nimbus — przewodnik, który zna Twój dom").should("be.visible");
     cy.contains("Trzy kroki do rodzinnego porządku").should("be.visible");
   });
 
@@ -18,6 +19,11 @@ describe("Strona główna", () => {
     cy.visit("/");
     cy.contains("a", "Zaloguj się").should("have.attr", "href", "/login");
     cy.contains("a", "Zacznij za darmo").should("have.attr", "href", "/register");
+  });
+
+  it("linkuje do sekcji Nimbusa w nawigacji", () => {
+    cy.visit("/");
+    cy.contains("a", "Nimbus").should("have.attr", "href", "#nimbus");
   });
 
   it("linkuje do historii zmian w stopce", () => {

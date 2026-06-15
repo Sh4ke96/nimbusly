@@ -23,3 +23,14 @@ When you ship a **new module**, **meaningful feature**, or **user-visible fix**:
 4. Use `CHANGELOG_ENTRY_TYPE` from `lib/constants/changelog.ts` (`major` | `minor` | `fix`).
 
 The public page `/change-log` and the bottom-right version badge read from this file automatically.
+
+## Nimbus companion
+
+Nimbus is a first-class product surface — not an afterthought. When you **create a module**, **develop or change module UX**, or **ship user-visible navigation changes**, update Nimbus in the **same change**:
+
+- Tour steps + `data-nimbus-tour` targets on the affected views
+- PL/EN copy in `lib/i18n/nimbus-messages.ts` (and summaries when tour scope changes)
+- Context hints, FAQ entries, and cross-module suggestions where relevant
+- Unit tests under `tests/unit/nimbus/`
+
+Full checklist: [`.cursor/rules/new-module-or-change.instructions.md`](.cursor/rules/new-module-or-change.instructions.md) → **Nimbus companion**.

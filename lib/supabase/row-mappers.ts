@@ -21,6 +21,8 @@ export function mapProfileRow(row: ProfileRow): Profile {
     onboarding_completed: row.onboarding_completed,
     preferred_lang: row.preferred_lang as Lang,
     dashboard_overview_layout: row.dashboard_overview_layout,
+    nimbus_companion_enabled: row.nimbus_companion_enabled,
+    nimbus_companion_quiet: row.nimbus_companion_quiet,
   };
 }
 

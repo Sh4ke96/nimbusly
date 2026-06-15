@@ -13,6 +13,8 @@ import {
 import { useShoppingCategoriesStore } from "@/lib/stores/shopping-categories-store";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { useProfileStore } from "@/lib/stores/profile-store";
+import { NimbusTourToolbarAnchor } from "@/components/nimbus/nimbus-tour-toolbar-anchor";
+import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus-tour";
 
 const ShoppingListCategorizedItems = dynamic(
   () =>
@@ -100,30 +102,42 @@ export function ShoppingListItemsPanel({
 
   return (
     <div className="space-y-4">
-      <ShoppingListAddItem
-        listId={listId}
-        categories={useCategories ? categories : []}
-        onSuccess={onChanged}
-      />
+      <div data-nimbus-tour={NIMBUS_TOUR_TARGET.SHOPPING_ADD_ITEM}>
+        <ShoppingListAddItem
+          listId={listId}
+          categories={useCategories ? categories : []}
+          onSuccess={onChanged}
+        />
+      </div>
 
       {items.length === 0 ? (
         <p className="text-sm text-muted-foreground text-center py-10 border border-dashed border-border bg-card shadow-sm">
           {t.shoppingLists.emptyItems}
         </p>
-      ) : useCategories && categoriesLoaded ? (
-        <ShoppingListCategorizedItems
-          listId={listId}
-          items={items}
-          categories={categories}
-          onChanged={onChanged}
-        />
       ) : (
-        <ShoppingListItemsSortable
-          listId={listId}
-          items={items}
-          itemIds={itemIds}
-          onChanged={onChanged}
-        />
+        <>
+          <NimbusTourToolbarAnchor
+            tourTarget={NIMBUS_TOUR_TARGET.SHOPPING_CATEGORIES}
+            visible={useCategories && categoriesLoaded}
+          >
+            {useCategories && categoriesLoaded ? (
+              <ShoppingListCategorizedItems
+                listId={listId}
+                items={items}
+                categories={categories}
+                onChanged={onChanged}
+              />
+            ) : null}
+          </NimbusTourToolbarAnchor>
+          {!(useCategories && categoriesLoaded) ? (
+            <ShoppingListItemsSortable
+              listId={listId}
+              items={items}
+              itemIds={itemIds}
+              onChanged={onChanged}
+            />
+          ) : null}
+        </>
       )}
     </div>
   );

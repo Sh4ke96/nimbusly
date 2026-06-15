@@ -1,0 +1,15 @@
+import { NIMBUS_SUGGESTION_ID, type NimbusSuggestionId } from "@/lib/nimbus/suggestions";
+
+export const NIMBUS_SUGGESTION_HREF: Record<NimbusSuggestionId, string> = {
+  [NIMBUS_SUGGESTION_ID.BUDGET_NO_MEDICINE]: "/medicine-cabinet",
+  [NIMBUS_SUGGESTION_ID.SHOPPING_NO_CHORES]: "/chores",
+  [NIMBUS_SUGGESTION_ID.FAMILY_NO_BIRTHDAYS]: "/birthdays",
+  [NIMBUS_SUGGESTION_ID.PETS_NO_MEDICINE]: "/medicine-cabinet",
+  [NIMBUS_SUGGESTION_ID.SCHEDULE_NO_BIRTHDAYS]: "/birthdays",
+  [NIMBUS_SUGGESTION_ID.GIFTS_NO_BIRTHDAYS]: "/birthdays",
+  [NIMBUS_SUGGESTION_ID.NOTES_NO_CHORES]: "/chores",
+  [NIMBUS_SUGGESTION_ID.BUDGET_NO_ENTRIES]: "/budget",
+  [NIMBUS_SUGGESTION_ID.WATCHLIST_EMPTY]: "/watchlist",
+  [NIMBUS_SUGGESTION_ID.MEDICINE_EXPIRING]: "/dashboard",
+  [NIMBUS_SUGGESTION_ID.EMPTY_DASHBOARD]: "/dashboard",
+};

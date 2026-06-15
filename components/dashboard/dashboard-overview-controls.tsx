@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { DASHBOARD_OVERVIEW_CARD, type DashboardOverviewCardId } from "@/lib/constants/dashboard-overview";
+import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus-tour";
 import { useT } from "@/lib/lang-context";
 import { cn } from "@/lib/utils";
 import { LayoutGrid, Check } from "lucide-react";
@@ -70,7 +71,10 @@ export function DashboardOverviewControls({
 
   return (
     <div className="space-y-3">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
+      <div
+        className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end"
+        data-nimbus-tour={NIMBUS_TOUR_TARGET.DASHBOARD_LAYOUT_EDIT}
+      >
         <Button
           type="button"
           variant={editMode ? "default" : "outline"}

@@ -23,6 +23,8 @@ export type Dict = {
     howItWorksSlug: string;
     forFamily: string;
     forFamilySlug: string;
+    nimbus: string;
+    nimbusSlug: string;
     login: string;
     getStarted: string;
     dashboard: string;
@@ -44,6 +46,17 @@ export type Dict = {
     heading: string;
     subheading: string;
     items: { title: string; desc: string }[];
+  };
+  nimbusLanding: {
+    badge: string;
+    heading: string;
+    intro: string;
+    pillars: { title: string; desc: string }[];
+    asideTitle: string;
+    asideBullets: string[];
+    capabilitiesHeading: string;
+    capabilities: { title: string; desc: string }[];
+    footnote: string;
   };
   steps: {
     heading: string;
@@ -1278,5 +1291,151 @@ export type Dict = {
     placeholder: string;
     empty: string;
     loading: string;
+  };
+  companion: {
+    name: string;
+    menuSubtitle: string;
+    openMenuAria: string;
+    closeMenuAria: string;
+    hoverHint: string;
+    tourAction: string;
+    tourActionDesc: string;
+    moduleTourAction: string;
+    moduleTourActionDesc: string;
+    familyTourAction: string;
+    familyTourActionDesc: string;
+    settingsSoloTourAction: string;
+    settingsSoloTourActionDesc: string;
+    askNimbus: string;
+    askNimbusDesc: string;
+    faqSearchPlaceholder: string;
+    faqGoTo: string;
+    faqEmpty: string;
+    snoozeTitle: string;
+    snoozeActionDesc: string;
+    snooze24h: string;
+    snooze24hDesc: string;
+    snoozeWeek: string;
+    snoozeWeekDesc: string;
+    snoozeDone: string;
+    backToMenu: string;
+    quietSettingLabel: string;
+    quietSettingDesc: string;
+    settingLabel: string;
+    settingDesc: string;
+    resumeTourAction: string;
+    resumeTourActionDesc: string;
+    hintActionTour: string;
+    hintActionGo: string;
+    suppressSuggestion: string;
+    onboardingIntroOffer: string;
+    firstVisitTourOffer: string;
+    attentionHint: string;
+    searchFirstUseHint: string;
+    hints: [
+      string,
+      string,
+      string,
+      string,
+      string,
+      string,
+      string,
+      string,
+      string,
+      string,
+    ];
+    celebrations: {
+      firstChore: string;
+      firstShoppingList: string;
+      firstBudget: string;
+      firstBudgetEntry: string;
+      firstUrgentNote: string;
+      firstBirthday: string;
+      firstPet: string;
+      firstScheduleEntry: string;
+    };
+    context: {
+      dashboard: string;
+      budget: string;
+      shopping: string;
+      chores: string;
+      notes: string;
+      medicine: string;
+      gifts: string;
+      birthdays: string;
+      schedule: string;
+      watchlist: string;
+      restaurants: string;
+      pets: string;
+      notifications: string;
+    };
+    suggestions: {
+      budgetNoMedicine: string;
+      shoppingNoChores: string;
+      familyNoBirthdays: string;
+      petsNoMedicine: string;
+      scheduleNoBirthdays: string;
+      giftsNoBirthdays: string;
+      notesNoChores: string;
+      budgetNoEntries: string;
+      watchlistEmpty: string;
+      medicineExpiring: string;
+      emptyDashboard: string;
+    };
+    faq: {
+      addFamilyMember: { q: string; a: string };
+      changeAvatar: { q: string; a: string };
+      addBudget: { q: string; a: string };
+      shoppingList: { q: string; a: string };
+      urgentNote: { q: string; a: string };
+      hideNimbus: { q: string; a: string };
+      quietMode: { q: string; a: string };
+      familyRealtime: { q: string; a: string };
+      assignChore: { q: string; a: string };
+      scheduleBirthdays: { q: string; a: string };
+      nimbusTour: { q: string; a: string };
+      notifications: { q: string; a: string };
+      globalSearch: { q: string; a: string };
+      dashboardLayout: { q: string; a: string };
+      exportCsv: { q: string; a: string };
+      watchDashboard: { q: string; a: string };
+      shoppingCategories: { q: string; a: string };
+      joinFamily: { q: string; a: string };
+    };
+    faqModules: {
+      settings: string;
+      budget: string;
+      shopping: string;
+      notes: string;
+      chores: string;
+      birthdays: string;
+      dashboard: string;
+      notifications: string;
+      search: string;
+    };
+  };
+  nimbusTour: {
+    badge: string;
+    summaryBadge: string;
+    summaryLearned: string;
+    summaryNext: string;
+    back: string;
+    next: string;
+    finish: string;
+    closeAria: string;
+    targetMissing: string;
+    keyboardHint: string;
+    intro: Record<string, { title: string; body: string }>;
+    family: Record<
+      string,
+      { title: string; body: string; learned?: string[]; next?: string[] }
+    >;
+    modules: Record<
+      string,
+      Record<
+        string,
+        { title: string; body: string; learned?: string[]; next?: string[] }
+      >
+    >;
   };
 };

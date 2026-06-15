@@ -12,6 +12,7 @@ import { ChoreFormDialog } from "@/components/chores/chore-form-dialog";
 import { ChoresCalendar } from "@/components/chores/chores-calendar";
 import { ChoresFilters } from "@/components/chores/chores-filters";
 import { ChoreTaskCard } from "@/components/chores/chore-task-card";
+import { NimbusTourToolbarAnchor } from "@/components/nimbus/nimbus-tour-toolbar-anchor";
 import { FamilyRealtimeHint } from "@/components/ui/family-realtime-hint";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -19,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { CHORE_FILTER_ALL } from "@/lib/constants/chores";
+import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus";
 import type { ChoreCalendarOccurrence } from "@/lib/chores/calendar";
 import { parseChoreDateString } from "@/lib/chores/types";
 import type { ChoreTask } from "@/lib/chores/types";
@@ -110,49 +112,57 @@ export function ChoresView() {
         <AccountBreadcrumbs current={t.chores.title} />
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="space-y-1">
+          <div className="space-y-1" data-nimbus-tour={NIMBUS_TOUR_TARGET.CHORES_HEADER}>
             <h1 className="font-heading font-bold text-2xl tracking-tight">
               {t.chores.title}
             </h1>
             <p className="text-sm text-muted-foreground">{t.chores.subtitle}</p>
           </div>
           <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
-            {!loading && tasks.length > 0 && (
-              <>
-                <div className="inline-flex rounded-none border border-border">
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant={viewMode === "list" ? "default" : "ghost"}
-                    className="cursor-pointer rounded-none h-8 gap-1.5"
-                    onClick={() => setViewMode("list")}
-                  >
-                    <List className="size-3.5" />
-                    {t.chores.viewList}
-                  </Button>
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant={viewMode === "calendar" ? "default" : "ghost"}
-                    className="cursor-pointer rounded-none h-8 gap-1.5"
-                    onClick={() => setViewMode("calendar")}
-                  >
-                    <LayoutGrid className="size-3.5" />
-                    {t.chores.viewCalendar}
-                  </Button>
-                </div>
-                <ChoresFilters
-                  tasks={tasks}
-                  members={members}
-                  isFamily={isFamily}
-                  statusFilter={statusFilter}
-                  assigneeFilter={assigneeFilter}
-                  onStatusChange={setStatusFilter}
-                  onAssigneeChange={setAssigneeFilter}
-                />
-              </>
-            )}
-            <ChoreFormDialog onSuccess={onTasksChanged} />
+            <NimbusTourToolbarAnchor
+              tourTarget={NIMBUS_TOUR_TARGET.CHORES_VIEW_TOGGLE}
+              visible={!loading && tasks.length > 0}
+            >
+              <div className="inline-flex rounded-none border border-border">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={viewMode === "list" ? "default" : "ghost"}
+                  className="cursor-pointer rounded-none h-8 gap-1.5"
+                  onClick={() => setViewMode("list")}
+                >
+                  <List className="size-3.5" />
+                  {t.chores.viewList}
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={viewMode === "calendar" ? "default" : "ghost"}
+                  className="cursor-pointer rounded-none h-8 gap-1.5"
+                  onClick={() => setViewMode("calendar")}
+                >
+                  <LayoutGrid className="size-3.5" />
+                  {t.chores.viewCalendar}
+                </Button>
+              </div>
+            </NimbusTourToolbarAnchor>
+            <NimbusTourToolbarAnchor
+              tourTarget={NIMBUS_TOUR_TARGET.CHORES_FILTERS}
+              visible={!loading && tasks.length > 0}
+            >
+              <ChoresFilters
+                tasks={tasks}
+                members={members}
+                isFamily={isFamily}
+                statusFilter={statusFilter}
+                assigneeFilter={assigneeFilter}
+                onStatusChange={setStatusFilter}
+                onAssigneeChange={setAssigneeFilter}
+              />
+            </NimbusTourToolbarAnchor>
+            <div data-nimbus-tour={NIMBUS_TOUR_TARGET.CHORES_ADD}>
+              <ChoreFormDialog onSuccess={onTasksChanged} />
+            </div>
           </div>
         </div>
 
@@ -174,7 +184,11 @@ export function ChoresView() {
                 : t.chores.empty}
           </p>
         ) : viewMode === "calendar" ? (
-          <Card id="chores-calendar" className="rounded-none py-0 shadow-sm scroll-mt-24">
+          <Card
+            id="chores-calendar"
+            className="rounded-none py-0 shadow-sm scroll-mt-24"
+            data-nimbus-tour={NIMBUS_TOUR_TARGET.CHORES_LIST}
+          >
             <CardContent className="p-4 md:p-6">
               <ChoresCalendar
                 year={year}
@@ -196,7 +210,7 @@ export function ChoresView() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2" data-nimbus-tour={NIMBUS_TOUR_TARGET.CHORES_LIST}>
             {filteredTasks.map((task) => (
               <ChoreTaskCard
                 key={task.id}

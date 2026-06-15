@@ -37,6 +37,8 @@ export type Profile = {
   onboarding_completed: boolean;
   preferred_lang?: Lang;
   dashboard_overview_layout?: unknown;
+  nimbus_companion_enabled?: boolean;
+  nimbus_companion_quiet?: boolean;
 };
 
 export type FamilyMember = Pick<

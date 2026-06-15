@@ -13,7 +13,9 @@ import { cn } from "@/lib/utils";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
 import { SettingsFormFooter } from "@/components/profile/settings/settings-form-footer";
+import { NimbusCompanionSetting } from "@/components/profile/settings/nimbus-companion-setting";
 import { updateProfile } from "@/app/(app)/account/actions";
+import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus";
 
 export function ProfileForm() {
   const t = useT();
@@ -54,7 +56,7 @@ export function ProfileForm() {
   }
 
   return (
-    <form action={action} className="space-y-6 max-w-md">
+    <form action={action} className="space-y-6 max-w-md" data-nimbus-tour={NIMBUS_TOUR_TARGET.SETTINGS_PROFILE}>
       <div className="flex justify-center sm:justify-start">
         <MemberAvatar name={getDisplayName(profile)} color={displayColor} size="lg" />
       </div>
@@ -97,6 +99,8 @@ export function ProfileForm() {
           />
         </div>
       </div>
+
+      <NimbusCompanionSetting />
 
       <SettingsFormFooter
         pending={pending}

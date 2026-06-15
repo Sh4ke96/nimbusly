@@ -26,6 +26,7 @@ import {
   type BudgetRecurrence,
 } from "@/lib/constants/budget";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
+import { useNimbusCelebration } from "@/lib/hooks/use-nimbus-celebration";
 import { selectionPickerTileButtonClasses } from "@/lib/ui/selection-styles";
 import { useT } from "@/lib/lang-context";
 import { cn } from "@/lib/utils";
@@ -42,6 +43,7 @@ export function BudgetExpenseFormDialog({
   triggerClassName,
 }: BudgetExpenseFormDialogProps) {
   const t = useT();
+  const celebrate = useNimbusCelebration();
   const [open, setOpen] = useState<boolean>(false);
   const [category, setCategory] = useState<BudgetExpenseCategory>(
     BUDGET_EXPENSE_CATEGORIES[0]
@@ -53,6 +55,7 @@ export function BudgetExpenseFormDialog({
   const [state, action, pending] = useActionState(addBudgetExpense, null);
 
   useActionFeedback(state, () => {
+    celebrate("firstBudgetEntry");
     setOpen(false);
     onSuccess?.();
   });

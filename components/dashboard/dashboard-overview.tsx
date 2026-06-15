@@ -35,6 +35,7 @@ import { BRAND_COLOR } from "@/lib/constants/brand";
 import { BUDGET_EXPENSE_COLOR } from "@/lib/constants/budget";
 import type { DashboardOverviewCardId } from "@/lib/constants/dashboard-overview";
 import { DASHBOARD_OVERVIEW_CARD } from "@/lib/constants/dashboard-overview";
+import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus";
 import { scheduleEntryOverlapsMonth } from "@/lib/schedule/types";
 import {
   parseDashboardOverviewLayout,
@@ -726,7 +727,9 @@ export function DashboardOverview() {
 
   return (
     <section className="space-y-4">
-      <DashboardAttentionBanner items={attentionItems} />
+      <div data-nimbus-tour={NIMBUS_TOUR_TARGET.DASHBOARD_ATTENTION}>
+        <DashboardAttentionBanner items={attentionItems} />
+      </div>
 
       <DashboardOverviewControls
         editMode={editMode}
@@ -737,7 +740,10 @@ export function DashboardOverview() {
       />
 
       {visibleCardIds.length === 0 ? (
-        <div className="flex flex-col items-center justify-center gap-3 py-16 border border-dashed border-border bg-muted/20 text-center">
+        <div
+          data-nimbus-tour={NIMBUS_TOUR_TARGET.DASHBOARD_OVERVIEW}
+          className="flex flex-col items-center justify-center gap-3 py-16 border border-dashed border-border bg-muted/20 text-center"
+        >
           <LayoutGrid className="size-8 text-muted-foreground" />
           <p className="text-sm text-muted-foreground max-w-sm">
             {t.dashboard.overviewAllHidden}
@@ -760,7 +766,8 @@ export function DashboardOverview() {
           )}
         </div>
       ) : (
-        <DashboardOverviewCardGrid
+        <div data-nimbus-tour={NIMBUS_TOUR_TARGET.DASHBOARD_OVERVIEW}>
+          <DashboardOverviewCardGrid
           visibleCardIds={visibleCardIds}
           editMode={editMode}
           profile={profile}
@@ -771,6 +778,7 @@ export function DashboardOverview() {
           onDragEnd={(event) => void handleDragEnd(event)}
           onHideCard={(cardId) => void handleHideCard(cardId)}
         />
+        </div>
       )}
     </section>
   );

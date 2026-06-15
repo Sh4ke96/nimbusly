@@ -16,6 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
+import { useNimbusCelebration } from "@/lib/hooks/use-nimbus-celebration";
 import { useT } from "@/lib/lang-context";
 import { BUDGET_NAME_MAX_LENGTH } from "@/lib/constants/budget";
 import { useProfileStore } from "@/lib/stores/profile-store";
@@ -26,6 +27,7 @@ interface BudgetFormDialogProps {
 
 export function BudgetFormDialog({ onSuccess }: BudgetFormDialogProps) {
   const t = useT();
+  const celebrate = useNimbusCelebration();
   const profile = useProfileStore((s) => s.profile);
   const members = useProfileStore((s) => s.members);
   const [open, setOpen] = useState<boolean>(false);
@@ -33,6 +35,7 @@ export function BudgetFormDialog({ onSuccess }: BudgetFormDialogProps) {
   const [state, action, pending] = useActionState(createBudget, null);
 
   useActionFeedback(state, () => {
+    celebrate("firstBudget");
     setOpen(false);
     setSelectedMemberIds([]);
     onSuccess?.();

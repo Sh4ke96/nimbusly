@@ -4,6 +4,7 @@ import { SiteNavbar } from "@/components/landing/navbar";
 import { HeroSection } from "@/components/landing/hero";
 import { HighlightsSection } from "@/components/landing/highlights";
 import { FeaturesSection } from "@/components/landing/features";
+import { NimbusLandingSection } from "@/components/landing/nimbus";
 import { StepsSection } from "@/components/landing/steps";
 import { CtaSection } from "@/components/landing/cta";
 import { SiteFooter } from "@/components/landing/site-footer";
@@ -20,6 +21,7 @@ export function HomePage() {
           <HeroSection />
           <HighlightsSection />
           <FeaturesSection />
+          <NimbusLandingSection />
           <StepsSection />
           <CtaSection />
         </main>

@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { ScheduleDatePicker } from "@/components/schedule/schedule-date-picker";
 import { ScheduleTypePicker } from "@/components/schedule/schedule-type-picker";
 import type { ScheduleEntryType } from "@/lib/constants/schedule";
+import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus-tour";
 import { useT } from "@/lib/lang-context";
 
 interface ScheduleEntryFormProps {
@@ -35,7 +36,9 @@ export function ScheduleEntryForm({
     <>
       {id && <input type="hidden" name={SCHEDULE_FORM_FIELD.ID} value={id} />}
 
-      <ScheduleDatePicker range={range} onRangeChange={onRangeChange} />
+      <div data-nimbus-tour={NIMBUS_TOUR_TARGET.SCHEDULE_MULTIDAY}>
+        <ScheduleDatePicker range={range} onRangeChange={onRangeChange} />
+      </div>
 
       <ScheduleTypePicker value={entryType} onChange={onEntryTypeChange} />
 
