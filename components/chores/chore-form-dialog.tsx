@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useState } from "react";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -65,7 +65,20 @@ export function ChoreFormDialog({
   const [recurrenceDuration, setRecurrenceDuration] = useState<ChoreRecurrenceDuration | null>(
     CHORE_RECURRENCE_DURATION.MONTH
   );
+  const [initialSeed, setInitialSeed] = useState<{ open: boolean; initialTime?: number }>({
+    open: false,
+  });
   const [state, action, pending] = useActionState(createChoreTask, null);
+
+  if (open && initialDueDate) {
+    const initialTime = initialDueDate.getTime();
+    if (!initialSeed.open || initialSeed.initialTime !== initialTime) {
+      setInitialSeed({ open: true, initialTime });
+      setDueDate(initialDueDate);
+    }
+  } else if (!open && initialSeed.open) {
+    setInitialSeed({ open: false });
+  }
 
   function handleOpenChange(next: boolean) {
     if (isControlled) {
@@ -75,11 +88,6 @@ export function ChoreFormDialog({
     }
     if (!next) resetForm();
   }
-
-  useEffect(() => {
-    if (!open || !initialDueDate) return;
-    setDueDate(initialDueDate);
-  }, [open, initialDueDate]);
 
   function resetForm() {
     setTitle("");

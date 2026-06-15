@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useState } from "react";
 import type { DateRange } from "react-day-picker";
 import { Button } from "@/components/ui/button";
 import {
@@ -51,7 +51,20 @@ export function ScheduleFormDialog({
   const [range, setRange] = useState<DateRange | undefined>();
   const [entryType, setEntryType] = useState<ScheduleEntryType | "">("");
   const [description, setDescription] = useState<string>("");
+  const [initialSeed, setInitialSeed] = useState<{ open: boolean; initialTime?: number }>({
+    open: false,
+  });
   const [state, action, pending] = useActionState(createScheduleEntry, null);
+
+  if (open && initialDate) {
+    const initialTime = initialDate.getTime();
+    if (!initialSeed.open || initialSeed.initialTime !== initialTime) {
+      setInitialSeed({ open: true, initialTime });
+      setRange({ from: initialDate, to: initialDate });
+    }
+  } else if (!open && initialSeed.open) {
+    setInitialSeed({ open: false });
+  }
 
   function handleOpenChange(next: boolean) {
     if (isControlled) {
@@ -65,11 +78,6 @@ export function ScheduleFormDialog({
       setDescription("");
     }
   }
-
-  useEffect(() => {
-    if (!open || !initialDate) return;
-    setRange({ from: initialDate, to: initialDate });
-  }, [open, initialDate]);
 
   useActionFeedback(state, () => {
     celebrate("firstScheduleEntry");

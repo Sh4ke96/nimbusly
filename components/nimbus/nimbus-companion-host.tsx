@@ -118,7 +118,7 @@ export function NimbusCompanionHost() {
       },
       message: greeting,
     });
-  }, [visible, quiet, tourActive, menuOpen, profile?.first_name, profile?.last_name, t]);
+  }, [visible, quiet, tourActive, menuOpen, profile, t]);
 
   useEffect(() => {
     if (!visible || quiet || tourActive || menuOpen || isNimbusHintsSnoozed()) return;

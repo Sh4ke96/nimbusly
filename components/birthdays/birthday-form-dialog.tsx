@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -40,7 +40,20 @@ export function BirthdayFormDialog({
   const [personName, setPersonName] = useState<string>("");
   const [date, setDate] = useState<Date | undefined>();
   const [description, setDescription] = useState<string>("");
+  const [initialSeed, setInitialSeed] = useState<{ open: boolean; initialTime?: number }>({
+    open: false,
+  });
   const [state, action, pending] = useActionState(createBirthday, null);
+
+  if (open && initialDate) {
+    const initialTime = initialDate.getTime();
+    if (!initialSeed.open || initialSeed.initialTime !== initialTime) {
+      setInitialSeed({ open: true, initialTime });
+      setDate(initialDate);
+    }
+  } else if (!open && initialSeed.open) {
+    setInitialSeed({ open: false });
+  }
 
   function handleOpenChange(next: boolean) {
     if (isControlled) {
@@ -54,11 +67,6 @@ export function BirthdayFormDialog({
       setDescription("");
     }
   }
-
-  useEffect(() => {
-    if (!open || !initialDate) return;
-    setDate(initialDate);
-  }, [open, initialDate]);
 
   useActionFeedback(state, () => {
     celebrate("firstBirthday");

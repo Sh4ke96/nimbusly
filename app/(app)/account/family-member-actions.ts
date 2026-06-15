@@ -101,9 +101,9 @@ export async function createFamily(
 }
 
 export async function leaveFamily(
-  _prev: AccountActionState,
-  _formData: FormData
+  ..._args: [AccountActionState, FormData]
 ): Promise<AccountActionState> {
+  void _args;
   const t = await getServerT();
   const ctx = await requireFamilyMember();
 
