@@ -10,6 +10,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { ChoreEntryForm } from "@/components/chores/chore-entry-form";
+import { isValidChoreCustomRecurrenceForm } from "@/components/chores/chore-custom-recurrence-fields";
+import {
+  CHORE_RECURRENCE,
+  CHORE_RECURRENCE_DURATION,
+  type ChoreRecurrence,
+  type ChoreRecurrenceDuration,
+} from "@/lib/constants/chores";
 import type { ChoreTask } from "@/lib/chores/types";
 import {
   dateToChoreDateString,
@@ -44,14 +51,37 @@ function ChoreEditForm({
   const profile = useProfileStore((s) => s.profile);
   const members = useProfileStore((s) => s.members);
   const [title, setTitle] = useState<string>(() => task.title);
+  const [iconEmoji, setIconEmoji] = useState<string | null>(() => task.icon_emoji);
   const [notes, setNotes] = useState<string>(() => task.notes);
   const [status, setStatus] = useState<ChoreTask["status"]>(() => task.status);
   const [assignedTo, setAssignedTo] = useState<string | null>(() => task.assigned_to);
   const [dueDate, setDueDate] = useState<Date | undefined>(() =>
-    parseChoreDateString(task.due_date)
+    parseChoreDateString(task.recurrence_start_date ?? task.due_date)
   );
   const [recurrence, setRecurrence] = useState<ChoreTask["recurrence"]>(() => task.recurrence);
+  const [recurrenceIntervalDays, setRecurrenceIntervalDays] = useState<number | null>(
+    () => task.recurrence_interval_days
+  );
+  const [recurrenceDuration, setRecurrenceDuration] = useState<ChoreRecurrenceDuration | null>(
+    () =>
+      task.recurrence_duration ??
+      (task.recurrence !== CHORE_RECURRENCE.NONE ? CHORE_RECURRENCE_DURATION.MONTH : null)
+  );
   const [state, action, pending] = useActionState(updateChoreTask, null);
+
+  function handleRecurrenceChange(value: ChoreRecurrence) {
+    setRecurrence(value);
+    if (value === CHORE_RECURRENCE.NONE) {
+      setRecurrenceDuration(null);
+      return;
+    }
+    if (recurrenceDuration === null) {
+      setRecurrenceDuration(CHORE_RECURRENCE_DURATION.MONTH);
+    }
+    if (value === CHORE_RECURRENCE.CUSTOM && recurrenceIntervalDays === null) {
+      setRecurrenceIntervalDays(2);
+    }
+  }
 
   useActionFeedback(
     state,
@@ -78,6 +108,20 @@ function ChoreEditForm({
       toast.error(t.chores.errorRecurrenceRequired);
       return;
     }
+    if (!isValidChoreCustomRecurrenceForm(recurrence, recurrenceIntervalDays, recurrenceDuration)) {
+      e.preventDefault();
+      toast.error(
+        recurrence === CHORE_RECURRENCE.CUSTOM
+          ? t.chores.errorCustomRecurrenceRequired
+          : t.chores.errorRecurrenceDurationRequired
+      );
+      return;
+    }
+    if (recurrence && recurrence !== CHORE_RECURRENCE.NONE && !dueDate) {
+      e.preventDefault();
+      toast.error(t.chores.errorRecurrenceStartDateRequired);
+      return;
+    }
     if (!isValidChoreDateString(dueDate ? dateToChoreDateString(dueDate) : null)) {
       e.preventDefault();
       toast.error(t.chores.errorInvalidDueDate);
@@ -92,6 +136,8 @@ function ChoreEditForm({
         members={members}
         title={title}
         onTitleChange={setTitle}
+        iconEmoji={iconEmoji}
+        onIconEmojiChange={setIconEmoji}
         notes={notes}
         onNotesChange={setNotes}
         status={status}
@@ -101,7 +147,11 @@ function ChoreEditForm({
         dueDate={dueDate}
         onDueDateChange={setDueDate}
         recurrence={recurrence}
-        onRecurrenceChange={setRecurrence}
+        onRecurrenceChange={handleRecurrenceChange}
+        recurrenceIntervalDays={recurrenceIntervalDays}
+        onRecurrenceIntervalDaysChange={setRecurrenceIntervalDays}
+        recurrenceDuration={recurrenceDuration}
+        onRecurrenceDurationChange={setRecurrenceDuration}
       />
       <Button type="submit" className="w-full" disabled={pending}>
         {pending ? t.chores.saving : t.chores.saveBtn}

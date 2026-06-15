@@ -1,5 +1,6 @@
 "use client";
 
+import type { DateRange } from "react-day-picker";
 import { SCHEDULE_FORM_FIELD } from "@/lib/schedule/types";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,8 +11,8 @@ import { useT } from "@/lib/lang-context";
 
 interface ScheduleEntryFormProps {
   id?: string;
-  date: Date | undefined;
-  onDateChange: (date: Date | undefined) => void;
+  range: DateRange | undefined;
+  onRangeChange: (range: DateRange | undefined) => void;
   entryType: ScheduleEntryType | "";
   onEntryTypeChange: (type: ScheduleEntryType) => void;
   description: string;
@@ -20,8 +21,8 @@ interface ScheduleEntryFormProps {
 
 export function ScheduleEntryForm({
   id,
-  date,
-  onDateChange,
+  range,
+  onRangeChange,
   entryType,
   onEntryTypeChange,
   description,
@@ -34,7 +35,7 @@ export function ScheduleEntryForm({
     <>
       {id && <input type="hidden" name={SCHEDULE_FORM_FIELD.ID} value={id} />}
 
-      <ScheduleDatePicker date={date} onDateChange={onDateChange} />
+      <ScheduleDatePicker range={range} onRangeChange={onRangeChange} />
 
       <ScheduleTypePicker value={entryType} onChange={onEntryTypeChange} />
 

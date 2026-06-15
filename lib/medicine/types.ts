@@ -21,6 +21,7 @@ export interface MedicineItem {
   availability: MedicineAvailability;
   location: string;
   notes: string;
+  taken_by: string | null;
   created_by: string;
   created_at: string;
   updated_at: string;
@@ -96,6 +97,7 @@ export const MEDICINE_FORM_FIELD = {
   AVAILABILITY: "availability",
   LOCATION: "location",
   NOTES: "notes",
+  TAKEN_BY: "takenBy",
 } as const;
 
 export function parseMedicineIdFromForm(formData: FormData): string {
@@ -110,6 +112,7 @@ export function parseMedicineItemFromForm(formData: FormData): {
   availability: MedicineAvailability | null;
   location: string;
   notes: string;
+  takenBy: string | null;
 } {
   const name = normalizeMedicineName(getFormString(formData, MEDICINE_FORM_FIELD.NAME));
   const formTypeRaw = getFormTrimmedString(formData, MEDICINE_FORM_FIELD.FORM_TYPE);
@@ -119,6 +122,7 @@ export function parseMedicineItemFromForm(formData: FormData): {
   const availabilityRaw = getFormTrimmedString(formData, MEDICINE_FORM_FIELD.AVAILABILITY);
   const location = getFormTrimmedString(formData, MEDICINE_FORM_FIELD.LOCATION);
   const notes = getFormTrimmedString(formData, MEDICINE_FORM_FIELD.NOTES);
+  const takenByRaw = getFormTrimmedString(formData, MEDICINE_FORM_FIELD.TAKEN_BY);
 
   return {
     name,
@@ -128,5 +132,6 @@ export function parseMedicineItemFromForm(formData: FormData): {
     availability: isValidMedicineAvailability(availabilityRaw) ? availabilityRaw : null,
     location,
     notes,
+    takenBy: takenByRaw || null,
   };
 }

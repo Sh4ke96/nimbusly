@@ -1,20 +1,26 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+import { LayoutGrid, List } from "lucide-react";
 import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
 import { AppHeader } from "@/components/app/app-header";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
-import { ChoreAssigneeFilter } from "@/components/chores/chore-assignee-filter";
 import { ChoreEditDialog } from "@/components/chores/chore-edit-dialog";
 import { ChoreFormDialog } from "@/components/chores/chore-form-dialog";
-import { ChoreStatusFilter } from "@/components/chores/chore-status-filter";
+import { ChoresCalendar } from "@/components/chores/chores-calendar";
+import { ChoresFilters } from "@/components/chores/chores-filters";
 import { ChoreTaskCard } from "@/components/chores/chore-task-card";
+import { FamilyRealtimeHint } from "@/components/ui/family-realtime-hint";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { CHORE_FILTER_ALL } from "@/lib/constants/chores";
+import type { ChoreCalendarOccurrence } from "@/lib/chores/calendar";
+import { parseChoreDateString } from "@/lib/chores/types";
 import type { ChoreTask } from "@/lib/chores/types";
 import {
   filterChoresByAssignee,
@@ -24,6 +30,8 @@ import {
 import { useT } from "@/lib/lang-context";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useChoresStore } from "@/lib/stores/chores-store";
+
+type ChoresViewMode = "list" | "calendar";
 
 export function ChoresView() {
   const t = useT();
@@ -42,6 +50,12 @@ export function ChoresView() {
       : null;
   const isFamily = !!familyId;
 
+  const now = new Date();
+  const [viewMode, setViewMode] = useState<ChoresViewMode>("list");
+  const [year, setYear] = useState<number>(now.getFullYear());
+  const [month, setMonth] = useState<number>(now.getMonth() + 1);
+  const [focusedDay, setFocusedDay] = useState<number | null>(null);
+  const [focusedTaskId, setFocusedTaskId] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>(CHORE_FILTER_ALL);
   const [assigneeFilter, setAssigneeFilter] = useState<string>(CHORE_FILTER_ALL);
   const [editingTask, setEditingTask] = useState<ChoreTask | null>(null);
@@ -73,6 +87,17 @@ export function ChoresView() {
     setEditOpen(true);
   }
 
+  function focusOccurrence(occurrence: ChoreCalendarOccurrence) {
+    const parsed = parseChoreDateString(occurrence.date);
+    if (!parsed) return;
+    setYear(parsed.getFullYear());
+    setMonth(parsed.getMonth() + 1);
+    setFocusedDay(parsed.getDate());
+    setFocusedTaskId(occurrence.taskId);
+    const task = tasks.find((item) => item.id === occurrence.taskId);
+    if (task) openEdit(task);
+  }
+
   const hasActiveFilter =
     statusFilter !== CHORE_FILTER_ALL ||
     (isFamily && assigneeFilter !== CHORE_FILTER_ALL);
@@ -91,32 +116,47 @@ export function ChoresView() {
             </h1>
             <p className="text-sm text-muted-foreground">{t.chores.subtitle}</p>
           </div>
-          <ChoreFormDialog onSuccess={onTasksChanged} />
+          <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+            {!loading && tasks.length > 0 && (
+              <>
+                <div className="inline-flex rounded-none border border-border">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={viewMode === "list" ? "default" : "ghost"}
+                    className="cursor-pointer rounded-none h-8 gap-1.5"
+                    onClick={() => setViewMode("list")}
+                  >
+                    <List className="size-3.5" />
+                    {t.chores.viewList}
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={viewMode === "calendar" ? "default" : "ghost"}
+                    className="cursor-pointer rounded-none h-8 gap-1.5"
+                    onClick={() => setViewMode("calendar")}
+                  >
+                    <LayoutGrid className="size-3.5" />
+                    {t.chores.viewCalendar}
+                  </Button>
+                </div>
+                <ChoresFilters
+                  tasks={tasks}
+                  members={members}
+                  isFamily={isFamily}
+                  statusFilter={statusFilter}
+                  assigneeFilter={assigneeFilter}
+                  onStatusChange={setStatusFilter}
+                  onAssigneeChange={setAssigneeFilter}
+                />
+              </>
+            )}
+            <ChoreFormDialog onSuccess={onTasksChanged} />
+          </div>
         </div>
 
-        {familyId && (
-          <p className="text-xs text-muted-foreground border border-border bg-muted/30 px-3 py-2">
-            {t.common.familyRealtimeHint}
-          </p>
-        )}
-
-        {!loading && tasks.length > 0 && (
-          <div className="space-y-3">
-            <ChoreStatusFilter
-              tasks={tasks}
-              value={statusFilter}
-              onChange={setStatusFilter}
-            />
-            {isFamily && (
-              <ChoreAssigneeFilter
-                tasks={tasks}
-                members={members}
-                value={assigneeFilter}
-                onChange={setAssigneeFilter}
-              />
-            )}
-          </div>
-        )}
+        {familyId ? <FamilyRealtimeHint /> : null}
 
         {error ? (
           <ModuleFetchError onRetry={() => void fetchTasks(true)} />
@@ -133,6 +173,28 @@ export function ChoresView() {
                 ? t.chores.emptyFiltered
                 : t.chores.empty}
           </p>
+        ) : viewMode === "calendar" ? (
+          <Card id="chores-calendar" className="rounded-none py-0 shadow-sm scroll-mt-24">
+            <CardContent className="p-4 md:p-6">
+              <ChoresCalendar
+                year={year}
+                month={month}
+                tasks={filteredTasks}
+                profile={profile}
+                userId={user?.id}
+                focusedDay={focusedDay}
+                focusedTaskId={focusedTaskId}
+                onMonthChange={(y, m) => {
+                  setYear(y);
+                  setMonth(m);
+                  setFocusedDay(null);
+                  setFocusedTaskId(null);
+                }}
+                onOccurrenceSelect={focusOccurrence}
+                onChanged={onTasksChanged}
+              />
+            </CardContent>
+          </Card>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2">
             {filteredTasks.map((task) => (

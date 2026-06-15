@@ -10,8 +10,10 @@ import {
   type WatchlistMediaType,
   type WatchlistStatus,
 } from "@/lib/constants/watchlist";
+import { StreamingPlatformPicker } from "@/components/watchlist/streaming-platform-picker";
+import type { StreamingPlatform } from "@/lib/constants/watchlist-streaming";
+import { selectionPickerTileButtonClasses } from "@/lib/ui/selection-styles";
 import { useT } from "@/lib/lang-context";
-import { cn } from "@/lib/utils";
 
 interface WatchlistEntryFormProps {
   title: string;
@@ -22,6 +24,8 @@ interface WatchlistEntryFormProps {
   onStatusChange: (value: WatchlistStatus) => void;
   notes: string;
   onNotesChange: (value: string) => void;
+  streamingPlatforms: StreamingPlatform[];
+  onStreamingPlatformsChange: (platforms: StreamingPlatform[]) => void;
 }
 
 export function WatchlistEntryForm({
@@ -33,6 +37,8 @@ export function WatchlistEntryForm({
   onStatusChange,
   notes,
   onNotesChange,
+  streamingPlatforms,
+  onStreamingPlatformsChange,
 }: WatchlistEntryFormProps) {
   const t = useT();
 
@@ -61,12 +67,7 @@ export function WatchlistEntryForm({
               key={type}
               type="button"
               onClick={() => onMediaTypeChange(type)}
-              className={cn(
-                "cursor-pointer rounded-none border px-2 py-2 text-xs font-medium transition-colors",
-                mediaType === type
-                  ? "border-primary bg-primary/10 text-primary"
-                  : "border-border bg-background hover:bg-muted/50"
-              )}
+              className={selectionPickerTileButtonClasses(mediaType === type, "px-2 py-2 text-xs")}
             >
               {t.watchlist.mediaTypeLabels[type]}
             </button>
@@ -84,12 +85,7 @@ export function WatchlistEntryForm({
               key={value}
               type="button"
               onClick={() => onStatusChange(value)}
-              className={cn(
-                "cursor-pointer rounded-none border px-2 py-2 text-xs font-medium transition-colors",
-                status === value
-                  ? "border-primary bg-primary/10 text-primary"
-                  : "border-border bg-background hover:bg-muted/50"
-              )}
+              className={selectionPickerTileButtonClasses(status === value, "px-2 py-2 text-xs")}
             >
               {t.watchlist.statusLabels[value]}
             </button>
@@ -97,6 +93,11 @@ export function WatchlistEntryForm({
         </div>
         <input type="hidden" name={WATCHLIST_FORM_FIELD.STATUS} value={status ?? ""} required />
       </div>
+
+      <StreamingPlatformPicker
+        value={streamingPlatforms}
+        onChange={onStreamingPlatformsChange}
+      />
 
       <div className="space-y-1.5">
         <Label htmlFor="watchlist-notes">{t.watchlist.notesLabel}</Label>

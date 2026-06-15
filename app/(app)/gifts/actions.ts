@@ -11,7 +11,9 @@ import {
   parseGiftContentFromForm,
   parseGiftIdFromForm,
   parseGiftRecipientFromForm,
+  parseGiftVisibleMemberIdsFromForm,
 } from "@/lib/gifts/types";
+import { isValidGiftLinkUrl, normalizeGiftLinkUrl } from "@/lib/gifts/url";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { GIFT_RECIPIENT_TYPE } from "@/lib/constants/gifts";
 import { NOTIFICATION_TYPE } from "@/lib/constants/notifications";
@@ -58,6 +60,33 @@ async function resolveRecipientForInsert(
   };
 }
 
+async function resolveVisibleMemberIds(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  familyId: string,
+  memberIds: string[]
+): Promise<string[] | null> {
+  if (memberIds.length === 0) return [];
+
+  const unique = [...new Set(memberIds)];
+  const { data: members } = await supabase
+    .from("profiles")
+    .select("id")
+    .eq("family_id", familyId)
+    .in("id", unique);
+
+  if (!members || members.length !== unique.length) return null;
+  return unique;
+}
+
+function parseLinkUrlFromForm(formData: FormData): string | null | undefined {
+  const raw = formData.get("linkUrl");
+  if (typeof raw !== "string") return null;
+  const trimmed = raw.trim();
+  if (!trimmed) return null;
+  const normalized = normalizeGiftLinkUrl(trimmed);
+  return isValidGiftLinkUrl(normalized) ? normalized : undefined;
+}
+
 export async function createGiftIdea(
   _prev: AccountActionState,
   formData: FormData
@@ -69,9 +98,11 @@ export async function createGiftIdea(
 
   const { content } = parseGiftContentFromForm(formData);
   const parsed = parseGiftRecipientFromForm(formData);
+  const linkUrl = parseLinkUrlFromForm(formData);
 
   if (!parsed.recipientType) return { error: t.gifts.errorInvalidRecipient };
   if (!isValidGiftContent(content)) return { error: t.gifts.errorContentRequired };
+  if (linkUrl === undefined) return { error: t.gifts.errorInvalidLinkUrl };
 
   const { profile, familyId } = await getProfileFamilyContext(supabase, user.id);
 
@@ -88,6 +119,15 @@ export async function createGiftIdea(
     return { error: t.gifts.errorInvalidRecipient };
   }
 
+  let visibleToMemberIds: string[] = [];
+  if (familyId) {
+    const visibleRaw = parseGiftVisibleMemberIdsFromForm(formData);
+    if (visibleRaw === null) return { error: t.gifts.errorInvalidVisibility };
+    const resolved = await resolveVisibleMemberIds(supabase, familyId, visibleRaw);
+    if (resolved === null) return { error: t.gifts.errorInvalidVisibility };
+    visibleToMemberIds = resolved;
+  }
+
   const { data: gift, error } = await supabase
     .from("gift_ideas")
     .insert({
@@ -96,6 +136,8 @@ export async function createGiftIdea(
       recipient_member_id: recipient.recipientMemberId,
       recipient_name: recipient.recipientName,
       content,
+      link_url: linkUrl,
+      visible_to_member_ids: visibleToMemberIds,
       created_by: user.id,
     })
     .select("id")
@@ -126,6 +168,8 @@ export async function createGiftIdea(
           change_summary: null,
           updated_at: new Date().toISOString(),
         },
+        onlyRecipientIds:
+          visibleToMemberIds.length > 0 ? visibleToMemberIds : undefined,
       });
     } catch {
       // Saved; notifications are best-effort
@@ -147,14 +191,18 @@ export async function updateGiftIdea(
   const id = parseGiftIdFromForm(formData);
   const { content } = parseGiftContentFromForm(formData);
   const parsed = parseGiftRecipientFromForm(formData);
+  const linkUrl = parseLinkUrlFromForm(formData);
 
   if (!id) return { error: t.gifts.errorGeneric };
   if (!parsed.recipientType) return { error: t.gifts.errorInvalidRecipient };
   if (!isValidGiftContent(content)) return { error: t.gifts.errorContentRequired };
+  if (linkUrl === undefined) return { error: t.gifts.errorInvalidLinkUrl };
 
   const { data: existing } = await supabase
     .from("gift_ideas")
-    .select("id, recipient_type, recipient_member_id, recipient_name, content, family_id, created_by")
+    .select(
+      "id, recipient_type, recipient_member_id, recipient_name, content, link_url, visible_to_member_ids, family_id, created_by"
+    )
     .eq("id", id)
     .eq("created_by", user.id)
     .maybeSingle();
@@ -172,6 +220,15 @@ export async function updateGiftIdea(
 
   if (!recipient) return { error: t.gifts.errorInvalidRecipient };
 
+  let visibleToMemberIds: string[] = [];
+  if (existing.family_id) {
+    const visibleRaw = parseGiftVisibleMemberIdsFromForm(formData);
+    if (visibleRaw === null) return { error: t.gifts.errorInvalidVisibility };
+    const resolved = await resolveVisibleMemberIds(supabase, existing.family_id, visibleRaw);
+    if (resolved === null) return { error: t.gifts.errorInvalidVisibility };
+    visibleToMemberIds = resolved;
+  }
+
   const { error } = await supabase
     .from("gift_ideas")
     .update({
@@ -179,6 +236,8 @@ export async function updateGiftIdea(
       recipient_member_id: recipient.recipientMemberId,
       recipient_name: recipient.recipientName,
       content,
+      link_url: linkUrl,
+      visible_to_member_ids: visibleToMemberIds,
       updated_at: new Date().toISOString(),
     })
     .eq("id", id)
@@ -191,6 +250,7 @@ export async function updateGiftIdea(
     {
       recipient_name: recipient.recipientName,
       content,
+      link_url: linkUrl,
     },
     t.gifts
   );
@@ -213,6 +273,8 @@ export async function updateGiftIdea(
           change_summary: changeSummary,
           updated_at: new Date().toISOString(),
         },
+        onlyRecipientIds:
+          visibleToMemberIds.length > 0 ? visibleToMemberIds : undefined,
       });
     } catch {
       // Updated; notifications are best-effort
@@ -236,7 +298,7 @@ export async function deleteGiftIdea(
 
   const { data: existing } = await supabase
     .from("gift_ideas")
-    .select("id, recipient_name, content, family_id, created_by")
+    .select("id, recipient_name, content, family_id, created_by, visible_to_member_ids")
     .eq("id", id)
     .eq("created_by", user.id)
     .maybeSingle();
@@ -261,6 +323,7 @@ export async function deleteGiftIdea(
       existing.content,
       t.gifts
     );
+    const visibleToMemberIds = existing.visible_to_member_ids ?? [];
 
     try {
       await notifyFamilyMembers(supabase, {
@@ -277,6 +340,8 @@ export async function deleteGiftIdea(
           change_summary: null,
           updated_at: new Date().toISOString(),
         },
+        onlyRecipientIds:
+          visibleToMemberIds.length > 0 ? visibleToMemberIds : undefined,
       });
     } catch {
       // Deleted; notifications are best-effort

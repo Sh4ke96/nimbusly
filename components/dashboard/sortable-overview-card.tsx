@@ -2,10 +2,16 @@
 
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { EyeOff, GripVertical, ArrowRight, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CARD_TITLE_ROW_CLASSNAME,
+} from "@/components/ui/card";
 import type { DashboardOverviewCardId } from "@/lib/constants/dashboard-overview";
 import { useT } from "@/lib/lang-context";
 import { cn } from "@/lib/utils";
@@ -89,6 +95,7 @@ export function SortableOverviewCard({
   children,
 }: SortableOverviewCardProps) {
   const t = useT();
+  const router = useRouter();
   const styles = overviewAccentStyles[accent];
   const {
     attributes,
@@ -107,6 +114,13 @@ export function SortableOverviewCard({
     transition,
   };
 
+  function handleCardClick(event: React.MouseEvent<HTMLDivElement>) {
+    if (editMode) return;
+    const target = event.target as HTMLElement;
+    if (target.closest("button, a, input, textarea, select")) return;
+    router.push(href);
+  }
+
   return (
     <div
       ref={setNodeRef}
@@ -118,62 +132,54 @@ export function SortableOverviewCard({
       )}
     >
       <Card
+        onClick={handleCardClick}
         className={cn(
           "group rounded-none py-0 shadow-sm transition-all duration-200 h-full",
-          !editMode && "hover:-translate-y-0.5 hover:shadow-md",
+          !editMode && "cursor-pointer hover:-translate-y-0.5 hover:shadow-md",
+          editMode && "hover:shadow-sm",
           styles.ring
         )}
       >
-        <CardHeader className="border-b border-border pt-4 pb-3">
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex items-center gap-3 min-w-0">
-              {editMode && (
-                <button
-                  type="button"
-                  className="inline-flex size-8 shrink-0 cursor-grab items-center justify-center rounded-none border border-border bg-muted/40 text-muted-foreground active:cursor-grabbing"
-                  aria-label={t.dashboard.overviewDragHandleLabel}
-                  {...attributes}
-                  {...listeners}
-                >
-                  <GripVertical className="size-4" />
-                </button>
-              )}
-              <span
-                className={cn(
-                  "inline-flex size-10 shrink-0 items-center justify-center rounded-none transition-transform duration-200",
-                  !editMode && "group-hover:scale-105",
-                  styles.icon
-                )}
+        <CardHeader className="grid-cols-[1fr_auto]">
+          <div className="flex min-w-0 items-center gap-3">
+            {editMode && (
+              <button
+                type="button"
+                className="inline-flex size-8 shrink-0 cursor-grab items-center justify-center rounded-none border border-border bg-muted/40 text-muted-foreground active:cursor-grabbing"
+                aria-label={t.dashboard.overviewDragHandleLabel}
+                {...attributes}
+                {...listeners}
               >
-                <Icon className="size-5" />
-              </span>
-              <CardTitle className="font-heading text-sm leading-tight pt-0.5">
-                {title}
-              </CardTitle>
-            </div>
-            <div className="flex shrink-0 items-center gap-1">
-              {editMode && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="cursor-pointer text-muted-foreground hover:text-foreground"
-                  onClick={onHide}
-                  aria-label={t.dashboard.hideOverviewCardBtn}
-                >
-                  <EyeOff className="size-4" />
-                </Button>
+                <GripVertical className="size-4" />
+              </button>
+            )}
+            <span
+              className={cn(
+                "inline-flex size-10 shrink-0 items-center justify-center rounded-none transition-transform duration-200",
+                !editMode && "group-hover:scale-105",
+                styles.icon
               )}
-              {!editMode && (
-                <Link
-                  href={href}
-                  className="inline-flex items-center gap-1 text-[11px] font-medium text-primary hover:underline pt-1"
-                >
-                  {t.dashboard.viewModule}
-                  <ArrowRight className="size-3" />
-                </Link>
-              )}
-            </div>
+            >
+              <Icon className="size-5" />
+            </span>
+            <CardTitle className={cn(CARD_TITLE_ROW_CLASSNAME, "text-sm")}>{title}</CardTitle>
+          </div>
+          <div className="col-start-2 row-start-1 flex shrink-0 items-center gap-1 self-center">
+            {editMode && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="cursor-pointer size-8 rounded-none text-muted-foreground hover:text-foreground hover:bg-muted/60"
+                onClick={onHide}
+                aria-label={t.dashboard.hideOverviewCardBtn}
+              >
+                <EyeOff className="size-4" />
+              </Button>
+            )}
+            {!editMode && (
+              <ArrowRight className="size-4 text-muted-foreground/40 transition-all group-hover:text-primary group-hover:translate-x-0.5" />
+            )}
           </div>
         </CardHeader>
         <CardContent className="p-4">{children}</CardContent>

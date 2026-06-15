@@ -9,6 +9,7 @@ import {
 import { useT } from "@/lib/lang-context";
 import { getScheduleTypeLabel, SCHEDULE_FORM_FIELD } from "@/lib/schedule/types";
 import { scheduleTypeChipClass } from "@/lib/schedule/type-styles";
+import { selectionPickerTileButtonClasses } from "@/lib/ui/selection-styles";
 import { cn } from "@/lib/utils";
 
 interface ScheduleTypePickerProps {
@@ -32,12 +33,7 @@ export function ScheduleTypePicker({ value, onChange, name = SCHEDULE_FORM_FIELD
               key={type}
               type="button"
               onClick={() => onChange(type)}
-              className={cn(
-                "flex cursor-pointer items-center gap-2 rounded-none border border-border px-3 py-2.5 text-left text-sm transition-colors",
-                selected
-                  ? "border-primary bg-primary/10"
-                  : "bg-background hover:bg-muted/60"
-              )}
+              className={selectionPickerTileButtonClasses(selected, "gap-2")}
             >
               <span className="text-lg leading-none" aria-hidden>
                 {SCHEDULE_ENTRY_EMOJI[type]}

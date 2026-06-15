@@ -4,7 +4,12 @@ import { SCHEDULE_ENTRY_EMOJI, SCHEDULE_ENTRY_TYPES } from "@/lib/constants/sche
 import type { ScheduleEntryType } from "@/lib/constants/schedule";
 import { openPrintWindow } from "@/lib/print/open-print-window";
 import type { ScheduleEntry } from "@/lib/schedule/types";
-import { getScheduleTypeLabel, parseEntryDateParts } from "@/lib/schedule/types";
+import {
+  getScheduleTypeLabel,
+  scheduleDateKey,
+  scheduleEntryIncludesDate,
+  scheduleEntryOverlapsMonth,
+} from "@/lib/schedule/types";
 
 function escapeHtml(value: string): string {
   return value
@@ -35,12 +40,17 @@ export function buildSchedulePrintHtml({
   lang: string;
 }): string {
   const entriesByDay = new Map<number, ScheduleEntry[]>();
-  for (const entry of entries) {
-    const parts = parseEntryDateParts(entry.entry_date);
-    if (parts.year !== year || parts.month !== month) continue;
-    const list = entriesByDay.get(parts.day) ?? [];
-    list.push(entry);
-    entriesByDay.set(parts.day, list);
+  const monthEntries = entries.filter((entry) => scheduleEntryOverlapsMonth(entry, year, month));
+  const lastDay = new Date(year, month, 0).getDate();
+
+  for (const entry of monthEntries) {
+    for (let day = 1; day <= lastDay; day += 1) {
+      const dateKey = scheduleDateKey(year, month, day);
+      if (!scheduleEntryIncludesDate(entry, dateKey)) continue;
+      const list = entriesByDay.get(day) ?? [];
+      list.push(entry);
+      entriesByDay.set(day, list);
+    }
   }
 
   const cells = buildMonthGrid(year, month);

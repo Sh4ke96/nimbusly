@@ -13,6 +13,7 @@ import {
   BUDGET_EXPENSE_CATEGORY,
   BUDGET_FILTER_ALL,
   BUDGET_INCOME_CATEGORY,
+  BUDGET_RECURRENCE,
 } from "@/lib/constants/budget";
 import type { BudgetExpense } from "@/lib/budget/types";
 
@@ -24,6 +25,11 @@ function entry(
     entry_type: BUDGET_ENTRY_TYPE.EXPENSE,
     description: "",
     expense_date: "2026-06-01",
+    recurrence: BUDGET_RECURRENCE.NONE,
+    recurrence_interval_days: null,
+    recurrence_end_date: null,
+    payment_reminder_enabled: false,
+    reminder_sent_keys: [],
     created_by: "user-1",
     created_at: "2026-06-01T00:00:00.000Z",
     updated_at: "2026-06-01T00:00:00.000Z",

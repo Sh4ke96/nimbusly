@@ -1,0 +1,5 @@
+export const SHOPPING_CATEGORY_NAME_MAX_LENGTH = 100;
+export const SHOPPING_ITEM_QUANTITY_MIN = 1;
+export const SHOPPING_ITEM_QUANTITY_MAX = 9999;
+
+export const SHOPPING_UNCATEGORIZED_KEY = "__uncategorized__";

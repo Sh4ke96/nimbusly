@@ -1,3 +1,8 @@
+import type { StreamingPlatform } from "@/lib/constants/watchlist-streaming";
+import {
+  formatStreamingPlatformList,
+  streamingPlatformsEqual,
+} from "@/lib/watchlist/streaming-platforms";
 import type { WatchlistItem } from "@/lib/watchlist/types";
 import { normalizeWatchlistTitle } from "@/lib/watchlist/types";
 import type { Dict } from "@/lib/i18n/types";
@@ -9,15 +14,23 @@ type WatchlistChangeLabels = Pick<
   | "changeSummaryMediaType"
   | "changeSummaryStatus"
   | "changeSummaryNotes"
+  | "changeSummaryStreamingPlatforms"
   | "changeSummaryEmpty"
   | "changeSummarySeparator"
   | "mediaTypeLabels"
   | "statusLabels"
+  | "streamingPlatformLabels"
+  | "streamingPlatformListSeparator"
+>;
+
+type WatchlistChangeSnapshot = Pick<
+  WatchlistItem,
+  "title" | "media_type" | "status" | "notes" | "streaming_platforms"
 >;
 
 export function buildWatchlistChangeSummary(
-  before: Pick<WatchlistItem, "title" | "media_type" | "status" | "notes">,
-  after: Pick<WatchlistItem, "title" | "media_type" | "status" | "notes">,
+  before: WatchlistChangeSnapshot,
+  after: WatchlistChangeSnapshot,
   labels: WatchlistChangeLabels
 ): string {
   const parts: string[] = [];
@@ -50,11 +63,32 @@ export function buildWatchlistChangeSummary(
     parts.push(labels.changeSummaryNotes);
   }
 
+  if (!streamingPlatformsEqual(before.streaming_platforms, after.streaming_platforms)) {
+    parts.push(
+      formatMessage(labels.changeSummaryStreamingPlatforms, {
+        from: formatPlatformSummary(before.streaming_platforms, labels),
+        to: formatPlatformSummary(after.streaming_platforms, labels),
+      })
+    );
+  }
+
   if (parts.length === 0) {
     return labels.changeSummaryEmpty;
   }
 
   return parts.join(labels.changeSummarySeparator);
+}
+
+function formatPlatformSummary(
+  platforms: StreamingPlatform[],
+  labels: Pick<WatchlistChangeLabels, "streamingPlatformLabels" | "streamingPlatformListSeparator">
+): string {
+  if (platforms.length === 0) return "—";
+  return formatStreamingPlatformList(
+    platforms,
+    labels.streamingPlatformLabels,
+    labels.streamingPlatformListSeparator
+  );
 }
 
 export function formatWatchlistNotificationDetail(

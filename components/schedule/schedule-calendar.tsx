@@ -14,14 +14,16 @@ import { SCHEDULE_ENTRY_EMOJI } from "@/lib/constants/schedule";
 import { useT } from "@/lib/lang-context";
 import { buildMonthGrid, getMonthName, getWeekdayLabels, shiftMonth } from "@/lib/birthdays/calendar";
 import {
-  formatScheduleDateLabel,
+  formatScheduleDateRangeLabel,
   getScheduleTypeLabel,
-  parseEntryDateParts,
   scheduleDateKey,
+  scheduleEntryIncludesDate,
+  scheduleEntryOverlapsMonth,
   type ScheduleEntry,
 } from "@/lib/schedule/types";
 import { getDisplayName } from "@/lib/profile";
 import type { FamilyMember, Profile } from "@/lib/profile";
+import { selectionPillClasses } from "@/lib/ui/selection-styles";
 import { cn } from "@/lib/utils";
 
 interface ScheduleCalendarProps {
@@ -50,8 +52,7 @@ function resolveCreatorName(
 }
 
 function entryMatchesMonth(entry: ScheduleEntry, year: number, month: number): boolean {
-  const parts = parseEntryDateParts(entry.entry_date);
-  return parts.year === year && parts.month === month;
+  return scheduleEntryOverlapsMonth(entry, year, month);
 }
 
 export function ScheduleCalendar({
@@ -78,13 +79,19 @@ export function ScheduleCalendar({
 
   const entriesByDay = useMemo(() => {
     const map = new Map<number, ScheduleEntry[]>();
-    for (const entry of entries) {
-      if (!entryMatchesMonth(entry, year, month)) continue;
-      const { day } = parseEntryDateParts(entry.entry_date);
-      const list = map.get(day) ?? [];
-      list.push(entry);
-      map.set(day, list);
+    const monthEntries = entries.filter((entry) => entryMatchesMonth(entry, year, month));
+
+    for (const entry of monthEntries) {
+      const lastDay = new Date(year, month, 0).getDate();
+      for (let day = 1; day <= lastDay; day += 1) {
+        const dateKey = scheduleDateKey(year, month, day);
+        if (!scheduleEntryIncludesDate(entry, dateKey)) continue;
+        const list = map.get(day) ?? [];
+        list.push(entry);
+        map.set(day, list);
+      }
     }
+
     return map;
   }, [entries, year, month]);
 
@@ -175,7 +182,13 @@ export function ScheduleCalendar({
                         <p className="font-semibold">
                           {SCHEDULE_ENTRY_EMOJI[entry.entry_type]} {typeLabel}
                         </p>
-                        <p>{formatScheduleDateLabel(entry.entry_date)}</p>
+                        <p>
+                          {formatScheduleDateRangeLabel(
+                            entry.entry_date,
+                            entry.entry_end_date,
+                            t.schedule.dateRangeSeparator
+                          )}
+                        </p>
                         {entry.description && (
                           <p>
                             <span className="font-medium">{t.schedule.reasonLabel}:</span>{" "}
@@ -198,9 +211,7 @@ export function ScheduleCalendar({
                             onClick={() => onEntrySelect?.(entry)}
                             className={cn(
                               "flex w-full min-w-0 cursor-pointer items-center gap-1 rounded-sm px-1.5 py-1 text-left text-[11px] font-medium leading-none transition-all duration-150",
-                              isSelected
-                                ? "bg-primary text-primary-foreground shadow-sm ring-1 ring-primary/40"
-                                : "bg-primary/10 text-primary hover:bg-primary/20 hover:ring-1 hover:ring-primary/20"
+                              selectionPillClasses(isSelected)
                             )}
                           >
                             <span

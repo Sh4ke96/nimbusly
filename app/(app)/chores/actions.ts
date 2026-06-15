@@ -6,22 +6,29 @@ import { buildChoreChangeSummary, formatChoreNotificationDetail } from "@/lib/ch
 import {
   CHORE_RECURRENCE,
   CHORE_STATUS,
-  type ChoreRecurrence,
   type ChoreStatus,
 } from "@/lib/constants/chores";
 import {
-  computeNextChoreDueDate,
-  dateToChoreDateString,
+  computeChoreStateAfterOccurrenceComplete,
+  isChoreOccurrenceCompleted,
+  isOccurrenceInChoreSeries,
+  resolveOccurrenceDateToComplete,
+} from "@/lib/chores/completion";
+import { resolveChoreRecurrenceFields } from "@/lib/chores/recurrence";
+import {
   isValidChoreDateString,
+  isValidChoreCustomRecurrence,
   isValidChoreNotes,
   isValidChoreStatus,
   isValidChoreTitle,
   normalizeChoreTitle,
-  parseChoreDateString,
+  CHORE_FORM_FIELD,
   parseChoreIdFromForm,
+  parseChoreOccurrenceCompleteFromForm,
   parseChoreStatusFromForm,
   parseChoreTaskFromForm,
 } from "@/lib/chores/types";
+import { isValidChoreIconEmoji } from "@/lib/chores/emoji";
 import { NOTIFICATION_TYPE } from "@/lib/constants/notifications";
 import { getDisplayName, type Profile } from "@/lib/profile";
 import type { AccountActionState } from "@/app/(app)/account/actions";
@@ -72,19 +79,44 @@ function validateChoreFields(
   if (!isValidChoreTitle(parsed.title)) return "title";
   if (!parsed.status) return "status";
   if (!parsed.recurrence) return "recurrence";
+  if (!isValidChoreCustomRecurrence(
+    parsed.recurrence,
+    parsed.recurrenceIntervalDays,
+    parsed.recurrenceDuration
+  )) {
+    return parsed.recurrence === CHORE_RECURRENCE.CUSTOM
+      ? "customRecurrence"
+      : "recurrenceDuration";
+  }
+  if (
+    parsed.recurrence !== CHORE_RECURRENCE.NONE &&
+    !parsed.dueDate
+  ) {
+    return "recurrenceStartDate";
+  }
   if (!isValidChoreNotes(parsed.notes)) return "notes";
+  if (!isValidChoreIconEmoji(parsed.iconEmoji)) return "iconEmoji";
   if (!isValidChoreDateString(parsed.dueDate)) return "dueDate";
   return null;
 }
 
 function toChorePayload(parsed: ReturnType<typeof parseChoreTaskFromForm>) {
+  const recurrenceFields = resolveChoreRecurrenceFields(
+    parsed.recurrence!,
+    parsed.recurrenceIntervalDays,
+    parsed.recurrenceDuration,
+    parsed.dueDate
+  );
+
   return {
     title: normalizeChoreTitle(parsed.title),
     notes: parsed.notes,
+    icon_emoji: parsed.iconEmoji,
     status: parsed.status!,
     assigned_to: parsed.assignedTo,
     due_date: parsed.dueDate,
     recurrence: parsed.recurrence!,
+    ...recurrenceFields,
   };
 }
 
@@ -101,6 +133,16 @@ export async function createChoreTask(
   if (validationError === "title") return { error: t.chores.errorTitleRequired };
   if (validationError === "status") return { error: t.chores.errorStatusRequired };
   if (validationError === "recurrence") return { error: t.chores.errorRecurrenceRequired };
+  if (validationError === "customRecurrence") {
+    return { error: t.chores.errorCustomRecurrenceRequired };
+  }
+  if (validationError === "recurrenceDuration") {
+    return { error: t.chores.errorRecurrenceDurationRequired };
+  }
+  if (validationError === "recurrenceStartDate") {
+    return { error: t.chores.errorRecurrenceStartDateRequired };
+  }
+  if (validationError === "iconEmoji") return { error: t.chores.errorInvalidIconEmoji };
   if (validationError === "dueDate") return { error: t.chores.errorInvalidDueDate };
   if (validationError) return { error: t.chores.errorGeneric };
 
@@ -162,6 +204,16 @@ export async function updateChoreTask(
   if (validationError === "title") return { error: t.chores.errorTitleRequired };
   if (validationError === "status") return { error: t.chores.errorStatusRequired };
   if (validationError === "recurrence") return { error: t.chores.errorRecurrenceRequired };
+  if (validationError === "customRecurrence") {
+    return { error: t.chores.errorCustomRecurrenceRequired };
+  }
+  if (validationError === "recurrenceDuration") {
+    return { error: t.chores.errorRecurrenceDurationRequired };
+  }
+  if (validationError === "recurrenceStartDate") {
+    return { error: t.chores.errorRecurrenceStartDateRequired };
+  }
+  if (validationError === "iconEmoji") return { error: t.chores.errorInvalidIconEmoji };
   if (validationError === "dueDate") return { error: t.chores.errorInvalidDueDate };
   if (validationError) return { error: t.chores.errorGeneric };
 
@@ -231,6 +283,99 @@ export async function updateChoreTask(
   return { success: t.chores.updatedSuccess };
 }
 
+export async function completeChoreOccurrence(
+  _prev: AccountActionState,
+  formData: FormData
+): Promise<AccountActionState> {
+  const t = await getServerT();
+  const { supabase, user } = await requireUser();
+  if (!user) return { error: t.account.errorUnauthorized };
+
+  const { id, occurrenceDate } = parseChoreOccurrenceCompleteFromForm(formData);
+  if (!id || !isValidChoreDateString(occurrenceDate)) {
+    return { error: t.chores.errorInvalidOccurrenceDate };
+  }
+
+  const { data: existing } = await supabase
+    .from("chore_tasks")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (!existing) return { error: t.chores.errorNotOwner };
+
+  if (existing.family_id === null && existing.created_by !== user.id) {
+    return { error: t.chores.errorNotOwner };
+  }
+
+  const chore = choreTaskFromRow(existing);
+
+  if (!isOccurrenceInChoreSeries(chore, occurrenceDate)) {
+    return { error: t.chores.errorInvalidOccurrenceDate };
+  }
+
+  if (isChoreOccurrenceCompleted(chore, occurrenceDate)) {
+    return { success: t.chores.completedOccurrenceSuccess };
+  }
+
+  const next = computeChoreStateAfterOccurrenceComplete(chore, occurrenceDate);
+
+  const { error } = await supabase
+    .from("chore_tasks")
+    .update({
+      completed_dates: next.completed_dates,
+      due_date: next.due_date,
+      status: next.status,
+      completed_at: next.completed_at,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", id);
+
+  if (error) return { error: t.chores.errorGeneric };
+
+  const { profile, familyId } = await getProfileFamilyContext(supabase, user.id);
+  if (familyId && profile) {
+    const { data: members } = await supabase
+      .from("profiles")
+      .select("id, first_name, last_name")
+      .eq("family_id", familyId);
+
+    const after = { ...chore, ...next };
+    const changeSummary = buildChoreChangeSummary(
+      chore,
+      after,
+      t.chores,
+      (assigneeId) =>
+        resolveAssigneeLabel(assigneeId, profile, members ?? [], t.chores.assigneeUnassigned)
+    );
+
+    try {
+      await notifyFamilyMembers(supabase, {
+        type: NOTIFICATION_TYPE.CHORE_UPDATED,
+        actorId: user.id,
+        actorName: getDisplayName(profile),
+        familyId,
+        body: changeSummary,
+        payload: {
+          chore_task_id: id,
+          actor_id: user.id,
+          family_id: familyId,
+          change_summary: changeSummary,
+        },
+      });
+    } catch {
+      // Best-effort
+    }
+  }
+
+  return {
+    success:
+      next.status === CHORE_STATUS.COMPLETED
+        ? t.chores.completedSuccess
+        : t.chores.completedOccurrenceSuccess,
+  };
+}
+
 export async function setChoreTaskStatus(
   _prev: AccountActionState,
   formData: FormData
@@ -249,40 +394,44 @@ export async function setChoreTaskStatus(
     .from("chore_tasks")
     .select("*")
     .eq("id", id)
-    .eq("created_by", user.id)
     .maybeSingle();
 
   if (!existing) return { error: t.chores.errorNotOwner };
+
+  if (existing.family_id === null && existing.created_by !== user.id) {
+    return { error: t.chores.errorNotOwner };
+  }
   if (existing.status === statusRaw) return { success: t.chores.updatedSuccess };
 
   const status = statusRaw as ChoreStatus;
   const markingCompleted = status === CHORE_STATUS.COMPLETED;
-  let nextStatus = status;
-  let dueDate = existing.due_date;
-  let completedAt: string | null = markingCompleted ? new Date().toISOString() : null;
-  let completedWithRecurrence = false;
 
-  if (markingCompleted && existing.recurrence !== CHORE_RECURRENCE.NONE) {
-    const base = existing.due_date
-      ? parseChoreDateString(existing.due_date) ?? new Date()
-      : new Date();
-    const next = computeNextChoreDueDate(base, existing.recurrence as ChoreRecurrence);
-    nextStatus = CHORE_STATUS.PENDING;
-    dueDate = next ? dateToChoreDateString(next) : null;
-    completedAt = null;
-    completedWithRecurrence = true;
+  if (markingCompleted) {
+    const chore = choreTaskFromRow(existing);
+    const occurrenceDate =
+      chore.recurrence !== CHORE_RECURRENCE.NONE || chore.due_date
+        ? resolveOccurrenceDateToComplete(chore)
+        : null;
+
+    if (occurrenceDate) {
+      const completeForm = new FormData();
+      completeForm.set(CHORE_FORM_FIELD.ID, id);
+      completeForm.set(CHORE_FORM_FIELD.OCCURRENCE_DATE, occurrenceDate);
+      return completeChoreOccurrence(_prev, completeForm);
+    }
   }
+
+  const completedAt =
+    markingCompleted ? new Date().toISOString() : null;
 
   const { error } = await supabase
     .from("chore_tasks")
     .update({
-      status: nextStatus,
-      due_date: dueDate,
+      status,
       completed_at: completedAt,
       updated_at: new Date().toISOString(),
     })
-    .eq("id", id)
-    .eq("created_by", user.id);
+    .eq("id", id);
 
   if (error) return { error: t.chores.errorGeneric };
 
@@ -294,7 +443,7 @@ export async function setChoreTaskStatus(
       .eq("family_id", familyId);
 
     const chore = choreTaskFromRow(existing);
-    const after = { ...chore, status: nextStatus, due_date: dueDate };
+    const after = { ...chore, status };
     const changeSummary = buildChoreChangeSummary(
       chore,
       after,
@@ -323,11 +472,7 @@ export async function setChoreTaskStatus(
   }
 
   if (markingCompleted) {
-    return {
-      success: completedWithRecurrence
-        ? t.chores.completedRecurrenceSuccess
-        : t.chores.completedSuccess,
-    };
+    return { success: t.chores.completedSuccess };
   }
 
   return { success: t.chores.updatedSuccess };

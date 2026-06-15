@@ -48,14 +48,25 @@ export async function GET(request: Request) {
       profile.preferred_lang === LANG.EN ? LANG.EN : LANG.PL;
     const t = dict[lang].dashboard;
 
-    const [{ data: choreTasks }, { data: medicineItems }, { data: careItems }, { data: pets }, { data: birthdays }] =
-      await Promise.all([
-        supabase.from("chore_tasks").select("*").eq(scope.column, scope.value),
-        supabase.from("medicine_items").select("*").eq(scope.column, scope.value),
-        supabase.from("pet_care_items").select("*").eq(scope.column, scope.value),
-        supabase.from("pets").select("*").eq(scope.column, scope.value),
-        supabase.from("birthday_entries").select("*").eq(scope.column, scope.value),
-      ]);
+    const [
+      { data: choreTasks },
+      { data: medicineItems },
+      { data: careItems },
+      { data: pets },
+      { data: birthdays },
+      { data: budgetExpenses },
+      { data: scheduleEntries },
+      { data: notes },
+    ] = await Promise.all([
+      supabase.from("chore_tasks").select("*").eq(scope.column, scope.value),
+      supabase.from("medicine_items").select("*").eq(scope.column, scope.value),
+      supabase.from("pet_care_items").select("*").eq(scope.column, scope.value),
+      supabase.from("pets").select("*").eq(scope.column, scope.value),
+      supabase.from("birthday_entries").select("*").eq(scope.column, scope.value),
+      supabase.from("budget_expenses").select("*").eq(scope.column, scope.value),
+      supabase.from("schedule_entries").select("*").eq(scope.column, scope.value),
+      supabase.from("notes").select("*").eq(scope.column, scope.value),
+    ]);
 
     const items = buildAttentionItems({
       choreTasks: choreTasks ?? [],
@@ -63,6 +74,9 @@ export async function GET(request: Request) {
       careItems: careItems ?? [],
       pets: pets ?? [],
       birthdays: birthdays ?? [],
+      budgetExpenses: budgetExpenses ?? [],
+      scheduleEntries: scheduleEntries ?? [],
+      notes: notes ?? [],
       labels: {
         choreOverdue: (title) => formatMessage(t.attentionChoreOverdue, { title }),
         medicineExpiring: (name) => formatMessage(t.attentionMedicineExpiring, { name }),
@@ -70,6 +84,11 @@ export async function GET(request: Request) {
         birthdaySoon: (name, when) => formatMessage(t.attentionBirthdaySoon, { name, when }),
         birthdayToday: t.birthdayToday,
         birthdayInDays: (count) => formatMessage(t.birthdayInDays, { count }),
+        budgetPaymentDue: (description) =>
+          formatMessage(t.attentionBudgetPaymentDue, { description }),
+        scheduleEnding: (description) =>
+          formatMessage(t.attentionScheduleEnding, { description }),
+        noteUrgent: (title) => formatMessage(t.attentionNoteUrgent, { title }),
       },
     });
 

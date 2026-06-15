@@ -40,6 +40,17 @@ See also: [`project-fundamentals.instructions.md`](project-fundamentals.instruct
 - Emails, metadata, calendar month names, and role labels → translation files, not inline PL/EN objects.
 - Both **Polish and English** are required for every new module.
 
+### Change log & app version (mandatory for user-visible releases)
+
+When shipping a **new module**, **larger feature**, or **user-visible fix**:
+
+1. Prepend an entry to `lib/changelog/entries.ts` (newest release first).
+2. Set `version` in `package.json` to the **same** version string as that entry.
+3. Fill `title` and `changes` in **both** `pl` and `en`.
+4. Pick `type`: `CHANGELOG_ENTRY_TYPE.MAJOR` (big launch), `MINOR` (feature), or `FIX` (bugfix).
+
+`/change-log` is public (no login). The version badge (`vX.Y.Z`, bottom-right) links there.
+
 ### Domain constants (mandatory)
 
 - New domain values (statuses, types, tabs, roles) → `lib/constants/<domain>.ts` with `as const` + exported type.
@@ -291,6 +302,7 @@ Reference: `tests/unit/family/invite.test.ts`.
 - [ ] `npm run build`
 - [ ] `npm test`
 - [ ] Cypress updated/passing for affected flows
+- [ ] Change log entry in `lib/changelog/entries.ts` + `package.json` version bump (if user-visible)
 
 ---
 
@@ -312,6 +324,7 @@ Reference: `tests/unit/family/invite.test.ts`.
 | Restaurants | `/restaurants` | `restaurants-store` | `restaurants/actions.ts` |
 | Pets | `/pets` | `pets-store` | `pets/actions.ts` |
 | Chores | `/chores` | `chores-store` | `chores/actions.ts` |
+| Notes | `/notes` | `notes-store` | `notes/actions.ts` |
 | Notifications | `/notifications` | `notifications-store` | `notifications/actions.ts` |
 
 When adding a module, mirror the closest row above.

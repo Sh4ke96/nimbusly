@@ -1,6 +1,6 @@
 {
   "name": "nimbusly",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -16,6 +16,7 @@
     "db:link": "dotenv -e .env.local -- supabase link --project-ref mxjbextvckzjfkzzpvin",
     "db:push": "dotenv -e .env.local -- supabase db push",
     "db:status": "dotenv -e .env.local -- supabase migration list",
+    "db:repair-022": "dotenv -e .env.local -- supabase migration repair --status reverted 022",
     "db:types": "node scripts/gen-database-types.mjs",
     "db:reset": "dotenv -e .env.local -- supabase db reset"
   },
@@ -28,6 +29,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.4.0",
+    "emoji-picker-react": "^4.19.1",
     "lucide-react": "^1.8.0",
     "next": "16.2.3",
     "next-themes": "^0.4.6",

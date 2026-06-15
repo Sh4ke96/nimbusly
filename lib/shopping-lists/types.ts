@@ -2,6 +2,10 @@ import {
   SHOPPING_LIST_ITEM_MAX_LENGTH,
   SHOPPING_LIST_NAME_MAX_LENGTH,
 } from "@/lib/constants/shopping-lists";
+import {
+  SHOPPING_ITEM_QUANTITY_MAX,
+  SHOPPING_ITEM_QUANTITY_MIN,
+} from "@/lib/constants/shopping-categories";
 
 import { COMMON_FORM_FIELD } from "@/lib/form/common-fields";
 import {
@@ -24,6 +28,8 @@ export interface ShoppingListItem {
   list_id: string;
   content: string;
   checked: boolean;
+  quantity: number;
+  category_id: string | null;
   sort_order: number;
   created_by: string;
   created_at: string;
@@ -42,6 +48,14 @@ export function isValidShoppingListName(name: string): boolean {
   const normalized = normalizeShoppingListName(name);
   return (
     normalized.length > 0 && normalized.length <= SHOPPING_LIST_NAME_MAX_LENGTH
+  );
+}
+
+export function isValidShoppingItemQuantity(quantity: number): boolean {
+  return (
+    Number.isInteger(quantity) &&
+    quantity >= SHOPPING_ITEM_QUANTITY_MIN &&
+    quantity <= SHOPPING_ITEM_QUANTITY_MAX
   );
 }
 
@@ -90,6 +104,8 @@ export const SHOPPING_FORM_FIELD = {
   LIST_ID: "listId",
   NAME: "name",
   CONTENT: "content",
+  CATEGORY_ID: "categoryId",
+  QUANTITY: "quantity",
   ORDERED_IDS: "orderedIds",
   WATCH: "watch",
   CHECKED: "checked",
@@ -118,10 +134,23 @@ export function parseShoppingListWatchFromForm(formData: FormData): {
 export function parseShoppingItemFromForm(formData: FormData): {
   listId: string;
   content: string;
+  categoryId: string | null;
+  quantity: number;
 } {
+  const categoryRaw = formData.get(SHOPPING_FORM_FIELD.CATEGORY_ID);
+  const quantityRaw = formData.get(SHOPPING_FORM_FIELD.QUANTITY);
+  let quantity = SHOPPING_ITEM_QUANTITY_MIN;
+  if (typeof quantityRaw === "string" && quantityRaw.length > 0) {
+    const parsed = Number.parseInt(quantityRaw, 10);
+    if (Number.isFinite(parsed)) quantity = parsed;
+  }
+
   return {
     listId: getFormTrimmedString(formData, SHOPPING_FORM_FIELD.LIST_ID),
     content: getFormString(formData, SHOPPING_FORM_FIELD.CONTENT),
+    categoryId:
+      typeof categoryRaw === "string" && categoryRaw.length > 0 ? categoryRaw : null,
+    quantity,
   };
 }
 
@@ -130,9 +159,17 @@ export function parseShoppingItemUpdateFromForm(formData: FormData): {
   listId: string;
   content: string | null;
   checked: boolean | null;
+  quantity: number | null;
 } {
   const contentRaw = formData.get(SHOPPING_FORM_FIELD.CONTENT);
   const checkedRaw = formData.get(SHOPPING_FORM_FIELD.CHECKED);
+  const quantityRaw = formData.get(SHOPPING_FORM_FIELD.QUANTITY);
+
+  let quantity: number | null = null;
+  if (typeof quantityRaw === "string" && quantityRaw.length > 0) {
+    const parsed = Number.parseInt(quantityRaw, 10);
+    quantity = Number.isFinite(parsed) ? parsed : null;
+  }
 
   return {
     id: getFormTrimmedString(formData, SHOPPING_FORM_FIELD.ID),
@@ -140,6 +177,7 @@ export function parseShoppingItemUpdateFromForm(formData: FormData): {
     content: typeof contentRaw === "string" ? contentRaw : null,
     checked:
       checkedRaw === "true" ? true : checkedRaw === "false" ? false : null,
+    quantity,
   };
 }
 

@@ -1,6 +1,10 @@
 import * as React from "react"
 
+import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+
+export const CARD_TITLE_ROW_CLASSNAME =
+  "flex min-h-8 items-center gap-3 min-w-0 pr-1"
 
 function Card({
   className,
@@ -25,7 +29,7 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card-header"
       className={cn(
-        "group/card-header @container/card-header grid auto-rows-min items-start gap-1 rounded-t-none px-(--card-spacing) has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto] [.border-b]:pb-(--card-spacing)",
+        "group/card-header @container/card-header grid auto-rows-min items-center gap-1 rounded-t-none border-b border-border px-(--card-spacing) py-1.5 has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto]",
         className
       )}
       {...props}
@@ -38,7 +42,7 @@ function CardTitle({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card-title"
       className={cn(
-        "font-heading text-base leading-snug font-medium group-data-[size=sm]/card:text-sm",
+        "font-heading text-base leading-snug font-semibold group-data-[size=sm]/card:text-sm",
         className
       )}
       {...props}
@@ -50,7 +54,7 @@ function CardDescription({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-description"
-      className={cn("text-sm text-muted-foreground", className)}
+      className={cn("text-[11px] text-muted-foreground", className)}
       {...props}
     />
   )
@@ -61,7 +65,44 @@ function CardAction({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card-action"
       className={cn(
-        "col-start-2 row-span-2 row-start-1 self-start justify-self-end",
+        "col-start-2 row-span-2 row-start-1 self-center justify-self-end",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function CardHeaderActions({
+  className,
+  ...props
+}: React.ComponentProps<"div">) {
+  return (
+    <CardAction className={cn("self-center", className)}>
+      <div
+        data-slot="card-header-actions"
+        className="inline-flex shrink-0 overflow-hidden rounded-none border border-border"
+        {...props}
+      />
+    </CardAction>
+  )
+}
+
+function CardHeaderActionButton({
+  className,
+  destructive = false,
+  ...props
+}: React.ComponentProps<typeof Button> & { destructive?: boolean }) {
+  return (
+    <Button
+      type="button"
+      variant="ghost"
+      size="icon"
+      className={cn(
+        "cursor-pointer size-8 rounded-none",
+        destructive
+          ? "text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+          : "text-muted-foreground hover:text-foreground hover:bg-muted/60",
         className
       )}
       {...props}
@@ -98,6 +139,8 @@ export {
   CardFooter,
   CardTitle,
   CardAction,
+  CardHeaderActions,
+  CardHeaderActionButton,
   CardDescription,
   CardContent,
 }

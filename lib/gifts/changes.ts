@@ -7,13 +7,14 @@ type GiftChangeLabels = Pick<
   Dict["gifts"],
   | "changeSummaryRecipient"
   | "changeSummaryContent"
+  | "changeSummaryLink"
   | "changeSummaryEmpty"
   | "changeSummarySeparator"
 >;
 
 export function buildGiftChangeSummary(
-  before: Pick<GiftIdea, "recipient_name" | "content">,
-  after: Pick<GiftIdea, "recipient_name" | "content">,
+  before: Pick<GiftIdea, "recipient_name" | "content" | "link_url">,
+  after: Pick<GiftIdea, "recipient_name" | "content" | "link_url">,
   labels: GiftChangeLabels
 ): string {
   const parts: string[] = [];
@@ -29,6 +30,10 @@ export function buildGiftChangeSummary(
 
   if (before.content !== after.content) {
     parts.push(labels.changeSummaryContent);
+  }
+
+  if ((before.link_url ?? null) !== (after.link_url ?? null)) {
+    parts.push(labels.changeSummaryLink);
   }
 
   if (parts.length === 0) {

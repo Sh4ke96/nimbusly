@@ -5,10 +5,15 @@ import { getServerT } from "@/lib/i18n/server";
 import { formatMessage } from "@/lib/i18n/format";
 import { buildScheduleChangeSummary, formatScheduleNotificationDetail } from "@/lib/schedule/changes";
 import {
+  countScheduleEntriesOnDate,
+  isValidEntryDateRange,
   isValidEntryDateString,
   isValidScheduleEntryType,
+  iterScheduleDateRange,
+  normalizeScheduleEntryEndDate,
   parseScheduleEntryFromForm,
   parseScheduleIdFromForm,
+  type ScheduleEntry,
 } from "@/lib/schedule/types";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { NOTIFICATION_TYPE } from "@/lib/constants/notifications";
@@ -20,19 +25,19 @@ import { requireUser, getProfileFamilyContext } from "@/lib/server-actions/requi
 import { notifyFamilyMembers } from "@/lib/server-actions/notify-family";
 import { scheduleEntryFromRow } from "@/lib/supabase/app-rows";
 
-async function countScheduleEntriesOnDate(
+type ScheduleEntryRow = Pick<ScheduleEntry, "id" | "entry_date" | "entry_end_date">;
+
+async function fetchScheduleEntriesForScope(
   supabase: Awaited<ReturnType<typeof createClient>>,
   params: {
-    entryDate: string;
     userId: string;
     familyId: string | null;
     excludeId?: string;
   }
-): Promise<number> {
+): Promise<ScheduleEntryRow[]> {
   let query = supabase
     .from("schedule_entries")
-    .select("id", { count: "exact", head: true })
-    .eq("entry_date", params.entryDate);
+    .select("id, entry_date, entry_end_date");
 
   if (params.familyId) {
     query = query.eq("family_id", params.familyId);
@@ -44,10 +49,48 @@ async function countScheduleEntriesOnDate(
     query = query.neq("id", params.excludeId);
   }
 
-  const { count, error } = await query;
-  if (error) return SCHEDULE_MAX_ENTRIES_PER_DAY;
+  const { data, error } = await query;
+  if (error || !data) return [];
 
-  return count ?? 0;
+  return data.map((row) => scheduleEntryFromRow(row));
+}
+
+async function isScheduleRangeFullOnServer(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  params: {
+    startDate: string;
+    endDate: string;
+    userId: string;
+    familyId: string | null;
+    excludeId?: string;
+  }
+): Promise<boolean> {
+  const entries = await fetchScheduleEntriesForScope(supabase, params);
+
+  return iterScheduleDateRange(params.startDate, params.endDate).some(
+    (date) =>
+      countScheduleEntriesOnDate(entries, date) >= SCHEDULE_MAX_ENTRIES_PER_DAY
+  );
+}
+
+function parseAndValidateScheduleDates(
+  entryDate: string,
+  entryEndDate: string,
+  errors: { invalidDate: string; endBeforeStart: string }
+): { entryDate: string; entryEndDate: string | null } | { error: string } {
+  if (!entryDate || !isValidEntryDateString(entryDate)) {
+    return { error: errors.invalidDate };
+  }
+
+  const resolvedEnd = entryEndDate || entryDate;
+  if (!isValidEntryDateRange(entryDate, resolvedEnd)) {
+    return { error: errors.endBeforeStart };
+  }
+
+  return {
+    entryDate,
+    entryEndDate: normalizeScheduleEntryEndDate(entryDate, resolvedEnd),
+  };
 }
 
 export async function createScheduleEntry(
@@ -59,24 +102,30 @@ export async function createScheduleEntry(
 
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const { entryDate, entryType, description } = parseScheduleEntryFromForm(formData);
+  const { entryDate, entryEndDate, entryType, description } =
+    parseScheduleEntryFromForm(formData);
 
-  if (!entryDate || !isValidEntryDateString(entryDate)) {
-    return { error: t.schedule.errorInvalidDate };
-  }
+  const parsedDates = parseAndValidateScheduleDates(entryDate, entryEndDate, {
+    invalidDate: t.schedule.errorInvalidDate,
+    endBeforeStart: t.schedule.errorEndBeforeStart,
+  });
+  if ("error" in parsedDates) return { error: parsedDates.error };
+
   if (!isValidScheduleEntryType(entryType)) {
     return { error: t.schedule.errorInvalidType };
   }
 
   const { profile, familyId } = await getProfileFamilyContext(supabase, user.id);
 
-  const entriesOnDate = await countScheduleEntriesOnDate(supabase, {
-    entryDate,
+  const resolvedEnd = parsedDates.entryEndDate ?? parsedDates.entryDate;
+  const rangeFull = await isScheduleRangeFullOnServer(supabase, {
+    startDate: parsedDates.entryDate,
+    endDate: resolvedEnd,
     userId: user.id,
     familyId,
   });
 
-  if (entriesOnDate >= SCHEDULE_MAX_ENTRIES_PER_DAY) {
+  if (rangeFull) {
     return {
       error: formatMessage(t.schedule.errorTooManyPerDay, {
         max: String(SCHEDULE_MAX_ENTRIES_PER_DAY),
@@ -88,7 +137,8 @@ export async function createScheduleEntry(
     .from("schedule_entries")
     .insert({
       family_id: familyId,
-      entry_date: entryDate,
+      entry_date: parsedDates.entryDate,
+      entry_end_date: parsedDates.entryEndDate,
       entry_type: entryType,
       description,
       created_by: user.id,
@@ -102,7 +152,8 @@ export async function createScheduleEntry(
     const actorName = profile ? getDisplayName(profile) : user.email ?? "Nimbusly";
     const bodyDetail = formatScheduleNotificationDetail(
       entryType as ScheduleEntryType,
-      entryDate,
+      parsedDates.entryDate,
+      parsedDates.entryEndDate,
       description,
       t.schedule
     );
@@ -140,33 +191,40 @@ export async function updateScheduleEntry(
   if (!user) return { error: t.account.errorUnauthorized };
 
   const id = parseScheduleIdFromForm(formData);
-  const { entryDate, entryType, description } = parseScheduleEntryFromForm(formData);
+  const { entryDate, entryEndDate, entryType, description } =
+    parseScheduleEntryFromForm(formData);
 
   if (!id) return { error: t.schedule.errorGeneric };
-  if (!entryDate || !isValidEntryDateString(entryDate)) {
-    return { error: t.schedule.errorInvalidDate };
-  }
+
+  const parsedDates = parseAndValidateScheduleDates(entryDate, entryEndDate, {
+    invalidDate: t.schedule.errorInvalidDate,
+    endBeforeStart: t.schedule.errorEndBeforeStart,
+  });
+  if ("error" in parsedDates) return { error: parsedDates.error };
+
   if (!isValidScheduleEntryType(entryType)) {
     return { error: t.schedule.errorInvalidType };
   }
 
   const { data: existing } = await supabase
     .from("schedule_entries")
-    .select("id, entry_date, entry_type, description, family_id, created_by")
+    .select("id, entry_date, entry_end_date, entry_type, description, family_id, created_by")
     .eq("id", id)
     .eq("created_by", user.id)
     .maybeSingle();
 
   if (!existing) return { error: t.schedule.errorNotOwner };
 
-  const entriesOnDate = await countScheduleEntriesOnDate(supabase, {
-    entryDate,
+  const resolvedEnd = parsedDates.entryEndDate ?? parsedDates.entryDate;
+  const rangeFull = await isScheduleRangeFullOnServer(supabase, {
+    startDate: parsedDates.entryDate,
+    endDate: resolvedEnd,
     userId: user.id,
     familyId: existing.family_id,
     excludeId: id,
   });
 
-  if (entriesOnDate >= SCHEDULE_MAX_ENTRIES_PER_DAY) {
+  if (rangeFull) {
     return {
       error: formatMessage(t.schedule.errorTooManyPerDay, {
         max: String(SCHEDULE_MAX_ENTRIES_PER_DAY),
@@ -179,7 +237,8 @@ export async function updateScheduleEntry(
   const { error } = await supabase
     .from("schedule_entries")
     .update({
-      entry_date: entryDate,
+      entry_date: parsedDates.entryDate,
+      entry_end_date: parsedDates.entryEndDate,
       entry_type: entryType,
       description,
       updated_at: new Date().toISOString(),
@@ -192,7 +251,8 @@ export async function updateScheduleEntry(
   const changeSummary = buildScheduleChangeSummary(
     scheduleEntryFromRow(existing),
     {
-      entry_date: entryDate,
+      entry_date: parsedDates.entryDate,
+      entry_end_date: parsedDates.entryEndDate,
       entry_type: entryType as ScheduleEntryType,
       description,
     },
@@ -239,7 +299,7 @@ export async function deleteScheduleEntry(
 
   const { data: existing } = await supabase
     .from("schedule_entries")
-    .select("id, entry_date, entry_type, description, family_id, created_by")
+    .select("id, entry_date, entry_end_date, entry_type, description, family_id, created_by")
     .eq("id", id)
     .eq("created_by", user.id)
     .maybeSingle();
@@ -262,6 +322,7 @@ export async function deleteScheduleEntry(
     const bodyDetail = formatScheduleNotificationDetail(
       existing.entry_type as ScheduleEntryType,
       existing.entry_date,
+      existing.entry_end_date,
       existing.description,
       t.schedule
     );

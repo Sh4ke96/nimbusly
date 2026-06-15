@@ -12,6 +12,7 @@ const modulePages = [
   { path: "/restaurants", title: t.modules.restaurants },
   { path: "/pets", title: t.modules.pets },
   { path: "/chores", title: t.modules.chores },
+  { path: "/notes", title: t.modules.notes },
 ] as const;
 
 describe("Moduły — smoke", () => {

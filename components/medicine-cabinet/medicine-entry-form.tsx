@@ -5,16 +5,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { MedicineDatePicker } from "@/components/medicine-cabinet/medicine-date-picker";
+import { MedicineTakenByPicker } from "@/components/medicine-cabinet/medicine-taken-by-picker";
 import {
   MEDICINE_AVAILABILITIES,
   MEDICINE_FORM_TYPES,
   type MedicineAvailability,
   type MedicineFormType,
 } from "@/lib/constants/medicine";
+import type { FamilyMember, Profile } from "@/lib/profile";
+import { selectionPickerTileButtonClasses } from "@/lib/ui/selection-styles";
 import { useT } from "@/lib/lang-context";
-import { cn } from "@/lib/utils";
 
 interface MedicineEntryFormProps {
+  profile: Profile | null;
+  members: FamilyMember[];
   name: string;
   onNameChange: (value: string) => void;
   formType: MedicineFormType | null;
@@ -29,9 +33,13 @@ interface MedicineEntryFormProps {
   onLocationChange: (value: string) => void;
   notes: string;
   onNotesChange: (value: string) => void;
+  takenBy: string | null;
+  onTakenByChange: (memberId: string | null) => void;
 }
 
 export function MedicineEntryForm({
+  profile,
+  members,
   name,
   onNameChange,
   formType,
@@ -46,6 +54,8 @@ export function MedicineEntryForm({
   onLocationChange,
   notes,
   onNotesChange,
+  takenBy,
+  onTakenByChange,
 }: MedicineEntryFormProps) {
   const t = useT();
 
@@ -75,12 +85,7 @@ export function MedicineEntryForm({
               key={type}
               type="button"
               onClick={() => onFormTypeChange(type)}
-              className={cn(
-                "cursor-pointer rounded-none border px-2 py-2 text-xs font-medium transition-colors",
-                formType === type
-                  ? "border-primary bg-primary/10 text-primary"
-                  : "border-border bg-background hover:bg-muted/50"
-              )}
+              className={selectionPickerTileButtonClasses(formType === type, "px-2 py-2 text-xs")}
             >
               {t.medicineCabinet.formLabels[type]}
             </button>
@@ -104,6 +109,13 @@ export function MedicineEntryForm({
 
       <MedicineDatePicker date={expiryDate} onDateChange={onExpiryDateChange} />
 
+      <MedicineTakenByPicker
+        profile={profile}
+        members={members}
+        takenBy={takenBy}
+        onTakenByChange={onTakenByChange}
+      />
+
       <div className="space-y-1.5">
         <Label>{t.medicineCabinet.availabilityLabel}</Label>
         <p className="text-xs text-muted-foreground">{t.medicineCabinet.availabilityHint}</p>
@@ -113,12 +125,7 @@ export function MedicineEntryForm({
               key={status}
               type="button"
               onClick={() => onAvailabilityChange(status)}
-              className={cn(
-                "cursor-pointer rounded-none border px-2 py-2 text-xs font-medium transition-colors",
-                availability === status
-                  ? "border-primary bg-primary/10 text-primary"
-                  : "border-border bg-background hover:bg-muted/50"
-              )}
+              className={selectionPickerTileButtonClasses(availability === status, "px-2 py-2 text-xs")}
             >
               {t.medicineCabinet.availabilityLabels[status]}
             </button>

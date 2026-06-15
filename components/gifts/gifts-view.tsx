@@ -8,12 +8,14 @@ import { AppHeader } from "@/components/app/app-header";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { GiftEditDialog } from "@/components/gifts/gift-edit-dialog";
 import { GiftFormDialog } from "@/components/gifts/gift-form-dialog";
+import { GiftsFilters } from "@/components/gifts/gifts-filters";
 import { GiftNoteCard } from "@/components/gifts/gift-note-card";
-import { GiftRecipientFilter } from "@/components/gifts/gift-recipient-filter";
+import { FamilyRealtimeHint } from "@/components/ui/family-realtime-hint";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
 import { Skeleton } from "@/components/ui/skeleton";
 import { GIFT_FILTER_ALL } from "@/lib/constants/gifts";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
+import { countActiveFilters } from "@/lib/filters/active-count";
 import { filterGiftIdeasByRecipient } from "@/lib/gifts/recipients";
 import type { GiftIdea } from "@/lib/gifts/types";
 import { useT } from "@/lib/lang-context";
@@ -66,6 +68,8 @@ export function GiftsView() {
     setEditOpen(true);
   }
 
+  const hasActiveFilter = countActiveFilters([filterKey], GIFT_FILTER_ALL) > 0;
+
   return (
     <div className="min-h-screen flex flex-col">
       <AppHeader />
@@ -78,23 +82,20 @@ export function GiftsView() {
             <h1 className="font-heading font-bold text-2xl tracking-tight">{t.gifts.title}</h1>
             <p className="text-sm text-muted-foreground">{t.gifts.subtitle}</p>
           </div>
-          <GiftFormDialog onSuccess={onGiftsChanged} />
+          <div className="flex items-center gap-2 self-start sm:self-auto">
+            {!loading && ideas.length > 0 && (
+              <GiftsFilters
+                ideas={ideas}
+                members={members}
+                value={filterKey}
+                onChange={setFilterKey}
+              />
+            )}
+            <GiftFormDialog onSuccess={onGiftsChanged} />
+          </div>
         </div>
 
-        {familyId && (
-          <p className="text-xs text-muted-foreground border border-border bg-muted/30 px-3 py-2">
-            {t.common.familyRealtimeHint}
-          </p>
-        )}
-
-        {!loading && ideas.length > 0 && (
-          <GiftRecipientFilter
-            ideas={ideas}
-            members={members}
-            value={filterKey}
-            onChange={setFilterKey}
-          />
-        )}
+        {familyId ? <FamilyRealtimeHint /> : null}
 
         {error ? (
           <ModuleFetchError onRetry={() => void fetchIdeas(true)} />
@@ -105,7 +106,7 @@ export function GiftsView() {
           </div>
         ) : filteredIdeas.length === 0 ? (
           <p className="text-sm text-muted-foreground text-center py-16 border border-dashed border-border">
-            {filterKey === GIFT_FILTER_ALL ? t.gifts.empty : t.gifts.emptyFiltered}
+            {filterKey === GIFT_FILTER_ALL ? t.gifts.empty : hasActiveFilter ? t.gifts.emptyFiltered : t.gifts.empty}
           </p>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2">

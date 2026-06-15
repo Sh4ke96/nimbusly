@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { createClient } from "@/lib/supabase/client";
-import { BUDGET_ENTRY_TYPE } from "@/lib/constants/budget";
+import { BUDGET_ENTRY_TYPE, BUDGET_RECURRENCE } from "@/lib/constants/budget";
 import type { Budget, BudgetExpense } from "@/lib/budget/types";
 import { watchedBudgetIdsFromRows } from "@/lib/budget/watches";
 import { dedupeAsync } from "@/lib/stores/dedupe-async";
@@ -70,7 +70,19 @@ function mapExpenseAmounts(rows: BudgetExpense[]): BudgetExpense[] {
   return rows.map((row) => ({
     ...row,
     entry_type: row.entry_type ?? BUDGET_ENTRY_TYPE.EXPENSE,
+    recurrence: row.recurrence ?? BUDGET_RECURRENCE.NONE,
+    recurrence_interval_days: row.recurrence_interval_days ?? null,
+    recurrence_end_date: row.recurrence_end_date ?? null,
+    payment_reminder_enabled: row.payment_reminder_enabled ?? false,
+    reminder_sent_keys: row.reminder_sent_keys ?? [],
     amount: Number(row.amount),
+  }));
+}
+
+function mapBudgets(rows: Budget[]): Budget[] {
+  return rows.map((row) => ({
+    ...row,
+    is_hidden: row.is_hidden ?? false,
   }));
 }
 
@@ -95,7 +107,7 @@ export const useBudgetStore = create<BudgetStore>((set, get) => ({
           return;
         }
 
-        const list = sortBudgets((budgets ?? []) as Budget[]);
+        const list = sortBudgets(mapBudgets((budgets ?? []) as Budget[]));
         const budgetIds = list.map((budget) => budget.id);
 
         if (budgetIds.length === 0) {

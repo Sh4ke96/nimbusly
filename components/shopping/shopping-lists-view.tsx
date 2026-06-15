@@ -25,7 +25,9 @@ import {
   useShoppingListsStore,
 } from "@/lib/stores/shopping-lists-store";
 import type { ShoppingList } from "@/lib/shopping-lists/types";
-import { Download } from "lucide-react";
+import { FamilyRealtimeHint } from "@/components/ui/family-realtime-hint";
+import { ModuleSectionHeading } from "@/components/ui/module-section-heading";
+import { ClipboardList, Download, ShoppingBag } from "lucide-react";
 
 export function ShoppingListsView() {
   const t = useT();
@@ -43,7 +45,7 @@ export function ShoppingListsView() {
   const listIdsKey = useMemo(() => lists.map((list) => list.id).join("|"), [lists]);
   const [activeListId, setSelectedListId] = useResolvedItemSelection(listIdsKey);
   const [editingList, setEditingList] = useState<ShoppingList | null>(null);
-  const [editOpen, setEditOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState<boolean>(false);
 
   const familyId =
     profile?.account_mode === ACCOUNT_MODE.FAMILY && profile.family_id
@@ -101,6 +103,7 @@ export function ShoppingListsView() {
       items: activeListItems,
       labels: {
         item: t.shoppingLists.itemsHeading,
+        quantity: t.shoppingLists.quantityLabel,
         checked: t.shoppingLists.toggleItemLabel,
         yes: t.shoppingLists.csvYes,
         no: t.shoppingLists.csvNo,
@@ -125,11 +128,7 @@ export function ShoppingListsView() {
           <ShoppingListFormDialog onSuccess={onListsChanged} />
         </div>
 
-        {familyId && (
-          <p className="text-xs text-muted-foreground border border-border bg-muted/30 px-3 py-2">
-            {t.common.familyRealtimeHint}
-          </p>
-        )}
+        {familyId ? <FamilyRealtimeHint /> : null}
 
         {error ? (
           <ModuleFetchError onRetry={() => void fetchLists(true)} />
@@ -145,9 +144,9 @@ export function ShoppingListsView() {
         ) : (
           <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
             <section className="space-y-3">
-              <h2 className="font-heading text-xs uppercase tracking-wider text-muted-foreground">
+              <ModuleSectionHeading icon={ClipboardList}>
                 {t.shoppingLists.listsHeading}
-              </h2>
+              </ModuleSectionHeading>
               <div className="space-y-3">
                 {lists.map((list) => (
                   <ShoppingListCard
@@ -165,9 +164,9 @@ export function ShoppingListsView() {
 
             <section className="space-y-3">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <h2 className="font-heading text-xs uppercase tracking-wider text-muted-foreground">
+                <ModuleSectionHeading icon={ShoppingBag}>
                   {activeList?.name ?? t.shoppingLists.itemsHeading}
-                </h2>
+                </ModuleSectionHeading>
                 {activeList ? (
                   <div className="flex flex-wrap gap-2">
                     <Button

@@ -20,11 +20,57 @@ import {
 } from "@/lib/medicine/types";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { NOTIFICATION_TYPE } from "@/lib/constants/notifications";
-import { getDisplayName } from "@/lib/profile";
+import { getDisplayName, type Profile } from "@/lib/profile";
 import type { AccountActionState } from "@/app/(app)/account/actions";
 import { requireUser, getProfileFamilyContext } from "@/lib/server-actions/require-user";
 import { notifyFamilyMembers } from "@/lib/server-actions/notify-family";
 import { medicineItemFromRow } from "@/lib/supabase/app-rows";
+
+async function validateTakenBy(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  takenBy: string | null,
+  familyId: string | null
+): Promise<boolean> {
+  if (!takenBy) return true;
+  if (!familyId) return false;
+  const { data: member } = await supabase
+    .from("profiles")
+    .select("id")
+    .eq("id", takenBy)
+    .eq("family_id", familyId)
+    .maybeSingle();
+  return !!member;
+}
+
+function resolveTakenByLabel(
+  id: string | null,
+  profile: Pick<Profile, "id" | "first_name" | "last_name"> | null,
+  members: { id: string; first_name: string | null; last_name: string | null }[],
+  unassignedLabel: string
+): string {
+  if (!id) return unassignedLabel;
+  if (profile && profile.id === id) {
+    return getDisplayName({
+      first_name: profile.first_name ?? "",
+      last_name: profile.last_name ?? "",
+    });
+  }
+  const member = members.find((m) => m.id === id);
+  if (!member) return unassignedLabel;
+  return getDisplayName({
+    first_name: member.first_name ?? "",
+    last_name: member.last_name ?? "",
+  });
+}
+
+function resolveTakenByForSave(
+  takenBy: string | null,
+  familyId: string | null,
+  userId: string
+): string | null {
+  if (!familyId) return userId;
+  return takenBy;
+}
 
 function validateMedicineFields(parsed: ReturnType<typeof parseMedicineItemFromForm>): string | null {
   if (!isValidMedicineName(parsed.name)) return "name";
@@ -103,6 +149,11 @@ export async function createMedicineItem(
   const formType = parsed.formType!;
   const availability = parsed.availability!;
 
+  const takenBy = resolveTakenByForSave(parsed.takenBy, familyId, user.id);
+  if (!(await validateTakenBy(supabase, takenBy, familyId))) {
+    return { error: t.medicineCabinet.errorInvalidTakenBy };
+  }
+
   const { data: item, error } = await supabase
     .from("medicine_items")
     .insert({
@@ -114,6 +165,7 @@ export async function createMedicineItem(
       availability,
       location: parsed.location,
       notes: parsed.notes,
+      taken_by: takenBy,
       created_by: user.id,
     })
     .select("id")
@@ -178,7 +230,7 @@ export async function updateMedicineItem(
   const { data: existing } = await supabase
     .from("medicine_items")
     .select(
-      "id, name, form_type, quantity, expiry_date, availability, location, notes, family_id, created_by"
+      "id, name, form_type, quantity, expiry_date, availability, location, notes, taken_by, family_id, created_by"
     )
     .eq("id", id)
     .eq("created_by", user.id)
@@ -190,6 +242,11 @@ export async function updateMedicineItem(
   const availability = parsed.availability!;
   const name = normalizeMedicineName(parsed.name);
 
+  const takenBy = resolveTakenByForSave(parsed.takenBy, existing.family_id, user.id);
+  if (!(await validateTakenBy(supabase, takenBy, existing.family_id))) {
+    return { error: t.medicineCabinet.errorInvalidTakenBy };
+  }
+
   const { error } = await supabase
     .from("medicine_items")
     .update({
@@ -200,6 +257,7 @@ export async function updateMedicineItem(
       availability,
       location: parsed.location,
       notes: parsed.notes,
+      taken_by: takenBy,
       updated_at: new Date().toISOString(),
     })
     .eq("id", id)
@@ -213,6 +271,17 @@ export async function updateMedicineItem(
   if (familyId && profile?.account_mode === ACCOUNT_MODE.FAMILY) {
     const actorName = getDisplayName(profile);
     const formLabel = t.medicineCabinet.formLabels[formType];
+    const { data: members } = await supabase
+      .from("profiles")
+      .select("id, first_name, last_name")
+      .eq("family_id", familyId);
+    const resolveTakenBy = (memberId: string | null) =>
+      resolveTakenByLabel(
+        memberId,
+        profile,
+        members ?? [],
+        t.medicineCabinet.takenByUnassigned
+      );
     const changeSummary = buildMedicineChangeSummary(
       medicineItemFromRow(existing),
       {
@@ -223,8 +292,10 @@ export async function updateMedicineItem(
         availability,
         location: parsed.location,
         notes: parsed.notes,
+        taken_by: takenBy,
       },
-      t.medicineCabinet
+      t.medicineCabinet,
+      resolveTakenBy
     );
 
     try {

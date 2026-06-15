@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import type { DateRange } from "react-day-picker";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -17,7 +18,8 @@ import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
 import { createScheduleEntry } from "@/app/(app)/schedule/actions";
 import {
   dateToEntryDateString,
-  isScheduleDayFull,
+  isScheduleRangeFull,
+  isValidEntryDateRange,
   type ScheduleEntry,
 } from "@/lib/schedule/types";
 import { Plus } from "lucide-react";
@@ -31,21 +33,21 @@ interface ScheduleFormDialogProps {
 export function ScheduleFormDialog({ entries, onSuccess }: ScheduleFormDialogProps) {
   const t = useT();
   const [open, setOpen] = useState<boolean>(false);
-  const [date, setDate] = useState<Date | undefined>();
+  const [range, setRange] = useState<DateRange | undefined>();
   const [entryType, setEntryType] = useState<ScheduleEntryType | "">("");
   const [description, setDescription] = useState<string>("");
   const [state, action, pending] = useActionState(createScheduleEntry, null);
 
   useActionFeedback(state, () => {
     setOpen(false);
-    setDate(undefined);
+    setRange(undefined);
     setEntryType("");
     setDescription("");
     onSuccess();
   });
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    if (!date) {
+    if (!range?.from) {
       e.preventDefault();
       toast.error(t.schedule.errorDateRequired);
       return;
@@ -56,8 +58,16 @@ export function ScheduleFormDialog({ entries, onSuccess }: ScheduleFormDialogPro
       return;
     }
 
-    const entryDate = dateToEntryDateString(date);
-    if (isScheduleDayFull(entries, entryDate)) {
+    const entryDate = dateToEntryDateString(range.from);
+    const entryEndDate = dateToEntryDateString(range.to ?? range.from);
+
+    if (!isValidEntryDateRange(entryDate, entryEndDate)) {
+      e.preventDefault();
+      toast.error(t.schedule.errorEndBeforeStart);
+      return;
+    }
+
+    if (isScheduleRangeFull(entries, entryDate, entryEndDate)) {
       e.preventDefault();
       toast.error(
         formatMessage(t.schedule.errorTooManyPerDay, {
@@ -82,8 +92,8 @@ export function ScheduleFormDialog({ entries, onSuccess }: ScheduleFormDialogPro
         </DialogHeader>
         <form action={action} className="space-y-4" onSubmit={onSubmit}>
           <ScheduleEntryForm
-            date={date}
-            onDateChange={setDate}
+            range={range}
+            onRangeChange={setRange}
             entryType={entryType}
             onEntryTypeChange={setEntryType}
             description={description}

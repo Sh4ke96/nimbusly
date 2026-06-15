@@ -18,6 +18,8 @@ function gift(partial: Partial<GiftIdea>): GiftIdea {
     recipient_member_id: null,
     recipient_name: "Ciocia",
     content: "Książka",
+    link_url: null,
+    visible_to_member_ids: [],
     created_by: "u1",
     created_at: "2026-01-01",
     updated_at: "2026-01-01",

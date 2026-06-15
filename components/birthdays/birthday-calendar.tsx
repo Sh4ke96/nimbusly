@@ -15,6 +15,7 @@ import { buildMonthGrid, getMonthName, getWeekdayLabels, shiftMonth } from "@/li
 import { birthdayDateKey, formatBirthdayLabel, type BirthdayEntry } from "@/lib/birthdays/types";
 import { getDisplayName } from "@/lib/profile";
 import type { FamilyMember, Profile } from "@/lib/profile";
+import { selectionPillClasses } from "@/lib/ui/selection-styles";
 import { cn } from "@/lib/utils";
 
 interface BirthdayCalendarProps {
@@ -176,9 +177,7 @@ export function BirthdayCalendar({
                             onClick={() => onEntrySelect?.(entry)}
                             className={cn(
                               "block w-full cursor-pointer truncate rounded-sm px-1.5 py-0.5 text-left text-[11px] font-medium transition-all duration-150",
-                              isSelected
-                                ? "bg-primary text-primary-foreground shadow-sm ring-1 ring-primary/40"
-                                : "bg-primary/10 text-primary hover:bg-primary/20 hover:ring-1 hover:ring-primary/20"
+                              selectionPillClasses(isSelected)
                             )}
                           >
                             {entry.person_name}

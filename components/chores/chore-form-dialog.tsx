@@ -12,10 +12,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { ChoreEntryForm } from "@/components/chores/chore-entry-form";
+import { isValidChoreCustomRecurrenceForm } from "@/components/chores/chore-custom-recurrence-fields";
 import {
   CHORE_RECURRENCE,
+  CHORE_RECURRENCE_DURATION,
   CHORE_STATUS,
   type ChoreRecurrence,
+  type ChoreRecurrenceDuration,
   type ChoreStatus,
 } from "@/lib/constants/chores";
 import {
@@ -40,20 +43,42 @@ export function ChoreFormDialog({ onSuccess }: ChoreFormDialogProps) {
   const members = useProfileStore((s) => s.members);
   const [open, setOpen] = useState<boolean>(false);
   const [title, setTitle] = useState<string>("");
+  const [iconEmoji, setIconEmoji] = useState<string | null>(null);
   const [notes, setNotes] = useState<string>("");
   const [status, setStatus] = useState<ChoreStatus | null>(CHORE_STATUS.PENDING);
   const [assignedTo, setAssignedTo] = useState<string | null>(null);
   const [dueDate, setDueDate] = useState<Date | undefined>();
   const [recurrence, setRecurrence] = useState<ChoreRecurrence | null>(CHORE_RECURRENCE.NONE);
+  const [recurrenceIntervalDays, setRecurrenceIntervalDays] = useState<number | null>(2);
+  const [recurrenceDuration, setRecurrenceDuration] = useState<ChoreRecurrenceDuration | null>(
+    CHORE_RECURRENCE_DURATION.MONTH
+  );
   const [state, action, pending] = useActionState(createChoreTask, null);
 
   function resetForm() {
     setTitle("");
+    setIconEmoji(null);
     setNotes("");
     setStatus(CHORE_STATUS.PENDING);
     setAssignedTo(null);
     setDueDate(undefined);
     setRecurrence(CHORE_RECURRENCE.NONE);
+    setRecurrenceIntervalDays(2);
+    setRecurrenceDuration(CHORE_RECURRENCE_DURATION.MONTH);
+  }
+
+  function handleRecurrenceChange(value: ChoreRecurrence) {
+    setRecurrence(value);
+    if (value === CHORE_RECURRENCE.NONE) {
+      setRecurrenceDuration(null);
+      return;
+    }
+    if (recurrenceDuration === null) {
+      setRecurrenceDuration(CHORE_RECURRENCE_DURATION.MONTH);
+    }
+    if (value === CHORE_RECURRENCE.CUSTOM && recurrenceIntervalDays === null) {
+      setRecurrenceIntervalDays(2);
+    }
   }
 
   useActionFeedback(
@@ -82,6 +107,24 @@ export function ChoreFormDialog({ onSuccess }: ChoreFormDialogProps) {
       toast.error(t.chores.errorRecurrenceRequired);
       return;
     }
+    if (!isValidChoreCustomRecurrenceForm(recurrence, recurrenceIntervalDays, recurrenceDuration)) {
+      e.preventDefault();
+      toast.error(
+        recurrence === CHORE_RECURRENCE.CUSTOM
+          ? t.chores.errorCustomRecurrenceRequired
+          : t.chores.errorRecurrenceDurationRequired
+      );
+      return;
+    }
+    if (
+      recurrence &&
+      recurrence !== CHORE_RECURRENCE.NONE &&
+      !dueDate
+    ) {
+      e.preventDefault();
+      toast.error(t.chores.errorRecurrenceStartDateRequired);
+      return;
+    }
     if (!isValidChoreDateString(dueDate ? dateToChoreDateString(dueDate) : null)) {
       e.preventDefault();
       toast.error(t.chores.errorInvalidDueDate);
@@ -106,6 +149,8 @@ export function ChoreFormDialog({ onSuccess }: ChoreFormDialogProps) {
             members={members}
             title={title}
             onTitleChange={setTitle}
+            iconEmoji={iconEmoji}
+            onIconEmojiChange={setIconEmoji}
             notes={notes}
             onNotesChange={setNotes}
             status={status}
@@ -115,7 +160,11 @@ export function ChoreFormDialog({ onSuccess }: ChoreFormDialogProps) {
             dueDate={dueDate}
             onDueDateChange={setDueDate}
             recurrence={recurrence}
-            onRecurrenceChange={setRecurrence}
+            onRecurrenceChange={handleRecurrenceChange}
+            recurrenceIntervalDays={recurrenceIntervalDays}
+            onRecurrenceIntervalDaysChange={setRecurrenceIntervalDays}
+            recurrenceDuration={recurrenceDuration}
+            onRecurrenceDurationChange={setRecurrenceDuration}
           />
           <Button type="submit" className="w-full" disabled={pending}>
             {pending ? t.chores.saving : t.chores.saveBtn}

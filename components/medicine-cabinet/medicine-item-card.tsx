@@ -2,10 +2,19 @@
 
 import { MEDICINE_FORM_FIELD } from "@/lib/medicine/types";
 import { format } from "date-fns";
-import { AlertTriangle, Calendar, MapPin, Package } from "lucide-react";
+import { AlertTriangle, Calendar, MapPin, Package, User } from "lucide-react";
 import { MedicineExpiryBadge } from "@/components/medicine-cabinet/medicine-expiry-badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { resolveMedicineTakenByName } from "@/components/medicine-cabinet/medicine-taken-by-picker";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardHeaderActionButton,
+  CardHeaderActions,
+  CardTitle,
+  CARD_TITLE_ROW_CLASSNAME,
+} from "@/components/ui/card";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { MEDICINE_AVAILABILITY } from "@/lib/constants/medicine";
 import type { MedicineItem } from "@/lib/medicine/types";
@@ -64,6 +73,12 @@ export function MedicineItemCard({
   const isFamily = profile?.account_mode === ACCOUNT_MODE.FAMILY && !!profile.family_id;
   const isOwner = item.created_by === userId;
   const creator = resolveCreatorName(item.created_by, userId, profile, members);
+  const takenByName = resolveMedicineTakenByName(
+    item.taken_by,
+    profile,
+    members,
+    t.medicineCabinet.takenByUnassigned
+  );
 
   const [deleteState, deleteAction, deletePending] = useActionState(deleteMedicineItem, null);
 
@@ -77,42 +92,25 @@ export function MedicineItemCard({
 
   return (
     <Card className="rounded-none py-0 shadow-sm transition-all duration-150 hover:shadow-md">
-      <CardHeader className="border-b border-border pt-4 pb-3">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0 space-y-1">
-            <CardTitle className="font-heading text-base truncate">{item.name}</CardTitle>
-            <p className="text-xs text-muted-foreground">
-              {t.medicineCabinet.formLabels[item.form_type]}
-              {item.quantity ? ` · ${item.quantity}` : ""}
-            </p>
-          </div>
-          {isOwner && (
-            <div className="flex shrink-0 gap-0.5">
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="cursor-pointer text-muted-foreground hover:text-foreground"
-                onClick={onEdit}
-                aria-label={t.medicineCabinet.editBtn}
-              >
-                <Pencil className="size-4" />
-              </Button>
-              <form action={deleteAction}>
-                <input type="hidden" name={MEDICINE_FORM_FIELD.ID} value={item.id} />
-                <Button
-                  type="submit"
-                  variant="ghost"
-                  size="icon"
-                  disabled={deletePending}
-                  className="cursor-pointer text-destructive hover:text-destructive"
-                >
-                  <Trash2 className="size-4" />
-                </Button>
-              </form>
-            </div>
-          )}
-        </div>
+      <CardHeader>
+        <CardTitle className={cn(CARD_TITLE_ROW_CLASSNAME, "truncate")}>{item.name}</CardTitle>
+        <CardDescription>
+          {t.medicineCabinet.formLabels[item.form_type]}
+          {item.quantity ? ` · ${item.quantity}` : ""}
+        </CardDescription>
+        {isOwner && (
+          <CardHeaderActions>
+            <CardHeaderActionButton onClick={onEdit} aria-label={t.medicineCabinet.editBtn}>
+              <Pencil className="size-4" />
+            </CardHeaderActionButton>
+            <form action={deleteAction} className="border-l border-border">
+              <input type="hidden" name={MEDICINE_FORM_FIELD.ID} value={item.id} />
+              <CardHeaderActionButton type="submit" destructive disabled={deletePending}>
+                <Trash2 className="size-4" />
+              </CardHeaderActionButton>
+            </form>
+          </CardHeaderActions>
+        )}
       </CardHeader>
       <CardContent className="p-4 space-y-3">
         <div className="flex flex-wrap gap-2">
@@ -131,6 +129,12 @@ export function MedicineItemCard({
         </div>
 
         <div className="space-y-1.5 text-sm text-muted-foreground">
+          {takenByName && (
+            <p className="flex items-center gap-2">
+              <User className="size-3.5 shrink-0" />
+              {t.medicineCabinet.takenByDisplay}: {takenByName}
+            </p>
+          )}
           {expiryLabel && (
             <p className="flex items-center gap-2">
               <Calendar className="size-3.5 shrink-0" />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import dynamic from "next/dynamic";
 import { ShoppingListAddItem } from "@/components/shopping/shopping-list-add-item";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
@@ -10,6 +10,25 @@ import {
   selectShoppingListItems,
   useShoppingListsStore,
 } from "@/lib/stores/shopping-lists-store";
+import { useShoppingCategoriesStore } from "@/lib/stores/shopping-categories-store";
+import { ACCOUNT_MODE } from "@/lib/constants/account";
+import { useProfileStore } from "@/lib/stores/profile-store";
+
+const ShoppingListCategorizedItems = dynamic(
+  () =>
+    import("@/components/shopping/shopping-list-categorized-items").then(
+      (m) => m.ShoppingListCategorizedItems
+    ),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="space-y-2">
+        <Skeleton className="h-16 w-full rounded-none" />
+        <Skeleton className="h-16 w-full rounded-none" />
+      </div>
+    ),
+  }
+);
 
 const ShoppingListItemsSortable = dynamic(
   () =>
@@ -37,8 +56,12 @@ export function ShoppingListItemsPanel({
   onChanged,
 }: ShoppingListItemsPanelProps) {
   const t = useT();
+  const profile = useProfileStore((s) => s.profile);
   const selectItems = useMemo(() => selectShoppingListItems(listId), [listId]);
   const items = useShoppingListsStore(selectItems);
+  const categories = useShoppingCategoriesStore((s) => s.categories);
+  const categoriesLoaded = useShoppingCategoriesStore((s) => s.loaded);
+  const fetchCategories = useShoppingCategoriesStore((s) => s.fetchCategories);
   const itemsLoading = useShoppingListsStore(
     (s) => s.itemsLoadingByListId[listId] ?? false
   );
@@ -48,6 +71,16 @@ export function ShoppingListItemsPanel({
   const fetchItems = useShoppingListsStore((s) => s.fetchItems);
 
   const itemIds = useMemo(() => items.map((item) => item.id), [items]);
+  const useCategories =
+    profile?.account_mode === ACCOUNT_MODE.FAMILY &&
+    !!profile.family_id &&
+    categories.length > 0;
+
+  useEffect(() => {
+    if (profile?.account_mode === ACCOUNT_MODE.FAMILY && profile.family_id) {
+      void fetchCategories();
+    }
+  }, [profile?.account_mode, profile?.family_id, fetchCategories]);
 
   if (itemsError) {
     return (
@@ -67,12 +100,23 @@ export function ShoppingListItemsPanel({
 
   return (
     <div className="space-y-4">
-      <ShoppingListAddItem listId={listId} onSuccess={onChanged} />
+      <ShoppingListAddItem
+        listId={listId}
+        categories={useCategories ? categories : []}
+        onSuccess={onChanged}
+      />
 
       {items.length === 0 ? (
-        <p className="text-sm text-muted-foreground text-center py-10 border border-dashed border-border">
+        <p className="text-sm text-muted-foreground text-center py-10 border border-dashed border-border bg-card shadow-sm">
           {t.shoppingLists.emptyItems}
         </p>
+      ) : useCategories && categoriesLoaded ? (
+        <ShoppingListCategorizedItems
+          listId={listId}
+          items={items}
+          categories={categories}
+          onChanged={onChanged}
+        />
       ) : (
         <ShoppingListItemsSortable
           listId={listId}

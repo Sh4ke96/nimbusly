@@ -3,6 +3,13 @@
 import { PET_FORM_FIELD } from "@/lib/pets/types";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { PetDatePicker } from "@/components/pets/pet-date-picker";
 import {
@@ -17,7 +24,7 @@ import {
 import type { Pet } from "@/lib/pets/types";
 import { isPetCareStockType } from "@/lib/pets/types";
 import { useT } from "@/lib/lang-context";
-import { cn } from "@/lib/utils";
+import { selectionPickerTileButtonClasses } from "@/lib/ui/selection-styles";
 
 interface PetCareEntryFormProps {
   pets?: Pet[];
@@ -69,24 +76,19 @@ export function PetCareEntryForm({
         <div className="space-y-1.5">
           <Label htmlFor="pet-care-pet">{t.pets.petLabel}</Label>
           <p className="text-xs text-muted-foreground">{t.pets.petHint}</p>
-          <select
-            id="pet-care-pet"
-            name={PET_FORM_FIELD.PET_ID}
-            value={petId}
-            onChange={(e) => onPetIdChange(e.target.value)}
-            required
-            className={cn(
-              "flex h-9 w-full rounded-none border border-input bg-background px-3 py-1 text-sm shadow-xs",
-              "focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] outline-none"
-            )}
-          >
-            <option value="">{t.pets.petPlaceholder}</option>
-            {pets.map((pet) => (
-              <option key={pet.id} value={pet.id}>
-                {pet.name}
-              </option>
-            ))}
-          </select>
+          <Select value={petId} onValueChange={onPetIdChange} required>
+            <SelectTrigger id="pet-care-pet" className="w-full rounded-none bg-background">
+              <SelectValue placeholder={t.pets.petPlaceholder} />
+            </SelectTrigger>
+            <SelectContent>
+              {pets.map((pet) => (
+                <SelectItem key={pet.id} value={pet.id}>
+                  {pet.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <input type="hidden" name={PET_FORM_FIELD.PET_ID} value={petId} />
         </div>
       )}
 
@@ -116,12 +118,7 @@ export function PetCareEntryForm({
               key={type}
               type="button"
               onClick={() => onCareTypeChange(type)}
-              className={cn(
-                "cursor-pointer rounded-none border px-2 py-2 text-xs font-medium transition-colors",
-                careType === type
-                  ? "border-primary bg-primary/10 text-primary"
-                  : "border-border bg-background hover:bg-muted/50"
-              )}
+              className={selectionPickerTileButtonClasses(careType === type)}
             >
               {t.pets.careTypeLabels[type]}
             </button>
@@ -159,12 +156,7 @@ export function PetCareEntryForm({
                   key={status}
                   type="button"
                   onClick={() => onStockStatusChange(status)}
-                  className={cn(
-                    "cursor-pointer rounded-none border px-2 py-2 text-xs font-medium transition-colors",
-                    stockStatus === status
-                      ? "border-primary bg-primary/10 text-primary"
-                      : "border-border bg-background hover:bg-muted/50"
-                  )}
+                  className={selectionPickerTileButtonClasses(stockStatus === status)}
                 >
                   {t.pets.stockStatusLabels[status]}
                 </button>

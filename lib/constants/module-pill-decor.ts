@@ -20,4 +20,5 @@ export const MODULE_PILL_POSITIONS = [
   { top: "56%", left: "60%", duration: "4.5s", delay: "0.9s" },
   { top: "70%", left: "4%", duration: "3.8s", delay: "0.3s" },
   { top: "74%", left: "38%", duration: "4.3s", delay: "1s" },
+  { top: "68%", left: "72%", duration: "4s", delay: "0.7s" },
 ] as const;

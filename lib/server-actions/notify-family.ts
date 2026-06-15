@@ -15,6 +15,7 @@ export async function notifyFamilyMembers(
     familyId: string;
     body: string;
     payload: Record<string, unknown>;
+    onlyRecipientIds?: string[];
   }
 ) {
   const t = await getServerT();
@@ -23,9 +24,14 @@ export async function notifyFamilyMembers(
     .select("id")
     .eq("family_id", params.familyId);
 
+  const allowed = params.onlyRecipientIds
+    ? new Set(params.onlyRecipientIds)
+    : null;
+
   const recipientIds = (members ?? [])
     .map((m) => m.id)
-    .filter((id) => id !== params.actorId);
+    .filter((id) => id !== params.actorId)
+    .filter((id) => (allowed ? allowed.has(id) : true));
 
   if (recipientIds.length === 0) return;
 

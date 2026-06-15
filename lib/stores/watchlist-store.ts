@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { createClient } from "@/lib/supabase/client";
+import { watchlistItemFromRow } from "@/lib/supabase/app-rows";
 import type { WatchlistItem } from "@/lib/watchlist/types";
 import { dedupeAsync } from "@/lib/stores/dedupe-async";
 import { listFetchInitial, runListFetch } from "@/lib/stores/list-fetch";
@@ -34,7 +35,7 @@ export const useWatchlistStore = create<WatchlistStore>((set, get) => ({
             .select("*")
             .order("updated_at", { ascending: false });
         },
-        apply: (data) => set({ items: (data ?? []) as WatchlistItem[] }),
+        apply: (data) => set({ items: (data ?? []).map(watchlistItemFromRow) }),
       });
     });
   },

@@ -21,6 +21,7 @@ import {
   selectShoppingListItems,
   useShoppingListsStore,
 } from "@/lib/stores/shopping-lists-store";
+import { ShoppingListItemQuantity } from "@/components/shopping/shopping-list-item-quantity";
 import { cn } from "@/lib/utils";
 
 interface ShoppingListItemRowProps {
@@ -109,12 +110,14 @@ export function ShoppingListItemRow({
 
       <p
         className={cn(
-          "flex-1 text-sm leading-snug",
+          "flex-1 min-w-0 text-sm leading-snug",
           item.checked && "text-muted-foreground line-through"
         )}
       >
         {item.content}
       </p>
+
+      <ShoppingListItemQuantity item={item} listId={listId} />
 
       <form action={deleteAction}>
         <input type="hidden" name={SHOPPING_FORM_FIELD.ID} value={item.id} />

@@ -10,6 +10,7 @@ import {
   Gift,
   ListChecks,
   PawPrint,
+  StickyNote,
   Scale,
   TrendingDown,
   TrendingUp,
@@ -41,6 +42,7 @@ import { formatMessage } from "@/lib/i18n/format";
 import type { Dict } from "@/lib/i18n/types";
 import { getDisplayName, type Family, type FamilyMember, type Profile } from "@/lib/profile";
 import type { GiftIdea } from "@/lib/gifts/types";
+import type { Note } from "@/lib/notes/types";
 import type { MedicineItem } from "@/lib/medicine/types";
 import type { ShoppingList } from "@/lib/shopping-lists/types";
 import type { WatchlistItem } from "@/lib/watchlist/types";
@@ -102,6 +104,8 @@ export interface OverviewCardBodiesProps {
   activeChoreCount: number;
   overdueChoreCount: number;
   previewChoreTasks: ChoreTask[];
+  notes: Note[];
+  previewNotes: Note[];
   upcomingBirthdays: BirthdayEntry[];
   monthScheduleEntries: ScheduleEntry[];
   scheduleByType: [string, number][];
@@ -140,6 +144,8 @@ export function OverviewCardBody({
   activeChoreCount,
   overdueChoreCount,
   previewChoreTasks,
+  notes,
+  previewNotes,
   upcomingBirthdays,
   monthScheduleEntries,
   scheduleByType,
@@ -149,7 +155,15 @@ export function OverviewCardBody({
       <div className="flex flex-col items-center gap-2 py-6 text-center">
         <p className="text-xs text-muted-foreground max-w-xs">{t.module.fetchError}</p>
         {onCardRetry && (
-          <Button type="button" variant="outline" size="sm" onClick={onCardRetry}>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={(event) => {
+              event.stopPropagation();
+              onCardRetry();
+            }}
+          >
             {t.module.retry}
           </Button>
         )}
@@ -484,6 +498,31 @@ export function OverviewCardBody({
               ))}
             </ul>
           )}
+        </div>
+      );
+
+    case DASHBOARD_OVERVIEW_CARD.NOTES:
+      return notes.length === 0 ? (
+        <EmptyHint icon={StickyNote} text={t.dashboard.notesEmpty} />
+      ) : (
+        <div className="space-y-3">
+          <BigStat
+            value={notes.length}
+            label={formatMessage(t.dashboard.notesCount, {
+              count: String(notes.length),
+            })}
+            accent="amber"
+          />
+          <ul className="space-y-1.5">
+            {previewNotes.map((note) => (
+              <li
+                key={note.id}
+                className="text-sm border border-border bg-muted/20 px-2.5 py-2 line-clamp-2"
+              >
+                {note.title}
+              </li>
+            ))}
+          </ul>
         </div>
       );
 

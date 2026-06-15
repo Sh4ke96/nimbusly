@@ -11,7 +11,9 @@ export function SettingsTabHeader({ icon: Icon, title }: SettingsTabHeaderProps)
       <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-none bg-primary/10 text-primary">
         <Icon className="size-5" />
       </span>
-      <h2 className="font-heading text-xl font-semibold tracking-tight">{title}</h2>
+      <h2 className="font-heading text-xl font-semibold tracking-tight text-foreground">
+        {title}
+      </h2>
     </div>
   );
 }

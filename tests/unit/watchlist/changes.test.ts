@@ -6,11 +6,20 @@ import {
 } from "@/lib/constants/watchlist";
 import { buildWatchlistChangeSummary } from "@/lib/watchlist/changes";
 
+const base = {
+  title: "Dune",
+  media_type: WATCHLIST_MEDIA_TYPE.MOVIE,
+  status: WATCHLIST_STATUS.TO_WATCH,
+  notes: "",
+  streaming_platforms: [],
+};
+
 const labels = {
   changeSummaryTitle: "title: {from} → {to}",
   changeSummaryMediaType: "type: {from} → {to}",
   changeSummaryStatus: "status: {from} → {to}",
   changeSummaryNotes: "notes changed",
+  changeSummaryStreamingPlatforms: "platforms: {from} → {to}",
   changeSummaryEmpty: "empty",
   changeSummarySeparator: "; ",
   mediaTypeLabels: {
@@ -22,13 +31,17 @@ const labels = {
     watching: "Watching",
     watched: "Watched",
   },
-};
-
-const base = {
-  title: "Dune",
-  media_type: WATCHLIST_MEDIA_TYPE.MOVIE,
-  status: WATCHLIST_STATUS.TO_WATCH,
-  notes: "",
+  streamingPlatformLabels: {
+    netflix: "Netflix",
+    max: "Max",
+    disney_plus: "Disney+",
+    prime_video: "Prime Video",
+    apple_tv: "Apple TV+",
+    canal_plus: "Canal+",
+    player: "Player",
+    polsat_box: "Polsat Box Go",
+  },
+  streamingPlatformListSeparator: ", ",
 };
 
 describe("buildWatchlistChangeSummary", () => {

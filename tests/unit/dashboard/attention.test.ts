@@ -13,6 +13,9 @@ const labels = {
   birthdaySoon: (name: string, when: string) => `bday:${name}:${when}`,
   birthdayToday: "today",
   birthdayInDays: (count: string) => `in ${count} days`,
+  budgetPaymentDue: (description: string) => `budget:${description}`,
+  scheduleEnding: (description: string) => `schedule:${description}`,
+  noteUrgent: (title: string) => `note:${title}`,
 };
 
 describe("buildAttentionItems", () => {
@@ -24,10 +27,16 @@ describe("buildAttentionItems", () => {
           family_id: null,
           title: "Śmieci",
           notes: "",
+          icon_emoji: null,
+          completed_dates: [],
           status: CHORE_STATUS.PENDING,
           assigned_to: null,
           due_date: "2026-06-01",
           recurrence: "none",
+          recurrence_interval_days: null,
+          recurrence_end_date: null,
+          recurrence_duration: null,
+          recurrence_start_date: null,
           completed_at: null,
           created_by: "u1",
           created_at: "2026-01-01",
@@ -59,6 +68,55 @@ describe("buildAttentionItems", () => {
 
     assert.ok(items.some((item) => item.href === APP_MODULE_ROUTES[APP_MODULE.CHORES]));
     assert.ok(items.some((item) => item.href === APP_MODULE_ROUTES[APP_MODULE.MEDICINE_CABINET]));
+  });
+
+  it("sorts pinned notes before other attention items", () => {
+    const items = buildAttentionItems({
+      choreTasks: [
+        {
+          id: "1",
+          family_id: null,
+          title: "Śmieci",
+          notes: "",
+          icon_emoji: null,
+          completed_dates: [],
+          status: CHORE_STATUS.PENDING,
+          assigned_to: null,
+          due_date: "2026-06-01",
+          recurrence: "none",
+          recurrence_interval_days: null,
+          recurrence_end_date: null,
+          recurrence_duration: null,
+          recurrence_start_date: null,
+          completed_at: null,
+          created_by: "u1",
+          created_at: "2026-01-01",
+          updated_at: "2026-01-01",
+        },
+      ],
+      medicineItems: [],
+      careItems: [],
+      pets: [],
+      birthdays: [],
+      notes: [
+        {
+          id: "n1",
+          family_id: null,
+          category_id: null,
+          title: "! Hasło WiFi",
+          content: "",
+          visible_to_member_ids: [],
+          created_by: "u1",
+          created_at: "2026-01-01",
+          updated_at: "2026-01-01",
+        },
+      ],
+      labels,
+      limit: 10,
+    });
+
+    assert.equal(items[0]?.kind, "note_urgent");
+    assert.ok(items.some((item) => item.kind === "chore_overdue"));
   });
 
   it("includes pet care due soon", () => {

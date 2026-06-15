@@ -2,7 +2,7 @@
 
 import { Fragment, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { KeyRound, Palette, ShieldCheck, User, Users, type LucideIcon } from "lucide-react";
+import { KeyRound, ListChecks, Palette, ShieldCheck, User, Users, type LucideIcon } from "lucide-react";
 import { AppHeader } from "@/components/app/app-header";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,11 +13,13 @@ import { AccountTypeForm } from "@/components/profile/settings/account-type-form
 import { JoinFamilyForm } from "@/components/profile/settings/join-family-form";
 import { FamilySection } from "@/components/profile/settings/family-section";
 import { FamilyPermissionsSection } from "@/components/profile/settings/family-permissions-section";
+import { ShoppingCategoriesSection } from "@/components/profile/settings/shopping-categories-section";
 import { PasswordSection } from "@/components/profile/settings/password-section";
 import { SettingsTabHeader } from "@/components/profile/settings/settings-tab-header";
 import { SettingsSkeleton } from "@/components/profile/settings/settings-skeleton";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useT } from "@/lib/lang-context";
+import { isFamilyFounder } from "@/lib/profile/family-roles";
 import { cn } from "@/lib/utils";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import {
@@ -38,10 +40,13 @@ const SIDEBAR_TRIGGER_CLASS = cn(
 export default function ProfileSettingsPage() {
   const t = useT();
   const searchParams = useSearchParams();
+  const user = useProfileStore((s) => s.user);
+  const family = useProfileStore((s) => s.family);
   const loaded = useProfileStore((s) => s.loaded);
   const profile = useProfileStore((s) => s.profile);
 
   const showFamily = profile?.account_mode === ACCOUNT_MODE.FAMILY && !!profile.family_id;
+  const showShoppingCategories = showFamily && isFamilyFounder(family, user?.id);
   const showJoinFamily = profile?.account_mode === ACCOUNT_MODE.SOLO && !profile.family_id;
 
   const urlTab = parseSettingsTab(searchParams.get("tab"));
@@ -56,6 +61,15 @@ export default function ProfileSettingsPage() {
           { value: SETTINGS_TAB.PERMISSIONS, icon: ShieldCheck, label: t.account.menuPermissions },
         ]
       : []),
+    ...(showShoppingCategories
+      ? [
+          {
+            value: SETTINGS_TAB.SHOPPING_CATEGORIES,
+            icon: ListChecks,
+            label: t.account.menuShoppingCategories,
+          },
+        ]
+      : []),
     { value: SETTINGS_TAB.PASSWORD, icon: KeyRound, label: t.account.menuPassword },
   ];
 
@@ -68,13 +82,23 @@ export default function ProfileSettingsPage() {
   useEffect(() => {
     if (!loaded) return;
     if (
-      (tab === SETTINGS_TAB.FAMILY || tab === SETTINGS_TAB.PERMISSIONS) &&
+      (tab === SETTINGS_TAB.FAMILY ||
+        tab === SETTINGS_TAB.PERMISSIONS ||
+        tab === SETTINGS_TAB.SHOPPING_CATEGORIES) &&
       !showFamily
     ) {
       setTab(SETTINGS_TAB.PROFILE);
       window.history.replaceState(window.history.state, "", settingsTabHref(SETTINGS_TAB.PROFILE));
     }
   }, [tab, showFamily, loaded]);
+
+  useEffect(() => {
+    if (!loaded) return;
+    if (tab === SETTINGS_TAB.SHOPPING_CATEGORIES && !showShoppingCategories) {
+      setTab(SETTINGS_TAB.PROFILE);
+      window.history.replaceState(window.history.state, "", settingsTabHref(SETTINGS_TAB.PROFILE));
+    }
+  }, [tab, showShoppingCategories, loaded]);
 
   useEffect(() => {
     function onPopState() {
@@ -165,6 +189,14 @@ export default function ProfileSettingsPage() {
                       <TabsContent value={SETTINGS_TAB.PERMISSIONS} className="mt-0 outline-none">
                         <FamilyPermissionsSection />
                       </TabsContent>
+                      {showShoppingCategories ? (
+                        <TabsContent
+                          value={SETTINGS_TAB.SHOPPING_CATEGORIES}
+                          className="mt-0 outline-none"
+                        >
+                          <ShoppingCategoriesSection />
+                        </TabsContent>
+                      ) : null}
                     </>
                   )}
 

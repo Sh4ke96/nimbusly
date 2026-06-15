@@ -42,7 +42,7 @@ function RestaurantEditForm({
   onClose: () => void;
 }) {
   const t = useT();
-  const [name, setName] = useState(() => place.name);
+  const [name, setName] = useState<string>(() => place.name);
   const [venueType, setVenueType] = useState<RestaurantPlace["venue_type"] | null>(
     () => place.venue_type
   );
@@ -50,9 +50,9 @@ function RestaurantEditForm({
     () => place.visit_status
   );
   const [rating, setRating] = useState<number | null>(() => place.rating);
-  const [comment, setComment] = useState(() => place.comment);
-  const [notes, setNotes] = useState(() => place.notes);
-  const [address, setAddress] = useState(() => place.address);
+  const [comment, setComment] = useState<string>(() => place.comment);
+  const [notes, setNotes] = useState<string>(() => place.notes);
+  const [address, setAddress] = useState<string>(() => place.address);
   const [visitedAt, setVisitedAt] = useState<Date | undefined>(() =>
     parseRestaurantDateString(place.visited_at)
   );

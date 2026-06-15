@@ -21,6 +21,7 @@ import {
   isValidMedicineName,
 } from "@/lib/medicine/types";
 import { useT } from "@/lib/lang-context";
+import { useProfileStore } from "@/lib/stores/profile-store";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
 import { createMedicineItem } from "@/app/(app)/medicine-cabinet/actions";
 import { Plus } from "lucide-react";
@@ -32,6 +33,8 @@ interface MedicineFormDialogProps {
 
 export function MedicineFormDialog({ onSuccess }: MedicineFormDialogProps) {
   const t = useT();
+  const profile = useProfileStore((s) => s.profile);
+  const members = useProfileStore((s) => s.members);
   const [open, setOpen] = useState<boolean>(false);
   const [name, setName] = useState<string>("");
   const [formType, setFormType] = useState<MedicineFormType | null>(null);
@@ -42,6 +45,7 @@ export function MedicineFormDialog({ onSuccess }: MedicineFormDialogProps) {
   );
   const [location, setLocation] = useState<string>("");
   const [notes, setNotes] = useState<string>("");
+  const [takenBy, setTakenBy] = useState<string | null>(null);
   const [state, action, pending] = useActionState(createMedicineItem, null);
 
   useActionFeedback(state, () => {
@@ -53,6 +57,7 @@ export function MedicineFormDialog({ onSuccess }: MedicineFormDialogProps) {
     setAvailability(MEDICINE_AVAILABILITY.IN_STOCK);
     setLocation("");
     setNotes("");
+    setTakenBy(null);
     onSuccess();
   }, pending);
 
@@ -87,6 +92,8 @@ export function MedicineFormDialog({ onSuccess }: MedicineFormDialogProps) {
         </DialogHeader>
         <form action={action} className="space-y-4" onSubmit={onSubmit}>
           <MedicineEntryForm
+            profile={profile}
+            members={members}
             name={name}
             onNameChange={setName}
             formType={formType}
@@ -101,6 +108,8 @@ export function MedicineFormDialog({ onSuccess }: MedicineFormDialogProps) {
             onLocationChange={setLocation}
             notes={notes}
             onNotesChange={setNotes}
+            takenBy={takenBy}
+            onTakenByChange={setTakenBy}
           />
           <Button type="submit" className="w-full" disabled={pending}>
             {pending ? t.medicineCabinet.saving : t.medicineCabinet.saveBtn}

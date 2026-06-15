@@ -16,12 +16,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { BudgetDatePicker } from "@/components/budget/budget-date-picker";
+import { BudgetPaymentReminderField } from "@/components/budget/budget-payment-reminder-field";
+import { BudgetRecurrenceFields } from "@/components/budget/budget-recurrence-fields";
 import {
   BUDGET_EXPENSE_CATEGORIES,
   BUDGET_EXPENSE_DESCRIPTION_MAX_LENGTH,
+  BUDGET_RECURRENCE,
   type BudgetExpenseCategory,
+  type BudgetRecurrence,
 } from "@/lib/constants/budget";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
+import { selectionPickerTileButtonClasses } from "@/lib/ui/selection-styles";
 import { useT } from "@/lib/lang-context";
 import { cn } from "@/lib/utils";
 
@@ -37,11 +42,14 @@ export function BudgetExpenseFormDialog({
   triggerClassName,
 }: BudgetExpenseFormDialogProps) {
   const t = useT();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState<boolean>(false);
   const [category, setCategory] = useState<BudgetExpenseCategory>(
     BUDGET_EXPENSE_CATEGORIES[0]
   );
   const [date, setDate] = useState<Date | undefined>(() => new Date());
+  const [recurrence, setRecurrence] = useState<BudgetRecurrence>(BUDGET_RECURRENCE.NONE);
+  const [recurrenceEndDate, setRecurrenceEndDate] = useState<Date | undefined>();
+  const [paymentReminderEnabled, setPaymentReminderEnabled] = useState<boolean>(false);
   const [state, action, pending] = useActionState(addBudgetExpense, null);
 
   useActionFeedback(state, () => {
@@ -54,6 +62,9 @@ export function BudgetExpenseFormDialog({
     if (next) {
       setDate(new Date());
       setCategory(BUDGET_EXPENSE_CATEGORIES[0]);
+      setRecurrence(BUDGET_RECURRENCE.NONE);
+      setRecurrenceEndDate(undefined);
+      setPaymentReminderEnabled(false);
     }
   }
 
@@ -85,12 +96,7 @@ export function BudgetExpenseFormDialog({
                   key={key}
                   type="button"
                   onClick={() => setCategory(key)}
-                  className={cn(
-                    "cursor-pointer rounded-none border border-border px-3 py-2 text-left text-sm transition-colors",
-                    category === key
-                      ? "border-primary bg-primary/10"
-                      : "bg-background hover:bg-muted/60"
-                  )}
+                  className={selectionPickerTileButtonClasses(category === key, "px-3 py-2 text-sm")}
                 >
                   {t.budget.categoryLabels[key]}
                 </button>
@@ -124,6 +130,18 @@ export function BudgetExpenseFormDialog({
               className="rounded-none min-h-20"
             />
           </div>
+
+          <BudgetRecurrenceFields
+            recurrence={recurrence}
+            onRecurrenceChange={setRecurrence}
+            recurrenceEndDate={recurrenceEndDate}
+            onRecurrenceEndDateChange={setRecurrenceEndDate}
+          />
+
+          <BudgetPaymentReminderField
+            enabled={paymentReminderEnabled}
+            onEnabledChange={setPaymentReminderEnabled}
+          />
 
           <Button type="submit" disabled={pending} className="w-full cursor-pointer">
             {pending ? t.budget.saving : t.budget.saveExpenseBtn}

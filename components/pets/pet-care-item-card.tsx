@@ -5,8 +5,16 @@ import { format } from "date-fns";
 import { useActionState } from "react";
 import { AlertTriangle, Calendar, Package, PawPrint, Pencil, Trash2 } from "lucide-react";
 import { PetDueBadge } from "@/components/pets/pet-due-badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardHeaderActionButton,
+  CardHeaderActions,
+  CardTitle,
+  CARD_TITLE_ROW_CLASSNAME,
+} from "@/components/ui/card";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { PET_STOCK_STATUS } from "@/lib/constants/pets";
 import type { PetCareItem } from "@/lib/pets/types";
@@ -88,50 +96,33 @@ export function PetCareItemCard({
 
   return (
     <Card className="rounded-none py-0 shadow-sm transition-all duration-150 hover:shadow-md">
-      <CardHeader className="border-b border-border pt-4 pb-3">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0 space-y-1">
-            <CardTitle className="font-heading text-base truncate">{item.name}</CardTitle>
-            <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
-              <PawPrint className="size-3 shrink-0" />
-              <span className="truncate">{petName}</span>
+      <CardHeader>
+        <CardTitle className={cn(CARD_TITLE_ROW_CLASSNAME, "truncate")}>{item.name}</CardTitle>
+        <CardDescription className="flex items-center gap-1.5 text-xs">
+          <PawPrint className="size-3 shrink-0" />
+          <span className="truncate">{petName}</span>
+          <span>·</span>
+          <span>{t.pets.careTypeLabels[item.care_type]}</span>
+          {item.quantity ? (
+            <>
               <span>·</span>
-              <span>{t.pets.careTypeLabels[item.care_type]}</span>
-              {item.quantity ? (
-                <>
-                  <span>·</span>
-                  <span>{item.quantity}</span>
-                </>
-              ) : null}
-            </p>
-          </div>
-          {isOwner && (
-            <div className="flex shrink-0 gap-0.5">
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="cursor-pointer text-muted-foreground hover:text-foreground"
-                onClick={onEdit}
-                aria-label={t.pets.editBtn}
-              >
-                <Pencil className="size-4" />
-              </Button>
-              <form action={deleteAction}>
-                <input type="hidden" name={PET_FORM_FIELD.ID} value={item.id} />
-                <Button
-                  type="submit"
-                  variant="ghost"
-                  size="icon"
-                  disabled={deletePending}
-                  className="cursor-pointer text-destructive hover:text-destructive"
-                >
-                  <Trash2 className="size-4" />
-                </Button>
-              </form>
-            </div>
-          )}
-        </div>
+              <span>{item.quantity}</span>
+            </>
+          ) : null}
+        </CardDescription>
+        {isOwner && (
+          <CardHeaderActions>
+            <CardHeaderActionButton onClick={onEdit} aria-label={t.pets.editBtn}>
+              <Pencil className="size-4" />
+            </CardHeaderActionButton>
+            <form action={deleteAction} className="border-l border-border">
+              <input type="hidden" name={PET_FORM_FIELD.ID} value={item.id} />
+              <CardHeaderActionButton type="submit" destructive disabled={deletePending}>
+                <Trash2 className="size-4" />
+              </CardHeaderActionButton>
+            </form>
+          </CardHeaderActions>
+        )}
       </CardHeader>
       <CardContent className="p-4 space-y-3">
         <div className="flex flex-wrap gap-2">

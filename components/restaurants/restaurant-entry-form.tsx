@@ -14,8 +14,8 @@ import {
   type RestaurantVenueType,
   type RestaurantVisitStatus,
 } from "@/lib/constants/restaurants";
+import { selectionPickerTileButtonClasses } from "@/lib/ui/selection-styles";
 import { useT } from "@/lib/lang-context";
-import { cn } from "@/lib/utils";
 
 interface RestaurantEntryFormProps {
   name: string;
@@ -82,12 +82,7 @@ export function RestaurantEntryForm({
               key={type}
               type="button"
               onClick={() => onVenueTypeChange(type)}
-              className={cn(
-                "cursor-pointer rounded-none border px-2 py-2 text-xs font-medium transition-colors",
-                venueType === type
-                  ? "border-primary bg-primary/10 text-primary"
-                  : "border-border bg-background hover:bg-muted/50"
-              )}
+              className={selectionPickerTileButtonClasses(venueType === type, "px-2 py-2 text-xs")}
             >
               {t.restaurants.venueTypeLabels[type]}
             </button>
@@ -105,12 +100,7 @@ export function RestaurantEntryForm({
               key={status}
               type="button"
               onClick={() => onVisitStatusChange(status)}
-              className={cn(
-                "cursor-pointer rounded-none border px-2 py-2 text-xs font-medium transition-colors",
-                visitStatus === status
-                  ? "border-primary bg-primary/10 text-primary"
-                  : "border-border bg-background hover:bg-muted/50"
-              )}
+              className={selectionPickerTileButtonClasses(visitStatus === status, "px-2 py-2 text-xs")}
             >
               {t.restaurants.visitStatusLabels[status]}
             </button>

@@ -6,8 +6,10 @@ import {
   type WatchlistMediaType,
   type WatchlistStatus,
 } from "@/lib/constants/watchlist";
+import type { StreamingPlatform } from "@/lib/constants/watchlist-streaming";
 import { COMMON_FORM_FIELD } from "@/lib/form/common-fields";
 import { getFormString, getFormTrimmedString } from "@/lib/form/values";
+import { parseStreamingPlatformsJson } from "@/lib/watchlist/streaming-platforms";
 
 export interface WatchlistItem {
   id: string;
@@ -16,6 +18,7 @@ export interface WatchlistItem {
   media_type: WatchlistMediaType;
   status: WatchlistStatus;
   notes: string;
+  streaming_platforms: StreamingPlatform[];
   created_by: string;
   created_at: string;
   updated_at: string;
@@ -48,6 +51,7 @@ export const WATCHLIST_FORM_FIELD = {
   MEDIA_TYPE: "mediaType",
   STATUS: "status",
   NOTES: "notes",
+  STREAMING_PLATFORMS: "streamingPlatforms",
 } as const;
 
 export function parseWatchlistIdFromForm(formData: FormData): string {
@@ -69,16 +73,23 @@ export function parseWatchlistItemFromForm(formData: FormData): {
   mediaType: WatchlistMediaType | null;
   status: WatchlistStatus | null;
   notes: string;
+  streamingPlatforms: StreamingPlatform[] | null;
 } {
   const title = normalizeWatchlistTitle(getFormString(formData, WATCHLIST_FORM_FIELD.TITLE));
   const mediaTypeRaw = getFormTrimmedString(formData, WATCHLIST_FORM_FIELD.MEDIA_TYPE);
   const statusRaw = getFormTrimmedString(formData, WATCHLIST_FORM_FIELD.STATUS);
   const notes = getFormTrimmedString(formData, WATCHLIST_FORM_FIELD.NOTES);
+  const streamingPlatformsRaw = getFormString(
+    formData,
+    WATCHLIST_FORM_FIELD.STREAMING_PLATFORMS
+  );
+  const streamingPlatforms = parseStreamingPlatformsJson(streamingPlatformsRaw);
 
   return {
     title,
     mediaType: isValidWatchlistMediaType(mediaTypeRaw) ? mediaTypeRaw : null,
     status: isValidWatchlistStatus(statusRaw) ? statusRaw : null,
     notes,
+    streamingPlatforms,
   };
 }

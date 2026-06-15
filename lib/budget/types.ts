@@ -4,9 +4,11 @@ import {
   BUDGET_NAME_MAX_LENGTH,
   BUDGET_EXPENSE_DESCRIPTION_MAX_LENGTH,
   BUDGET_ENTRY_TYPE,
+  BUDGET_RECURRENCE,
   type BudgetEntryType,
   type BudgetExpenseCategory,
   type BudgetIncomeCategory,
+  type BudgetRecurrence,
 } from "@/lib/constants/budget";
 import { COMMON_FORM_FIELD } from "@/lib/form/common-fields";
 import {
@@ -19,6 +21,7 @@ export interface Budget {
   id: string;
   family_id: string | null;
   name: string;
+  is_hidden: boolean;
   created_by: string;
   created_at: string;
   updated_at: string;
@@ -37,6 +40,11 @@ export interface BudgetExpense {
   amount: number;
   description: string;
   expense_date: string;
+  recurrence: BudgetRecurrence;
+  recurrence_interval_days: number | null;
+  recurrence_end_date: string | null;
+  payment_reminder_enabled: boolean;
+  reminder_sent_keys: string[];
   created_by: string;
   created_at: string;
   updated_at: string;
@@ -112,6 +120,10 @@ export const BUDGET_FORM_FIELD = {
   DESCRIPTION: "description",
   EXPENSE_DATE: "expenseDate",
   WATCH: "watch",
+  IS_HIDDEN: "isHidden",
+  RECURRENCE: "recurrence",
+  RECURRENCE_END_DATE: "recurrenceEndDate",
+  PAYMENT_REMINDER_ENABLED: "paymentReminderEnabled",
 } as const;
 
 export function parseBudgetMemberIdsFromForm(formData: FormData): string[] {
@@ -138,6 +150,25 @@ export function parseBudgetWatchFromForm(formData: FormData): {
   return {
     budgetId: getFormTrimmedString(formData, BUDGET_FORM_FIELD.BUDGET_ID),
     watch: getFormBooleanTrue(formData, BUDGET_FORM_FIELD.WATCH),
+  };
+}
+
+export function parseBudgetHiddenFromForm(formData: FormData): boolean {
+  return getFormBooleanTrue(formData, BUDGET_FORM_FIELD.IS_HIDDEN);
+}
+
+export function parseBudgetRecurrenceFromForm(formData: FormData): {
+  recurrence: string;
+  recurrenceEndDate: string;
+  paymentReminderEnabled: boolean;
+} {
+  return {
+    recurrence: getFormTrimmedString(formData, BUDGET_FORM_FIELD.RECURRENCE) || BUDGET_RECURRENCE.NONE,
+    recurrenceEndDate: getFormTrimmedString(formData, BUDGET_FORM_FIELD.RECURRENCE_END_DATE),
+    paymentReminderEnabled: getFormBooleanTrue(
+      formData,
+      BUDGET_FORM_FIELD.PAYMENT_REMINDER_ENABLED
+    ),
   };
 }
 

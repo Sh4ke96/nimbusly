@@ -1,18 +1,29 @@
 "use client";
 
 import { GIFT_FORM_FIELD } from "@/lib/gifts/types";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MemberAvatar } from "@/components/member-avatar";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardHeaderActionButton,
+  CardHeaderActions,
+  CardTitle,
+  CARD_TITLE_ROW_CLASSNAME,
+} from "@/components/ui/card";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { GIFT_RECIPIENT_TYPE } from "@/lib/constants/gifts";
 import type { GiftIdea } from "@/lib/gifts/types";
+import { formatGiftLinkLabel } from "@/lib/gifts/url";
+import { isGiftVisibleToAllMembers } from "@/lib/gifts/visibility";
 import { resolveGiftRecipientLabel } from "@/lib/gifts/recipients";
 import { getDisplayName, type FamilyMember, type Profile } from "@/lib/profile";
 import { useT } from "@/lib/lang-context";
+import { selectionCardClasses } from "@/lib/ui/selection-styles";
 import { cn } from "@/lib/utils";
 import { deleteGiftIdea } from "@/app/(app)/gifts/actions";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, ExternalLink } from "lucide-react";
 import { useActionState } from "react";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
 
@@ -57,6 +68,10 @@ export function GiftNoteCard({
   const member = idea.recipient_member_id
     ? members.find((m) => m.id === idea.recipient_member_id)
     : null;
+  const visibleMemberNames = idea.visible_to_member_ids
+    .map((id) => members.find((m) => m.id === id))
+    .filter((entry): entry is FamilyMember => !!entry)
+    .map((entry) => getDisplayName(entry));
 
   const [deleteState, deleteAction, deletePending] = useActionState(deleteGiftIdea, null);
 
@@ -68,7 +83,7 @@ export function GiftNoteCard({
     <Card
       className={cn(
         "rounded-none py-0 shadow-sm transition-all duration-150",
-        selected && "ring-2 ring-primary/30 border-primary/40",
+        selectionCardClasses(selected),
         onSelect && "cursor-pointer hover:shadow-md"
       )}
       onClick={onSelect}
@@ -85,63 +100,59 @@ export function GiftNoteCard({
       role={onSelect ? "button" : undefined}
       tabIndex={onSelect ? 0 : undefined}
     >
-      <CardHeader className="border-b border-border pt-4 pb-3">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex min-w-0 items-center gap-2">
-            {member ? (
-              <MemberAvatar
-                name={recipientLabel}
-                color={member.avatar_color}
-                size="sm"
-              />
-            ) : (
-              <span className="inline-flex size-7 shrink-0 items-center justify-center rounded-none bg-primary/10 text-primary text-xs font-bold">
-                {recipientLabel.charAt(0).toUpperCase()}
-              </span>
-            )}
-            <div className="min-w-0">
-              <CardTitle className="font-heading text-base truncate">
-                {recipientLabel}
-              </CardTitle>
-              {idea.recipient_type === GIFT_RECIPIENT_TYPE.CUSTOM && isFamily && (
-                <p className="text-[11px] text-muted-foreground">
-                  {t.gifts.recipientOutsideFamily}
-                </p>
-              )}
-            </div>
-          </div>
-          {isOwner && (
-            <div className="flex shrink-0 gap-0.5" onClick={(e) => e.stopPropagation()}>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="cursor-pointer text-muted-foreground hover:text-foreground"
-                onClick={onEdit}
-                aria-label={t.gifts.editBtn}
-              >
-                <Pencil className="size-4" />
-              </Button>
-              <form action={deleteAction}>
-                <input type="hidden" name={GIFT_FORM_FIELD.ID} value={idea.id} />
-                <Button
-                  type="submit"
-                  variant="ghost"
-                  size="icon"
-                  disabled={deletePending}
-                  className="cursor-pointer text-destructive hover:text-destructive"
-                >
-                  <Trash2 className="size-4" />
-                </Button>
-              </form>
-            </div>
+      <CardHeader>
+        <CardTitle className={cn(CARD_TITLE_ROW_CLASSNAME, "gap-2")}>
+          {member ? (
+            <MemberAvatar
+              name={recipientLabel}
+              color={member.avatar_color}
+              size="sm"
+            />
+          ) : (
+            <span className="inline-flex size-7 shrink-0 items-center justify-center rounded-none bg-primary/10 text-primary text-xs font-bold">
+              {recipientLabel.charAt(0).toUpperCase()}
+            </span>
           )}
-        </div>
+          <span className="min-w-0 truncate">{recipientLabel}</span>
+        </CardTitle>
+        {idea.recipient_type === GIFT_RECIPIENT_TYPE.CUSTOM && isFamily && (
+          <CardDescription>{t.gifts.recipientOutsideFamily}</CardDescription>
+        )}
+        {isOwner && (
+          <CardHeaderActions onClick={(e) => e.stopPropagation()}>
+            <CardHeaderActionButton onClick={onEdit} aria-label={t.gifts.editBtn}>
+              <Pencil className="size-4" />
+            </CardHeaderActionButton>
+            <form action={deleteAction} className="border-l border-border">
+              <input type="hidden" name={GIFT_FORM_FIELD.ID} value={idea.id} />
+              <CardHeaderActionButton type="submit" destructive disabled={deletePending}>
+                <Trash2 className="size-4" />
+              </CardHeaderActionButton>
+            </form>
+          </CardHeaderActions>
+        )}
       </CardHeader>
       <CardContent className="p-4">
         <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground">
           {idea.content}
         </p>
+        {idea.link_url && (
+          <a
+            href={idea.link_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <ExternalLink className="size-3.5 shrink-0" />
+            {formatGiftLinkLabel(idea.link_url)}
+          </a>
+        )}
+        {isFamily && !isGiftVisibleToAllMembers(idea.visible_to_member_ids) && (
+          <p className="mt-3 text-[11px] text-muted-foreground">
+            {t.gifts.visibleTo}: {visibleMemberNames.join(", ")}
+          </p>
+        )}
         {isFamily && creator && (
           <p className="mt-3 text-[11px] text-muted-foreground">
             {t.gifts.addedBy}: {creator}

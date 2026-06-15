@@ -14,8 +14,10 @@ const labels = {
   changeSummaryAvailability: "availability: {from} → {to}",
   changeSummaryLocation: "location changed",
   changeSummaryNotes: "notes changed",
+  changeSummaryTakenBy: "taken by: {from} → {to}",
   changeSummaryEmpty: "empty",
   changeSummarySeparator: "; ",
+  takenByUnassigned: "Unassigned",
   formLabels: {
     tablets: "Tablets",
     syrup: "Syrup",
@@ -41,19 +43,23 @@ const base = {
   availability: MEDICINE_AVAILABILITY.IN_STOCK,
   location: "Cabinet",
   notes: "",
+  taken_by: null,
 };
 
 describe("buildMedicineChangeSummary", () => {
+  const resolveTakenBy = (id: string | null) => id ?? "Unassigned";
+
   it("reports name changes", () => {
     const summary = buildMedicineChangeSummary(
       base,
       { ...base, name: "Paracetamol" },
-      labels
+      labels,
+      resolveTakenBy
     );
     assert.match(summary, /name:/);
   });
 
   it("returns empty summary when unchanged", () => {
-    assert.equal(buildMedicineChangeSummary(base, base, labels), "empty");
+    assert.equal(buildMedicineChangeSummary(base, base, labels, resolveTakenBy), "empty");
   });
 });

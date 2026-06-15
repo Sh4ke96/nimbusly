@@ -3,12 +3,12 @@
 import { GIFT_FORM_FIELD } from "@/lib/gifts/types";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { MemberAvatar } from "@/components/member-avatar";
+import { MemberTilePicker } from "@/components/family/member-tile-picker";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { GIFT_RECIPIENT_TYPE } from "@/lib/constants/gifts";
 import { useT } from "@/lib/lang-context";
+import { selectionPickerTileButtonClasses } from "@/lib/ui/selection-styles";
 import { getDisplayName, type FamilyMember, type Profile } from "@/lib/profile";
-import { cn } from "@/lib/utils";
 
 export type GiftRecipientSelection =
   | { type: typeof GIFT_RECIPIENT_TYPE.FAMILY_MEMBER; memberId: string; name: string }
@@ -69,11 +69,8 @@ export function GiftRecipientPicker({
                 name: getDisplayName(firstMember),
               });
             }}
-            className={cn(
-              "cursor-pointer rounded-none border border-border px-3 py-2.5 text-left text-sm transition-colors",
+            className={selectionPickerTileButtonClasses(
               recipientType === GIFT_RECIPIENT_TYPE.FAMILY_MEMBER
-                ? "border-primary bg-primary/10"
-                : "bg-background hover:bg-muted/60"
             )}
           >
             {t.gifts.recipientFamilyMember}
@@ -86,11 +83,8 @@ export function GiftRecipientPicker({
                 name: customName,
               })
             }
-            className={cn(
-              "cursor-pointer rounded-none border border-border px-3 py-2.5 text-left text-sm transition-colors",
+            className={selectionPickerTileButtonClasses(
               recipientType === GIFT_RECIPIENT_TYPE.CUSTOM
-                ? "border-primary bg-primary/10"
-                : "bg-background hover:bg-muted/60"
             )}
           >
             {t.gifts.recipientCustom}
@@ -102,35 +96,20 @@ export function GiftRecipientPicker({
         <div className="space-y-2">
           <Label>{t.gifts.recipientMemberLabel}</Label>
           <div className="grid gap-2 sm:grid-cols-2">
-            {members.map((member) => {
-              const selected = memberId === member.id;
-              return (
-                <button
-                  key={member.id}
-                  type="button"
-                  onClick={() =>
-                    onChange({
-                      type: GIFT_RECIPIENT_TYPE.FAMILY_MEMBER,
-                      memberId: member.id,
-                      name: getDisplayName(member),
-                    })
-                  }
-                  className={cn(
-                    "flex cursor-pointer items-center gap-2 rounded-none border border-border px-3 py-2 text-left text-sm transition-colors",
-                    selected
-                      ? "border-primary bg-primary/10"
-                      : "bg-background hover:bg-muted/60"
-                  )}
-                >
-                  <MemberAvatar
-                    name={getDisplayName(member)}
-                    color={member.avatar_color}
-                    size="sm"
-                  />
-                  <span className="font-medium">{getDisplayName(member)}</span>
-                </button>
-              );
-            })}
+            <MemberTilePicker
+              mode="single"
+              members={members}
+              value={memberId}
+              onChange={(id) => {
+                const member = members.find((m) => m.id === id);
+                if (!member) return;
+                onChange({
+                  type: GIFT_RECIPIENT_TYPE.FAMILY_MEMBER,
+                  memberId: member.id,
+                  name: getDisplayName(member),
+                });
+              }}
+            />
           </div>
         </div>
       )}

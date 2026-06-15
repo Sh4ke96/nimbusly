@@ -9,9 +9,8 @@ import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { PetCareEditDialog } from "@/components/pets/pet-care-edit-dialog";
 import { PetCareFormDialog } from "@/components/pets/pet-care-form-dialog";
 import { PetCareItemCard } from "@/components/pets/pet-care-item-card";
-import { PetCareTypeFilter } from "@/components/pets/pet-care-type-filter";
+import { PetsFilters } from "@/components/pets/pets-filters";
 import { PetEditDialog } from "@/components/pets/pet-edit-dialog";
-import { PetFilter } from "@/components/pets/pet-filter";
 import { PetFormDialog } from "@/components/pets/pet-form-dialog";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
 import { Button } from "@/components/ui/button";
@@ -84,16 +83,25 @@ export function PetsView() {
             </h1>
             <p className="text-sm text-muted-foreground">{t.pets.subtitle}</p>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+            {!loading && careItems.length > 0 && (
+              <PetsFilters
+                pets={pets}
+                items={careItems}
+                petFilter={petFilter}
+                typeFilter={typeFilter}
+                onPetChange={setPetFilter}
+                onTypeChange={setTypeFilter}
+              />
+            )}
             <PetFormDialog onSuccess={onDataChanged} />
             <PetCareFormDialog pets={pets} onSuccess={onDataChanged} />
           </div>
         </div>
 
         {!loading && pets.length > 0 && (
-          <div className="space-y-3">
-            <div className="flex flex-wrap gap-2">
-              {pets.map((pet) => {
+          <div className="flex flex-wrap gap-2">
+            {pets.map((pet) => {
                 const isOwner = pet.created_by === user?.id;
                 return (
                   <div
@@ -121,19 +129,6 @@ export function PetsView() {
                   </div>
                 );
               })}
-            </div>
-
-            <PetFilter
-              pets={pets}
-              items={careItems}
-              value={petFilter}
-              onChange={setPetFilter}
-            />
-            <PetCareTypeFilter
-              items={careItems}
-              value={typeFilter}
-              onChange={setTypeFilter}
-            />
           </div>
         )}
 

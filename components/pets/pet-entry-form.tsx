@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { PET_SPECIES_LIST, type PetSpecies } from "@/lib/constants/pets";
 import { PET_NAME_MAX_LENGTH, PET_NOTES_MAX_LENGTH } from "@/lib/constants/pets";
 import { useT } from "@/lib/lang-context";
-import { cn } from "@/lib/utils";
+import { selectionPickerTileButtonClasses } from "@/lib/ui/selection-styles";
 
 interface PetEntryFormProps {
   name: string;
@@ -54,12 +54,7 @@ export function PetEntryForm({
               key={type}
               type="button"
               onClick={() => onSpeciesChange(type)}
-              className={cn(
-                "cursor-pointer rounded-none border px-2 py-2 text-xs font-medium transition-colors",
-                species === type
-                  ? "border-primary bg-primary/10 text-primary"
-                  : "border-border bg-background hover:bg-muted/50"
-              )}
+              className={selectionPickerTileButtonClasses(species === type, "justify-center")}
             >
               {t.pets.speciesLabels[type]}
             </button>

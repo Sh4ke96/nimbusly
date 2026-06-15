@@ -5,20 +5,41 @@ import {
   CHORE_STATUSES,
   CHORE_TITLE_MAX_LENGTH,
   type ChoreRecurrence,
+  type ChoreRecurrenceDuration,
   type ChoreStatus,
 } from "@/lib/constants/chores";
+import { computeNextChoreDueDateWithOptions } from "@/lib/chores/recurrence";
 import { COMMON_FORM_FIELD } from "@/lib/form/common-fields";
 import { getFormString, getFormTrimmedString } from "@/lib/form/values";
+import {
+  isValidChoreCustomIntervalDays,
+  isValidChoreRecurrenceDuration,
+  parseChoreCustomIntervalDays,
+} from "@/lib/chores/recurrence";
+import { isValidChoreIconEmoji, normalizeChoreIconEmoji } from "@/lib/chores/emoji";
+
+export { dateToChoreDateString, isValidChoreDateString, parseChoreDateString } from "@/lib/chores/dates";
+import {
+  dateToChoreDateString,
+  isValidChoreDateString,
+  parseChoreDateString,
+} from "@/lib/chores/dates";
 
 export interface ChoreTask {
   id: string;
   family_id: string | null;
   title: string;
   notes: string;
+  icon_emoji: string | null;
   status: ChoreStatus;
   assigned_to: string | null;
   due_date: string | null;
   recurrence: ChoreRecurrence;
+  recurrence_interval_days: number | null;
+  recurrence_end_date: string | null;
+  recurrence_duration: ChoreRecurrenceDuration | null;
+  recurrence_start_date: string | null;
+  completed_dates: string[];
   completed_at: string | null;
   created_by: string;
   created_at: string;
@@ -46,59 +67,25 @@ export function isValidChoreNotes(notes: string): boolean {
   return notes.length <= CHORE_NOTES_MAX_LENGTH;
 }
 
-export function dateToChoreDateString(date: Date): string {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
-
-export function parseChoreDateString(value: string | null | undefined): Date | undefined {
-  if (!value) return undefined;
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
-  if (!match) return undefined;
-  const year = Number(match[1]);
-  const month = Number(match[2]);
-  const day = Number(match[3]);
-  const date = new Date(year, month - 1, day);
-  if (
-    date.getFullYear() !== year ||
-    date.getMonth() !== month - 1 ||
-    date.getDate() !== day
-  ) {
-    return undefined;
-  }
-  return date;
-}
-
-export function isValidChoreDateString(value: string | null | undefined): boolean {
-  if (!value) return true;
-  return parseChoreDateString(value) !== undefined;
-}
-
 export function computeNextChoreDueDate(
   from: Date,
-  recurrence: ChoreRecurrence
+  recurrence: ChoreRecurrence,
+  intervalDays: number | null = null
 ): Date | null {
-  if (recurrence === CHORE_RECURRENCE.NONE) return null;
-  const next = new Date(from.getFullYear(), from.getMonth(), from.getDate());
-  switch (recurrence) {
-    case CHORE_RECURRENCE.DAILY:
-      next.setDate(next.getDate() + 1);
-      break;
-    case CHORE_RECURRENCE.WEEKLY:
-      next.setDate(next.getDate() + 7);
-      break;
-    case CHORE_RECURRENCE.BIWEEKLY:
-      next.setDate(next.getDate() + 14);
-      break;
-    case CHORE_RECURRENCE.MONTHLY:
-      next.setMonth(next.getMonth() + 1);
-      break;
-    default:
-      return null;
+  return computeNextChoreDueDateWithOptions(from, recurrence, intervalDays);
+}
+
+export function isValidChoreCustomRecurrence(
+  recurrence: ChoreRecurrence | null,
+  intervalDays: number | null,
+  duration: ChoreRecurrenceDuration | null
+): boolean {
+  if (!recurrence || recurrence === CHORE_RECURRENCE.NONE) return true;
+  if (!duration) return false;
+  if (recurrence === CHORE_RECURRENCE.CUSTOM) {
+    return intervalDays !== null && isValidChoreCustomIntervalDays(intervalDays);
   }
-  return next;
+  return true;
 }
 
 export const CHORE_FORM_FIELD = {
@@ -109,6 +96,10 @@ export const CHORE_FORM_FIELD = {
   ASSIGNED_TO: "assignedTo",
   DUE_DATE: "dueDate",
   RECURRENCE: "recurrence",
+  RECURRENCE_INTERVAL_DAYS: "recurrenceIntervalDays",
+  RECURRENCE_DURATION: "recurrenceDuration",
+  ICON_EMOJI: "iconEmoji",
+  OCCURRENCE_DATE: "occurrenceDate",
 } as const;
 
 export function parseChoreIdFromForm(formData: FormData): string {
@@ -125,13 +116,26 @@ export function parseChoreStatusFromForm(formData: FormData): {
   };
 }
 
+export function parseChoreOccurrenceCompleteFromForm(formData: FormData): {
+  id: string;
+  occurrenceDate: string;
+} {
+  return {
+    id: getFormTrimmedString(formData, CHORE_FORM_FIELD.ID),
+    occurrenceDate: getFormTrimmedString(formData, CHORE_FORM_FIELD.OCCURRENCE_DATE),
+  };
+}
+
 export function parseChoreTaskFromForm(formData: FormData): {
   title: string;
   notes: string;
+  iconEmoji: string | null;
   status: ChoreStatus | null;
   assignedTo: string | null;
   dueDate: string | null;
   recurrence: ChoreRecurrence | null;
+  recurrenceIntervalDays: number | null;
+  recurrenceDuration: ChoreRecurrenceDuration | null;
 } {
   const title = normalizeChoreTitle(getFormString(formData, CHORE_FORM_FIELD.TITLE));
   const notes = getFormTrimmedString(formData, CHORE_FORM_FIELD.NOTES);
@@ -139,13 +143,19 @@ export function parseChoreTaskFromForm(formData: FormData): {
   const assignedRaw = getFormTrimmedString(formData, CHORE_FORM_FIELD.ASSIGNED_TO);
   const dueDateRaw = getFormTrimmedString(formData, CHORE_FORM_FIELD.DUE_DATE);
   const recurrenceRaw = getFormTrimmedString(formData, CHORE_FORM_FIELD.RECURRENCE);
+  const intervalRaw = getFormTrimmedString(formData, CHORE_FORM_FIELD.RECURRENCE_INTERVAL_DAYS);
+  const durationRaw = getFormTrimmedString(formData, CHORE_FORM_FIELD.RECURRENCE_DURATION);
+  const iconEmojiRaw = getFormTrimmedString(formData, CHORE_FORM_FIELD.ICON_EMOJI);
 
   return {
     title,
     notes,
+    iconEmoji: iconEmojiRaw ? normalizeChoreIconEmoji(iconEmojiRaw) : null,
     status: isValidChoreStatus(statusRaw) ? statusRaw : null,
     assignedTo: assignedRaw || null,
     dueDate: dueDateRaw || null,
     recurrence: isValidChoreRecurrence(recurrenceRaw) ? recurrenceRaw : null,
+    recurrenceIntervalDays: intervalRaw ? parseChoreCustomIntervalDays(intervalRaw) : null,
+    recurrenceDuration: isValidChoreRecurrenceDuration(durationRaw) ? durationRaw : null,
   };
 }

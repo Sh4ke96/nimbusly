@@ -3,6 +3,7 @@ export const FAMILY_ACCESS_ERROR = {
   NO_FAMILY: "no_family",
   NOT_OWNER: "not_owner",
   NOT_ADMIN: "not_admin",
+  NOT_FOUNDER: "not_founder",
 } as const;
 
 export type FamilyAccessError =

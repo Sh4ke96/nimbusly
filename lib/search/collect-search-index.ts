@@ -1,42 +1,55 @@
-import { LOCALE_BY_LANG } from "@/lib/constants/lang";
 import type { Lang } from "@/lib/constants/lang";
+import {
+  getAppModuleDesc,
+  getFamilyModuleRoute,
+} from "@/lib/constants/app-modules";
 import { resolveGiftRecipientLabel } from "@/lib/gifts/recipients";
 import type { Dict } from "@/lib/i18n/types";
 import { buildSearchIndex, type SearchIndexInput } from "@/lib/search/global-search";
-import { useBirthdaysStore } from "@/lib/stores/birthdays-store";
-import { useBudgetStore } from "@/lib/stores/budget-store";
-import { useChoresStore } from "@/lib/stores/chores-store";
-import { useGiftsStore } from "@/lib/stores/gifts-store";
-import { useMedicineStore } from "@/lib/stores/medicine-store";
-import { usePetsStore } from "@/lib/stores/pets-store";
-import { useProfileStore } from "@/lib/stores/profile-store";
-import { useRestaurantsStore } from "@/lib/stores/restaurants-store";
-import { useScheduleStore } from "@/lib/stores/schedule-store";
-import { useShoppingListsStore } from "@/lib/stores/shopping-lists-store";
-import { useWatchlistStore } from "@/lib/stores/watchlist-store";
+import {
+  readSearchStoresSnapshot,
+  type SearchStoresSnapshot,
+} from "@/lib/search/search-stores-snapshot";
+import { resolvePetName } from "@/lib/pets/filters";
+import { formatScheduleDateRangeLabel } from "@/lib/schedule/types";
+import { getDisplayName } from "@/lib/profile";
 
-export function collectSearchIndexInput(
+export function buildSearchIndexInput(
   moduleLabels: Dict["dashboard"]["moduleLabels"],
-  lang: Lang
+  moduleDescs: Dict["dashboard"]["moduleDescs"],
+  snapshot: SearchStoresSnapshot
 ): SearchIndexInput {
-  const locale = LOCALE_BY_LANG[lang];
-  const members = useProfileStore.getState().members;
-  const shoppingState = useShoppingListsStore.getState();
   const listNameById = Object.fromEntries(
-    shoppingState.lists.map((list) => [list.id, list.name])
+    snapshot.shoppingLists.map((list) => [list.id, list.name])
+  );
+  const budgetNameById = Object.fromEntries(
+    snapshot.budgets.map((budget) => [budget.id, budget.name])
   );
 
   return {
     moduleLabels,
-    budgets: useBudgetStore.getState().budgets.map((budget) => ({
+    moduleDescs,
+    familyHref: getFamilyModuleRoute(snapshot.profile),
+    budgets: snapshot.budgets.map((budget) => ({
       id: budget.id,
       name: budget.name,
     })),
-    shoppingLists: shoppingState.lists.map((list) => ({
+    budgetEntries: Object.entries(snapshot.expensesByBudgetId).flatMap(
+      ([budgetId, entries]) =>
+        entries.map((entry) => ({
+          id: entry.id,
+          budgetId,
+          budgetName: budgetNameById[budgetId] ?? "",
+          description: entry.description,
+          category: entry.category,
+          entryType: entry.entry_type,
+        }))
+    ),
+    shoppingLists: snapshot.shoppingLists.map((list) => ({
       id: list.id,
       name: list.name,
     })),
-    shoppingItems: Object.entries(shoppingState.itemsByListId).flatMap(([listId, items]) =>
+    shoppingItems: Object.entries(snapshot.itemsByListId).flatMap(([listId, items]) =>
       items.map((item) => ({
         id: item.id,
         listId,
@@ -44,47 +57,88 @@ export function collectSearchIndexInput(
         listName: listNameById[listId] ?? "",
       }))
     ),
-    gifts: useGiftsStore.getState().ideas.map((idea) => ({
+    gifts: snapshot.gifts.map((idea) => ({
       id: idea.id,
       content: idea.content,
-      recipientLabel: resolveGiftRecipientLabel(idea, members),
+      recipientLabel: resolveGiftRecipientLabel(idea, snapshot.members),
+      recipientName: idea.recipient_name,
     })),
-    birthdays: useBirthdaysStore.getState().entries.map((entry) => ({
+    birthdays: snapshot.birthdays.map((entry) => ({
       id: entry.id,
       personName: entry.person_name,
     })),
-    scheduleEntries: useScheduleStore.getState().entries.map((entry) => ({
+    scheduleEntries: snapshot.scheduleEntries.map((entry) => ({
       id: entry.id,
       title: entry.description,
-      dateLabel: new Intl.DateTimeFormat(locale, {
-        day: "numeric",
-        month: "short",
-        year: "numeric",
-      }).format(new Date(entry.entry_date)),
+      dateLabel: formatScheduleDateRangeLabel(
+        entry.entry_date,
+        entry.entry_end_date,
+        " – "
+      ),
     })),
-    medicineItems: useMedicineStore.getState().items.map((item) => ({
+    medicineItems: snapshot.medicineItems.map((item) => ({
       id: item.id,
       name: item.name,
+      location: item.location,
+      notes: item.notes,
     })),
-    watchlistItems: useWatchlistStore.getState().items.map((item) => ({
+    watchlistItems: snapshot.watchlistItems.map((item) => ({
       id: item.id,
       title: item.title,
     })),
-    restaurants: useRestaurantsStore.getState().places.map((place) => ({
+    restaurants: snapshot.restaurants.map((place) => ({
       id: place.id,
       name: place.name,
+      address: place.address,
+      notes: place.notes,
+      comment: place.comment,
     })),
-    pets: usePetsStore.getState().pets.map((pet) => ({
+    pets: snapshot.pets.map((pet) => ({
       id: pet.id,
       name: pet.name,
     })),
-    chores: useChoresStore.getState().tasks.map((task) => ({
+    petCareItems: snapshot.petCareItems.map((care) => ({
+      id: care.id,
+      name: care.name,
+      petName: resolvePetName(snapshot.pets, care.pet_id),
+    })),
+    chores: snapshot.chores.map((task) => ({
       id: task.id,
       title: task.title,
+      notes: task.notes,
+    })),
+    notes: snapshot.notes.map((note) => ({
+      id: note.id,
+      title: note.title,
+      content: note.content,
+    })),
+    noteCategories: snapshot.noteCategories.map((category) => ({
+      id: category.id,
+      name: category.name,
+    })),
+    familyMembers: snapshot.members.map((member) => ({
+      id: member.id,
+      name: getDisplayName(member),
     })),
   };
 }
 
-export function collectSearchIndex(moduleLabels: Dict["dashboard"]["moduleLabels"], lang: Lang) {
-  return buildSearchIndex(collectSearchIndexInput(moduleLabels, lang));
+export function collectSearchIndexInput(
+  moduleLabels: Dict["dashboard"]["moduleLabels"],
+  moduleDescs: Dict["dashboard"]["moduleDescs"],
+  _lang: Lang
+): SearchIndexInput {
+  return buildSearchIndexInput(
+    moduleLabels,
+    moduleDescs,
+    readSearchStoresSnapshot()
+  );
+}
+
+export function collectSearchIndex(
+  moduleLabels: Dict["dashboard"]["moduleLabels"],
+  moduleDescs: Dict["dashboard"]["moduleDescs"],
+  lang: Lang
+) {
+  return buildSearchIndex(collectSearchIndexInput(moduleLabels, moduleDescs, lang));
 }

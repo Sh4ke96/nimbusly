@@ -4,18 +4,18 @@ import { useEffect, useMemo, useState } from "react";
 import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { useResolvedItemSelection } from "@/lib/hooks/use-resolved-item-selection";
-import { Printer, Scale, TrendingDown, TrendingUp, Download } from "lucide-react";
+import { ModuleSectionHeading } from "@/components/ui/module-section-heading";
+import { Eye, EyeOff, BarChart3, Download, Printer, Scale, TrendingDown, TrendingUp, Wallet } from "lucide-react";
 import { AppHeader } from "@/components/app/app-header";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { BudgetCard } from "@/components/budget/budget-card";
-import { BudgetCategoryFilter } from "@/components/budget/budget-category-filter";
+import { BudgetFilters } from "@/components/budget/budget-filters";
 import { BudgetChartsLazy } from "@/components/budget/budget-charts-lazy";
 import { BudgetEditDialog } from "@/components/budget/budget-edit-dialog";
 import { BudgetExpenseFormDialog } from "@/components/budget/budget-expense-form-dialog";
 import { BudgetExpensesList } from "@/components/budget/budget-expenses-list";
 import { BudgetFormDialog } from "@/components/budget/budget-form-dialog";
 import { BudgetMonthPicker } from "@/components/budget/budget-month-picker";
-import { BudgetTypeFilter } from "@/components/budget/budget-type-filter";
 import { BudgetWatchButton } from "@/components/budget/budget-watch-button";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
 import { Button } from "@/components/ui/button";
@@ -67,17 +67,25 @@ export function BudgetView() {
   const fetchBudgets = useBudgetStore((s) => s.fetchBudgets);
   const fetchWatches = useBudgetStore((s) => s.fetchWatches);
 
+  const [showHiddenBudgets, setShowHiddenBudgets] = useState<boolean>(false);
+
+  const visibleBudgets = useMemo(
+    () => budgets.filter((budget) => showHiddenBudgets || !budget.is_hidden),
+    [budgets, showHiddenBudgets]
+  );
+  const hiddenBudgetCount = budgets.length - visibleBudgets.length;
+
   const budgetIdsKey = useMemo(
-    () => budgets.map((budget) => budget.id).join("|"),
-    [budgets]
+    () => visibleBudgets.map((budget) => budget.id).join("|"),
+    [visibleBudgets]
   );
   const [activeBudgetId, setSelectedBudgetId] = useResolvedItemSelection(budgetIdsKey);
-  const [selectedMonthKey, setSelectedMonthKey] = useState(getCurrentMonthKey);
+  const [selectedMonthKey, setSelectedMonthKey] = useState<string>(getCurrentMonthKey);
   const [typeFilter, setTypeFilter] = useState<string>(BUDGET_FILTER_ALL);
   const [categoryFilter, setCategoryFilter] = useState<string>(BUDGET_FILTER_ALL);
   const [filtersBudgetId, setFiltersBudgetId] = useState<string | null>(null);
   const [editingBudget, setEditingBudget] = useState<Budget | null>(null);
-  const [editOpen, setEditOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState<boolean>(false);
 
   const selectExpenses = useMemo(
     () =>
@@ -120,8 +128,8 @@ export function BudgetView() {
   );
 
   const activeBudget = useMemo(
-    () => budgets.find((budget) => budget.id === activeBudgetId) ?? null,
-    [budgets, activeBudgetId]
+    () => visibleBudgets.find((budget) => budget.id === activeBudgetId) ?? null,
+    [visibleBudgets, activeBudgetId]
   );
 
   const incomeTotal = sumIncomeOnly(monthlyEntries);
@@ -261,14 +269,47 @@ export function BudgetView() {
           <p className="text-sm text-muted-foreground text-center py-16 border border-dashed border-border">
             {t.budget.empty}
           </p>
+        ) : visibleBudgets.length === 0 ? (
+          <div className="space-y-3 text-center py-16 border border-dashed border-border">
+            <p className="text-sm text-muted-foreground">{t.budget.emptyHidden}</p>
+            {hiddenBudgetCount > 0 && (
+              <Button
+                type="button"
+                variant="outline"
+                className="cursor-pointer"
+                onClick={() => setShowHiddenBudgets(true)}
+              >
+                <Eye className="size-4" />
+                {t.budget.showHiddenBtn}
+              </Button>
+            )}
+          </div>
         ) : (
           <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
             <section className="space-y-3 no-print">
-              <h2 className="font-heading text-xs uppercase tracking-wider text-muted-foreground">
-                {t.budget.budgetsHeading}
-              </h2>
+              <div className="flex items-center justify-between gap-2">
+                <ModuleSectionHeading icon={Wallet}>
+                  {t.budget.budgetsHeading}
+                </ModuleSectionHeading>
+                {hiddenBudgetCount > 0 || showHiddenBudgets ? (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="cursor-pointer shrink-0"
+                    onClick={() => setShowHiddenBudgets((value) => !value)}
+                  >
+                    {showHiddenBudgets ? (
+                      <EyeOff className="size-4" />
+                    ) : (
+                      <Eye className="size-4" />
+                    )}
+                    {showHiddenBudgets ? t.budget.hideHiddenBtn : t.budget.showHiddenBtn}
+                  </Button>
+                ) : null}
+              </div>
               <div className="space-y-3">
-                {budgets.map((budget) => (
+                {visibleBudgets.map((budget) => (
                   <BudgetCard
                     key={budget.id}
                     budget={budget}
@@ -285,9 +326,9 @@ export function BudgetView() {
 
             <section className="space-y-4">
               <div className="space-y-4 no-print">
-                <h2 className="font-heading text-xs uppercase tracking-wider text-muted-foreground">
+                <ModuleSectionHeading icon={BarChart3}>
                   {activeBudget?.name ?? t.budget.detailsHeading}
-                </h2>
+                </ModuleSectionHeading>
 
                 <BudgetMonthPicker value={selectedMonthKey} onChange={setSelectedMonthKey} />
 
@@ -363,6 +404,13 @@ export function BudgetView() {
                       />
                     </div>
                     <div className="flex items-center gap-2 overflow-x-auto">
+                      <BudgetFilters
+                        entries={monthlyEntries}
+                        typeFilter={typeFilter}
+                        categoryFilter={categoryFilter}
+                        onTypeChange={handleTypeFilterChange}
+                        onCategoryChange={setCategoryFilter}
+                      />
                       <BudgetWatchButton budgetId={activeBudgetId} onChanged={onWatchChanged} />
                       <Button
                         type="button"
@@ -428,19 +476,6 @@ export function BudgetView() {
 
               {activeBudgetId && (
                 <>
-                  <div className="space-y-2 no-print">
-                    <BudgetTypeFilter
-                      entries={monthlyEntries}
-                      value={typeFilter}
-                      onChange={handleTypeFilterChange}
-                    />
-                    <BudgetCategoryFilter
-                      entries={monthlyEntries}
-                      typeFilter={typeFilter}
-                      value={categoryFilter}
-                      onChange={setCategoryFilter}
-                    />
-                  </div>
                   <BudgetExpensesList
                     budgetId={activeBudgetId}
                     entries={filteredEntries}

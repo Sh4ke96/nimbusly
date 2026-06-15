@@ -38,12 +38,15 @@ function WatchlistEditForm({
   onClose: () => void;
 }) {
   const t = useT();
-  const [title, setTitle] = useState(() => item.title);
+  const [title, setTitle] = useState<string>(() => item.title);
   const [mediaType, setMediaType] = useState<WatchlistItem["media_type"] | null>(
     () => item.media_type
   );
   const [status, setStatus] = useState<WatchlistItem["status"] | null>(() => item.status);
-  const [notes, setNotes] = useState(() => item.notes);
+  const [notes, setNotes] = useState<string>(() => item.notes);
+  const [streamingPlatforms, setStreamingPlatforms] = useState<WatchlistItem["streaming_platforms"]>(
+    () => item.streaming_platforms
+  );
   const [state, action, pending] = useActionState(updateWatchlistItem, null);
 
   useActionFeedback(state, () => {
@@ -80,6 +83,8 @@ function WatchlistEditForm({
         onStatusChange={setStatus}
         notes={notes}
         onNotesChange={setNotes}
+        streamingPlatforms={streamingPlatforms}
+        onStreamingPlatformsChange={setStreamingPlatforms}
       />
       <Button type="submit" className="w-full" disabled={pending}>
         {pending ? t.watchlist.saving : t.watchlist.saveBtn}

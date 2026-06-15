@@ -39,6 +39,22 @@ export function countPetCareByType(
   return counts;
 }
 
+export function countPetCareByPet(
+  items: PetCareItem[],
+  pets: Pet[]
+): Record<string, number> & { all: number } {
+  const counts: Record<string, number> & { all: number } = { all: items.length };
+  for (const pet of pets) {
+    counts[pet.id] = 0;
+  }
+  for (const item of items) {
+    if (counts[item.pet_id] !== undefined) {
+      counts[item.pet_id] += 1;
+    }
+  }
+  return counts;
+}
+
 export function countDuePetCareItems(items: PetCareItem[]): number {
   return items.filter((item) => isPetCareDueSoon(item.next_due_date)).length;
 }

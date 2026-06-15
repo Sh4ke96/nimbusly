@@ -6,7 +6,7 @@ import {
   getCurrentMonthKey,
   shiftMonthKey,
 } from "@/lib/budget/monthly";
-import { BUDGET_ENTRY_TYPE, BUDGET_EXPENSE_CATEGORY } from "@/lib/constants/budget";
+import { BUDGET_ENTRY_TYPE, BUDGET_EXPENSE_CATEGORY, BUDGET_RECURRENCE } from "@/lib/constants/budget";
 import type { BudgetExpense } from "@/lib/budget/types";
 
 function entry(expenseDate: string): BudgetExpense {
@@ -18,6 +18,11 @@ function entry(expenseDate: string): BudgetExpense {
     amount: 10,
     description: "",
     expense_date: expenseDate,
+    recurrence: BUDGET_RECURRENCE.NONE,
+    recurrence_interval_days: null,
+    recurrence_end_date: null,
+    payment_reminder_enabled: false,
+    reminder_sent_keys: [],
     created_by: "u1",
     created_at: "2026-06-01T00:00:00.000Z",
     updated_at: "2026-06-01T00:00:00.000Z",

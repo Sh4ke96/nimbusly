@@ -9,13 +9,14 @@ import { BirthdayCalendar } from "@/components/birthdays/birthday-calendar";
 import { BirthdayEditDialog } from "@/components/birthdays/birthday-edit-dialog";
 import { BirthdayFormDialog } from "@/components/birthdays/birthday-form-dialog";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CARD_TITLE_ROW_CLASSNAME } from "@/components/ui/card";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useT } from "@/lib/lang-context";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useBirthdaysStore } from "@/lib/stores/birthdays-store";
 import { formatBirthdayLabel, type BirthdayEntry, BIRTHDAY_FORM_FIELD } from "@/lib/birthdays/types";
+import { selectionListRowClasses } from "@/lib/ui/selection-styles";
 import { cn } from "@/lib/utils";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
 import { deleteBirthday } from "@/app/(app)/birthdays/actions";
@@ -110,8 +111,8 @@ export function BirthdaysView() {
           </Card>
 
           <Card className="rounded-none py-0 shadow-sm h-fit gap-0">
-            <CardHeader className="border-b border-border pt-4">
-              <CardTitle className="font-heading text-base">{t.birthdays.listTitle}</CardTitle>
+            <CardHeader>
+              <CardTitle className={CARD_TITLE_ROW_CLASSNAME}>{t.birthdays.listTitle}</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
               {loading && !loaded ? (
@@ -130,10 +131,7 @@ export function BirthdaysView() {
                     return (
                       <li
                         key={entry.id}
-                        className={cn(
-                          "flex items-start gap-2 p-3 transition-colors",
-                          isSelected && "bg-primary/4"
-                        )}
+                        className="flex items-start gap-2 p-3 transition-colors"
                       >
                         <button
                           type="button"
@@ -141,9 +139,7 @@ export function BirthdaysView() {
                           className={cn(
                             "min-w-0 flex-1 cursor-pointer rounded-sm border-l-2 text-left transition-all duration-150",
                             "hover:bg-muted/60 -my-1 py-2 pl-3 pr-2",
-                            isSelected
-                              ? "border-l-primary bg-primary/6 shadow-sm ring-1 ring-primary/15"
-                              : "border-l-transparent"
+                            selectionListRowClasses(isSelected)
                           )}
                         >
                           <p className="font-medium text-sm truncate">{entry.person_name}</p>

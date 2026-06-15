@@ -5,13 +5,14 @@ import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { AppHeader } from "@/components/app/app-header";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
-import { MedicineAvailabilityFilter } from "@/components/medicine-cabinet/medicine-availability-filter";
+import { MedicineCabinetFilters } from "@/components/medicine-cabinet/medicine-cabinet-filters";
 import { MedicineEditDialog } from "@/components/medicine-cabinet/medicine-edit-dialog";
 import { MedicineFormDialog } from "@/components/medicine-cabinet/medicine-form-dialog";
 import { MedicineItemCard } from "@/components/medicine-cabinet/medicine-item-card";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MEDICINE_FILTER_ALL } from "@/lib/constants/medicine";
+import { countActiveFilters } from "@/lib/filters/active-count";
 import { filterMedicineByAvailability } from "@/lib/medicine/filters";
 import { sortMedicineByExpiry } from "@/lib/medicine/expiry";
 import type { MedicineItem } from "@/lib/medicine/types";
@@ -48,6 +49,8 @@ export function MedicineView() {
     setEditOpen(true);
   }
 
+  const hasActiveFilter = countActiveFilters([filterKey], MEDICINE_FILTER_ALL) > 0;
+
   return (
     <div className="min-h-screen flex flex-col">
       <AppHeader />
@@ -62,16 +65,17 @@ export function MedicineView() {
             </h1>
             <p className="text-sm text-muted-foreground">{t.medicineCabinet.subtitle}</p>
           </div>
-          <MedicineFormDialog onSuccess={onItemsChanged} />
+          <div className="flex items-center gap-2 self-start sm:self-auto">
+            {!loading && items.length > 0 && (
+              <MedicineCabinetFilters
+                items={items}
+                value={filterKey}
+                onChange={setFilterKey}
+              />
+            )}
+            <MedicineFormDialog onSuccess={onItemsChanged} />
+          </div>
         </div>
-
-        {!loading && items.length > 0 && (
-          <MedicineAvailabilityFilter
-            items={items}
-            value={filterKey}
-            onChange={setFilterKey}
-          />
-        )}
 
         {error ? (
           <ModuleFetchError onRetry={() => void fetchItems(true)} />
@@ -84,7 +88,9 @@ export function MedicineView() {
           <p className="text-sm text-muted-foreground text-center py-16 border border-dashed border-border">
             {filterKey === MEDICINE_FILTER_ALL
               ? t.medicineCabinet.empty
-              : t.medicineCabinet.emptyFiltered}
+              : hasActiveFilter
+                ? t.medicineCabinet.emptyFiltered
+                : t.medicineCabinet.empty}
           </p>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2">

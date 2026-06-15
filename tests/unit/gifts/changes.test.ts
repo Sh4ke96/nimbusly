@@ -5,6 +5,7 @@ import { buildGiftChangeSummary } from "@/lib/gifts/changes";
 const labels = {
   changeSummaryRecipient: "recipient: {from} → {to}",
   changeSummaryContent: "content changed",
+  changeSummaryLink: "link changed",
   changeSummaryEmpty: "empty",
   changeSummarySeparator: "; ",
 };
@@ -12,6 +13,7 @@ const labels = {
 const base = {
   recipient_name: "Anna",
   content: "Book",
+  link_url: null,
 };
 
 describe("buildGiftChangeSummary", () => {

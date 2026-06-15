@@ -71,3 +71,25 @@ export const BUDGET_CATEGORY_COLORS: Record<BudgetCategory, string> = {
 
 export const BUDGET_INCOME_COLOR = "#2e7d4f";
 export const BUDGET_EXPENSE_COLOR = "#c45c26";
+
+export const BUDGET_RECURRENCE = {
+  NONE: "none",
+  WEEKLY: "weekly",
+  BIWEEKLY: "biweekly",
+  MONTHLY: "monthly",
+  YEARLY: "yearly",
+} as const;
+
+export const BUDGET_RECURRENCES = [
+  BUDGET_RECURRENCE.NONE,
+  BUDGET_RECURRENCE.WEEKLY,
+  BUDGET_RECURRENCE.BIWEEKLY,
+  BUDGET_RECURRENCE.MONTHLY,
+  BUDGET_RECURRENCE.YEARLY,
+] as const;
+
+export type BudgetRecurrence = (typeof BUDGET_RECURRENCES)[number];
+
+export const BUDGET_PAYMENT_REMINDER_OFFSETS = [7, 3, 0] as const;
+
+export type BudgetPaymentReminderOffset = (typeof BUDGET_PAYMENT_REMINDER_OFFSETS)[number];

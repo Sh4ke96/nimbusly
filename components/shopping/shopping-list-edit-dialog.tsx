@@ -34,7 +34,7 @@ function ShoppingListEditForm({
   onClose: () => void;
 }) {
   const t = useT();
-  const [name, setName] = useState(() => list.name);
+  const [name, setName] = useState<string>(() => list.name);
   const [state, action, pending] = useActionState(updateShoppingList, null);
 
   useActionFeedback(state, () => {

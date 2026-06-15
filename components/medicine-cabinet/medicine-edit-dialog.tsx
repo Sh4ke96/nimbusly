@@ -18,6 +18,7 @@ import {
   isValidMedicineName,
 } from "@/lib/medicine/types";
 import { useT } from "@/lib/lang-context";
+import { useProfileStore } from "@/lib/stores/profile-store";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
 import { updateMedicineItem } from "@/app/(app)/medicine-cabinet/actions";
 import { toast } from "sonner";
@@ -39,19 +40,22 @@ function MedicineEditForm({
   onClose: () => void;
 }) {
   const t = useT();
-  const [name, setName] = useState(() => item.name);
+  const profile = useProfileStore((s) => s.profile);
+  const members = useProfileStore((s) => s.members);
+  const [name, setName] = useState<string>(() => item.name);
   const [formType, setFormType] = useState<MedicineItem["form_type"] | null>(
     () => item.form_type
   );
-  const [quantity, setQuantity] = useState(() => item.quantity);
+  const [quantity, setQuantity] = useState<string>(() => item.quantity);
   const [expiryDate, setExpiryDate] = useState<Date | undefined>(() =>
     parseMedicineDateString(item.expiry_date)
   );
   const [availability, setAvailability] = useState<MedicineItem["availability"] | null>(
     () => item.availability
   );
-  const [location, setLocation] = useState(() => item.location);
-  const [notes, setNotes] = useState(() => item.notes);
+  const [location, setLocation] = useState<string>(() => item.location);
+  const [notes, setNotes] = useState<string>(() => item.notes);
+  const [takenBy, setTakenBy] = useState<string | null>(() => item.taken_by);
   const [state, action, pending] = useActionState(updateMedicineItem, null);
 
   useActionFeedback(state, () => {
@@ -80,6 +84,8 @@ function MedicineEditForm({
     <form action={action} className="space-y-4" onSubmit={onSubmit}>
       <input type="hidden" name={MEDICINE_FORM_FIELD.ID} value={item.id} />
       <MedicineEntryForm
+        profile={profile}
+        members={members}
         name={name}
         onNameChange={setName}
         formType={formType}
@@ -94,6 +100,8 @@ function MedicineEditForm({
         onLocationChange={setLocation}
         notes={notes}
         onNotesChange={setNotes}
+        takenBy={takenBy}
+        onTakenByChange={setTakenBy}
       />
       <Button type="submit" className="w-full" disabled={pending}>
         {pending ? t.medicineCabinet.saving : t.medicineCabinet.saveBtn}

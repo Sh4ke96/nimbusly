@@ -17,6 +17,11 @@ import { useProfileStore } from "@/lib/stores/profile-store";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
 import { createGiftIdea } from "@/app/(app)/gifts/actions";
 import { isValidGiftContent, isValidRecipientName } from "@/lib/gifts/types";
+import { isValidGiftLinkUrl, normalizeGiftLinkUrl } from "@/lib/gifts/url";
+import {
+  isValidGiftVisibilitySelection,
+  type GiftVisibilitySelection,
+} from "@/components/gifts/gift-visibility-picker";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 
@@ -31,12 +36,19 @@ export function GiftFormDialog({ onSuccess }: GiftFormDialogProps) {
   const [open, setOpen] = useState<boolean>(false);
   const [recipient, setRecipient] = useState<GiftRecipientSelection | null>(null);
   const [content, setContent] = useState<string>("");
+  const [linkUrl, setLinkUrl] = useState<string>("");
+  const [visibility, setVisibility] = useState<GiftVisibilitySelection>({
+    visibleToAll: true,
+    memberIds: [],
+  });
   const [state, action, pending] = useActionState(createGiftIdea, null);
 
   useActionFeedback(state, () => {
     setOpen(false);
     setRecipient(null);
     setContent("");
+    setLinkUrl("");
+    setVisibility({ visibleToAll: true, memberIds: [] });
     onSuccess();
   });
 
@@ -57,6 +69,17 @@ export function GiftFormDialog({ onSuccess }: GiftFormDialogProps) {
     if (!isValidGiftContent(content)) {
       e.preventDefault();
       toast.error(t.gifts.errorContentRequired);
+      return;
+    }
+    const normalizedLink = normalizeGiftLinkUrl(linkUrl);
+    if (!isValidGiftLinkUrl(normalizedLink)) {
+      e.preventDefault();
+      toast.error(t.gifts.errorInvalidLinkUrl);
+      return;
+    }
+    if (!isValidGiftVisibilitySelection(visibility)) {
+      e.preventDefault();
+      toast.error(t.gifts.errorVisibilityRequired);
     }
   }
 
@@ -80,6 +103,10 @@ export function GiftFormDialog({ onSuccess }: GiftFormDialogProps) {
             onRecipientChange={setRecipient}
             content={content}
             onContentChange={setContent}
+            linkUrl={linkUrl}
+            onLinkUrlChange={setLinkUrl}
+            visibility={visibility}
+            onVisibilityChange={setVisibility}
           />
           <Button type="submit" className="w-full" disabled={pending}>
             {pending ? t.gifts.saving : t.gifts.saveBtn}

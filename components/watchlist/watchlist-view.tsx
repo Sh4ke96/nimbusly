@@ -6,16 +6,16 @@ import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { AppHeader } from "@/components/app/app-header";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { WatchlistEditDialog } from "@/components/watchlist/watchlist-edit-dialog";
+import { WatchlistFilters } from "@/components/watchlist/watchlist-filters";
 import { WatchlistFormDialog } from "@/components/watchlist/watchlist-form-dialog";
 import { WatchlistItemCard } from "@/components/watchlist/watchlist-item-card";
-import { WatchlistMediaTypeFilter } from "@/components/watchlist/watchlist-media-type-filter";
-import { WatchlistStatusFilter } from "@/components/watchlist/watchlist-status-filter";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
 import { Skeleton } from "@/components/ui/skeleton";
 import { WATCHLIST_FILTER_ALL } from "@/lib/constants/watchlist";
 import {
   filterWatchlistByMediaType,
   filterWatchlistByStatus,
+  filterWatchlistByStreamingPlatform,
 } from "@/lib/watchlist/filters";
 import type { WatchlistItem } from "@/lib/watchlist/types";
 import { useT } from "@/lib/lang-context";
@@ -35,6 +35,7 @@ export function WatchlistView() {
 
   const [statusFilter, setStatusFilter] = useState<string>(WATCHLIST_FILTER_ALL);
   const [mediaFilter, setMediaFilter] = useState<string>(WATCHLIST_FILTER_ALL);
+  const [platformFilter, setPlatformFilter] = useState<string>(WATCHLIST_FILTER_ALL);
   const [editingItem, setEditingItem] = useState<WatchlistItem | null>(null);
   const [editOpen, setEditOpen] = useState<boolean>(false);
 
@@ -43,8 +44,9 @@ export function WatchlistView() {
 
   const filteredItems = useMemo(() => {
     const byStatus = filterWatchlistByStatus(items, statusFilter);
-    return filterWatchlistByMediaType(byStatus, mediaFilter);
-  }, [items, statusFilter, mediaFilter]);
+    const byMedia = filterWatchlistByMediaType(byStatus, mediaFilter);
+    return filterWatchlistByStreamingPlatform(byMedia, platformFilter);
+  }, [items, statusFilter, mediaFilter, platformFilter]);
 
   function openEdit(item: WatchlistItem) {
     setEditingItem(item);
@@ -52,7 +54,9 @@ export function WatchlistView() {
   }
 
   const hasActiveFilter =
-    statusFilter !== WATCHLIST_FILTER_ALL || mediaFilter !== WATCHLIST_FILTER_ALL;
+    statusFilter !== WATCHLIST_FILTER_ALL ||
+    mediaFilter !== WATCHLIST_FILTER_ALL ||
+    platformFilter !== WATCHLIST_FILTER_ALL;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -68,23 +72,21 @@ export function WatchlistView() {
             </h1>
             <p className="text-sm text-muted-foreground">{t.watchlist.subtitle}</p>
           </div>
-          <WatchlistFormDialog onSuccess={onItemsChanged} />
-        </div>
-
-        {!loading && items.length > 0 && (
-          <div className="space-y-3">
-            <WatchlistStatusFilter
-              items={items}
-              value={statusFilter}
-              onChange={setStatusFilter}
-            />
-            <WatchlistMediaTypeFilter
-              items={items}
-              value={mediaFilter}
-              onChange={setMediaFilter}
-            />
+          <div className="flex items-center gap-2 self-start sm:self-auto">
+            {!loading && items.length > 0 && (
+              <WatchlistFilters
+                items={items}
+                statusFilter={statusFilter}
+                mediaFilter={mediaFilter}
+                platformFilter={platformFilter}
+                onStatusChange={setStatusFilter}
+                onMediaChange={setMediaFilter}
+                onPlatformChange={setPlatformFilter}
+              />
+            )}
+            <WatchlistFormDialog onSuccess={onItemsChanged} />
           </div>
-        )}
+        </div>
 
         {error ? (
           <ModuleFetchError onRetry={() => void fetchItems(true)} />

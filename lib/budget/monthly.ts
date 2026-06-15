@@ -1,3 +1,4 @@
+import { expandBudgetEntriesForMonth } from "@/lib/budget/recurrence";
 import type { BudgetExpense } from "@/lib/budget/types";
 
 export function getCurrentMonthKey(date = new Date()): string {
@@ -11,7 +12,7 @@ export function filterEntriesByMonth(
   monthKey: string
 ): BudgetExpense[] {
   if (!/^\d{4}-\d{2}$/.test(monthKey)) return entries;
-  return entries.filter((entry) => entry.expense_date.startsWith(monthKey));
+  return expandBudgetEntriesForMonth(entries, monthKey);
 }
 
 export function shiftMonthKey(monthKey: string, delta: number): string {

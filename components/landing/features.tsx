@@ -10,6 +10,7 @@ import {
   ListChecks,
   PawPrint,
   ShoppingCart,
+  StickyNote,
   UtensilsCrossed,
   Users,
   Wallet,
@@ -26,6 +27,7 @@ const featureIcons = [
   UtensilsCrossed,
   PawPrint,
   ListChecks,
+  StickyNote,
   Users,
 ];
 

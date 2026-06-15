@@ -1,12 +1,11 @@
 "use client";
 
 import { CHORE_FORM_FIELD } from "@/lib/chores/types";
-import { MemberAvatar } from "@/components/member-avatar";
+import { MemberTilePicker } from "@/components/family/member-tile-picker";
 import { Label } from "@/components/ui/label";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { useT } from "@/lib/lang-context";
 import { getDisplayName, type FamilyMember, type Profile } from "@/lib/profile";
-import { cn } from "@/lib/utils";
 
 interface ChoreAssigneePickerProps {
   profile: Profile | null;
@@ -36,44 +35,13 @@ export function ChoreAssigneePicker({
 
       <input type="hidden" name={CHORE_FORM_FIELD.ASSIGNED_TO} value={assignedTo ?? ""} />
 
-      <div className="grid gap-2 sm:grid-cols-2">
-        <button
-          type="button"
-          onClick={() => onAssigneeChange(null)}
-          className={cn(
-            "cursor-pointer rounded-none border border-border px-3 py-2.5 text-left text-sm transition-colors",
-            assignedTo === null
-              ? "border-primary bg-primary/10"
-              : "bg-background hover:bg-muted/60"
-          )}
-        >
-          {t.chores.assigneeUnassigned}
-        </button>
-
-        {members.map((member) => {
-          const selected = assignedTo === member.id;
-          return (
-            <button
-              key={member.id}
-              type="button"
-              onClick={() => onAssigneeChange(member.id)}
-              className={cn(
-                "flex cursor-pointer items-center gap-2 rounded-none border border-border px-3 py-2 text-left text-sm transition-colors",
-                selected
-                  ? "border-primary bg-primary/10"
-                  : "bg-background hover:bg-muted/60"
-              )}
-            >
-              <MemberAvatar
-                name={getDisplayName(member)}
-                color={member.avatar_color}
-                size="sm"
-              />
-              <span className="font-medium">{getDisplayName(member)}</span>
-            </button>
-          );
-        })}
-      </div>
+      <MemberTilePicker
+        mode="single-nullable"
+        members={members}
+        value={assignedTo}
+        onChange={onAssigneeChange}
+        unassignedLabel={t.chores.assigneeUnassigned}
+      />
     </div>
   );
 }

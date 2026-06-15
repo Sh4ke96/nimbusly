@@ -7,9 +7,8 @@ import { AppHeader } from "@/components/app/app-header";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { RestaurantEditDialog } from "@/components/restaurants/restaurant-edit-dialog";
 import { RestaurantFormDialog } from "@/components/restaurants/restaurant-form-dialog";
+import { RestaurantsFilters } from "@/components/restaurants/restaurants-filters";
 import { RestaurantPlaceCard } from "@/components/restaurants/restaurant-place-card";
-import { RestaurantVenueTypeFilter } from "@/components/restaurants/restaurant-venue-type-filter";
-import { RestaurantVisitStatusFilter } from "@/components/restaurants/restaurant-visit-status-filter";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
 import { Skeleton } from "@/components/ui/skeleton";
 import { RESTAURANT_FILTER_ALL } from "@/lib/constants/restaurants";
@@ -70,23 +69,19 @@ export function RestaurantsView() {
             </h1>
             <p className="text-sm text-muted-foreground">{t.restaurants.subtitle}</p>
           </div>
-          <RestaurantFormDialog onSuccess={onPlacesChanged} />
-        </div>
-
-        {!loading && places.length > 0 && (
-          <div className="space-y-3">
-            <RestaurantVisitStatusFilter
-              places={places}
-              value={visitFilter}
-              onChange={setVisitFilter}
-            />
-            <RestaurantVenueTypeFilter
-              places={places}
-              value={venueFilter}
-              onChange={setVenueFilter}
-            />
+          <div className="flex items-center gap-2 self-start sm:self-auto">
+            {!loading && places.length > 0 && (
+              <RestaurantsFilters
+                places={places}
+                visitFilter={visitFilter}
+                venueFilter={venueFilter}
+                onVisitChange={setVisitFilter}
+                onVenueChange={setVenueFilter}
+              />
+            )}
+            <RestaurantFormDialog onSuccess={onPlacesChanged} />
           </div>
-        )}
+        </div>
 
         {error ? (
           <ModuleFetchError onRetry={() => void fetchPlaces(true)} />

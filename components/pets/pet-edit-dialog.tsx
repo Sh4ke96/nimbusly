@@ -34,9 +34,9 @@ function PetEditForm({
   onClose: () => void;
 }) {
   const t = useT();
-  const [name, setName] = useState(() => pet.name);
+  const [name, setName] = useState<string>(() => pet.name);
   const [species, setSpecies] = useState<Pet["species"] | null>(() => pet.species);
-  const [notes, setNotes] = useState(() => pet.notes);
+  const [notes, setNotes] = useState<string>(() => pet.notes);
   const [state, action, pending] = useActionState(updatePet, null);
 
   useActionFeedback(state, () => {

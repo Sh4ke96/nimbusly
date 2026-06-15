@@ -9,6 +9,7 @@ import {
 } from "@/lib/shopping-lists/changes";
 import {
   isValidShoppingItemContent,
+  isValidShoppingItemQuantity,
   isValidShoppingListName,
   normalizeShoppingItemContent,
   normalizeShoppingListName,
@@ -22,6 +23,10 @@ import {
   parseShoppingListWatchFromForm,
   parseShoppingReorderFromForm,
 } from "@/lib/shopping-lists/types";
+import {
+  parseOrderedCategoryIds,
+  parseShoppingCategoryReorderFromForm,
+} from "@/lib/shopping-lists/categories";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { NOTIFICATION_TYPE, type NotificationType } from "@/lib/constants/notifications";
 import { getFamilyNotificationTitle } from "@/lib/notifications/family-notification";
@@ -80,6 +85,24 @@ async function getAccessibleList(
     .maybeSingle();
 
   return data;
+}
+
+async function getFamilyCategoryId(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  categoryId: string | null,
+  familyId: string | null
+): Promise<string | null> {
+  if (!categoryId) return null;
+  if (!familyId) return null;
+
+  const { data } = await supabase
+    .from("shopping_list_categories")
+    .select("id")
+    .eq("id", categoryId)
+    .eq("family_id", familyId)
+    .maybeSingle();
+
+  return data?.id ?? null;
 }
 
 export async function createShoppingList(
@@ -258,16 +281,29 @@ export async function addShoppingListItem(
 
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const { listId, content: contentRaw } = parseShoppingItemFromForm(formData);
+  const { listId, content: contentRaw, categoryId, quantity } =
+    parseShoppingItemFromForm(formData);
   const content = normalizeShoppingItemContent(contentRaw);
 
   if (!listId) return { error: t.shoppingLists.errorGeneric };
   if (!isValidShoppingItemContent(content)) {
     return { error: t.shoppingLists.errorItemRequired };
   }
+  if (!isValidShoppingItemQuantity(quantity)) {
+    return { error: t.shoppingLists.errorQuantityInvalid };
+  }
 
   const list = await getAccessibleList(supabase, listId);
   if (!list) return { error: t.shoppingLists.errorNotFound };
+
+  const resolvedCategoryId = await getFamilyCategoryId(
+    supabase,
+    categoryId,
+    list.family_id
+  );
+  if (categoryId && !resolvedCategoryId) {
+    return { error: t.shoppingLists.errorGeneric };
+  }
 
   const { data: lastItem } = await supabase
     .from("shopping_list_items")
@@ -283,6 +319,8 @@ export async function addShoppingListItem(
     list_id: listId,
     content,
     checked: false,
+    quantity,
+    category_id: resolvedCategoryId,
     sort_order: sortOrder,
     created_by: user.id,
   });
@@ -330,7 +368,8 @@ export async function updateShoppingListItem(
 
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const { id, listId, content: contentRaw, checked } = parseShoppingItemUpdateFromForm(formData);
+  const { id, listId, content: contentRaw, checked, quantity } =
+    parseShoppingItemUpdateFromForm(formData);
 
   if (!id || !listId) return { error: t.shoppingLists.errorGeneric };
 
@@ -351,6 +390,13 @@ export async function updateShoppingListItem(
 
   if (checked !== null) {
     updates.checked = checked;
+  }
+
+  if (quantity !== null) {
+    if (!isValidShoppingItemQuantity(quantity)) {
+      return { error: t.shoppingLists.errorQuantityInvalid };
+    }
+    updates.quantity = quantity;
   }
 
   const { error } = await supabase
@@ -517,4 +563,53 @@ export async function toggleShoppingListItemChecked(
     .eq("id", listId);
 
   return { success: t.shoppingLists.itemUpdatedSuccess };
+}
+
+export async function reorderShoppingListCategories(
+  _prev: AccountActionState,
+  formData: FormData
+): Promise<AccountActionState> {
+  const t = await getServerT();
+  const { supabase, user } = await requireUser();
+
+  if (!user) return { error: t.account.errorUnauthorized };
+
+  const { orderedIdsRaw } = parseShoppingCategoryReorderFromForm(formData);
+  const orderedIds = parseOrderedCategoryIds(orderedIdsRaw);
+  if (!orderedIds || orderedIds.length === 0) {
+    return { error: t.shoppingLists.errorGeneric };
+  }
+
+  const { profile } = await getProfileFamilyContext(supabase, user.id);
+  if (!profile?.family_id || profile.account_mode !== ACCOUNT_MODE.FAMILY) {
+    return { error: t.shoppingLists.errorGeneric };
+  }
+
+  const familyId = profile.family_id;
+
+  const { data: existing } = await supabase
+    .from("shopping_list_categories")
+    .select("id")
+    .eq("family_id", familyId);
+
+  const existingIds = new Set((existing ?? []).map((row) => row.id as string));
+  if (orderedIds.some((id) => !existingIds.has(id))) {
+    return { error: t.shoppingLists.errorGeneric };
+  }
+
+  const now = new Date().toISOString();
+  const updates = orderedIds.map((id, index) =>
+    supabase
+      .from("shopping_list_categories")
+      .update({ sort_order: index, updated_at: now })
+      .eq("id", id)
+      .eq("family_id", familyId)
+  );
+
+  const results = await Promise.all(updates);
+  if (results.some((result) => result.error)) {
+    return { error: t.shoppingLists.errorGeneric };
+  }
+
+  return { success: t.shoppingLists.categoryReorderedSuccess };
 }

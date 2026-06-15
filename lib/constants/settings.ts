@@ -3,6 +3,7 @@ export const SETTINGS_TAB = {
   ACCOUNT: "account",
   FAMILY: "family",
   PERMISSIONS: "permissions",
+  SHOPPING_CATEGORIES: "shopping-categories",
   PASSWORD: "password",
 } as const;
 

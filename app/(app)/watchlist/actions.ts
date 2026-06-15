@@ -30,6 +30,7 @@ function validateWatchlistFields(
   if (!parsed.mediaType) return "mediaType";
   if (!parsed.status) return "status";
   if (!isValidWatchlistNotes(parsed.notes)) return "notes";
+  if (parsed.streamingPlatforms === null) return "streamingPlatforms";
   return null;
 }
 
@@ -48,6 +49,9 @@ export async function createWatchlistItem(
   if (validationError === "title") return { error: t.watchlist.errorTitleRequired };
   if (validationError === "mediaType") return { error: t.watchlist.errorMediaTypeRequired };
   if (validationError === "status") return { error: t.watchlist.errorStatusRequired };
+  if (validationError === "streamingPlatforms") {
+    return { error: t.watchlist.errorStreamingPlatformsInvalid };
+  }
   if (validationError) return { error: t.watchlist.errorGeneric };
 
   const { profile, familyId } = await getProfileFamilyContext(supabase, user.id);
@@ -64,6 +68,7 @@ export async function createWatchlistItem(
       media_type: mediaType,
       status,
       notes: parsed.notes,
+      streaming_platforms: parsed.streamingPlatforms!,
       created_by: user.id,
     })
     .select("id")
@@ -121,11 +126,14 @@ export async function updateWatchlistItem(
   if (validationError === "title") return { error: t.watchlist.errorTitleRequired };
   if (validationError === "mediaType") return { error: t.watchlist.errorMediaTypeRequired };
   if (validationError === "status") return { error: t.watchlist.errorStatusRequired };
+  if (validationError === "streamingPlatforms") {
+    return { error: t.watchlist.errorStreamingPlatformsInvalid };
+  }
   if (validationError) return { error: t.watchlist.errorGeneric };
 
   const { data: existing } = await supabase
     .from("watchlist_items")
-    .select("id, title, media_type, status, notes, family_id, created_by")
+    .select("id, title, media_type, status, notes, streaming_platforms, family_id, created_by")
     .eq("id", id)
     .eq("created_by", user.id)
     .maybeSingle();
@@ -143,6 +151,7 @@ export async function updateWatchlistItem(
       media_type: mediaType,
       status,
       notes: parsed.notes,
+      streaming_platforms: parsed.streamingPlatforms!,
       updated_at: new Date().toISOString(),
     })
     .eq("id", id)
@@ -157,7 +166,7 @@ export async function updateWatchlistItem(
     const actorName = getDisplayName(profile);
     const changeSummary = buildWatchlistChangeSummary(
       watchlistItemFromRow(existing),
-      { title, media_type: mediaType, status, notes: parsed.notes },
+      { title, media_type: mediaType, status, notes: parsed.notes, streaming_platforms: parsed.streamingPlatforms! },
       t.watchlist
     );
 
@@ -202,7 +211,7 @@ export async function setWatchlistItemStatus(
 
   const { data: existing } = await supabase
     .from("watchlist_items")
-    .select("id, title, media_type, status, notes, family_id, created_by")
+    .select("id, title, media_type, status, notes, streaming_platforms, family_id, created_by")
     .eq("id", id)
     .eq("created_by", user.id)
     .maybeSingle();

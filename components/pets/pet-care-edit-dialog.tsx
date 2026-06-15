@@ -43,7 +43,7 @@ function PetCareEditForm({
 }) {
   const t = useT();
   const petId = item.pet_id;
-  const [name, setName] = useState(() => item.name);
+  const [name, setName] = useState<string>(() => item.name);
   const [careType, setCareType] = useState<PetCareItem["care_type"] | null>(
     () => item.care_type
   );
@@ -56,8 +56,8 @@ function PetCareEditForm({
   const [stockStatus, setStockStatus] = useState<PetCareItem["stock_status"]>(
     () => item.stock_status
   );
-  const [quantity, setQuantity] = useState(() => item.quantity);
-  const [notes, setNotes] = useState(() => item.notes);
+  const [quantity, setQuantity] = useState<string>(() => item.quantity);
+  const [notes, setNotes] = useState<string>(() => item.notes);
   const [state, action, pending] = useActionState(updatePetCareItem, null);
 
   useActionFeedback(state, () => {

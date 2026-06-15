@@ -4,18 +4,27 @@ import { SHOPPING_FORM_FIELD } from "@/lib/shopping-lists/types";
 import { useActionState, useMemo } from "react";
 import { Pencil, Trash2 } from "lucide-react";
 import { deleteShoppingList } from "@/app/(app)/shopping/actions";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ShoppingListWatchButton } from "@/components/shopping/shopping-list-watch-button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardHeaderActionButton,
+  CardHeaderActions,
+  CardTitle,
+  CARD_TITLE_ROW_CLASSNAME,
+} from "@/components/ui/card";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
 import { formatMessage } from "@/lib/i18n/format";
 import { useT } from "@/lib/lang-context";
 import type { ShoppingList } from "@/lib/shopping-lists/types";
-import { ShoppingListWatchButton } from "@/components/shopping/shopping-list-watch-button";
 import {
   selectIsListWatched,
   selectShoppingListItems,
   useShoppingListsStore,
 } from "@/lib/stores/shopping-lists-store";
+import { selectionCardClasses } from "@/lib/ui/selection-styles";
 import { cn } from "@/lib/utils";
 
 interface ShoppingListCardProps {
@@ -54,7 +63,7 @@ export function ShoppingListCard({
     <Card
       className={cn(
         "rounded-none py-0 shadow-sm transition-all duration-150 cursor-pointer hover:shadow-md",
-        selected && "ring-2 ring-primary/30 border-primary/40"
+        selectionCardClasses(selected)
       )}
       onClick={onSelect}
       onKeyDown={(e) => {
@@ -66,50 +75,38 @@ export function ShoppingListCard({
       role="button"
       tabIndex={0}
     >
-      <CardHeader className="border-b border-border pt-4 pb-3">
-        <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0">
-            <CardTitle className="font-heading text-base truncate">{list.name}</CardTitle>
-            <p className="text-[11px] text-muted-foreground mt-1">
-              {totalCount === 0
-                ? t.shoppingLists.noItemsYet
-                : formatMessage(t.shoppingLists.itemsProgress, {
-                    unchecked: String(uncheckedCount),
-                    total: String(totalCount),
-                  })}
-            </p>
-          </div>
-          <div className="flex shrink-0 gap-0.5" onClick={(e) => e.stopPropagation()}>
-            <ShoppingListWatchButton
-              listId={list.id}
-              compact
-              onChanged={onWatchChanged}
-            />
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="cursor-pointer text-muted-foreground hover:text-foreground"
-              onClick={onEdit}
-              aria-label={t.shoppingLists.editBtn}
+      <CardHeader>
+        <CardTitle className={cn(CARD_TITLE_ROW_CLASSNAME, "truncate")}>{list.name}</CardTitle>
+        <CardDescription>
+          {totalCount === 0
+            ? t.shoppingLists.noItemsYet
+            : formatMessage(t.shoppingLists.itemsProgress, {
+                unchecked: String(uncheckedCount),
+                total: String(totalCount),
+              })}
+        </CardDescription>
+        <CardHeaderActions onClick={(e) => e.stopPropagation()}>
+          <ShoppingListWatchButton
+            listId={list.id}
+            compact
+            onChanged={onWatchChanged}
+            className="border-r border-border [&_button]:size-8 [&_button]:rounded-none [&_button]:border-0 [&_button]:shadow-none"
+          />
+          <CardHeaderActionButton onClick={onEdit} aria-label={t.shoppingLists.editBtn}>
+            <Pencil className="size-4" />
+          </CardHeaderActionButton>
+          <form action={deleteAction} className="border-l border-border">
+            <input type="hidden" name={SHOPPING_FORM_FIELD.ID} value={list.id} />
+            <CardHeaderActionButton
+              type="submit"
+              destructive
+              disabled={deletePending}
+              aria-label={t.shoppingLists.deleteListBtn}
             >
-              <Pencil className="size-4" />
-            </Button>
-            <form action={deleteAction}>
-              <input type="hidden" name={SHOPPING_FORM_FIELD.ID} value={list.id} />
-              <Button
-                type="submit"
-                variant="ghost"
-                size="icon"
-                disabled={deletePending}
-                className="cursor-pointer text-destructive hover:text-destructive"
-                aria-label={t.shoppingLists.deleteListBtn}
-              >
-                <Trash2 className="size-4" />
-              </Button>
-            </form>
-          </div>
-        </div>
+              <Trash2 className="size-4" />
+            </CardHeaderActionButton>
+          </form>
+        </CardHeaderActions>
       </CardHeader>
       <CardContent className="p-4 space-y-2">
         {watched && (

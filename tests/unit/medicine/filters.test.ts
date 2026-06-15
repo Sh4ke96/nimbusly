@@ -18,6 +18,7 @@ function item(partial: Partial<MedicineItem>): MedicineItem {
     availability: MEDICINE_AVAILABILITY.IN_STOCK,
     location: "",
     notes: "",
+    taken_by: null,
     created_by: "u1",
     created_at: "2026-01-01",
     updated_at: "2026-01-01",

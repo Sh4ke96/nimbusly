@@ -18,11 +18,11 @@ const Toaster = ({ ...props }: ToasterProps) => {
       theme={theme as ToasterProps["theme"]}
       className="toaster group"
       icons={{
-        success: <CircleCheckIcon className="size-4 text-primary" />,
-        info: <InfoIcon className="size-4 text-primary" />,
-        warning: <TriangleAlertIcon className="size-4 text-accent-foreground" />,
-        error: <OctagonXIcon className="size-4 text-destructive" />,
-        loading: <Loader2Icon className="size-4 animate-spin text-primary" />,
+        success: <CircleCheckIcon className="size-5 text-primary" />,
+        info: <InfoIcon className="size-5 text-primary" />,
+        warning: <TriangleAlertIcon className="size-5 text-accent-foreground" />,
+        error: <OctagonXIcon className="size-5 text-destructive" />,
+        loading: <Loader2Icon className="size-5 animate-spin text-primary" />,
       }}
       style={
         {
@@ -44,9 +44,12 @@ const Toaster = ({ ...props }: ToasterProps) => {
       toastOptions={{
         classNames: {
           toast:
-            "nimbus-toast group-[.toaster]:rounded-none group-[.toaster]:border group-[.toaster]:border-border group-[.toaster]:bg-card group-[.toaster]:text-card-foreground group-[.toaster]:font-sans group-[.toaster]:text-sm group-[.toaster]:shadow-sm group-[.toaster]:ring-1 group-[.toaster]:ring-foreground/10 data-[type=success]:group-[.toaster]:border-primary/30 data-[type=success]:group-[.toaster]:bg-primary/10 data-[type=error]:group-[.toaster]:border-destructive/30 data-[type=error]:group-[.toaster]:bg-destructive/10",
-          title: "group-[.toast]:font-heading group-[.toast]:font-semibold group-[.toast]:text-sm",
-          description: "group-[.toast]:text-muted-foreground group-[.toast]:text-xs",
+            "nimbus-toast group-[.toaster]:rounded-none group-[.toaster]:border group-[.toaster]:border-border group-[.toaster]:bg-card group-[.toaster]:text-card-foreground group-[.toaster]:font-sans group-[.toaster]:text-sm group-[.toaster]:shadow-sm group-[.toaster]:ring-1 group-[.toaster]:ring-foreground/10 group-[.toaster]:items-center data-[type=success]:group-[.toaster]:border-primary/30 data-[type=success]:group-[.toaster]:bg-primary/10 data-[type=error]:group-[.toaster]:border-destructive/30 data-[type=error]:group-[.toaster]:bg-destructive/10",
+          icon: "group-[.toast]:flex group-[.toast]:size-7 group-[.toast]:shrink-0 group-[.toast]:items-center group-[.toast]:justify-center group-[.toast]:self-center [&_svg]:size-5",
+          content:
+            "group-[.toast]:flex group-[.toast]:min-h-7 group-[.toast]:flex-col group-[.toast]:justify-center group-[.toast]:self-center",
+          title: "group-[.toast]:font-heading group-[.toast]:font-semibold group-[.toast]:text-sm group-[.toast]:leading-snug",
+          description: "group-[.toast]:text-muted-foreground group-[.toast]:text-xs group-[.toast]:leading-snug",
           actionButton:
             "group-[.toast]:rounded-none group-[.toast]:bg-primary group-[.toast]:font-semibold group-[.toast]:text-primary-foreground",
           cancelButton:

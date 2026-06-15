@@ -8,4 +8,7 @@ export const BRAND_COLOR = {
   MUTED_FG: "#5c6b5c",
   SURFACE: "#f6f8f2",
   ENTRY_BG: "#eef2e7",
+  /** Terracotta — wydatki, sekcja „Wymaga uwagi” */
+  ATTENTION: "#c45c26",
+  ATTENTION_FG: "#fff8f4",
 } as const;

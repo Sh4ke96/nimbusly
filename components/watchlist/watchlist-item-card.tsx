@@ -1,9 +1,19 @@
 "use client";
 
+import { StreamingPlatformBadges } from "@/components/watchlist/streaming-platform-badges";
 import { WATCHLIST_FORM_FIELD } from "@/lib/watchlist/types";
 import { Film, Pencil, Trash2, Tv } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardHeaderActionButton,
+  CardHeaderActions,
+  CardTitle,
+  CARD_TITLE_ROW_CLASSNAME,
+} from "@/components/ui/card";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import {
   WATCHLIST_MEDIA_TYPE,
@@ -75,42 +85,25 @@ export function WatchlistItemCard({
 
   return (
     <Card className="rounded-none py-0 shadow-sm transition-all duration-150 hover:shadow-md">
-      <CardHeader className="border-b border-border pt-4 pb-3">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0 space-y-1">
-            <CardTitle className="font-heading text-base truncate">{item.title}</CardTitle>
-            <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-              <MediaIcon className="size-3 shrink-0" />
-              {t.watchlist.mediaTypeLabels[item.media_type]}
-            </p>
-          </div>
-          {isOwner && (
-            <div className="flex shrink-0 gap-0.5">
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="cursor-pointer text-muted-foreground hover:text-foreground"
-                onClick={onEdit}
-                aria-label={t.watchlist.editBtn}
-              >
-                <Pencil className="size-4" />
-              </Button>
-              <form action={deleteAction}>
-                <input type="hidden" name={WATCHLIST_FORM_FIELD.ID} value={item.id} />
-                <Button
-                  type="submit"
-                  variant="ghost"
-                  size="icon"
-                  disabled={deletePending}
-                  className="cursor-pointer text-destructive hover:text-destructive"
-                >
-                  <Trash2 className="size-4" />
-                </Button>
-              </form>
-            </div>
-          )}
-        </div>
+      <CardHeader>
+        <CardTitle className={cn(CARD_TITLE_ROW_CLASSNAME, "truncate")}>{item.title}</CardTitle>
+        <CardDescription className="flex items-center gap-1.5 text-xs">
+          <MediaIcon className="size-3 shrink-0" />
+          {t.watchlist.mediaTypeLabels[item.media_type]}
+        </CardDescription>
+        {isOwner && (
+          <CardHeaderActions>
+            <CardHeaderActionButton onClick={onEdit} aria-label={t.watchlist.editBtn}>
+              <Pencil className="size-4" />
+            </CardHeaderActionButton>
+            <form action={deleteAction} className="border-l border-border">
+              <input type="hidden" name={WATCHLIST_FORM_FIELD.ID} value={item.id} />
+              <CardHeaderActionButton type="submit" destructive disabled={deletePending}>
+                <Trash2 className="size-4" />
+              </CardHeaderActionButton>
+            </form>
+          </CardHeaderActions>
+        )}
       </CardHeader>
       <CardContent className="p-4 space-y-3">
         <span
@@ -121,6 +114,8 @@ export function WatchlistItemCard({
         >
           {t.watchlist.statusLabels[item.status]}
         </span>
+
+        <StreamingPlatformBadges platforms={item.streaming_platforms} />
 
         {item.notes && (
           <p className="whitespace-pre-wrap text-sm leading-relaxed text-foreground border-t border-border pt-3">

@@ -5,10 +5,12 @@ import {
   WATCHLIST_MEDIA_TYPE,
   WATCHLIST_STATUS,
 } from "@/lib/constants/watchlist";
+import { STREAMING_PLATFORM } from "@/lib/constants/watchlist-streaming";
 import {
   countWatchlistByStatus,
   filterWatchlistByMediaType,
   filterWatchlistByStatus,
+  filterWatchlistByStreamingPlatform,
 } from "@/lib/watchlist/filters";
 import type { WatchlistItem } from "@/lib/watchlist/types";
 
@@ -20,6 +22,7 @@ function item(partial: Partial<WatchlistItem>): WatchlistItem {
     media_type: WATCHLIST_MEDIA_TYPE.MOVIE,
     status: WATCHLIST_STATUS.TO_WATCH,
     notes: "",
+    streaming_platforms: [],
     created_by: "u1",
     created_at: "2026-01-01",
     updated_at: "2026-01-01",
@@ -58,5 +61,21 @@ describe("countWatchlistByStatus", () => {
     assert.equal(counts.all, 3);
     assert.equal(counts.to_watch, 2);
     assert.equal(counts.watched, 1);
+  });
+});
+
+describe("filterWatchlistByStreamingPlatform", () => {
+  it("filters items that include the selected platform", () => {
+    const items = [
+      item({ id: "1", streaming_platforms: [STREAMING_PLATFORM.NETFLIX] }),
+      item({ id: "2", streaming_platforms: [STREAMING_PLATFORM.MAX] }),
+      item({
+        id: "3",
+        streaming_platforms: [STREAMING_PLATFORM.NETFLIX, STREAMING_PLATFORM.MAX],
+      }),
+    ];
+    assert.equal(filterWatchlistByStreamingPlatform(items, WATCHLIST_FILTER_ALL).length, 3);
+    assert.equal(filterWatchlistByStreamingPlatform(items, STREAMING_PLATFORM.NETFLIX).length, 2);
+    assert.equal(filterWatchlistByStreamingPlatform(items, STREAMING_PLATFORM.PLAYER).length, 0);
   });
 });

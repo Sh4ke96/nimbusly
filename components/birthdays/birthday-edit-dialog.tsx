@@ -32,11 +32,11 @@ function BirthdayEditForm({
   onClose: () => void;
 }) {
   const t = useT();
-  const [personName, setPersonName] = useState(() => entry.person_name);
+  const [personName, setPersonName] = useState<string>(() => entry.person_name);
   const [date, setDate] = useState<Date | undefined>(
     () => new Date(2000, entry.birth_month - 1, entry.birth_day)
   );
-  const [description, setDescription] = useState(() => entry.description);
+  const [description, setDescription] = useState<string>(() => entry.description);
   const [state, action, pending] = useActionState(updateBirthday, null);
 
   useActionFeedback(state, () => {

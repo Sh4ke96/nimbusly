@@ -6,8 +6,7 @@ import { Pencil, Trash2 } from "lucide-react";
 import { deleteBudget } from "@/app/(app)/budget/actions";
 import { BudgetWatchButton } from "@/components/budget/budget-watch-button";
 import { MemberAvatar } from "@/components/member-avatar";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardHeaderActionButton, CardHeaderActions, CardTitle, CARD_TITLE_ROW_CLASSNAME } from "@/components/ui/card";
 import { formatBudgetAmount, netBalance } from "@/lib/budget/aggregates";
 import type { Budget } from "@/lib/budget/types";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
@@ -19,6 +18,7 @@ import {
   selectIsBudgetWatched,
   useBudgetStore,
 } from "@/lib/stores/budget-store";
+import { selectionCardClasses } from "@/lib/ui/selection-styles";
 import { cn } from "@/lib/utils";
 
 interface BudgetCardProps {
@@ -61,7 +61,7 @@ export function BudgetCard({
     <Card
       className={cn(
         "rounded-none py-0 shadow-sm transition-all duration-150 cursor-pointer hover:shadow-md",
-        selected && "ring-2 ring-primary/30 border-primary/40"
+        selectionCardClasses(selected)
       )}
       onClick={onSelect}
       onKeyDown={(e) => {
@@ -73,47 +73,38 @@ export function BudgetCard({
       role="button"
       tabIndex={0}
     >
-      <CardHeader className="border-b border-border pt-4 pb-3">
-        <div className="flex items-start justify-between gap-2">
-          <div className="min-w-0">
-            <CardTitle className="font-heading text-base truncate">{budget.name}</CardTitle>
-            <p className="text-[11px] text-muted-foreground mt-1">
-              {t.budget.entryCount.replace("{count}", String(entries.length))}
-              {" · "}
-              {formatBudgetAmount(balance, lang)}
-            </p>
-          </div>
-          <div className="flex shrink-0 gap-0.5" onClick={(e) => e.stopPropagation()}>
-            <BudgetWatchButton
-              budgetId={budget.id}
-              compact
-              onChanged={onWatchChanged}
-            />
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="cursor-pointer text-muted-foreground hover:text-foreground"
-              onClick={onEdit}
-              aria-label={t.budget.editBtn}
+      <CardHeader>
+        <CardTitle className={cn(CARD_TITLE_ROW_CLASSNAME, "truncate")}>{budget.name}</CardTitle>
+        <CardDescription>
+          {budget.is_hidden && (
+            <span className="text-muted-foreground/80">{t.budget.hiddenBadge} · </span>
+          )}
+          {t.budget.entryCount.replace("{count}", String(entries.length))}
+          {" · "}
+          {formatBudgetAmount(balance, lang)}
+        </CardDescription>
+        <CardHeaderActions onClick={(e) => e.stopPropagation()}>
+          <BudgetWatchButton
+            budgetId={budget.id}
+            compact
+            onChanged={onWatchChanged}
+            className="border-r border-border [&_button]:size-8 [&_button]:rounded-none [&_button]:border-0 [&_button]:shadow-none"
+          />
+          <CardHeaderActionButton onClick={onEdit} aria-label={t.budget.editBtn}>
+            <Pencil className="size-4" />
+          </CardHeaderActionButton>
+          <form action={deleteAction} className="border-l border-border">
+            <input type="hidden" name={BUDGET_FORM_FIELD.ID} value={budget.id} />
+            <CardHeaderActionButton
+              type="submit"
+              destructive
+              disabled={deletePending}
+              aria-label={t.budget.deleteBtn}
             >
-              <Pencil className="size-4" />
-            </Button>
-            <form action={deleteAction}>
-              <input type="hidden" name={BUDGET_FORM_FIELD.ID} value={budget.id} />
-              <Button
-                type="submit"
-                variant="ghost"
-                size="icon"
-                disabled={deletePending}
-                className="cursor-pointer text-destructive hover:text-destructive"
-                aria-label={t.budget.deleteBtn}
-              >
-                <Trash2 className="size-4" />
-              </Button>
-            </form>
-          </div>
-        </div>
+              <Trash2 className="size-4" />
+            </CardHeaderActionButton>
+          </form>
+        </CardHeaderActions>
       </CardHeader>
       <CardContent className="p-4 space-y-2">
         {watched && (

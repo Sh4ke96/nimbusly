@@ -23,6 +23,7 @@ const labels = {
     weekly: "Weekly",
     biweekly: "Biweekly",
     monthly: "Monthly",
+    custom: "Custom",
   },
   assigneeUnassigned: "Unassigned",
 };

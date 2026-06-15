@@ -5,6 +5,7 @@ import { useActionState, useState } from "react";
 import { updateBudget } from "@/app/(app)/budget/actions";
 import { BudgetMemberPicker } from "@/components/budget/budget-member-picker";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -41,8 +42,9 @@ function BudgetEditForm({
   const t = useT();
   const profile = useProfileStore((s) => s.profile);
   const members = useProfileStore((s) => s.members);
-  const [name, setName] = useState(() => budget.name);
-  const [selectedMemberIds, setSelectedMemberIds] = useState(() => memberIds);
+  const [name, setName] = useState<string>(() => budget.name);
+  const [isHidden, setIsHidden] = useState<boolean>(() => budget.is_hidden);
+  const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>(() => memberIds);
   const [state, action, pending] = useActionState(updateBudget, null);
 
   useActionFeedback(state, () => {
@@ -71,6 +73,25 @@ function BudgetEditForm({
         selectedIds={selectedMemberIds}
         onChange={setSelectedMemberIds}
       />
+      <div className="flex items-start gap-3 rounded-none border border-border bg-muted/30 px-3 py-3">
+        <input
+          type="hidden"
+          name={BUDGET_FORM_FIELD.IS_HIDDEN}
+          value={isHidden ? "true" : "false"}
+        />
+        <Checkbox
+          id="budget-edit-hidden"
+          checked={isHidden}
+          onCheckedChange={(checked) => setIsHidden(checked === true)}
+          className="mt-0.5"
+        />
+        <div className="space-y-1">
+          <Label htmlFor="budget-edit-hidden" className="cursor-pointer font-medium">
+            {t.budget.hiddenLabel}
+          </Label>
+          <p className="text-xs text-muted-foreground">{t.budget.hiddenHint}</p>
+        </div>
+      </div>
       <Button type="submit" disabled={pending} className="w-full cursor-pointer">
         {pending ? t.budget.saving : t.budget.saveBtn}
       </Button>
@@ -95,7 +116,7 @@ export function BudgetEditDialog({
         </DialogHeader>
         {budget && (
           <BudgetEditForm
-            key={`${budget.id}:${memberIds.join(",")}`}
+            key={`${budget.id}:${budget.is_hidden}:${memberIds.join(",")}`}
             budget={budget}
             memberIds={memberIds}
             onSuccess={onSuccess}

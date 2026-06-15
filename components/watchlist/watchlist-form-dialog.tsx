@@ -15,6 +15,7 @@ import {
   type WatchlistMediaType,
   type WatchlistStatus,
 } from "@/lib/constants/watchlist";
+import type { StreamingPlatform } from "@/lib/constants/watchlist-streaming";
 import {
   isValidWatchlistMediaType,
   isValidWatchlistStatus,
@@ -37,6 +38,7 @@ export function WatchlistFormDialog({ onSuccess }: WatchlistFormDialogProps) {
   const [mediaType, setMediaType] = useState<WatchlistMediaType | null>(null);
   const [status, setStatus] = useState<WatchlistStatus | null>(WATCHLIST_STATUS.TO_WATCH);
   const [notes, setNotes] = useState<string>("");
+  const [streamingPlatforms, setStreamingPlatforms] = useState<StreamingPlatform[]>([]);
   const [state, action, pending] = useActionState(createWatchlistItem, null);
 
   useActionFeedback(state, () => {
@@ -45,6 +47,7 @@ export function WatchlistFormDialog({ onSuccess }: WatchlistFormDialogProps) {
     setMediaType(null);
     setStatus(WATCHLIST_STATUS.TO_WATCH);
     setNotes("");
+    setStreamingPlatforms([]);
     onSuccess();
   }, pending);
 
@@ -87,6 +90,8 @@ export function WatchlistFormDialog({ onSuccess }: WatchlistFormDialogProps) {
             onStatusChange={setStatus}
             notes={notes}
             onNotesChange={setNotes}
+            streamingPlatforms={streamingPlatforms}
+            onStreamingPlatformsChange={setStreamingPlatforms}
           />
           <Button type="submit" className="w-full" disabled={pending}>
             {pending ? t.watchlist.saving : t.watchlist.saveBtn}

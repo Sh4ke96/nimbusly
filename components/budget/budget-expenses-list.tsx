@@ -2,7 +2,7 @@
 
 import { BUDGET_FORM_FIELD } from "@/lib/budget/types";
 import { useActionState } from "react";
-import { Trash2 } from "lucide-react";
+import { Trash2, Bell, Repeat } from "lucide-react";
 import { deleteBudgetExpense } from "@/app/(app)/budget/actions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,6 +11,7 @@ import {
   type BudgetExpenseCategory,
   type BudgetIncomeCategory,
 } from "@/lib/constants/budget";
+import { isBudgetEntryRecurring } from "@/lib/budget/recurrence";
 import { formatBudgetAmount } from "@/lib/budget/aggregates";
 import type { BudgetExpense } from "@/lib/budget/types";
 import { isIncomeEntry } from "@/lib/budget/types";
@@ -58,6 +59,7 @@ function EntryRow({
   const t = useT();
   const { lang } = useLang();
   const isIncome = isIncomeEntry(entry);
+  const isRecurring = isBudgetEntryRecurring(entry);
   const [deleteState, deleteAction, deletePending] = useActionState(
     deleteBudgetExpense,
     null
@@ -88,6 +90,18 @@ function EntryRow({
               {categoryLabel}
             </span>
             <span className="text-xs text-muted-foreground">{entry.expense_date}</span>
+            {isRecurring && (
+              <span className="inline-flex items-center gap-1 text-xs border border-border px-2 py-0.5 text-muted-foreground">
+                <Repeat className="size-3" />
+                {t.budget.recurrenceLabels[entry.recurrence]}
+              </span>
+            )}
+            {!isIncome && entry.payment_reminder_enabled && (
+              <span className="inline-flex items-center gap-1 text-xs border border-primary/30 bg-primary/5 px-2 py-0.5 text-primary">
+                <Bell className="size-3" />
+                {t.budget.paymentReminderBadge}
+              </span>
+            )}
           </div>
           {entry.description.trim() && (
             <p className="text-sm text-foreground">{entry.description}</p>
@@ -151,7 +165,7 @@ export function BudgetExpensesList({
 
         return (
           <EntryRow
-            key={entry.id}
+            key={`${entry.id}-${entry.expense_date}`}
             entry={entry}
             budgetId={budgetId}
             categoryLabel={categoryLabel}

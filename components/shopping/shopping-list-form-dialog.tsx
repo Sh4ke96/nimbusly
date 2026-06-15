@@ -24,7 +24,7 @@ interface ShoppingListFormDialogProps {
 
 export function ShoppingListFormDialog({ onSuccess }: ShoppingListFormDialogProps) {
   const t = useT();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState<boolean>(false);
   const [state, action, pending] = useActionState(createShoppingList, null);
 
   useActionFeedback(state, () => {

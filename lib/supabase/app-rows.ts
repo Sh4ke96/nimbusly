@@ -4,6 +4,7 @@ import type { PetCareItem } from "@/lib/pets/types";
 import type { RestaurantPlace } from "@/lib/restaurants/types";
 import type { ScheduleEntry } from "@/lib/schedule/types";
 import type { WatchlistItem } from "@/lib/watchlist/types";
+import { normalizeStreamingPlatforms } from "@/lib/watchlist/streaming-platforms";
 import type { Database } from "@/lib/supabase/database.types";
 
 type Tables = Database["public"]["Tables"];
@@ -18,7 +19,11 @@ export function medicineItemFromRow(row: unknown): MedicineItem {
 }
 
 export function watchlistItemFromRow(row: unknown): WatchlistItem {
-  return row as WatchlistItem;
+  const item = row as WatchlistItem;
+  return {
+    ...item,
+    streaming_platforms: normalizeStreamingPlatforms(item.streaming_platforms ?? []),
+  };
 }
 
 export function restaurantPlaceFromRow(row: unknown): RestaurantPlace {

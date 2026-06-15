@@ -16,11 +16,14 @@ import {
   normalizeBudgetName,
   parseBudgetExpenseFromForm,
   parseBudgetExpenseUpdateFromForm,
+  parseBudgetHiddenFromForm,
   parseBudgetIdFromForm,
   parseBudgetMemberIdsFromForm,
   parseBudgetNameFromForm,
+  parseBudgetRecurrenceFromForm,
   parseBudgetWatchFromForm,
 } from "@/lib/budget/types";
+import { isValidBudgetRecurrence } from "@/lib/budget/recurrence";
 import { BUDGET_ENTRY_TYPE } from "@/lib/constants/budget";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { NOTIFICATION_TYPE, type NotificationType } from "@/lib/constants/notifications";
@@ -70,18 +73,6 @@ async function notifyWatchersAboutBudgetExpenseEvent(
   });
 }
 
-async function getAccessibleBudget(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  budgetId: string
-) {
-  const { data } = await supabase
-    .from("budgets")
-    .select("id, name, family_id, created_by")
-    .eq("id", budgetId)
-    .maybeSingle();
-  return data;
-}
-
 function resolveBudgetCategoryLabel(
   category: string,
   entryType: string,
@@ -98,6 +89,52 @@ function resolveBudgetCategoryLabel(
     labels.categoryLabels[category as keyof typeof labels.categoryLabels] ??
     category
   );
+}
+
+async function getAccessibleBudget(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  budgetId: string
+) {
+  const { data } = await supabase
+    .from("budgets")
+    .select("id, name, family_id, created_by")
+    .eq("id", budgetId)
+    .maybeSingle();
+  return data;
+}
+
+function parseBudgetEntryRecurrence(
+  formData: FormData,
+  expenseDate: string,
+  allowPaymentReminder: boolean
+):
+  | {
+      recurrence: string;
+      recurrence_end_date: string | null;
+      payment_reminder_enabled: boolean;
+    }
+  | { error: "recurrence" | "date" | "recurrenceEnd" } {
+  const { recurrence, recurrenceEndDate, paymentReminderEnabled } =
+    parseBudgetRecurrenceFromForm(formData);
+
+  if (!isValidBudgetRecurrence(recurrence)) {
+    return { error: "recurrence" };
+  }
+
+  if (recurrenceEndDate) {
+    if (!isValidExpenseDateString(recurrenceEndDate)) {
+      return { error: "date" };
+    }
+    if (recurrenceEndDate < expenseDate) {
+      return { error: "recurrenceEnd" };
+    }
+  }
+
+  return {
+    recurrence,
+    recurrence_end_date: recurrenceEndDate || null,
+    payment_reminder_enabled: allowPaymentReminder && paymentReminderEnabled,
+  };
 }
 
 async function syncBudgetMembers(
@@ -158,10 +195,15 @@ export async function updateBudget(
   const existing = await getAccessibleBudget(supabase, id);
   if (!existing) return { error: t.budget.errorNotFound };
 
+  const isHidden = parseBudgetHiddenFromForm(formData);
   const profile = await getActorProfile(supabase, user.id);
   const { error } = await supabase
     .from("budgets")
-    .update({ name, updated_at: new Date().toISOString() })
+    .update({
+      name,
+      is_hidden: isHidden,
+      updated_at: new Date().toISOString(),
+    })
     .eq("id", id);
 
   if (error) return { error: t.budget.errorGeneric };
@@ -306,6 +348,15 @@ export async function addBudgetExpense(
   if (!isValidExpenseDescription(description)) return { error: t.budget.errorDescription };
   if (!isValidExpenseDateString(expenseDate)) return { error: t.budget.errorDate };
 
+  const recurrenceFields = parseBudgetEntryRecurrence(formData, expenseDate, true);
+  if ("error" in recurrenceFields) {
+    if (recurrenceFields.error === "recurrence") return { error: t.budget.errorRecurrence };
+    if (recurrenceFields.error === "recurrenceEnd") {
+      return { error: t.budget.errorRecurrenceEndBeforeStart };
+    }
+    return { error: t.budget.errorDate };
+  }
+
   const budget = await getAccessibleBudget(supabase, budgetId);
   if (!budget) return { error: t.budget.errorNotFound };
 
@@ -316,6 +367,10 @@ export async function addBudgetExpense(
     amount,
     description,
     expense_date: expenseDate,
+    recurrence: recurrenceFields.recurrence,
+    recurrence_end_date: recurrenceFields.recurrence_end_date,
+    payment_reminder_enabled: recurrenceFields.payment_reminder_enabled,
+    reminder_sent_keys: [],
     created_by: user.id,
   });
 
@@ -376,6 +431,15 @@ export async function addBudgetIncome(
   if (!isValidExpenseDescription(description)) return { error: t.budget.errorDescription };
   if (!isValidExpenseDateString(expenseDate)) return { error: t.budget.errorDate };
 
+  const recurrenceFields = parseBudgetEntryRecurrence(formData, expenseDate, false);
+  if ("error" in recurrenceFields) {
+    if (recurrenceFields.error === "recurrence") return { error: t.budget.errorRecurrence };
+    if (recurrenceFields.error === "recurrenceEnd") {
+      return { error: t.budget.errorRecurrenceEndBeforeStart };
+    }
+    return { error: t.budget.errorDate };
+  }
+
   const budget = await getAccessibleBudget(supabase, budgetId);
   if (!budget) return { error: t.budget.errorNotFound };
 
@@ -386,6 +450,10 @@ export async function addBudgetIncome(
     amount,
     description,
     expense_date: expenseDate,
+    recurrence: recurrenceFields.recurrence,
+    recurrence_end_date: recurrenceFields.recurrence_end_date,
+    payment_reminder_enabled: false,
+    reminder_sent_keys: [],
     created_by: user.id,
   });
 

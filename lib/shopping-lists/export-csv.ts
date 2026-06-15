@@ -13,18 +13,20 @@ export function buildShoppingListCsv(params: {
   items: ShoppingListItem[];
   labels: {
     item: string;
+    quantity: string;
     checked: string;
     yes: string;
     no: string;
   };
 }): string {
-  const header = [params.labels.item, params.labels.checked]
+  const header = [params.labels.item, params.labels.quantity, params.labels.checked]
     .map(escapeCsvCell)
     .join(",");
 
   const rows = params.items.map((item) =>
     [
       item.content,
+      String(item.quantity),
       item.checked ? params.labels.yes : params.labels.no,
     ]
       .map((cell) => escapeCsvCell(String(cell)))

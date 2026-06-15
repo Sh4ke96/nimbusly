@@ -18,6 +18,8 @@ function item(
     list_id: "list-1",
     content: "Milk",
     checked: false,
+    quantity: 1,
+    category_id: null,
     sort_order: 0,
     created_by: "user-1",
     created_at: "2026-01-01T00:00:00.000Z",

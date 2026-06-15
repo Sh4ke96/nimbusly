@@ -3,8 +3,16 @@
 import { RESTAURANT_FORM_FIELD } from "@/lib/restaurants/types";
 import { format } from "date-fns";
 import { Beer, Calendar, MapPin, Pencil, Trash2, Utensils } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardHeaderActionButton,
+  CardHeaderActions,
+  CardTitle,
+  CARD_TITLE_ROW_CLASSNAME,
+} from "@/components/ui/card";
 import { RestaurantMapPreview } from "@/components/restaurants/restaurant-map-preview";
 import { RestaurantStarRating } from "@/components/restaurants/restaurant-star-rating";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
@@ -84,42 +92,25 @@ export function RestaurantPlaceCard({
 
   return (
     <Card className="rounded-none py-0 shadow-sm transition-all duration-150 hover:shadow-md sm:col-span-2">
-      <CardHeader className="border-b border-border pt-4 pb-3">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0 space-y-1">
-            <CardTitle className="font-heading text-base truncate">{place.name}</CardTitle>
-            <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-              <VenueIcon className="size-3 shrink-0" />
-              {t.restaurants.venueTypeLabels[place.venue_type]}
-            </p>
-          </div>
-          {isOwner && (
-            <div className="flex shrink-0 gap-0.5">
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="cursor-pointer text-muted-foreground hover:text-foreground"
-                onClick={onEdit}
-                aria-label={t.restaurants.editBtn}
-              >
-                <Pencil className="size-4" />
-              </Button>
-              <form action={deleteAction}>
-                <input type="hidden" name={RESTAURANT_FORM_FIELD.ID} value={place.id} />
-                <Button
-                  type="submit"
-                  variant="ghost"
-                  size="icon"
-                  disabled={deletePending}
-                  className="cursor-pointer text-destructive hover:text-destructive"
-                >
-                  <Trash2 className="size-4" />
-                </Button>
-              </form>
-            </div>
-          )}
-        </div>
+      <CardHeader>
+        <CardTitle className={cn(CARD_TITLE_ROW_CLASSNAME, "truncate")}>{place.name}</CardTitle>
+        <CardDescription className="flex items-center gap-1.5 text-xs">
+          <VenueIcon className="size-3 shrink-0" />
+          {t.restaurants.venueTypeLabels[place.venue_type]}
+        </CardDescription>
+        {isOwner && (
+          <CardHeaderActions>
+            <CardHeaderActionButton onClick={onEdit} aria-label={t.restaurants.editBtn}>
+              <Pencil className="size-4" />
+            </CardHeaderActionButton>
+            <form action={deleteAction} className="border-l border-border">
+              <input type="hidden" name={RESTAURANT_FORM_FIELD.ID} value={place.id} />
+              <CardHeaderActionButton type="submit" destructive disabled={deletePending}>
+                <Trash2 className="size-4" />
+              </CardHeaderActionButton>
+            </form>
+          </CardHeaderActions>
+        )}
       </CardHeader>
       <CardContent className="p-4 space-y-3">
         <div className="flex flex-wrap items-center gap-2">

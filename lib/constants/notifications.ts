@@ -20,6 +20,7 @@ export const NOTIFICATION_TYPE = {
   BUDGET_EXPENSE_REMOVED: "budget_expense_removed",
   BUDGET_INCOME_ADDED: "budget_income_added",
   BUDGET_INCOME_REMOVED: "budget_income_removed",
+  BUDGET_EXPENSE_DUE_REMINDER: "budget_expense_due_reminder",
   MEDICINE_ADDED: "medicine_added",
   MEDICINE_UPDATED: "medicine_updated",
   MEDICINE_DELETED: "medicine_deleted",
@@ -37,6 +38,9 @@ export const NOTIFICATION_TYPE = {
   CHORE_ADDED: "chore_added",
   CHORE_UPDATED: "chore_updated",
   CHORE_DELETED: "chore_deleted",
+  NOTE_ADDED: "note_added",
+  NOTE_UPDATED: "note_updated",
+  NOTE_DELETED: "note_deleted",
 } as const;
 
 export type NotificationType = (typeof NOTIFICATION_TYPE)[keyof typeof NOTIFICATION_TYPE];
@@ -75,6 +79,7 @@ export const BUDGET_NOTIFICATION_TYPES: NotificationType[] = [
   NOTIFICATION_TYPE.BUDGET_EXPENSE_REMOVED,
   NOTIFICATION_TYPE.BUDGET_INCOME_ADDED,
   NOTIFICATION_TYPE.BUDGET_INCOME_REMOVED,
+  NOTIFICATION_TYPE.BUDGET_EXPENSE_DUE_REMINDER,
 ];
 
 export const MEDICINE_NOTIFICATION_TYPES: NotificationType[] = [
@@ -107,6 +112,12 @@ export const CHORE_NOTIFICATION_TYPES: NotificationType[] = [
   NOTIFICATION_TYPE.CHORE_ADDED,
   NOTIFICATION_TYPE.CHORE_UPDATED,
   NOTIFICATION_TYPE.CHORE_DELETED,
+];
+
+export const NOTE_NOTIFICATION_TYPES: NotificationType[] = [
+  NOTIFICATION_TYPE.NOTE_ADDED,
+  NOTIFICATION_TYPE.NOTE_UPDATED,
+  NOTIFICATION_TYPE.NOTE_DELETED,
 ];
 
 export const NOTIFICATION_FILTER_TAB = {

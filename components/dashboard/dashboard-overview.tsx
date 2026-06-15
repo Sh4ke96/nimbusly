@@ -35,7 +35,7 @@ import { BRAND_COLOR } from "@/lib/constants/brand";
 import { BUDGET_EXPENSE_COLOR } from "@/lib/constants/budget";
 import type { DashboardOverviewCardId } from "@/lib/constants/dashboard-overview";
 import { DASHBOARD_OVERVIEW_CARD } from "@/lib/constants/dashboard-overview";
-import { parseEntryDateParts } from "@/lib/schedule/types";
+import { scheduleEntryOverlapsMonth } from "@/lib/schedule/types";
 import {
   parseDashboardOverviewLayout,
   serializeDashboardOverviewLayout,
@@ -54,6 +54,7 @@ import { useWatchlistStore } from "@/lib/stores/watchlist-store";
 import { useRestaurantsStore } from "@/lib/stores/restaurants-store";
 import { usePetsStore } from "@/lib/stores/pets-store";
 import { useChoresStore } from "@/lib/stores/chores-store";
+import { useNotesStore } from "@/lib/stores/notes-store";
 import { useScheduleStore } from "@/lib/stores/schedule-store";
 import { useBirthdaysStore } from "@/lib/stores/birthdays-store";
 import { useShoppingListsStore } from "@/lib/stores/shopping-lists-store";
@@ -220,6 +221,22 @@ export function DashboardOverview() {
   );
 
   const {
+    notes,
+    loaded: notesLoaded,
+    loading: notesLoading,
+    error: notesError,
+    fetchNotes,
+  } = useNotesStore(
+    useShallow((s) => ({
+      notes: s.notes,
+      loaded: s.loaded,
+      loading: s.loading,
+      error: s.error,
+      fetchNotes: s.fetchNotes,
+    }))
+  );
+
+  const {
     entries: scheduleEntries,
     loaded: scheduleLoaded,
     loading: scheduleLoading,
@@ -328,6 +345,7 @@ export function DashboardOverview() {
       [DASHBOARD_OVERVIEW_CARD.RESTAURANTS]: () => void fetchRestaurantPlaces(),
       [DASHBOARD_OVERVIEW_CARD.PETS]: () => void fetchPets(),
       [DASHBOARD_OVERVIEW_CARD.CHORES]: () => void fetchChores(),
+      [DASHBOARD_OVERVIEW_CARD.NOTES]: () => void fetchNotes(),
       [DASHBOARD_OVERVIEW_CARD.CALENDAR]: () => void fetchSchedule(),
       [DASHBOARD_OVERVIEW_CARD.BIRTHDAYS]: () => void fetchBirthdays(),
     };
@@ -347,6 +365,7 @@ export function DashboardOverview() {
     fetchRestaurantPlaces,
     fetchPets,
     fetchChores,
+    fetchNotes,
     fetchSchedule,
     fetchBirthdays,
   ]);
@@ -381,10 +400,9 @@ export function DashboardOverview() {
 
   const monthScheduleEntries = useMemo(
     () =>
-      scheduleEntries.filter((entry) => {
-        const parts = parseEntryDateParts(entry.entry_date);
-        return parts.year === scheduleYear && parts.month === scheduleMonth;
-      }),
+      scheduleEntries.filter((entry) =>
+        scheduleEntryOverlapsMonth(entry, scheduleYear, scheduleMonth)
+      ),
     [scheduleEntries, scheduleYear, scheduleMonth]
   );
 
@@ -440,6 +458,8 @@ export function DashboardOverview() {
     () => pickDuePetCarePreview(careItems, pets, 3),
     [careItems, pets]
   );
+  const previewNotes = useMemo(() => notes.slice(0, 2), [notes]);
+
   const activeChoreCount = useMemo(
     () => countActiveChores(choreTasks),
     [choreTasks]
@@ -453,6 +473,11 @@ export function DashboardOverview() {
     [choreTasks]
   );
 
+  const allBudgetExpenses = useMemo(
+    () => Object.values(expensesByBudgetId).flat(),
+    [expensesByBudgetId]
+  );
+
   const attentionItems = useMemo(
     () =>
       buildAttentionItems({
@@ -461,6 +486,9 @@ export function DashboardOverview() {
         careItems,
         pets,
         birthdays,
+        budgetExpenses: allBudgetExpenses,
+        scheduleEntries,
+        notes,
         labels: {
           choreOverdue: (title) =>
             formatMessage(t.dashboard.attentionChoreOverdue, { title }),
@@ -473,10 +501,26 @@ export function DashboardOverview() {
           birthdayToday: t.dashboard.birthdayToday,
           birthdayInDays: (count) =>
             formatMessage(t.dashboard.birthdayInDays, { count }),
+          budgetPaymentDue: (description) =>
+            formatMessage(t.dashboard.attentionBudgetPaymentDue, { description }),
+          scheduleEnding: (description) =>
+            formatMessage(t.dashboard.attentionScheduleEnding, { description }),
+          noteUrgent: (title) =>
+            formatMessage(t.dashboard.attentionNoteUrgent, { title }),
         },
         limit: undefined,
       }),
-    [choreTasks, medicineItems, careItems, pets, birthdays, t.dashboard]
+    [
+      choreTasks,
+      medicineItems,
+      careItems,
+      pets,
+      birthdays,
+      allBudgetExpenses,
+      scheduleEntries,
+      notes,
+      t.dashboard,
+    ]
   );
 
   const cardErrorById = useMemo(
@@ -489,6 +533,7 @@ export function DashboardOverview() {
       [DASHBOARD_OVERVIEW_CARD.RESTAURANTS]: restaurantsError,
       [DASHBOARD_OVERVIEW_CARD.PETS]: petsError,
       [DASHBOARD_OVERVIEW_CARD.CHORES]: choresError,
+      [DASHBOARD_OVERVIEW_CARD.NOTES]: notesError,
       [DASHBOARD_OVERVIEW_CARD.BIRTHDAYS]: birthdaysError,
       [DASHBOARD_OVERVIEW_CARD.CALENDAR]: scheduleError,
       [DASHBOARD_OVERVIEW_CARD.FAMILY]: false,
@@ -502,6 +547,7 @@ export function DashboardOverview() {
       restaurantsError,
       petsError,
       choresError,
+      notesError,
       birthdaysError,
       scheduleError,
     ]
@@ -517,6 +563,7 @@ export function DashboardOverview() {
       [DASHBOARD_OVERVIEW_CARD.RESTAURANTS]: () => void fetchRestaurantPlaces(true),
       [DASHBOARD_OVERVIEW_CARD.PETS]: () => void fetchPets(true),
       [DASHBOARD_OVERVIEW_CARD.CHORES]: () => void fetchChores(true),
+      [DASHBOARD_OVERVIEW_CARD.NOTES]: () => void fetchNotes(true),
       [DASHBOARD_OVERVIEW_CARD.BIRTHDAYS]: () => void fetchBirthdays(true),
       [DASHBOARD_OVERVIEW_CARD.CALENDAR]: () => void fetchSchedule(true),
       [DASHBOARD_OVERVIEW_CARD.FAMILY]: () => { },
@@ -530,6 +577,7 @@ export function DashboardOverview() {
       fetchRestaurantPlaces,
       fetchPets,
       fetchChores,
+      fetchNotes,
       fetchBirthdays,
       fetchSchedule,
     ]
@@ -545,6 +593,7 @@ export function DashboardOverview() {
       [DASHBOARD_OVERVIEW_CARD.RESTAURANTS]: !restaurantsLoaded && restaurantsLoading,
       [DASHBOARD_OVERVIEW_CARD.PETS]: !petsLoaded && petsLoading,
       [DASHBOARD_OVERVIEW_CARD.CHORES]: !choresLoaded && choresLoading,
+      [DASHBOARD_OVERVIEW_CARD.NOTES]: !notesLoaded && notesLoading,
       [DASHBOARD_OVERVIEW_CARD.BIRTHDAYS]: !birthdaysLoaded && birthdaysLoading,
       [DASHBOARD_OVERVIEW_CARD.CALENDAR]: !scheduleLoaded && scheduleLoading,
       [DASHBOARD_OVERVIEW_CARD.FAMILY]: false,
@@ -566,6 +615,8 @@ export function DashboardOverview() {
       petsLoading,
       choresLoaded,
       choresLoading,
+      notesLoaded,
+      notesLoading,
       birthdaysLoaded,
       birthdaysLoading,
       scheduleLoaded,
@@ -604,6 +655,8 @@ export function DashboardOverview() {
       activeChoreCount,
       overdueChoreCount,
       previewChoreTasks,
+      notes,
+      previewNotes,
       upcomingBirthdays,
       monthScheduleEntries,
       scheduleByType,
@@ -638,6 +691,8 @@ export function DashboardOverview() {
       activeChoreCount,
       overdueChoreCount,
       previewChoreTasks,
+      notes,
+      previewNotes,
       upcomingBirthdays,
       monthScheduleEntries,
       scheduleByType,
@@ -671,6 +726,8 @@ export function DashboardOverview() {
 
   return (
     <section className="space-y-4">
+      <DashboardAttentionBanner items={attentionItems} />
+
       <DashboardOverviewControls
         editMode={editMode}
         onEditModeChange={setEditMode}
@@ -678,8 +735,6 @@ export function DashboardOverview() {
         onShowCard={(cardId) => void handleShowCard(cardId)}
         saving={savingLayout}
       />
-
-      <DashboardAttentionBanner items={attentionItems} />
 
       {visibleCardIds.length === 0 ? (
         <div className="flex flex-col items-center justify-center gap-3 py-16 border border-dashed border-border bg-muted/20 text-center">

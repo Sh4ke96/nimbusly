@@ -2,9 +2,9 @@
 
 **Your family's shared home — all in one place.**
 
-Nimbusly is a family hub web app: shared budget, shopping, gifts, birthdays, schedule, medicine cabinet, watchlist, restaurants, pets, household chores, and family account management. Each member has their own profile; family data stays in sync.
+Nimbusly is a family hub web app: shared budget, shopping, gifts, birthdays, schedule, medicine cabinet, watchlist, restaurants, pets, household chores, notes, and family account management. Each member has their own profile; family data stays in sync.
 
-Available in **Polish** and **English**.
+Available in **Polish** and **English**. Current version: **0.2.0** — see `/change-log` or the in-app version badge.
 
 ---
 
@@ -12,22 +12,25 @@ Available in **Polish** and **English**.
 
 | Module | Route | Description |
 |--------|-------|-------------|
-| Budget | `/budget` | Shared budgets, income & expenses, monthly overview |
+| Budget | `/budget` | Shared budgets, income & expenses, recurring entries, hidden budgets, payment reminders |
 | Shopping lists | `/shopping` | Shared lists with live updates and optional watches |
 | Gifts | `/gifts` | Gift ideas per recipient without spoiling surprises |
 | Birthdays | `/birthdays` | Calendar, upcoming birthdays, reminders |
-| Schedule | `/schedule` | Shared work / family schedule |
+| Schedule | `/schedule` | Shared work / family schedule with multi-day date ranges |
 | Medicine cabinet | `/medicine-cabinet` | Home pharmacy with expiry tracking |
 | Watchlist | `/watchlist` | Movies & series to watch together |
 | Restaurants | `/restaurants` | Places to visit and ratings |
 | Pets | `/pets` | Pet profiles and care schedules |
 | Chores | `/chores` | Household tasks with assignees and recurrence |
+| Notes | `/notes` | Custom emoji categories and family visibility |
 | Family & settings | `/profile/settings` | Account type, family invites, permissions |
 
 Additional:
 
-- **Dashboard** (`/dashboard`) — customizable overview cards and an “needs attention” summary
+- **Dashboard** (`/dashboard`) — Summary / Modules tabs, customizable overview cards, brown “needs attention” banner
+- **Global search** — quick jump to modules, lists, budgets, notes, chores, and more (header shortcut)
 - **Notifications** (`/notifications`) — in-app family activity feed
+- **Change log** (`/change-log`) — public release history (no login required)
 - **Onboarding** — guided setup for new accounts
 - **Solo or family mode** — up to 6 members with roles (founder, admin, member)
 
@@ -99,7 +102,7 @@ See [`.env.example`](.env.example) for the full list.
 | `SUPABASE_SERVICE_ROLE_KEY` | Optional | E2E tests, cron reminders, admin tasks |
 | `RESEND_API_KEY` | Optional | Family invite & reminder emails |
 | `RESEND_FROM_EMAIL` | Optional | Sender address for Resend |
-| `CRON_SECRET` | Optional | Protects `GET /api/cron/reminders` |
+| `CRON_SECRET` | Optional | Protects cron API routes |
 | `SUPABASE_ACCESS_TOKEN` | Optional | Supabase CLI (`db:push`, etc.) |
 
 Never commit `.env.local` or secrets.
@@ -108,14 +111,21 @@ Never commit `.env.local` or secrets.
 
 ## Email reminders (optional)
 
-When `RESEND_API_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, and `CRON_SECRET` are set, schedule a cron job:
+When `RESEND_API_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, and `CRON_SECRET` are set, schedule cron jobs:
+
+**Family digest** (chores, medicine, pets, birthdays):
 
 ```http
 GET /api/cron/reminders
 Authorization: Bearer <CRON_SECRET>
 ```
 
-The endpoint sends digest emails for overdue chores, expiring medicine, due pet care, and upcoming birthdays.
+**Budget payment due reminders** (7 / 3 / 0 days before due date):
+
+```http
+GET /api/cron/budget-payment-reminders
+Authorization: Bearer <CRON_SECRET>
+```
 
 ---
 
@@ -128,6 +138,7 @@ The endpoint sends digest emails for overdue chores, expiring medicine, due pet 
 | `npm run start` | Production server |
 | `npm run lint` | ESLint |
 | `npm test` | Unit tests (`tests/unit/**/*.test.ts`) |
+| `npm run test:types` | Typecheck test tsconfig |
 | `npm run e2e` | Cypress headless (starts dev server) |
 | `npm run e2e:open` | Cypress interactive |
 | `npm run db:push` | Apply SQL migrations to linked Supabase project |
@@ -148,6 +159,8 @@ tests/            Unit tests (`tests/unit/`) and E2E (`tests/e2e/`)
 
 Developer guidelines: [`AGENTS.md`](AGENTS.md) and [`.cursor/rules/`](.cursor/rules/).
 
+When shipping a release, bump `version` in `package.json` and add an entry to `lib/changelog/entries.ts`.
+
 ---
 
 ## Testing
@@ -158,10 +171,25 @@ Developer guidelines: [`AGENTS.md`](AGENTS.md) and [`.cursor/rules/`](.cursor/ru
 npm test
 ```
 
+Covers domain logic (budget, chores, notes, search, changelog, etc.).
+
 **E2E (requires Supabase service role in `.env.local` for full flows)**
 
 ```bash
 npm run e2e
 ```
+
+| Spec | Scope |
+|------|--------|
+| `01-landing` | Landing page sections and auth links |
+| `02-auth` · `03-guards` | Login, register, route protection |
+| `04-onboarding` | Profile setup |
+| `05-dashboard` | Greeting, modules tab, account menu |
+| `06-settings-logout` | Settings and sign-out |
+| `07-family-invites` | Family invites |
+| `08-gifts` · `09-shopping-realtime` | Module flows |
+| `10-cron` | Cron auth |
+| `11-change-log` | Public change log |
+| `11-modules-smoke` | All module pages load |
 
 Cypress `baseUrl` uses `NEXT_PUBLIC_SITE_URL` or defaults to `http://localhost:3000`.

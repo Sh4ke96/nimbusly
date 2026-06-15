@@ -17,6 +17,7 @@ function getOverviewCardLabel(
     restaurants: string;
     pets: string;
     chores: string;
+    notes: string;
     birthdays: string;
     calendar: string;
     family: string;
@@ -39,6 +40,8 @@ function getOverviewCardLabel(
       return labels.pets;
     case DASHBOARD_OVERVIEW_CARD.CHORES:
       return labels.chores;
+    case DASHBOARD_OVERVIEW_CARD.NOTES:
+      return labels.notes;
     case DASHBOARD_OVERVIEW_CARD.BIRTHDAYS:
       return labels.birthdays;
     case DASHBOARD_OVERVIEW_CARD.CALENDAR:
@@ -67,10 +70,7 @@ export function DashboardOverviewControls({
 
   return (
     <div className="space-y-3">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="font-heading font-semibold text-xs text-muted-foreground uppercase tracking-wider">
-          {t.dashboard.overviewHeading}
-        </h2>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end">
         <Button
           type="button"
           variant={editMode ? "default" : "outline"}

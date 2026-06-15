@@ -7,23 +7,35 @@ import {
   AlertTriangle,
   Calendar,
   CircleCheck,
+  ListTodo,
+  Loader2,
   Pencil,
-  RefreshCw,
   Trash2,
-  User,
+  UserCheck,
+  UserPen,
+  type LucideIcon,
 } from "lucide-react";
 import { resolveChoreAssigneeName } from "@/components/chores/chore-assignee-picker";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardHeaderActionButton, CardHeaderActions, CardTitle, CARD_TITLE_ROW_CLASSNAME } from "@/components/ui/card";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import {
   CHORE_RECURRENCE,
   CHORE_STATUSES,
   CHORE_STATUS,
+  type ChoreStatus,
 } from "@/lib/constants/chores";
+import {
+  countChoreSeriesOccurrences,
+  normalizeCompletedDates,
+  resolveOccurrenceDateToComplete,
+} from "@/lib/chores/completion";
 import type { ChoreTask } from "@/lib/chores/types";
 import { parseChoreDateString } from "@/lib/chores/types";
 import { isChoreOverdue } from "@/lib/chores/filters";
+import { formatChoreScheduleLabel } from "@/lib/chores/recurrence";
+import { ChoreOccurrenceCompleteButton } from "@/components/chores/chore-occurrence-complete-button";
+import { formatMessage } from "@/lib/i18n/format";
 import { getDateFnsLocale } from "@/lib/i18n/date-fns-locale";
 import { useLang, useT } from "@/lib/lang-context";
 import { getDisplayName, type FamilyMember, type Profile } from "@/lib/profile";
@@ -50,6 +62,23 @@ const statusStyles: Record<ChoreTask["status"], string> = {
   [CHORE_STATUS.COMPLETED]: "bg-primary/10 text-primary border-primary/20",
 };
 
+const statusIcons: Record<ChoreStatus, LucideIcon> = {
+  [CHORE_STATUS.PENDING]: ListTodo,
+  [CHORE_STATUS.IN_PROGRESS]: Loader2,
+  [CHORE_STATUS.COMPLETED]: CircleCheck,
+};
+
+function ChoreStatusIcon({
+  status,
+  className,
+}: {
+  status: ChoreStatus;
+  className?: string;
+}) {
+  const Icon = statusIcons[status];
+  return <Icon className={className} strokeWidth={2.25} aria-hidden />;
+}
+
 function resolveCreatorName(
   createdBy: string,
   userId: string | undefined,
@@ -60,16 +89,6 @@ function resolveCreatorName(
   if (createdBy === userId && profile) return getDisplayName(profile);
   const member = members.find((m) => m.id === createdBy);
   return member ? getDisplayName(member) : null;
-}
-
-function formatDueDateLabel(
-  value: string | null,
-  locale: ReturnType<typeof getDateFnsLocale>
-): string | null {
-  if (!value) return null;
-  const parsed = parseChoreDateString(value);
-  if (!parsed) return null;
-  return format(parsed, "d MMM yyyy", { locale });
 }
 
 function formatCompletedAtLabel(
@@ -95,10 +114,10 @@ export function ChoreTaskCard({
   const locale = getDateFnsLocale(lang);
   const isFamily = profile?.account_mode === ACCOUNT_MODE.FAMILY && !!profile.family_id;
   const isOwner = task.created_by === userId;
+  const canChangeStatus = isOwner || isFamily;
   const isCompleted = task.status === CHORE_STATUS.COMPLETED;
   const creator = resolveCreatorName(task.created_by, userId, profile, members);
   const overdue = isChoreOverdue(task) && !isCompleted;
-  const dueDateLabel = formatDueDateLabel(task.due_date, locale);
   const completedAtLabel = formatCompletedAtLabel(task.completed_at, locale);
   const assigneeLabel = resolveChoreAssigneeName(
     task.assigned_to,
@@ -106,6 +125,20 @@ export function ChoreTaskCard({
     members,
     t.chores.assigneeUnassigned
   );
+  const scheduleLabel = formatChoreScheduleLabel(task, t.chores, (iso) => {
+    const parsed = parseChoreDateString(iso);
+    if (!parsed) return iso;
+    return format(parsed, "d MMM yyyy", { locale });
+  });
+  const isSeries = task.recurrence !== CHORE_RECURRENCE.NONE;
+  const occurrenceToComplete = resolveOccurrenceDateToComplete(task);
+  const seriesDoneCount = normalizeCompletedDates(task.completed_dates).length;
+  const seriesTotal = isSeries ? countChoreSeriesOccurrences(task) : 0;
+  const hasMeta =
+    !!scheduleLabel ||
+    isFamily ||
+    (isSeries && seriesTotal > 0) ||
+    (isFamily && !!creator);
 
   const [deleteState, deleteAction, deletePending] = useActionState(deleteChoreTask, null);
   const [statusState, statusAction, statusPending] = useActionState(setChoreTaskStatus, null);
@@ -121,10 +154,10 @@ export function ChoreTaskCard({
   return (
     <Card
       className={cn(
-        "rounded-none py-0 shadow-sm transition-all duration-200 hover:shadow-md overflow-hidden",
+        "gap-0 rounded-none py-0 shadow-sm transition-all duration-200 hover:shadow-md overflow-hidden",
         overdue && "border-destructive/50",
         isCompleted &&
-          "border-primary/60 bg-primary/8 shadow-md ring-1 ring-primary/20"
+        "border-primary/60 bg-primary/8 shadow-md ring-1 ring-primary/20"
       )}
     >
       {isCompleted && (
@@ -144,91 +177,105 @@ export function ChoreTaskCard({
           </div>
         </div>
       )}
-      <CardHeader
-        className={cn(
-          "border-b border-border pt-4 pb-3",
-          isCompleted && "border-primary/20 bg-primary/5"
-        )}
-      >
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0 space-y-1">
-            <CardTitle
-              className={cn(
-                "font-heading text-base truncate",
-                isCompleted &&
-                  "text-foreground/80 line-through decoration-primary/50 decoration-2"
-              )}
-            >
-              {task.title}
-            </CardTitle>
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted-foreground">
-              {isFamily && (
-                <span className="inline-flex items-center gap-1">
-                  <User className="size-3 shrink-0" />
-                  {assigneeLabel}
-                </span>
-              )}
-              {dueDateLabel && (
-                <span className="inline-flex items-center gap-1">
-                  <Calendar className="size-3 shrink-0" />
-                  {dueDateLabel}
-                </span>
-              )}
-            </div>
-          </div>
-          {isOwner && (
-            <div className="flex shrink-0 gap-0.5">
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="cursor-pointer text-muted-foreground hover:text-foreground"
-                onClick={onEdit}
-                aria-label={t.chores.editBtn}
-              >
-                <Pencil className="size-4" />
-              </Button>
-              <form action={deleteAction}>
-                <input type="hidden" name={CHORE_FORM_FIELD.ID} value={task.id} />
-                <Button
-                  type="submit"
-                  variant="ghost"
-                  size="icon"
-                  disabled={deletePending}
-                  className="cursor-pointer text-destructive hover:text-destructive"
-                >
-                  <Trash2 className="size-4" />
-                </Button>
-              </form>
-            </div>
+      <CardHeader className={cn(isCompleted && "border-primary/20 bg-primary/5")}>
+        <CardTitle
+          className={cn(
+            CARD_TITLE_ROW_CLASSNAME,
+            isCompleted &&
+              "text-foreground/80 line-through decoration-primary/50 decoration-2"
           )}
-        </div>
+        >
+          {task.icon_emoji && (
+            <span
+              className="inline-flex h-[1.375rem] w-[1.375rem] shrink-0 items-center justify-center text-[1.25rem] leading-none"
+              aria-hidden
+            >
+              {task.icon_emoji}
+            </span>
+          )}
+          <span className="min-w-0 flex-1 break-words">{task.title}</span>
+        </CardTitle>
+        {isOwner && (
+          <CardHeaderActions>
+            <CardHeaderActionButton onClick={onEdit} aria-label={t.chores.editBtn}>
+              <Pencil className="size-4" />
+            </CardHeaderActionButton>
+            <form action={deleteAction} className="border-l border-border">
+              <input type="hidden" name={CHORE_FORM_FIELD.ID} value={task.id} />
+              <CardHeaderActionButton
+                type="submit"
+                destructive
+                disabled={deletePending}
+                aria-label={t.chores.deleteBtn}
+              >
+                <Trash2 className="size-4" />
+              </CardHeaderActionButton>
+            </form>
+          </CardHeaderActions>
+        )}
       </CardHeader>
       <CardContent
-        className={cn("p-4 space-y-3", isCompleted && "bg-primary/5")}
+        className={cn("flex flex-col gap-4 pb-4 pt-4", isCompleted && "bg-primary/5")}
       >
-        <div className="flex flex-wrap items-center gap-2">
+        {hasMeta && (
+          <div className="space-y-2 text-xs text-muted-foreground">
+            {scheduleLabel && (
+              <div className="flex items-start gap-2">
+                <Calendar className="size-3.5 shrink-0 mt-0.5 text-muted-foreground/80" />
+                <span className="min-w-0 leading-relaxed">{scheduleLabel}</span>
+              </div>
+            )}
+            {isFamily && (
+              <div className="flex items-start gap-2">
+                <UserCheck className="size-3.5 shrink-0 mt-0.5 text-muted-foreground/80" />
+                <span className="min-w-0 leading-relaxed">{assigneeLabel}</span>
+              </div>
+            )}
+            {isSeries && seriesTotal > 0 && (
+              <div className="flex items-start gap-2">
+                <ListTodo className="size-3.5 shrink-0 mt-0.5 text-muted-foreground/80" />
+                <span className="min-w-0 leading-relaxed">
+                  {formatMessage(t.chores.completedDaysProgress, {
+                    done: String(seriesDoneCount),
+                    total: String(seriesTotal),
+                  })}
+                </span>
+              </div>
+            )}
+            {isFamily && creator && (
+              <div className="flex items-start gap-2">
+                <UserPen className="size-3.5 shrink-0 mt-0.5 text-muted-foreground/80" />
+                <span className="min-w-0 leading-relaxed text-[11px]">
+                  {t.chores.addedBy}: {creator}
+                </span>
+              </div>
+            )}
+          </div>
+        )}
+
+        <div
+          className={cn(
+            "flex flex-wrap items-center gap-2",
+            hasMeta && "border-t border-border pt-3"
+          )}
+        >
           <span
             className={cn(
-              "inline-flex items-center gap-1 rounded-none border px-2.5 py-1 text-xs font-semibold",
+              "inline-flex items-center gap-1.5 rounded-none border px-3 py-1.5 text-xs font-semibold",
               statusStyles[task.status],
               isCompleted && "border-primary/30 bg-primary text-primary-foreground"
             )}
           >
-            {isCompleted && <CircleCheck className="size-3.5" strokeWidth={2.5} />}
+            <ChoreStatusIcon
+              status={task.status}
+              className={cn("size-4 shrink-0", isCompleted && "text-primary-foreground")}
+            />
             {t.chores.statusLabels[task.status]}
           </span>
 
-          {task.recurrence !== CHORE_RECURRENCE.NONE && (
-            <span className="inline-flex items-center gap-1 rounded-none border border-border bg-muted/50 px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
-              <RefreshCw className="size-3" />
-              {t.chores.recurrenceLabels[task.recurrence]}
-            </span>
-          )}
-
           {overdue && (
-            <span className="inline-flex items-center gap-1 rounded-none border border-destructive/20 bg-destructive/10 px-2 py-0.5 text-[11px] font-medium text-destructive">
-              <AlertTriangle className="size-3" />
+            <span className="inline-flex items-center gap-1.5 rounded-none border border-destructive/20 bg-destructive/10 px-2.5 py-1 text-xs font-medium text-destructive">
+              <AlertTriangle className="size-3.5 shrink-0" />
               {t.chores.overdue}
             </span>
           )}
@@ -247,30 +294,38 @@ export function ChoreTaskCard({
           </p>
         )}
 
-        {isOwner && (
+        {canChangeStatus && (
           <div className="flex flex-wrap gap-1.5 border-t border-border pt-3">
-            {CHORE_STATUSES.map((status) => (
-              <form key={status} action={statusAction}>
-                <input type="hidden" name={CHORE_FORM_FIELD.ID} value={task.id} />
-                <input type="hidden" name={CHORE_FORM_FIELD.STATUS} value={status} />
-                <Button
-                  type="submit"
-                  size="sm"
-                  variant={task.status === status ? "default" : "outline"}
-                  disabled={statusPending || task.status === status}
-                  className="cursor-pointer rounded-none h-7 text-xs"
-                >
-                  {t.chores.statusLabels[status]}
-                </Button>
-              </form>
-            ))}
-          </div>
-        )}
+            {CHORE_STATUSES.map((status) => {
+              if (status === CHORE_STATUS.COMPLETED && occurrenceToComplete) {
+                return (
+                  <ChoreOccurrenceCompleteButton
+                    key={status}
+                    taskId={task.id}
+                    occurrenceDate={occurrenceToComplete}
+                    onSuccess={onChanged}
+                  />
+                );
+              }
 
-        {isFamily && creator && (
-          <p className="text-[11px] text-muted-foreground">
-            {t.chores.addedBy}: {creator}
-          </p>
+              return (
+                <form key={status} action={statusAction}>
+                  <input type="hidden" name={CHORE_FORM_FIELD.ID} value={task.id} />
+                  <input type="hidden" name={CHORE_FORM_FIELD.STATUS} value={status} />
+                  <Button
+                    type="submit"
+                    size="sm"
+                    variant={task.status === status ? "default" : "outline"}
+                    disabled={statusPending || task.status === status}
+                    className="cursor-pointer rounded-none h-8 text-xs gap-1.5 px-2.5"
+                  >
+                    <ChoreStatusIcon status={status} className="size-3.5" />
+                    {t.chores.statusLabels[status]}
+                  </Button>
+                </form>
+              );
+            })}
+          </div>
         )}
       </CardContent>
     </Card>

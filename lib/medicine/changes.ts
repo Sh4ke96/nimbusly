@@ -12,10 +12,12 @@ type MedicineChangeLabels = Pick<
   | "changeSummaryAvailability"
   | "changeSummaryLocation"
   | "changeSummaryNotes"
+  | "changeSummaryTakenBy"
   | "changeSummaryEmpty"
   | "changeSummarySeparator"
   | "formLabels"
   | "availabilityLabels"
+  | "takenByUnassigned"
 >;
 
 export function buildMedicineChangeSummary(
@@ -28,6 +30,7 @@ export function buildMedicineChangeSummary(
     | "availability"
     | "location"
     | "notes"
+    | "taken_by"
   >,
   after: Pick<
     MedicineItem,
@@ -38,8 +41,10 @@ export function buildMedicineChangeSummary(
     | "availability"
     | "location"
     | "notes"
+    | "taken_by"
   >,
-  labels: MedicineChangeLabels
+  labels: MedicineChangeLabels,
+  resolveTakenBy: (id: string | null) => string
 ): string {
   const parts: string[] = [];
 
@@ -81,6 +86,15 @@ export function buildMedicineChangeSummary(
 
   if (before.notes !== after.notes) {
     parts.push(labels.changeSummaryNotes);
+  }
+
+  if (before.taken_by !== after.taken_by) {
+    parts.push(
+      formatMessage(labels.changeSummaryTakenBy, {
+        from: resolveTakenBy(before.taken_by),
+        to: resolveTakenBy(after.taken_by),
+      })
+    );
   }
 
   if (parts.length === 0) {

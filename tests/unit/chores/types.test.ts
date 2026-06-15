@@ -38,6 +38,7 @@ describe("isValidChoreStatus", () => {
 describe("isValidChoreRecurrence", () => {
   it("accepts known recurrence values", () => {
     assert.equal(isValidChoreRecurrence(CHORE_RECURRENCE.WEEKLY), true);
+    assert.equal(isValidChoreRecurrence(CHORE_RECURRENCE.CUSTOM), true);
     assert.equal(isValidChoreRecurrence("yearly"), false);
   });
 });
@@ -56,6 +57,9 @@ describe("computeNextChoreDueDate", () => {
     const weekly = computeNextChoreDueDate(from, CHORE_RECURRENCE.WEEKLY);
     assert.equal(dateToChoreDateString(weekly!), "2026-06-21");
     assert.equal(computeNextChoreDueDate(from, CHORE_RECURRENCE.NONE), null);
+
+    const custom = computeNextChoreDueDate(from, CHORE_RECURRENCE.CUSTOM, 2);
+    assert.equal(dateToChoreDateString(custom!), "2026-06-16");
   });
 });
 

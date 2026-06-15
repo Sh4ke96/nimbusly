@@ -1,10 +1,11 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Quicksand, Nunito, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { cookies } from "next/headers";
 import { LangProvider } from "@/lib/lang-context";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
+import { VersionBadge } from "@/components/app/version-badge";
 import { LANG, LANG_COOKIE, type Lang } from "@/lib/constants/lang";
 import { dict } from "@/lib/i18n";
 import "./globals.css";
@@ -34,13 +35,32 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: dict[lang].meta.title,
     description: dict[lang].meta.description,
+    applicationName: "Nimbusly",
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: "black-translucent",
+      title: "Nimbusly",
+    },
+    formatDetection: {
+      telephone: false,
+    },
     icons: {
       icon: "/icon.svg",
       shortcut: "/icon.svg",
-      apple: "/icon.svg",
+      apple: "/pwa-icon.svg",
     },
   };
 }
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#618764" },
+    { media: "(prefers-color-scheme: dark)", color: "#2B5748" },
+  ],
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+};
 
 export default async function RootLayout({
   children,
@@ -67,6 +87,7 @@ export default async function RootLayout({
           <LangProvider initialLang={lang}>
             <TooltipProvider>
               {children}
+              <VersionBadge />
               <Toaster closeButton position="top-right" />
             </TooltipProvider>
           </LangProvider>

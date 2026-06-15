@@ -24,11 +24,13 @@ import { cn } from "@/lib/utils";
 import { HEADER_CONTROL_HEIGHT } from "@/lib/ui/header-controls";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { navigateSettingsTab, settingsTabHref, SETTINGS_TAB } from "@/lib/profile/settings-tabs";
+import { isFamilyFounder } from "@/lib/profile/family-roles";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { logout } from "@/app/(app)/actions";
 import {
   Bell,
   ChevronDown,
+  ListChecks,
   KeyRound,
   LogOut,
   Palette,
@@ -43,6 +45,7 @@ export function AccountMenu() {
   const pathname = usePathname();
   const user = useProfileStore((s) => s.user);
   const profile = useProfileStore((s) => s.profile);
+  const family = useProfileStore((s) => s.family);
 
   const displayName = profile
     ? getDisplayName(profile)
@@ -171,6 +174,21 @@ export function AccountMenu() {
                   {t.account.menuPermissions}
                 </Link>
               </DropdownMenuItem>
+              {isFamilyFounder(family, user?.id) ? (
+                <DropdownMenuItem asChild>
+                  <Link
+                    href={settingsTabHref(SETTINGS_TAB.SHOPPING_CATEGORIES)}
+                    onClick={(e) =>
+                      navigateSettingsTab(SETTINGS_TAB.SHOPPING_CATEGORIES, pathname) &&
+                      e.preventDefault()
+                    }
+                    className="flex items-center gap-2"
+                  >
+                    <ListChecks className="size-4 text-primary" />
+                    {t.account.menuShoppingCategories}
+                  </Link>
+                </DropdownMenuItem>
+              ) : null}
             </>
           )}
           <DropdownMenuItem asChild>

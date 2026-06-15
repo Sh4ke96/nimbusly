@@ -97,6 +97,11 @@ export type Database = {
           entry_type: string
           expense_date: string
           id: string
+          payment_reminder_enabled: boolean
+          recurrence: string
+          recurrence_end_date: string | null
+          recurrence_interval_days: number | null
+          reminder_sent_keys: string[]
           updated_at: string
         }
         Insert: {
@@ -109,6 +114,11 @@ export type Database = {
           entry_type?: string
           expense_date: string
           id?: string
+          payment_reminder_enabled?: boolean
+          recurrence?: string
+          recurrence_end_date?: string | null
+          recurrence_interval_days?: number | null
+          reminder_sent_keys?: string[]
           updated_at?: string
         }
         Update: {
@@ -121,6 +131,11 @@ export type Database = {
           entry_type?: string
           expense_date?: string
           id?: string
+          payment_reminder_enabled?: boolean
+          recurrence?: string
+          recurrence_end_date?: string | null
+          recurrence_interval_days?: number | null
+          reminder_sent_keys?: string[]
           updated_at?: string
         }
         Relationships: [
@@ -198,6 +213,7 @@ export type Database = {
           created_by: string
           family_id: string | null
           id: string
+          is_hidden: boolean
           name: string
           updated_at: string
         }
@@ -206,6 +222,7 @@ export type Database = {
           created_by: string
           family_id?: string | null
           id?: string
+          is_hidden?: boolean
           name: string
           updated_at?: string
         }
@@ -214,6 +231,7 @@ export type Database = {
           created_by?: string
           family_id?: string | null
           id?: string
+          is_hidden?: boolean
           name?: string
           updated_at?: string
         }
@@ -231,13 +249,19 @@ export type Database = {
         Row: {
           assigned_to: string | null
           completed_at: string | null
+          completed_dates: string[]
           created_at: string
           created_by: string
           due_date: string | null
           family_id: string | null
+          icon_emoji: string | null
           id: string
           notes: string
           recurrence: string
+          recurrence_duration: string | null
+          recurrence_end_date: string | null
+          recurrence_interval_days: number | null
+          recurrence_start_date: string | null
           status: string
           title: string
           updated_at: string
@@ -245,13 +269,19 @@ export type Database = {
         Insert: {
           assigned_to?: string | null
           completed_at?: string | null
+          completed_dates?: string[]
           created_at?: string
           created_by: string
           due_date?: string | null
           family_id?: string | null
+          icon_emoji?: string | null
           id?: string
           notes?: string
           recurrence?: string
+          recurrence_duration?: string | null
+          recurrence_end_date?: string | null
+          recurrence_interval_days?: number | null
+          recurrence_start_date?: string | null
           status?: string
           title: string
           updated_at?: string
@@ -259,13 +289,19 @@ export type Database = {
         Update: {
           assigned_to?: string | null
           completed_at?: string | null
+          completed_dates?: string[]
           created_at?: string
           created_by?: string
           due_date?: string | null
           family_id?: string | null
+          icon_emoji?: string | null
           id?: string
           notes?: string
           recurrence?: string
+          recurrence_duration?: string | null
+          recurrence_end_date?: string | null
+          recurrence_interval_days?: number | null
+          recurrence_start_date?: string | null
           status?: string
           title?: string
           updated_at?: string
@@ -359,10 +395,12 @@ export type Database = {
           created_by: string
           family_id: string | null
           id: string
+          link_url: string | null
           recipient_member_id: string | null
           recipient_name: string
           recipient_type: string
           updated_at: string
+          visible_to_member_ids: string[]
         }
         Insert: {
           content?: string
@@ -370,10 +408,12 @@ export type Database = {
           created_by: string
           family_id?: string | null
           id?: string
+          link_url?: string | null
           recipient_member_id?: string | null
           recipient_name: string
           recipient_type: string
           updated_at?: string
+          visible_to_member_ids?: string[]
         }
         Update: {
           content?: string
@@ -381,10 +421,12 @@ export type Database = {
           created_by?: string
           family_id?: string | null
           id?: string
+          link_url?: string | null
           recipient_member_id?: string | null
           recipient_name?: string
           recipient_type?: string
           updated_at?: string
+          visible_to_member_ids?: string[]
         }
         Relationships: [
           {
@@ -416,6 +458,7 @@ export type Database = {
           name: string
           notes: string
           quantity: string
+          taken_by: string | null
           updated_at: string
         }
         Insert: {
@@ -430,6 +473,7 @@ export type Database = {
           name: string
           notes?: string
           quantity?: string
+          taken_by?: string | null
           updated_at?: string
         }
         Update: {
@@ -444,11 +488,104 @@ export type Database = {
           name?: string
           notes?: string
           quantity?: string
+          taken_by?: string | null
           updated_at?: string
         }
         Relationships: [
           {
             foreignKeyName: "medicine_items_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "families"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      note_categories: {
+        Row: {
+          created_at: string
+          created_by: string
+          family_id: string | null
+          icon_emoji: string | null
+          id: string
+          name: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          family_id?: string | null
+          icon_emoji?: string | null
+          id?: string
+          name: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          family_id?: string | null
+          icon_emoji?: string | null
+          id?: string
+          name?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "note_categories_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "families"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notes: {
+        Row: {
+          category_id: string | null
+          content: string
+          created_at: string
+          created_by: string
+          family_id: string | null
+          id: string
+          title: string
+          updated_at: string
+          visible_to_member_ids: string[]
+        }
+        Insert: {
+          category_id?: string | null
+          content?: string
+          created_at?: string
+          created_by: string
+          family_id?: string | null
+          id?: string
+          title: string
+          updated_at?: string
+          visible_to_member_ids?: string[]
+        }
+        Update: {
+          category_id?: string | null
+          content?: string
+          created_at?: string
+          created_by?: string
+          family_id?: string | null
+          id?: string
+          title?: string
+          updated_at?: string
+          visible_to_member_ids?: string[]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notes_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "note_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notes_family_id_fkey"
             columns: ["family_id"]
             isOneToOne: false
             referencedRelation: "families"
@@ -708,6 +845,7 @@ export type Database = {
           created_by: string
           description: string
           entry_date: string
+          entry_end_date: string | null
           entry_type: string
           family_id: string | null
           id: string
@@ -718,6 +856,7 @@ export type Database = {
           created_by: string
           description?: string
           entry_date: string
+          entry_end_date?: string | null
           entry_type: string
           family_id?: string | null
           id?: string
@@ -728,6 +867,7 @@ export type Database = {
           created_by?: string
           description?: string
           entry_date?: string
+          entry_end_date?: string | null
           entry_type?: string
           family_id?: string | null
           id?: string
@@ -745,41 +885,89 @@ export type Database = {
       }
       shopping_list_items: {
         Row: {
+          category_id: string | null
           checked: boolean
           content: string
           created_at: string
           created_by: string
           id: string
           list_id: string
+          quantity: number
           sort_order: number
           updated_at: string
         }
         Insert: {
+          category_id?: string | null
           checked?: boolean
           content: string
           created_at?: string
           created_by: string
           id?: string
           list_id: string
+          quantity?: number
           sort_order?: number
           updated_at?: string
         }
         Update: {
+          category_id?: string | null
           checked?: boolean
           content?: string
           created_at?: string
           created_by?: string
           id?: string
           list_id?: string
+          quantity?: number
           sort_order?: number
           updated_at?: string
         }
         Relationships: [
           {
+            foreignKeyName: "shopping_list_items_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "shopping_list_categories"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "shopping_list_items_list_id_fkey"
             columns: ["list_id"]
             isOneToOne: false
             referencedRelation: "shopping_lists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shopping_list_categories: {
+        Row: {
+          created_at: string
+          family_id: string
+          id: string
+          name: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          family_id: string
+          id?: string
+          name: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          family_id?: string
+          id?: string
+          name?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shopping_list_categories_family_id_fkey"
+            columns: ["family_id"]
+            isOneToOne: false
+            referencedRelation: "families"
             referencedColumns: ["id"]
           },
         ]
@@ -857,6 +1045,7 @@ export type Database = {
           media_type: string
           notes: string
           status: string
+          streaming_platforms: string[]
           title: string
           updated_at: string
         }
@@ -868,6 +1057,7 @@ export type Database = {
           media_type: string
           notes?: string
           status?: string
+          streaming_platforms?: string[]
           title: string
           updated_at?: string
         }
@@ -879,6 +1069,7 @@ export type Database = {
           media_type?: string
           notes?: string
           status?: string
+          streaming_platforms?: string[]
           title?: string
           updated_at?: string
         }

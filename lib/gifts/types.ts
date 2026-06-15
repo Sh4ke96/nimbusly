@@ -6,6 +6,8 @@ import {
 } from "@/lib/constants/gifts";
 import { COMMON_FORM_FIELD } from "@/lib/form/common-fields";
 import { getFormString, getFormTrimmedString } from "@/lib/form/values";
+import { isValidGiftLinkUrl, normalizeGiftLinkUrl } from "@/lib/gifts/url";
+import { parseVisibleMemberIdsJson } from "@/lib/gifts/visibility";
 
 export interface GiftIdea {
   id: string;
@@ -14,6 +16,8 @@ export interface GiftIdea {
   recipient_member_id: string | null;
   recipient_name: string;
   content: string;
+  link_url: string | null;
+  visible_to_member_ids: string[];
   created_by: string;
   created_at: string;
   updated_at: string;
@@ -35,6 +39,24 @@ export function isValidGiftContent(content: string): boolean {
   return content.trim().length > 0 && content.length <= GIFT_CONTENT_MAX_LENGTH;
 }
 
+export function parseGiftLinkUrlFromForm(formData: FormData): string | null {
+  const raw = getFormTrimmedString(formData, GIFT_FORM_FIELD.LINK_URL);
+  if (!raw) return null;
+  const normalized = normalizeGiftLinkUrl(raw);
+  return isValidGiftLinkUrl(normalized) ? normalized : null;
+}
+
+export function isValidGiftLinkUrlField(url: string | null): boolean {
+  if (url === null) return true;
+  return isValidGiftLinkUrl(url);
+}
+
+export function parseGiftVisibleMemberIdsFromForm(formData: FormData): string[] | null {
+  return parseVisibleMemberIdsJson(
+    getFormString(formData, GIFT_FORM_FIELD.VISIBLE_MEMBER_IDS)
+  );
+}
+
 export function getGiftRecipientFilterKey(
   entry: Pick<GiftIdea, "recipient_member_id" | "recipient_name">
 ): string {
@@ -50,6 +72,8 @@ export const GIFT_FORM_FIELD = {
   RECIPIENT_MEMBER_ID: "recipientMemberId",
   RECIPIENT_NAME: "recipientName",
   CONTENT: "content",
+  LINK_URL: "linkUrl",
+  VISIBLE_MEMBER_IDS: "visibleMemberIds",
 } as const;
 
 export function parseGiftRecipientFromForm(formData: FormData): {

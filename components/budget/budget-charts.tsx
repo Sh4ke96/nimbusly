@@ -10,7 +10,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CARD_TITLE_ROW_CLASSNAME } from "@/components/ui/card";
 import { BRAND_COLOR } from "@/lib/constants/brand";
 import {
   BUDGET_CATEGORY_COLORS,
@@ -31,6 +31,7 @@ import { budgetChartTooltipFormatter } from "@/lib/budget/chart-tooltip";
 import { BudgetResponsiveChart } from "@/components/budget/budget-responsive-chart";
 import type { BudgetExpense } from "@/lib/budget/types";
 import { useLang, useT } from "@/lib/lang-context";
+import { cn } from "@/lib/utils";
 
 interface BudgetChartsProps {
   entries: BudgetExpense[];
@@ -77,8 +78,8 @@ export function BudgetCharts({
 
     return (
       <Card className="rounded-none py-0 shadow-sm">
-        <CardHeader className="border-b border-border pt-4 pb-3">
-          <CardTitle className="font-heading text-sm">{compareTitle}</CardTitle>
+        <CardHeader>
+          <CardTitle className={cn(CARD_TITLE_ROW_CLASSNAME, "text-sm")}>{compareTitle}</CardTitle>
         </CardHeader>
         <CardContent className="flex h-64 flex-col p-4">
           <BudgetResponsiveChart className="min-h-0 flex-1">
@@ -135,8 +136,8 @@ export function BudgetCharts({
       )}
       <div className="grid gap-4 lg:grid-cols-2">
       <Card className="rounded-none py-0 shadow-sm">
-        <CardHeader className="border-b border-border pt-4 pb-3">
-          <CardTitle className="font-heading text-sm">
+        <CardHeader>
+          <CardTitle className={cn(CARD_TITLE_ROW_CLASSNAME, "text-sm")}>
             {isIncomeView ? t.budget.chartIncomePieTitle : t.budget.chartPieTitle}
           </CardTitle>
         </CardHeader>
@@ -169,8 +170,8 @@ export function BudgetCharts({
       </Card>
 
       <Card className="rounded-none py-0 shadow-sm">
-        <CardHeader className="border-b border-border pt-4 pb-3">
-          <CardTitle className="font-heading text-sm">
+        <CardHeader>
+          <CardTitle className={cn(CARD_TITLE_ROW_CLASSNAME, "text-sm")}>
             {isIncomeView ? t.budget.chartIncomeBarTitle : t.budget.chartBarTitle}
           </CardTitle>
         </CardHeader>

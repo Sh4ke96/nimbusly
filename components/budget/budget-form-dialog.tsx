@@ -28,7 +28,7 @@ export function BudgetFormDialog({ onSuccess }: BudgetFormDialogProps) {
   const t = useT();
   const profile = useProfileStore((s) => s.profile);
   const members = useProfileStore((s) => s.members);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState<boolean>(false);
   const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>([]);
   const [state, action, pending] = useActionState(createBudget, null);
 

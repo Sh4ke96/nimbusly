@@ -2,12 +2,18 @@
 
 import { GIFT_FORM_FIELD } from "@/lib/gifts/types";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
   GiftRecipientPicker,
   type GiftRecipientSelection,
 } from "@/components/gifts/gift-recipient-picker";
-import { GIFT_CONTENT_MAX_LENGTH } from "@/lib/constants/gifts";
+import {
+  GiftVisibilityPicker,
+  type GiftVisibilitySelection,
+} from "@/components/gifts/gift-visibility-picker";
+import { GIFT_CONTENT_MAX_LENGTH, GIFT_LINK_URL_MAX_LENGTH } from "@/lib/constants/gifts";
+import { ACCOUNT_MODE } from "@/lib/constants/account";
 import type { FamilyMember, Profile } from "@/lib/profile";
 import { useT } from "@/lib/lang-context";
 
@@ -19,6 +25,10 @@ interface GiftEntryFormProps {
   onRecipientChange: (selection: GiftRecipientSelection) => void;
   content: string;
   onContentChange: (value: string) => void;
+  linkUrl: string;
+  onLinkUrlChange: (value: string) => void;
+  visibility: GiftVisibilitySelection;
+  onVisibilityChange: (value: GiftVisibilitySelection) => void;
 }
 
 export function GiftEntryForm({
@@ -29,9 +39,16 @@ export function GiftEntryForm({
   onRecipientChange,
   content,
   onContentChange,
+  linkUrl,
+  onLinkUrlChange,
+  visibility,
+  onVisibilityChange,
 }: GiftEntryFormProps) {
   const t = useT();
   const contentId = id ? `${id}-content` : "gift-content";
+  const linkId = id ? `${id}-link` : "gift-link";
+  const isFamily =
+    profile?.account_mode === ACCOUNT_MODE.FAMILY && !!profile.family_id && members.length > 0;
 
   return (
     <>
@@ -58,6 +75,30 @@ export function GiftEntryForm({
           className="min-h-32"
         />
       </div>
+
+      <div className="space-y-1.5">
+        <Label htmlFor={linkId}>{t.gifts.linkUrlLabel}</Label>
+        <p className="text-xs text-muted-foreground">{t.gifts.linkUrlHint}</p>
+        <Input
+          id={linkId}
+          name={GIFT_FORM_FIELD.LINK_URL}
+          type="url"
+          inputMode="url"
+          value={linkUrl}
+          onChange={(e) => onLinkUrlChange(e.target.value)}
+          maxLength={GIFT_LINK_URL_MAX_LENGTH}
+          placeholder={t.gifts.linkUrlPlaceholder}
+          className="rounded-none"
+        />
+      </div>
+
+      {isFamily && (
+        <GiftVisibilityPicker
+          members={members}
+          value={visibility}
+          onChange={onVisibilityChange}
+        />
+      )}
     </>
   );
 }
