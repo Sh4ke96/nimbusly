@@ -13,6 +13,8 @@
     "e2e:open": "start-server-and-test dev http://localhost:3000 cy:open",
     "test": "node scripts/run-unit-tests.mjs",
     "test:types": "tsc -p tsconfig.test.json",
+    "verify": "npm run lint && npm run test:types && npm test && npm run build",
+    "prepare": "node scripts/setup-git-hooks.mjs",
     "db:link": "dotenv -e .env.local -- supabase link --project-ref mxjbextvckzjfkzzpvin",
     "db:push": "dotenv -e .env.local -- supabase db push",
     "db:status": "dotenv -e .env.local -- supabase migration list",

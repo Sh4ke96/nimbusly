@@ -52,6 +52,7 @@ describe("buildAttentionItems", () => {
           quantity: "",
           expiry_date: "2026-06-20",
           availability: MEDICINE_AVAILABILITY.IN_STOCK,
+          taken_by: null,
           location: "",
           notes: "",
           created_by: "u1",
