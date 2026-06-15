@@ -31,20 +31,7 @@ export function FamilyVisibilityPicker({
   hiddenFieldName,
   serializeMemberIds,
 }: FamilyVisibilityPickerProps) {
-  const selected = new Set(value.memberIds);
   const serializedIds = value.visibleToAll ? [] : value.memberIds;
-
-  function toggleMember(memberId: string) {
-    if (selected.has(memberId)) {
-      const next = value.memberIds.filter((id) => id !== memberId);
-      onChange({ visibleToAll: false, memberIds: next });
-      return;
-    }
-    onChange({
-      visibleToAll: false,
-      memberIds: [...value.memberIds, memberId],
-    });
-  }
 
   return (
     <div className="space-y-3">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -27,17 +27,11 @@ export function GlobalSearchDialog() {
   const [hydrating, setHydrating] = useState<boolean>(false);
   const snapshot = useSearchStoresSnapshot();
 
-  useEffect(() => {
-    if (!open) return;
-    let cancelled = false;
+  function handleOpen() {
+    setOpen(true);
     setHydrating(true);
-    void prefetchSearchStores().finally(() => {
-      if (!cancelled) setHydrating(false);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [open]);
+    void prefetchSearchStores().finally(() => setHydrating(false));
+  }
 
   const results = useMemo(() => {
     const index = buildSearchIndex(
@@ -62,7 +56,7 @@ export function GlobalSearchDialog() {
           HEADER_CONTROL_HEIGHT,
           "hidden sm:inline-flex max-w-52 justify-start gap-2 rounded-none border-border bg-muted/40 px-2.5 text-muted-foreground font-normal"
         )}
-        onClick={() => setOpen(true)}
+        onClick={handleOpen}
         aria-label={t.search.triggerLabel}
       >
         <Search className="size-4 shrink-0" />
@@ -73,7 +67,7 @@ export function GlobalSearchDialog() {
         variant="outline"
         size="icon"
         className={cn(HEADER_CONTROL_HEIGHT, "w-8 sm:hidden rounded-none shrink-0")}
-        onClick={() => setOpen(true)}
+        onClick={handleOpen}
         aria-label={t.search.triggerLabel}
       >
         <Search className="size-4" />
@@ -83,7 +77,10 @@ export function GlobalSearchDialog() {
         open={open}
         onOpenChange={(next) => {
           setOpen(next);
-          if (!next) setQuery("");
+          if (!next) {
+            setQuery("");
+            setHydrating(false);
+          }
         }}
       >
         <DialogContent className="rounded-none sm:max-w-lg gap-0 p-0 overflow-hidden">

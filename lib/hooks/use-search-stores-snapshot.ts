@@ -1,9 +1,6 @@
 import { useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
-import {
-  readSearchStoresSnapshot,
-  type SearchStoresSnapshot,
-} from "@/lib/search/search-stores-snapshot";
+import type { SearchStoresSnapshot } from "@/lib/search/search-stores-snapshot";
 import { useBirthdaysStore } from "@/lib/stores/birthdays-store";
 import { useBudgetStore } from "@/lib/stores/budget-store";
 import { useChoresStore } from "@/lib/stores/chores-store";
@@ -39,8 +36,25 @@ export function useSearchStoresSnapshot(): SearchStoresSnapshot {
   );
 
   return useMemo(
-    () =>
-      readSearchStoresSnapshot(),
+    (): SearchStoresSnapshot => ({
+      profile,
+      members,
+      budgets,
+      expensesByBudgetId,
+      shoppingLists,
+      itemsByListId,
+      gifts,
+      birthdays,
+      scheduleEntries,
+      medicineItems,
+      watchlistItems,
+      restaurants,
+      pets,
+      petCareItems,
+      chores,
+      notes,
+      noteCategories,
+    }),
     [
       profile,
       members,

@@ -1,7 +1,7 @@
 import type { BirthdayEntry } from "@/lib/birthdays/types";
 import { isBudgetPaymentDueSoon } from "@/lib/budget/attention";
 import type { BudgetExpense } from "@/lib/budget/types";
-import { APP_MODULE, APP_MODULE_ROUTES, type AppModuleId } from "@/lib/constants/app-modules";
+import { APP_MODULE, APP_MODULE_ROUTES, getAppModuleIcon, type AppModuleId } from "@/lib/constants/app-modules";
 import { daysUntilBirthday } from "@/lib/dashboard/birthdays";
 import type { ChoreTask } from "@/lib/chores/types";
 import { isChoreOverdue } from "@/lib/chores/filters";
@@ -14,6 +14,7 @@ import type { Pet, PetCareItem } from "@/lib/pets/types";
 import { resolvePetName } from "@/lib/pets/filters";
 import { isScheduleEntryEndingSoon } from "@/lib/schedule/attention";
 import type { ScheduleEntry } from "@/lib/schedule/types";
+import type { LucideIcon } from "lucide-react";
 
 export const ATTENTION_KIND = {
   CHORE_OVERDUE: "chore_overdue",
@@ -40,6 +41,16 @@ export const ATTENTION_KIND_MODULE: Record<AttentionKind, AppModuleId> = {
 export function getAttentionModuleId(kind: AttentionKind): AppModuleId {
   return ATTENTION_KIND_MODULE[kind];
 }
+
+export const ATTENTION_KIND_ICON: Record<AttentionKind, LucideIcon> = {
+  [ATTENTION_KIND.CHORE_OVERDUE]: getAppModuleIcon(APP_MODULE.CHORES),
+  [ATTENTION_KIND.MEDICINE_EXPIRING]: getAppModuleIcon(APP_MODULE.MEDICINE_CABINET),
+  [ATTENTION_KIND.PET_CARE_DUE]: getAppModuleIcon(APP_MODULE.PETS),
+  [ATTENTION_KIND.BIRTHDAY_SOON]: getAppModuleIcon(APP_MODULE.BIRTHDAYS),
+  [ATTENTION_KIND.BUDGET_PAYMENT_DUE]: getAppModuleIcon(APP_MODULE.BUDGET),
+  [ATTENTION_KIND.SCHEDULE_ENDING]: getAppModuleIcon(APP_MODULE.CALENDAR),
+  [ATTENTION_KIND.NOTE_URGENT]: getAppModuleIcon(APP_MODULE.NOTES),
+};
 
 export interface AttentionItem {
   kind: AttentionKind;

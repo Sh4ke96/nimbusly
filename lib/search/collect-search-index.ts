@@ -1,10 +1,6 @@
-import type { Lang } from "@/lib/constants/lang";
-import {
-  getAppModuleDesc,
-  getFamilyModuleRoute,
-} from "@/lib/constants/app-modules";
-import { resolveGiftRecipientLabel } from "@/lib/gifts/recipients";
 import type { Dict } from "@/lib/i18n/types";
+import { getFamilyModuleRoute } from "@/lib/constants/app-modules";
+import { resolveGiftRecipientLabel } from "@/lib/gifts/recipients";
 import { buildSearchIndex, type SearchIndexInput } from "@/lib/search/global-search";
 import {
   readSearchStoresSnapshot,
@@ -125,8 +121,7 @@ export function buildSearchIndexInput(
 
 export function collectSearchIndexInput(
   moduleLabels: Dict["dashboard"]["moduleLabels"],
-  moduleDescs: Dict["dashboard"]["moduleDescs"],
-  _lang: Lang
+  moduleDescs: Dict["dashboard"]["moduleDescs"]
 ): SearchIndexInput {
   return buildSearchIndexInput(
     moduleLabels,
@@ -137,8 +132,7 @@ export function collectSearchIndexInput(
 
 export function collectSearchIndex(
   moduleLabels: Dict["dashboard"]["moduleLabels"],
-  moduleDescs: Dict["dashboard"]["moduleDescs"],
-  lang: Lang
+  moduleDescs: Dict["dashboard"]["moduleDescs"]
 ) {
-  return buildSearchIndex(collectSearchIndexInput(moduleLabels, moduleDescs, lang));
+  return buildSearchIndex(collectSearchIndexInput(moduleLabels, moduleDescs));
 }

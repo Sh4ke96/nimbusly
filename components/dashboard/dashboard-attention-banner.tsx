@@ -6,11 +6,10 @@ import { AlertTriangle, ChevronDown, ChevronUp, Pin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   ATTENTION_KIND,
-  getAttentionModuleId,
+  ATTENTION_KIND_ICON,
   isPinnedAttentionItem,
   type AttentionItem,
 } from "@/lib/dashboard/attention";
-import { getAppModuleIcon } from "@/lib/constants/app-modules";
 import { formatMessage } from "@/lib/i18n/format";
 import { useT } from "@/lib/lang-context";
 import { cn } from "@/lib/utils";
@@ -18,7 +17,7 @@ import { cn } from "@/lib/utils";
 const ATTENTION_PREVIEW_LIMIT = 8;
 
 function AttentionModuleIcon({ kind }: { kind: AttentionItem["kind"] }) {
-  const Icon = getAppModuleIcon(getAttentionModuleId(kind));
+  const Icon = ATTENTION_KIND_ICON[kind];
   return <Icon className="size-4 shrink-0 text-attention" aria-hidden />;
 }
 

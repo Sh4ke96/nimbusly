@@ -16,14 +16,9 @@ import {
   isValidChoreRecurrenceDuration,
   parseChoreCustomIntervalDays,
 } from "@/lib/chores/recurrence";
-import { isValidChoreIconEmoji, normalizeChoreIconEmoji } from "@/lib/chores/emoji";
+import { normalizeChoreIconEmoji } from "@/lib/chores/emoji";
 
 export { dateToChoreDateString, isValidChoreDateString, parseChoreDateString } from "@/lib/chores/dates";
-import {
-  dateToChoreDateString,
-  isValidChoreDateString,
-  parseChoreDateString,
-} from "@/lib/chores/dates";
 
 export interface ChoreTask {
   id: string;
