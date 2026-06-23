@@ -228,7 +228,7 @@ When adding tables, columns, or policies:
 
 | Change type | Required tests |
 |-------------|----------------|
-| New pure helpers (`lib/**/helpers.ts`, validators, formatters) | `tests/unit/**/*.test.ts` (Node test runner) |
+| New pure helpers (`lib/**/helpers.ts`, validators, formatters) | `tests/unit/**/*.test.ts` or `tests/integration/**/*.test.ts` for Server Action logic |
 | New user flow (auth, onboarding, settings, invites) | Cypress spec in `tests/e2e/` or extend existing |
 | Bug fix | Regression test when feasible |
 

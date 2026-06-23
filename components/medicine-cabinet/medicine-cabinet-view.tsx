@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
+import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
 import { AppHeader } from "@/components/app/app-header";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { MedicineCabinetFilters } from "@/components/medicine-cabinet/medicine-cabinet-filters";
@@ -11,9 +12,11 @@ import { MedicineFormDialog } from "@/components/medicine-cabinet/medicine-form-
 import { MedicineItemCard } from "@/components/medicine-cabinet/medicine-item-card";
 import { NimbusTourToolbarAnchor } from "@/components/nimbus/nimbus-tour-toolbar-anchor";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
+import { FamilyRealtimeHint } from "@/components/ui/family-realtime-hint";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MEDICINE_FILTER_ALL } from "@/lib/constants/medicine";
 import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus";
+import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { countActiveFilters } from "@/lib/filters/active-count";
 import { filterMedicineByAvailability } from "@/lib/medicine/filters";
 import { sortMedicineByExpiry } from "@/lib/medicine/expiry";
@@ -34,12 +37,29 @@ export function MedicineView() {
   const error = useMedicineStore((s) => s.error);
   const fetchItems = useMedicineStore((s) => s.fetchItems);
 
+  const familyId =
+    profile?.account_mode === ACCOUNT_MODE.FAMILY && profile.family_id
+      ? profile.family_id
+      : null;
+
   const [filterKey, setFilterKey] = useState<string>(MEDICINE_FILTER_ALL);
   const [editingItem, setEditingItem] = useState<MedicineItem | null>(null);
   const [editOpen, setEditOpen] = useState<boolean>(false);
 
   useStoreBootstrap(loaded, error, fetchItems);
   const onItemsChanged = useModuleRefresh(fetchItems);
+
+  const onRealtimeChange = useCallback(() => {
+    void fetchItems(true);
+  }, [fetchItems]);
+
+  useScopedRealtime({
+    userId: user?.id,
+    familyId,
+    channelKey: "medicine-items",
+    table: "medicine_items",
+    onChange: onRealtimeChange,
+  });
 
   const filteredItems = useMemo(() => {
     const filtered = filterMedicineByAvailability(items, filterKey);
@@ -83,6 +103,8 @@ export function MedicineView() {
             </div>
           </div>
         </div>
+
+        {familyId ? <FamilyRealtimeHint /> : null}
 
         {error ? (
           <ModuleFetchError onRetry={() => void fetchItems(true)} />

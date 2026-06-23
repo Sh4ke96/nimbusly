@@ -31,12 +31,15 @@ export function getBudgetReminderOffsetsToSend(
   });
 }
 
-export function resolveBudgetReminderDueDate(entry: {
-  expense_date: string;
-  recurrence: BudgetRecurrence;
-  recurrence_end_date: string | null;
-  payment_reminder_enabled: boolean;
-}): string | null {
+export function resolveBudgetReminderDueDate(
+  entry: {
+    expense_date: string;
+    recurrence: BudgetRecurrence;
+    recurrence_end_date: string | null;
+    payment_reminder_enabled: boolean;
+  },
+  today = new Date()
+): string | null {
   if (!entry.payment_reminder_enabled) return null;
-  return getNextBudgetDueDate(entry);
+  return getNextBudgetDueDate(entry, today);
 }

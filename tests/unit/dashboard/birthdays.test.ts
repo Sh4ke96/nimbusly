@@ -28,11 +28,11 @@ describe("daysUntilBirthday", () => {
 
 describe("sortBirthdaysByUpcoming", () => {
   it("orders by nearest birthday first", () => {
-    const sorted = sortBirthdaysByUpcoming([
-      entry(12, 25, "dec"),
-      entry(6, 20, "jun"),
-      entry(6, 15, "mid"),
-    ]);
+    const from = new Date(2026, 5, 14);
+    const sorted = sortBirthdaysByUpcoming(
+      [entry(12, 25, "dec"), entry(6, 20, "jun"), entry(6, 15, "mid")],
+      from
+    );
     assert.deepEqual(sorted.map((row) => row.id), ["mid", "jun", "dec"]);
   });
 });

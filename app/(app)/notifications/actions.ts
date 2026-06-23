@@ -1,9 +1,12 @@
 "use server";
 
 import { getServerT } from "@/lib/i18n/server";
-import { parseEntityIdFromForm } from "@/lib/form/common-fields";
 import type { AccountActionState } from "@/app/(app)/account/actions";
 import { requireUser } from "@/lib/server-actions/require-user";
+import {
+  executeMarkAllNotificationsRead,
+  executeMarkNotificationRead,
+} from "@/lib/notifications/server/mark-notification-read";
 
 export async function markNotificationRead(
   _prev: AccountActionState,
@@ -11,22 +14,7 @@ export async function markNotificationRead(
 ): Promise<AccountActionState> {
   const t = await getServerT();
   const { supabase, user } = await requireUser();
-
-  if (!user) return { error: t.account.errorUnauthorized };
-
-  const id = parseEntityIdFromForm(formData);
-  if (!id) return { error: t.notifications.errorGeneric };
-
-  const { error } = await supabase
-    .from("notifications")
-    .update({ read_at: new Date().toISOString() })
-    .eq("id", id)
-    .eq("user_id", user.id)
-    .is("read_at", null);
-
-  if (error) return { error: t.notifications.errorGeneric };
-
-  return { success: t.notifications.markedRead };
+  return executeMarkNotificationRead({ t, user, supabase }, formData);
 }
 
 export async function markAllNotificationsRead(
@@ -35,16 +23,5 @@ export async function markAllNotificationsRead(
   void _previous;
   const t = await getServerT();
   const { supabase, user } = await requireUser();
-
-  if (!user) return { error: t.account.errorUnauthorized };
-
-  const { error } = await supabase
-    .from("notifications")
-    .update({ read_at: new Date().toISOString() })
-    .eq("user_id", user.id)
-    .is("read_at", null);
-
-  if (error) return { error: t.notifications.errorGeneric };
-
-  return { success: t.notifications.allMarkedRead };
+  return executeMarkAllNotificationsRead({ t, user, supabase });
 }

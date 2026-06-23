@@ -46,7 +46,7 @@ export function AccountMenu() {
   const user = useProfileStore((s) => s.user);
   const profile = useProfileStore((s) => s.profile);
   const family = useProfileStore((s) => s.family);
-  const [logoutOpen, setLogoutOpen] = useState(false);
+  const [logoutOpen, setLogoutOpen] = useState<boolean>(false);
 
   const displayName = profile
     ? getDisplayName(profile)

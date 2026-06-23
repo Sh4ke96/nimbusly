@@ -102,6 +102,8 @@ npm run cy:run       # Cypress only (server must already run)
 | Layer | Location |
 |-------|----------|
 | Unit | `tests/unit/**/*.test.ts` |
+| Integration | `tests/integration/**/*.test.ts` |
+| Component | `tests/component/**/*.test.tsx` |
 | E2E | `tests/e2e/**/*.cy.ts` |
 | Cypress config | `cypress.config.ts` — `baseUrl` from `NEXT_PUBLIC_SITE_URL` or `http://localhost:3000` |
 | Supabase test tasks | `tests/tasks/supabase` |

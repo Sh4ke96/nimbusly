@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 
 export function NimbusCompanion() {
   const t = useT();
-  const [hovered, setHovered] = useState(false);
+  const [hovered, setHovered] = useState<boolean>(false);
   const menuOpen = useNimbusStore((s) => s.menuOpen);
   const hintIndex = useNimbusStore((s) => s.hintIndex);
   const hintMessage = useNimbusStore((s) => s.hintMessage);

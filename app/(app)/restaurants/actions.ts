@@ -6,18 +6,12 @@ import {
   formatRestaurantNotificationDetail,
 } from "@/lib/restaurants/changes";
 import {
-  isValidRestaurantAddress,
-  isValidRestaurantComment,
-  isValidRestaurantName,
-  isValidRestaurantNotes,
-  isValidRestaurantRating,
   isValidRestaurantVenueType,
   isValidRestaurantVisitStatus,
   normalizeRestaurantAddress,
   normalizeRestaurantName,
   parseRestaurantIdFromForm,
   parseRestaurantPlaceFromForm,
-  validateRestaurantVisitFields,
 } from "@/lib/restaurants/types";
 import { RESTAURANT_VISIT_STATUS } from "@/lib/constants/restaurants";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
@@ -27,30 +21,7 @@ import type { AccountActionState } from "@/app/(app)/account/actions";
 import { requireUser, getProfileFamilyContext } from "@/lib/server-actions/require-user";
 import { notifyFamilyMembers } from "@/lib/server-actions/notify-family";
 import { restaurantPlaceFromRow } from "@/lib/supabase/app-rows";
-
-function validateRestaurantFields(
-  parsed: ReturnType<typeof parseRestaurantPlaceFromForm>
-): string | null {
-  if (!isValidRestaurantName(parsed.name)) return "name";
-  if (!parsed.venueType) return "venueType";
-  if (!parsed.visitStatus) return "visitStatus";
-  if (!isValidRestaurantAddress(parsed.address)) return "address";
-  if (!isValidRestaurantComment(parsed.comment)) return "comment";
-  if (!isValidRestaurantNotes(parsed.notes)) return "notes";
-
-  const visitError = validateRestaurantVisitFields(
-    parsed.visitStatus,
-    parsed.rating,
-    parsed.visitedAt
-  );
-  if (visitError) return visitError;
-
-  if (parsed.rating !== null && !isValidRestaurantRating(parsed.rating)) {
-    return "rating";
-  }
-
-  return null;
-}
+import { validateRestaurantFields } from "@/lib/restaurants/server/validate-fields";
 
 function toDbPayload(parsed: ReturnType<typeof parseRestaurantPlaceFromForm>) {
   const visitStatus = parsed.visitStatus!;

@@ -58,7 +58,7 @@ export function NimbusCompanionMenu({ onClose }: NimbusCompanionMenuProps) {
   const setMenuView = useNimbusStore((s) => s.setMenuView);
   const startTour = useNimbusStore((s) => s.startTour);
   const dismissHint = useNimbusStore((s) => s.dismissHint);
-  const [faqQuery, setFaqQuery] = useState("");
+  const [faqQuery, setFaqQuery] = useState<string>("");
   const [openFaqId, setOpenFaqId] = useState<NimbusFaqId | null>(NIMBUS_FAQ_IDS[0]);
 
   const moduleTourId = getModuleTourIdForPath(pathname);

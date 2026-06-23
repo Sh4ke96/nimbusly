@@ -1,9 +1,10 @@
 "use client";
 
 import { SCHEDULE_FORM_FIELD } from "@/lib/schedule/types";
-import { useActionState, useMemo, useState } from "react";
+import { useActionState, useCallback, useMemo, useState } from "react";
 import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
+import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
 import { AppHeader } from "@/components/app/app-header";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { ScheduleCalendar } from "@/components/schedule/schedule-calendar";
@@ -13,12 +14,14 @@ import { ScheduleTypeBadge } from "@/components/schedule/schedule-type-picker";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CARD_TITLE_ROW_CLASSNAME } from "@/components/ui/card";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
+import { FamilyRealtimeHint } from "@/components/ui/family-realtime-hint";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLang, useT } from "@/lib/lang-context";
 import { formatMessage } from "@/lib/i18n/format";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useScheduleStore } from "@/lib/stores/schedule-store";
 import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus-tour";
+import { ACCOUNT_MODE } from "@/lib/constants/account";
 import {
   formatScheduleDateRangeLabel,
   parseEntryDateParts,
@@ -50,6 +53,11 @@ export function ScheduleView() {
   const error = useScheduleStore((s) => s.error);
   const fetchEntries = useScheduleStore((s) => s.fetchEntries);
 
+  const familyId =
+    profile?.account_mode === ACCOUNT_MODE.FAMILY && profile.family_id
+      ? profile.family_id
+      : null;
+
   const now = new Date();
   const [year, setYear] = useState<number>(now.getFullYear());
   const [month, setMonth] = useState<number>(now.getMonth() + 1);
@@ -63,6 +71,18 @@ export function ScheduleView() {
 
   useStoreBootstrap(loaded, error, fetchEntries);
   const onScheduleChanged = useModuleRefresh(fetchEntries);
+
+  const onRealtimeChange = useCallback(() => {
+    void fetchEntries(true);
+  }, [fetchEntries]);
+
+  useScopedRealtime({
+    userId: user?.id,
+    familyId,
+    channelKey: "schedule-entries",
+    table: "schedule_entries",
+    onChange: onRealtimeChange,
+  });
 
   useActionFeedback(deleteState, onScheduleChanged, deletePending);
 
@@ -161,6 +181,8 @@ export function ScheduleView() {
             </div>
           </div>
         </div>
+
+        {familyId ? <FamilyRealtimeHint /> : null}
 
         {error ? (
           <ModuleFetchError onRetry={() => void fetchEntries(true)} />

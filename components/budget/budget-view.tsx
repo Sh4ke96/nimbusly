@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
+import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
 import { useResolvedItemSelection } from "@/lib/hooks/use-resolved-item-selection";
 import { ModuleSectionHeading } from "@/components/ui/module-section-heading";
 import { Eye, EyeOff, BarChart3, Download, Printer, Scale, TrendingDown, TrendingUp, Wallet } from "lucide-react";
@@ -18,6 +19,7 @@ import { BudgetFormDialog } from "@/components/budget/budget-form-dialog";
 import { BudgetMonthPicker } from "@/components/budget/budget-month-picker";
 import { BudgetWatchButton } from "@/components/budget/budget-watch-button";
 import { NimbusTourToolbarAnchor } from "@/components/nimbus/nimbus-tour-toolbar-anchor";
+import { FamilyRealtimeHint } from "@/components/ui/family-realtime-hint";
 import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus-tour";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
 import { Button } from "@/components/ui/button";
@@ -54,6 +56,7 @@ import {
   useBudgetStore,
 } from "@/lib/stores/budget-store";
 import { cn } from "@/lib/utils";
+import { ACCOUNT_MODE } from "@/lib/constants/account";
 
 export function BudgetView() {
   const t = useT();
@@ -61,6 +64,11 @@ export function BudgetView() {
   const user = useProfileStore((s) => s.user);
   const profile = useProfileStore((s) => s.profile);
   const members = useProfileStore((s) => s.members);
+
+  const familyId =
+    profile?.account_mode === ACCOUNT_MODE.FAMILY && profile.family_id
+      ? profile.family_id
+      : null;
 
   const budgets = useBudgetStore((s) => s.budgets);
   const loaded = useBudgetStore((s) => s.loaded);
@@ -146,6 +154,26 @@ export function BudgetView() {
   );
 
   useStoreBootstrap(loaded, error, fetchBudgets);
+
+  const onBudgetDataChanged = useCallback(() => {
+    void fetchBudgets(true);
+  }, [fetchBudgets]);
+
+  useScopedRealtime({
+    userId: user?.id,
+    familyId,
+    channelKey: "budget-expenses",
+    table: "budget_expenses",
+    onChange: onBudgetDataChanged,
+  });
+
+  useScopedRealtime({
+    userId: user?.id,
+    familyId,
+    channelKey: "budgets",
+    table: "budgets",
+    onChange: onBudgetDataChanged,
+  });
 
   useEffect(() => {
     void fetchWatches();
@@ -261,6 +289,8 @@ export function BudgetView() {
             <BudgetFormDialog onSuccess={onDataChanged} />
           </div>
         </div>
+
+        {familyId ? <FamilyRealtimeHint /> : null}
 
         {error ? (
           <ModuleFetchError onRetry={() => void fetchBudgets(true)} />

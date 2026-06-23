@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
+import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
 import { AppHeader } from "@/components/app/app-header";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { WatchlistEditDialog } from "@/components/watchlist/watchlist-edit-dialog";
@@ -11,9 +12,11 @@ import { WatchlistFormDialog } from "@/components/watchlist/watchlist-form-dialo
 import { WatchlistItemCard } from "@/components/watchlist/watchlist-item-card";
 import { NimbusTourToolbarAnchor } from "@/components/nimbus/nimbus-tour-toolbar-anchor";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
+import { FamilyRealtimeHint } from "@/components/ui/family-realtime-hint";
 import { Skeleton } from "@/components/ui/skeleton";
 import { WATCHLIST_FILTER_ALL } from "@/lib/constants/watchlist";
 import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus";
+import { ACCOUNT_MODE } from "@/lib/constants/account";
 import {
   filterWatchlistByMediaType,
   filterWatchlistByStatus,
@@ -35,6 +38,11 @@ export function WatchlistView() {
   const error = useWatchlistStore((s) => s.error);
   const fetchItems = useWatchlistStore((s) => s.fetchItems);
 
+  const familyId =
+    profile?.account_mode === ACCOUNT_MODE.FAMILY && profile.family_id
+      ? profile.family_id
+      : null;
+
   const [statusFilter, setStatusFilter] = useState<string>(WATCHLIST_FILTER_ALL);
   const [mediaFilter, setMediaFilter] = useState<string>(WATCHLIST_FILTER_ALL);
   const [platformFilter, setPlatformFilter] = useState<string>(WATCHLIST_FILTER_ALL);
@@ -43,6 +51,18 @@ export function WatchlistView() {
 
   useStoreBootstrap(loaded, error, fetchItems);
   const onItemsChanged = useModuleRefresh(fetchItems);
+
+  const onRealtimeChange = useCallback(() => {
+    void fetchItems(true);
+  }, [fetchItems]);
+
+  useScopedRealtime({
+    userId: user?.id,
+    familyId,
+    channelKey: "watchlist-items",
+    table: "watchlist_items",
+    onChange: onRealtimeChange,
+  });
 
   const filteredItems = useMemo(() => {
     const byStatus = filterWatchlistByStatus(items, statusFilter);
@@ -94,6 +114,8 @@ export function WatchlistView() {
             </div>
           </div>
         </div>
+
+        {familyId ? <FamilyRealtimeHint /> : null}
 
         {error ? (
           <ModuleFetchError onRetry={() => void fetchItems(true)} />

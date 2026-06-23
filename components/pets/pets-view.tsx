@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
+import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
 import { Pencil } from "lucide-react";
 import { AppHeader } from "@/components/app/app-header";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
@@ -14,10 +15,12 @@ import { PetEditDialog } from "@/components/pets/pet-edit-dialog";
 import { PetFormDialog } from "@/components/pets/pet-form-dialog";
 import { NimbusTourToolbarAnchor } from "@/components/nimbus/nimbus-tour-toolbar-anchor";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
+import { FamilyRealtimeHint } from "@/components/ui/family-realtime-hint";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PET_FILTER_ALL } from "@/lib/constants/pets";
 import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus";
+import { ACCOUNT_MODE } from "@/lib/constants/account";
 import {
   filterPetCareByPet,
   filterPetCareByType,
@@ -42,6 +45,11 @@ export function PetsView() {
   const error = usePetsStore((s) => s.error);
   const fetchAll = usePetsStore((s) => s.fetchAll);
 
+  const familyId =
+    profile?.account_mode === ACCOUNT_MODE.FAMILY && profile.family_id
+      ? profile.family_id
+      : null;
+
   const [petFilter, setPetFilter] = useState<string>(PET_FILTER_ALL);
   const [typeFilter, setTypeFilter] = useState<string>(PET_FILTER_ALL);
   const [editingCareItem, setEditingCareItem] = useState<PetCareItem | null>(null);
@@ -51,6 +59,26 @@ export function PetsView() {
 
   useStoreBootstrap(loaded, error, fetchAll);
   const onDataChanged = useModuleRefresh(fetchAll);
+
+  const onRealtimeChange = useCallback(() => {
+    void fetchAll(true);
+  }, [fetchAll]);
+
+  useScopedRealtime({
+    userId: user?.id,
+    familyId,
+    channelKey: "pets",
+    table: "pets",
+    onChange: onRealtimeChange,
+  });
+
+  useScopedRealtime({
+    userId: user?.id,
+    familyId,
+    channelKey: "pet-care-items",
+    table: "pet_care_items",
+    onChange: onRealtimeChange,
+  });
 
   const filteredItems = useMemo(() => {
     const byPet = filterPetCareByPet(careItems, petFilter);
@@ -107,6 +135,8 @@ export function PetsView() {
             </div>
           </div>
         </div>
+
+        {familyId ? <FamilyRealtimeHint /> : null}
 
         {!loading && pets.length > 0 && (
           <div className="flex flex-wrap gap-2">

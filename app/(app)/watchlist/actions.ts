@@ -7,9 +7,7 @@ import {
 } from "@/lib/watchlist/changes";
 import {
   isValidWatchlistMediaType,
-  isValidWatchlistNotes,
   isValidWatchlistStatus,
-  isValidWatchlistTitle,
   normalizeWatchlistTitle,
   parseWatchlistIdFromForm,
   parseWatchlistItemFromForm,
@@ -22,17 +20,7 @@ import type { AccountActionState } from "@/app/(app)/account/actions";
 import { requireUser, getProfileFamilyContext } from "@/lib/server-actions/require-user";
 import { notifyFamilyMembers } from "@/lib/server-actions/notify-family";
 import { watchlistItemFromRow } from "@/lib/supabase/app-rows";
-
-function validateWatchlistFields(
-  parsed: ReturnType<typeof parseWatchlistItemFromForm>
-): string | null {
-  if (!isValidWatchlistTitle(parsed.title)) return "title";
-  if (!parsed.mediaType) return "mediaType";
-  if (!parsed.status) return "status";
-  if (!isValidWatchlistNotes(parsed.notes)) return "notes";
-  if (parsed.streamingPlatforms === null) return "streamingPlatforms";
-  return null;
-}
+import { validateWatchlistFields } from "@/lib/watchlist/server/validate-fields";
 
 export async function createWatchlistItem(
   _prev: AccountActionState,

@@ -6,11 +6,8 @@ import { formatMessage } from "@/lib/i18n/format";
 import { buildScheduleChangeSummary, formatScheduleNotificationDetail } from "@/lib/schedule/changes";
 import {
   countScheduleEntriesOnDate,
-  isValidEntryDateRange,
-  isValidEntryDateString,
   isValidScheduleEntryType,
   iterScheduleDateRange,
-  normalizeScheduleEntryEndDate,
   parseScheduleEntryFromForm,
   parseScheduleIdFromForm,
   type ScheduleEntry,
@@ -24,6 +21,7 @@ import type { AccountActionState } from "@/app/(app)/account/actions";
 import { requireUser, getProfileFamilyContext } from "@/lib/server-actions/require-user";
 import { notifyFamilyMembers } from "@/lib/server-actions/notify-family";
 import { scheduleEntryFromRow } from "@/lib/supabase/app-rows";
+import { parseAndValidateScheduleDates } from "@/lib/schedule/server/validate-schedule-dates";
 
 type ScheduleEntryRow = Pick<ScheduleEntry, "id" | "entry_date" | "entry_end_date">;
 
@@ -71,26 +69,6 @@ async function isScheduleRangeFullOnServer(
     (date) =>
       countScheduleEntriesOnDate(entries, date) >= SCHEDULE_MAX_ENTRIES_PER_DAY
   );
-}
-
-function parseAndValidateScheduleDates(
-  entryDate: string,
-  entryEndDate: string,
-  errors: { invalidDate: string; endBeforeStart: string }
-): { entryDate: string; entryEndDate: string | null } | { error: string } {
-  if (!entryDate || !isValidEntryDateString(entryDate)) {
-    return { error: errors.invalidDate };
-  }
-
-  const resolvedEnd = entryEndDate || entryDate;
-  if (!isValidEntryDateRange(entryDate, resolvedEnd)) {
-    return { error: errors.endBeforeStart };
-  }
-
-  return {
-    entryDate,
-    entryEndDate: normalizeScheduleEntryEndDate(entryDate, resolvedEnd),
-  };
 }
 
 export async function createScheduleEntry(

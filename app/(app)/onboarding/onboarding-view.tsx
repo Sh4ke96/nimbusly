@@ -14,7 +14,7 @@ import { OnboardingWizard } from "./onboarding-wizard";
 
 export function OnboardingView() {
   const t = useT();
-  const [logoutOpen, setLogoutOpen] = useState(false);
+  const [logoutOpen, setLogoutOpen] = useState<boolean>(false);
 
   return (
     <div className="min-h-screen flex flex-col">

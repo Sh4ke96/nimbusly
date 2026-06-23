@@ -1,8 +1,9 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useCallback, useState } from "react";
 import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
+import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
 import { AppHeader } from "@/components/app/app-header";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { BirthdayCalendar } from "@/components/birthdays/birthday-calendar";
@@ -11,11 +12,13 @@ import { BirthdayFormDialog } from "@/components/birthdays/birthday-form-dialog"
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CARD_TITLE_ROW_CLASSNAME } from "@/components/ui/card";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
+import { FamilyRealtimeHint } from "@/components/ui/family-realtime-hint";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useT } from "@/lib/lang-context";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useBirthdaysStore } from "@/lib/stores/birthdays-store";
 import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus";
+import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { formatBirthdayLabel, type BirthdayEntry, BIRTHDAY_FORM_FIELD } from "@/lib/birthdays/types";
 import { selectionListRowClasses } from "@/lib/ui/selection-styles";
 import { cn } from "@/lib/utils";
@@ -34,6 +37,11 @@ export function BirthdaysView() {
   const error = useBirthdaysStore((s) => s.error);
   const fetchEntries = useBirthdaysStore((s) => s.fetchEntries);
 
+  const familyId =
+    profile?.account_mode === ACCOUNT_MODE.FAMILY && profile.family_id
+      ? profile.family_id
+      : null;
+
   const now = new Date();
   const [year, setYear] = useState<number>(now.getFullYear());
   const [month, setMonth] = useState<number>(now.getMonth() + 1);
@@ -47,6 +55,18 @@ export function BirthdaysView() {
 
   useStoreBootstrap(loaded, error, fetchEntries);
   const onBirthdayChanged = useModuleRefresh(fetchEntries);
+
+  const onRealtimeChange = useCallback(() => {
+    void fetchEntries(true);
+  }, [fetchEntries]);
+
+  useScopedRealtime({
+    userId: user?.id,
+    familyId,
+    channelKey: "birthday-entries",
+    table: "birthday_entries",
+    onChange: onRealtimeChange,
+  });
 
   useActionFeedback(deleteState, onBirthdayChanged, deletePending);
 
@@ -100,6 +120,8 @@ export function BirthdaysView() {
             />
           </div>
         </div>
+
+        {familyId ? <FamilyRealtimeHint /> : null}
 
         {error ? (
           <ModuleFetchError onRetry={() => void fetchEntries(true)} />

@@ -11,6 +11,29 @@ export { CHANGELOG_ENTRY_TYPE, type ChangelogEntry };
  */
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "0.3.1",
+    date: "2026-06-23",
+    type: CHANGELOG_ENTRY_TYPE.FIX,
+    title: {
+      pl: "Jakość, testy i synchronizacja na żywo",
+      en: "Quality, tests, and live sync",
+    },
+    changes: {
+      pl: [
+        "Naprawiono panel „Wymaga uwagi” dla płatności budżetu (przekazywanie daty, przeterminowane wpisy)",
+        "Realtime we wszystkich modułach rodzinnych + sekcja planowanych uprawnień w ustawieniach",
+        "Testy E2E CRUD/smoke dla budżetu, urodzin, grafiku, watchlisty, restauracji i powiadomień",
+        "Testy integracyjne Server Actions i deterministyczne testy jednostkowe dat",
+      ],
+      en: [
+        "Fixed Needs attention budget payments (date forwarding, overdue entries)",
+        "Realtime across all family modules + planned permissions section in settings",
+        "E2E CRUD/smoke for budget, birthdays, schedule, watchlist, restaurants, and notifications",
+        "Server Action integration tests and deterministic date unit tests",
+      ],
+    },
+  },
+  {
     version: "0.3.0",
     date: "2026-06-14",
     type: CHANGELOG_ENTRY_TYPE.MINOR,

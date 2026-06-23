@@ -32,7 +32,7 @@ import { NOTIFICATION_TYPE, type NotificationType } from "@/lib/constants/notifi
 import { getFamilyNotificationTitle } from "@/lib/notifications/family-notification";
 import { getDisplayName } from "@/lib/profile";
 import type { AccountActionState } from "@/app/(app)/account/actions";
-import { requireUser, getActorProfile, getProfileFamilyContext } from "@/lib/server-actions/require-user";
+import { requireUser, getProfileFamilyContext } from "@/lib/server-actions/require-user";
 import { notifyEntityWatchers } from "@/lib/server-actions/notify-watchers";
 import { notifyFamilyMembers } from "@/lib/server-actions/notify-family";
 import type { ShoppingListItemUpdate } from "@/lib/supabase/app-rows";
@@ -332,7 +332,7 @@ export async function addShoppingListItem(
     .update({ updated_at: new Date().toISOString() })
     .eq("id", listId);
 
-  const profile = await getActorProfile(supabase, user.id);
+  const { profile } = await getProfileFamilyContext(supabase, user.id);
   if (profile) {
     const actorName = getDisplayName(profile);
     const bodyDetail = formatShoppingListItemNotificationDetail(
@@ -452,7 +452,7 @@ export async function deleteShoppingListItem(
     .eq("id", listId);
 
   const itemContent = existingItem?.content ?? "";
-  const profile = await getActorProfile(supabase, user.id);
+  const { profile } = await getProfileFamilyContext(supabase, user.id);
   if (profile && itemContent) {
     const actorName = getDisplayName(profile);
     const bodyDetail = formatShoppingListItemNotificationDetail(

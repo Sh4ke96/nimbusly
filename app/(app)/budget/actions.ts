@@ -30,7 +30,7 @@ import { NOTIFICATION_TYPE, type NotificationType } from "@/lib/constants/notifi
 import { getFamilyNotificationTitle } from "@/lib/notifications/family-notification";
 import { getDisplayName } from "@/lib/profile";
 import type { AccountActionState } from "@/app/(app)/account/actions";
-import { requireUser, getActorProfile } from "@/lib/server-actions/require-user";
+import { requireUser, getProfileFamilyContext } from "@/lib/server-actions/require-user";
 import { notifyEntityWatchers } from "@/lib/server-actions/notify-watchers";
 import { notifyFamilyMembers } from "@/lib/server-actions/notify-family";
 import { executeCreateBudget } from "@/lib/budget/server/create-budget";
@@ -196,7 +196,7 @@ export async function updateBudget(
   if (!existing) return { error: t.budget.errorNotFound };
 
   const isHidden = parseBudgetHiddenFromForm(formData);
-  const profile = await getActorProfile(supabase, user.id);
+  const { profile } = await getProfileFamilyContext(supabase, user.id);
   const { error } = await supabase
     .from("budgets")
     .update({
@@ -261,7 +261,7 @@ export async function deleteBudget(
   const existing = await getAccessibleBudget(supabase, id);
   if (!existing) return { error: t.budget.errorNotFound };
 
-  const profile = await getActorProfile(supabase, user.id);
+  const { profile } = await getProfileFamilyContext(supabase, user.id);
   const { count } = await supabase
     .from("budget_expenses")
     .select("id", { count: "exact", head: true })
@@ -381,7 +381,7 @@ export async function addBudgetExpense(
     .update({ updated_at: new Date().toISOString() })
     .eq("id", budgetId);
 
-  const profile = await getActorProfile(supabase, user.id);
+  const { profile } = await getProfileFamilyContext(supabase, user.id);
   if (profile) {
     const categoryLabel = resolveBudgetCategoryLabel(
       category,
@@ -464,7 +464,7 @@ export async function addBudgetIncome(
     .update({ updated_at: new Date().toISOString() })
     .eq("id", budgetId);
 
-  const profile = await getActorProfile(supabase, user.id);
+  const { profile } = await getProfileFamilyContext(supabase, user.id);
   if (profile) {
     const categoryLabel = resolveBudgetCategoryLabel(
       category,
@@ -532,7 +532,7 @@ export async function deleteBudgetExpense(
     .eq("id", budgetId);
 
   if (existing) {
-    const profile = await getActorProfile(supabase, user.id);
+    const { profile } = await getProfileFamilyContext(supabase, user.id);
     if (profile) {
       const entryType = existing.entry_type ?? BUDGET_ENTRY_TYPE.EXPENSE;
       const categoryLabel = resolveBudgetCategoryLabel(

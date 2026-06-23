@@ -22,6 +22,23 @@ describe("isBudgetPaymentDueSoon", () => {
       true
     );
   });
+
+  it("returns true for overdue one-time expense with reminder enabled", () => {
+    const today = new Date("2026-06-23");
+    assert.equal(
+      isBudgetPaymentDueSoon(
+        {
+          entry_type: BUDGET_ENTRY_TYPE.EXPENSE,
+          expense_date: "2026-06-21",
+          recurrence: BUDGET_RECURRENCE.NONE,
+          recurrence_end_date: null,
+          payment_reminder_enabled: true,
+        },
+        today
+      ),
+      true
+    );
+  });
 });
 
 describe("isScheduleEntryEndingSoon", () => {

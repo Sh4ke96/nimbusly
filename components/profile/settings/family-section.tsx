@@ -66,8 +66,8 @@ export function FamilySection() {
     null
   );
   const [leaveState, leaveAction, leavePending] = useActionState(leaveFamily, null);
-  const [copied, setCopied] = useState(false);
-  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [copied, setCopied] = useState<boolean>(false);
+  const [confirmOpen, setConfirmOpen] = useState<boolean>(false);
   const [confirmAction, setConfirmAction] = useState<ConfirmAction | null>(null);
   const [targetMemberId, setTargetMemberId] = useState<string | null>(null);
   const ensuringCodeRef = useRef(false);
@@ -423,6 +423,11 @@ export function FamilySection() {
         {!canManage && (
           <p className="text-xs text-muted-foreground">{t.account.permissionsMemberHint}</p>
         )}
+
+        <div className="space-y-1 rounded-none border border-dashed border-border bg-muted/20 p-4">
+          <p className="font-heading text-sm font-semibold">{t.account.permissionsMoreTitle}</p>
+          <p className="text-xs text-muted-foreground">{t.account.permissionsMoreDesc}</p>
+        </div>
 
         <div
           className="space-y-3 rounded-none border border-border bg-muted/30 p-4"

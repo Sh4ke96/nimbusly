@@ -116,4 +116,40 @@ export const t = {
     chores: "Obowiązki domowe",
     notes: "Notatki",
   },
+  budget: {
+    title: "Budżet",
+    subtitle:
+      "Wspólny budżet rodzinny lub osobisty — dochody, wydatki, kategorie i podsumowania.",
+    addBtn: "Nowy budżet",
+    addTitle: "Nowy budżet",
+  },
+  birthdays: {
+    title: "Urodziny",
+    subtitle: "Kalendarz urodzin — solo lub współdzielony z rodziną.",
+    addBtn: "Dodaj urodziny",
+    addTitle: "Nowe urodziny",
+  },
+  schedule: {
+    title: "Grafik pracy",
+    subtitle: "Planuj dni pracy, wolne i inne aktywności — solo lub współdzielony z rodziną.",
+    addBtn: "Dodaj wpis",
+    addTitle: "Nowy wpis w grafiku",
+  },
+  watchlist: {
+    title: "Filmy i seriale",
+    subtitle: "Lista do obejrzenia — filmy i seriale, solo lub współdzielone z rodziną.",
+    addBtn: "Dodaj pozycję",
+    addTitle: "Nowy film lub serial",
+  },
+  restaurants: {
+    title: "Restauracje i puby",
+    subtitle:
+      "Miejsca do odwiedzenia i już odwiedzone — z oceną, adresem i mapą. Solo lub z rodziną.",
+    addBtn: "Dodaj miejsce",
+    addTitle: "Nowa restauracja lub pub",
+  },
+  notifications: {
+    title: "Powiadomienia",
+    subtitle: "Aktywność w rodzinie i przypomnienia.",
+  },
 } as const;

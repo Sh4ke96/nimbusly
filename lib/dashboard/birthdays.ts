@@ -13,10 +13,13 @@ export function daysUntilBirthday(
   return Math.round((next.getTime() - today.getTime()) / 86_400_000);
 }
 
-export function sortBirthdaysByUpcoming(entries: BirthdayEntry[]): BirthdayEntry[] {
+export function sortBirthdaysByUpcoming(
+  entries: BirthdayEntry[],
+  from = new Date()
+): BirthdayEntry[] {
   return [...entries].sort(
     (a, b) =>
-      daysUntilBirthday(a.birth_month, a.birth_day) -
-      daysUntilBirthday(b.birth_month, b.birth_day)
+      daysUntilBirthday(a.birth_month, a.birth_day, from) -
+      daysUntilBirthday(b.birth_month, b.birth_day, from)
   );
 }

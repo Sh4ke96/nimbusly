@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
+import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
 import { AppHeader } from "@/components/app/app-header";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { RestaurantEditDialog } from "@/components/restaurants/restaurant-edit-dialog";
@@ -11,9 +12,11 @@ import { RestaurantsFilters } from "@/components/restaurants/restaurants-filters
 import { RestaurantPlaceCard } from "@/components/restaurants/restaurant-place-card";
 import { NimbusTourToolbarAnchor } from "@/components/nimbus/nimbus-tour-toolbar-anchor";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
+import { FamilyRealtimeHint } from "@/components/ui/family-realtime-hint";
 import { Skeleton } from "@/components/ui/skeleton";
 import { RESTAURANT_FILTER_ALL } from "@/lib/constants/restaurants";
 import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus";
+import { ACCOUNT_MODE } from "@/lib/constants/account";
 import {
   filterRestaurantsByVenueType,
   filterRestaurantsByVisitStatus,
@@ -35,6 +38,11 @@ export function RestaurantsView() {
   const error = useRestaurantsStore((s) => s.error);
   const fetchPlaces = useRestaurantsStore((s) => s.fetchPlaces);
 
+  const familyId =
+    profile?.account_mode === ACCOUNT_MODE.FAMILY && profile.family_id
+      ? profile.family_id
+      : null;
+
   const [visitFilter, setVisitFilter] = useState<string>(RESTAURANT_FILTER_ALL);
   const [venueFilter, setVenueFilter] = useState<string>(RESTAURANT_FILTER_ALL);
   const [editingPlace, setEditingPlace] = useState<RestaurantPlace | null>(null);
@@ -42,6 +50,18 @@ export function RestaurantsView() {
 
   useStoreBootstrap(loaded, error, fetchPlaces);
   const onPlacesChanged = useModuleRefresh(fetchPlaces);
+
+  const onRealtimeChange = useCallback(() => {
+    void fetchPlaces(true);
+  }, [fetchPlaces]);
+
+  useScopedRealtime({
+    userId: user?.id,
+    familyId,
+    channelKey: "restaurant-places",
+    table: "restaurant_places",
+    onChange: onRealtimeChange,
+  });
 
   const filteredPlaces = useMemo(() => {
     const byVisit = filterRestaurantsByVisitStatus(places, visitFilter);
@@ -89,6 +109,8 @@ export function RestaurantsView() {
             </div>
           </div>
         </div>
+
+        {familyId ? <FamilyRealtimeHint /> : null}
 
         {error ? (
           <ModuleFetchError onRetry={() => void fetchPlaces(true)} />
