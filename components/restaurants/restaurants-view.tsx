@@ -5,6 +5,7 @@ import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
 import { AppHeader } from "@/components/app/app-header";
+import { AppPage } from "@/components/app/app-page";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { RestaurantEditDialog } from "@/components/restaurants/restaurant-edit-dialog";
 import { RestaurantFormDialog } from "@/components/restaurants/restaurant-form-dialog";
@@ -78,10 +79,10 @@ export function RestaurantsView() {
     visitFilter !== RESTAURANT_FILTER_ALL || venueFilter !== RESTAURANT_FILTER_ALL;
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex flex-col md:min-h-screen">
       <AppHeader />
 
-      <main className="flex-1 mx-auto w-full max-w-5xl px-4 py-10 space-y-6">
+      <AppPage width="default">
         <AccountBreadcrumbs current={t.restaurants.title} />
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -142,7 +143,7 @@ export function RestaurantsView() {
             ))}
           </div>
         )}
-      </main>
+      </AppPage>
 
       <RestaurantEditDialog
         place={editingPlace}

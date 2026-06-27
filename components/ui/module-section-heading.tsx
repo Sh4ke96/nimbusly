@@ -13,14 +13,14 @@ export function ModuleSectionHeading({
   className,
 }: ModuleSectionHeadingProps) {
   return (
-    <div className={cn("flex items-center gap-2.5", className)}>
+    <div className={cn("flex min-w-0 items-center gap-2.5", className)}>
       <span
         className="inline-flex size-8 shrink-0 items-center justify-center rounded-none bg-primary/10 text-primary"
         aria-hidden
       >
         <Icon className="size-4" />
       </span>
-      <h2 className="font-heading text-sm font-semibold tracking-tight text-foreground">
+      <h2 className="min-w-0 truncate font-heading text-sm font-semibold tracking-tight text-foreground">
         {children}
       </h2>
     </div>

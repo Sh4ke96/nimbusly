@@ -21,9 +21,9 @@ export function VersionBadge({ className }: VersionBadgeProps) {
     <Link
       href="/change-log"
       className={cn(
-        "fixed bottom-3 right-3 z-40",
-        "inline-flex items-center gap-1.5 rounded-none border border-border/80",
-        "bg-card/90 px-2 py-1.5 shadow-sm backdrop-blur-sm",
+        "fixed bottom-3 right-3 z-30 max-md:hidden",
+        "inline-flex items-center gap-1.5",
+        "rounded-none border border-border/80 bg-card/90 px-2 py-1.5 shadow-sm backdrop-blur-sm",
         "font-mono text-[11px] font-medium text-muted-foreground",
         "transition-colors hover:border-primary/35 hover:bg-card hover:text-foreground",
         className

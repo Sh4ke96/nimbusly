@@ -11,6 +11,29 @@ export { CHANGELOG_ENTRY_TYPE, type ChangelogEntry };
  */
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "0.4.0",
+    date: "2026-06-23",
+    type: CHANGELOG_ENTRY_TYPE.MINOR,
+    title: {
+      pl: "Mobile-first i PWA",
+      en: "Mobile-first and PWA",
+    },
+    changes: {
+      pl: [
+        "Układ pod telefon: dolna nawigacja, większe cele dotykowe, bezpieczne strefy (notch)",
+        "Dialogi i formularze dostosowane do małego ekranu",
+        "Manifest PWA, service worker, strona offline i prompt instalacji",
+        "Panel modułów dostępny z dolnego paska (?view=modules)",
+      ],
+      en: [
+        "Phone-first layout: bottom nav, larger touch targets, safe-area insets",
+        "Dialogs and forms tuned for small screens",
+        "PWA manifest, service worker, offline page, and install prompt",
+        "Module grid from bottom bar (?view=modules)",
+      ],
+    },
+  },
+  {
     version: "0.3.1",
     date: "2026-06-23",
     type: CHANGELOG_ENTRY_TYPE.FIX,

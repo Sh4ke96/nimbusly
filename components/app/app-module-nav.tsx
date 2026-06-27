@@ -18,26 +18,29 @@ import {
 } from "@/lib/constants/app-modules";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useT } from "@/lib/lang-context";
-import { HEADER_CONTROL_HEIGHT } from "@/lib/ui/header-controls";
 import { cn } from "@/lib/utils";
 
-export function AppModuleNav() {
+interface AppModuleNavProps {
+  className?: string;
+}
+
+export function AppModuleNav({ className }: AppModuleNavProps) {
   const t = useT();
   const profile = useProfileStore((s) => s.profile);
   const familyHref = getFamilyModuleRoute(profile);
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button
-          type="button"
-          variant="outline"
-          size="icon"
-          className={cn(
-            HEADER_CONTROL_HEIGHT,
-            "rounded-none shrink-0 border-border bg-muted/50 text-muted-foreground",
-            "hover:border-primary/40 hover:bg-primary/10 hover:text-primary"
-          )}
+    <div className={cn("hidden md:block", className)}>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            className={cn(
+              "h-8 w-8 shrink-0 rounded-none border-border bg-muted/50 text-muted-foreground",
+              "hover:border-primary/40 hover:bg-primary/10 hover:text-primary"
+            )}
           aria-label={t.dashboard.modules}
           title={t.dashboard.modules}
         >
@@ -64,5 +67,6 @@ export function AppModuleNav() {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+    </div>
   );
 }

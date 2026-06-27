@@ -15,7 +15,7 @@ import {
 import { useT } from "@/lib/lang-context";
 import { cn } from "@/lib/utils";
 import { NOTIFICATION_FILTER_TAB } from "@/lib/constants/notifications";
-import { HEADER_CONTROL_HEIGHT } from "@/lib/ui/header-controls";
+import { HEADER_ICON_BUTTON_CLASS } from "@/lib/ui/header-controls";
 import { useNotificationsStore } from "@/lib/stores/notifications-store";
 
 export function NotificationsBell() {
@@ -34,7 +34,7 @@ export function NotificationsBell() {
         asChild
         variant="outline"
         size="icon"
-        className={cn(HEADER_CONTROL_HEIGHT, "relative rounded-none shrink-0")}
+        className={cn(HEADER_ICON_BUTTON_CLASS, "relative rounded-none")}
       >
         <Link
           href={`/notifications?filter=${NOTIFICATION_FILTER_TAB.UNREAD}`}
@@ -55,7 +55,7 @@ export function NotificationsBell() {
         <Button
           variant="outline"
           size="icon"
-          className={cn(HEADER_CONTROL_HEIGHT, "relative rounded-none shrink-0")}
+          className={cn(HEADER_ICON_BUTTON_CLASS, "relative rounded-none")}
           aria-label={t.notifications.title}
         >
           <Bell className="size-4" />

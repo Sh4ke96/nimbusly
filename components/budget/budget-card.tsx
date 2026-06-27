@@ -106,7 +106,7 @@ export function BudgetCard({
           </form>
         </CardHeaderActions>
       </CardHeader>
-      <CardContent className="p-4 space-y-2">
+      <CardContent className="space-y-2 p-3 sm:p-4">
         {watched && (
           <p className="text-[11px] font-medium text-primary">{t.budget.watchingBadge}</p>
         )}
@@ -114,13 +114,17 @@ export function BudgetCard({
           <div className="flex flex-wrap items-center gap-1.5">
             <span className="text-[11px] text-muted-foreground">{t.budget.membersShort}:</span>
             {budgetMembers.map((member) => (
-              <span key={member.id} className="inline-flex items-center gap-1 text-[11px]">
+              <span
+                key={member.id}
+                className="inline-flex max-w-full items-center gap-1 text-[11px]"
+                title={getDisplayName(member)}
+              >
                 <MemberAvatar
                   name={getDisplayName(member)}
                   color={member.avatar_color}
                   size="sm"
                 />
-                {getDisplayName(member)}
+                <span className="hidden truncate sm:inline">{getDisplayName(member)}</span>
               </span>
             ))}
           </div>

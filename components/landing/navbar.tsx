@@ -39,7 +39,7 @@ export function SiteNavbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/50 bg-background/80 backdrop-blur-md">
-      <div className="mx-auto max-w-6xl px-4 flex h-16 items-center justify-between gap-4">
+      <div className="mx-auto max-w-6xl px-4 flex min-h-14 sm:h-16 items-center justify-between gap-2 sm:gap-4 pt-[env(safe-area-inset-top)]">
         <Logo size="sm" />
 
         <nav className="hidden md:flex items-center gap-1 text-sm font-medium">

@@ -24,7 +24,7 @@ import { useT } from "@/lib/lang-context";
 import { buildSearchIndexInput } from "@/lib/search/collect-search-index";
 import { buildSearchIndex, filterSearchResults } from "@/lib/search/global-search";
 import { prefetchSearchStores } from "@/lib/search/prefetch-search-stores";
-import { HEADER_CONTROL_HEIGHT } from "@/lib/ui/header-controls";
+import { HEADER_CONTROL_HEIGHT, HEADER_ICON_BUTTON_CLASS } from "@/lib/ui/header-controls";
 import { cn } from "@/lib/utils";
 
 export function GlobalSearchDialog() {
@@ -79,7 +79,7 @@ export function GlobalSearchDialog() {
   return (
     <>
       <div
-        className="flex w-full min-w-0 items-center gap-1 sm:inline-flex"
+        className="flex shrink-0 items-center gap-1 sm:inline-flex"
         data-nimbus-tour={NIMBUS_TOUR_TARGET.GLOBAL_SEARCH_TRIGGER}
       >
         <Button
@@ -106,7 +106,7 @@ export function GlobalSearchDialog() {
           type="button"
           variant="outline"
           size="icon"
-          className={cn(HEADER_CONTROL_HEIGHT, "w-8 sm:hidden rounded-none shrink-0")}
+          className={cn(HEADER_ICON_BUTTON_CLASS, "sm:hidden rounded-none")}
           onClick={handleOpen}
           aria-label={t.search.triggerLabel}
         >
@@ -125,7 +125,7 @@ export function GlobalSearchDialog() {
         }}
       >
         <DialogContent className="rounded-none sm:max-w-lg gap-0 p-0 overflow-hidden">
-          <DialogHeader className="border-b border-border px-4 py-3">
+          <DialogHeader className="sm:border-b sm:border-border sm:px-4 sm:py-3">
             <DialogTitle className="font-heading text-base">{t.search.title}</DialogTitle>
           </DialogHeader>
           <div className="p-4 space-y-3">

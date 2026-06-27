@@ -9,10 +9,18 @@ import { useEffect, useState } from "react";
 
 interface DashboardHomeProps {
   modules: DashboardModuleItem[];
+  initialView?: DashboardView;
 }
 
-export function DashboardHome({ modules }: DashboardHomeProps) {
-  const [view, setView] = useState<DashboardView>(DASHBOARD_VIEW.SUMMARY);
+export function DashboardHome({
+  modules,
+  initialView = DASHBOARD_VIEW.SUMMARY,
+}: DashboardHomeProps) {
+  const [view, setView] = useState<DashboardView>(initialView);
+
+  useEffect(() => {
+    setView(initialView);
+  }, [initialView]);
 
   useEffect(() => {
     function onDashboardView(event: Event) {

@@ -72,7 +72,7 @@ export function NimbusHintBubble({ message, action, kind, onDismiss }: NimbusHin
   return (
     <div
       className={cn(
-        "relative max-w-[min(18rem,calc(100vw-4rem))] animate-pop",
+        "relative w-full max-w-[min(18rem,calc(100vw-1.5rem))] animate-pop",
         "rounded-none border border-primary/40 bg-card/95 px-3 py-2.5 shadow-lg backdrop-blur-sm",
         "nimbus-npc-speech"
       )}

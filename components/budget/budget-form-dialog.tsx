@@ -20,12 +20,14 @@ import { useNimbusCelebration } from "@/lib/hooks/use-nimbus-celebration";
 import { useT } from "@/lib/lang-context";
 import { BUDGET_NAME_MAX_LENGTH } from "@/lib/constants/budget";
 import { useProfileStore } from "@/lib/stores/profile-store";
+import { cn } from "@/lib/utils";
 
 interface BudgetFormDialogProps {
   onSuccess?: () => void;
+  triggerClassName?: string;
 }
 
-export function BudgetFormDialog({ onSuccess }: BudgetFormDialogProps) {
+export function BudgetFormDialog({ onSuccess, triggerClassName }: BudgetFormDialogProps) {
   const t = useT();
   const celebrate = useNimbusCelebration();
   const profile = useProfileStore((s) => s.profile);
@@ -44,7 +46,7 @@ export function BudgetFormDialog({ onSuccess }: BudgetFormDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button type="button" className="cursor-pointer">
+        <Button type="button" className={cn("w-full cursor-pointer sm:w-auto", triggerClassName)}>
           <Plus className="size-4" />
           {t.budget.addBtn}
         </Button>

@@ -23,7 +23,7 @@ export function Logo({
   const { icon: iconSize, text: textClass } = sizes[size];
 
   const content = (
-    <span className={cn("inline-flex items-center gap-2.5 group", className)}>
+    <span className={cn("inline-flex items-center gap-2.5 group leading-none", className)}>
       {/* Icon */}
       <span
         className="relative shrink-0 rounded-none overflow-hidden"
@@ -61,7 +61,7 @@ export function Logo({
       {showWordmark && (
         <span
           className={cn(
-            "font-heading font-bold tracking-tight text-foreground",
+            "font-heading font-bold tracking-tight text-foreground leading-none",
             textClass
           )}
         >
@@ -72,7 +72,11 @@ export function Logo({
   );
 
   if (href) {
-    return <Link href={href}>{content}</Link>;
+    return (
+      <Link href={href} className="inline-flex items-center shrink-0">
+        {content}
+      </Link>
+    );
   }
   return content;
 }

@@ -4,6 +4,7 @@ import { Fragment, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { KeyRound, ListChecks, Palette, User, Users, type LucideIcon } from "lucide-react";
 import { AppHeader } from "@/components/app/app-header";
+import { AppPage } from "@/components/app/app-page";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -132,10 +133,10 @@ export default function ProfileSettingsPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex flex-col md:min-h-screen">
       <AppHeader />
 
-      <main className="flex-1 mx-auto w-full max-w-7xl px-4 py-10 space-y-6">
+      <AppPage width="full">
         <AccountBreadcrumbs current={t.account.settingsTitle} />
 
         <div className="space-y-1">
@@ -160,14 +161,17 @@ export default function ProfileSettingsPage() {
                 >
                   <TabsList
                     variant="line"
-                    className="flex h-auto w-full flex-col items-stretch gap-0 rounded-none border-0 bg-transparent p-2"
+                    className="flex h-auto w-full flex-row md:flex-col items-stretch gap-0 overflow-x-auto rounded-none border-0 bg-transparent p-2 md:overflow-visible"
                   >
                     {navItems.map(({ value, icon: Icon, label }, index) => (
                       <Fragment key={value}>
-                        {index > 0 && <Separator />}
+                        {index > 0 && <Separator className="hidden md:block" />}
                         <TabsTrigger
                           value={value}
-                          className={SIDEBAR_TRIGGER_CLASS}
+                          className={cn(
+                            SIDEBAR_TRIGGER_CLASS,
+                            "md:w-full shrink-0 md:shrink min-w-[9.5rem] md:min-w-0"
+                          )}
                           data-nimbus-tour={
                             value === SETTINGS_TAB.FAMILY
                               ? NIMBUS_TOUR_TARGET.FAMILY_SETTINGS_TAB
@@ -182,7 +186,7 @@ export default function ProfileSettingsPage() {
                   </TabsList>
                 </aside>
 
-                <div className="min-w-0 p-6 md:p-8">
+                <div className="min-w-0 p-4 sm:p-6 md:p-8">
                   <SettingsTabHeader icon={activeNav.icon} title={activeNav.label} />
 
                   <TabsContent value={SETTINGS_TAB.PROFILE} className="mt-0 outline-none">
@@ -226,7 +230,7 @@ export default function ProfileSettingsPage() {
             </Tabs>
           </CardContent>
         </Card>
-      </main>
+      </AppPage>
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
 import { Pencil } from "lucide-react";
 import { AppHeader } from "@/components/app/app-header";
+import { AppPage } from "@/components/app/app-page";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { PetCareEditDialog } from "@/components/pets/pet-care-edit-dialog";
 import { PetCareFormDialog } from "@/components/pets/pet-care-form-dialog";
@@ -100,10 +101,10 @@ export function PetsView() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex flex-col md:min-h-screen">
       <AppHeader />
 
-      <main className="flex-1 mx-auto w-full max-w-5xl px-4 py-10 space-y-6">
+      <AppPage width="default">
         <AccountBreadcrumbs current={t.pets.title} />
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -206,7 +207,7 @@ export function PetsView() {
             ))}
           </div>
         )}
-      </main>
+      </AppPage>
 
       <PetEditDialog
         pet={editingPet}

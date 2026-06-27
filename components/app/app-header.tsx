@@ -6,19 +6,24 @@ import { AccountMenu } from "@/components/account/account-menu";
 import { NotificationsBell } from "@/components/notifications/notifications-bell";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageToggle } from "@/components/language-toggle";
+import { APP_HEADER_CLASS, APP_HEADER_ROW_CLASS } from "@/lib/ui/app-layout";
 
 export function AppHeader() {
   return (
-    <header className="sticky top-0 z-40 flex items-center justify-between border-b border-border bg-background/80 backdrop-blur-md px-6 py-3">
-      <div className="flex items-center min-w-0 shrink-0">
-        <Logo size="sm" href="/dashboard" />
-      </div>
-      <div className="flex items-center gap-2">
-        <GlobalSearchDialog />
-        <LanguageToggle className="hidden sm:flex" />
-        <ThemeToggle />
-        <NotificationsBell />
-        <AccountMenu />
+    <header className={APP_HEADER_CLASS}>
+      <div className={APP_HEADER_ROW_CLASS}>
+        <div className="flex h-10 sm:h-8 items-center min-w-0 shrink-0">
+          <Logo size="sm" href="/dashboard" />
+        </div>
+        <div className="flex h-10 sm:h-8 items-center gap-1 sm:gap-2">
+          <GlobalSearchDialog />
+          <LanguageToggle className="hidden sm:flex" />
+          <ThemeToggle />
+          <div className="hidden md:block">
+            <NotificationsBell />
+          </div>
+          <AccountMenu />
+        </div>
       </div>
     </header>
   );

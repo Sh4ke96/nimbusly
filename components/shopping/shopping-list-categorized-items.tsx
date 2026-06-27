@@ -81,7 +81,7 @@ function SortableCategorySection({
     group.items.length > 0 && group.items.every((item) => item.checked);
 
   const style = {
-    transform: CSS.Transform.toString(sortable.transform),
+    transform: CSS.Translate.toString(sortable.transform),
     transition: sortable.transition,
   };
 
@@ -91,7 +91,7 @@ function SortableCategorySection({
       style={isSortableCategory ? style : undefined}
       className={cn(
         "w-full min-w-0 border border-border bg-card shadow-sm",
-        sortable.isDragging && "z-10 opacity-90 ring-2 ring-primary/30"
+        sortable.isDragging && "z-10 opacity-90 shadow-md ring-2 ring-primary/30"
       )}
     >
       <div className="flex w-full min-w-0 items-center gap-2 border-b border-border px-2 py-2">
@@ -143,7 +143,7 @@ function SortableCategorySection({
         </button>
       </div>
 
-      {expanded && (
+      {expanded && !sortable.isDragging && (
         <div className="w-full p-2">
           {group.items.length === 0 ? (
             <p className="text-xs text-muted-foreground px-2 py-3 text-center">

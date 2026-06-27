@@ -82,6 +82,11 @@
   --chart-2: #9cb080;
   --chart-3: #2b5748;
   --chart-4: #b0c79a;
+  --app-mobile-nav-height: 3.5rem;
+  --app-mobile-nav-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --app-mobile-bottom-inset: calc(
+    var(--app-mobile-nav-height) + var(--app-mobile-nav-safe-bottom) + 0.75rem
+  );
   --chart-5: #3f6b58;
   --radius: 0;
   --sidebar: #2b5748;
@@ -487,6 +492,54 @@
   [data-sonner-toast] [data-close-button]:hover {
     background: var(--muted);
     color: var(--foreground);
+  }
+}
+
+/* Mobile-first: touch targets, safe areas, momentum scroll */
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    overscroll-behavior-y: none;
+  }
+
+  @media (max-width: 767px) {
+    html {
+      scroll-padding-bottom: var(--app-mobile-bottom-inset);
+    }
+
+    input,
+    select,
+    textarea {
+      font-size: 16px;
+    }
+  }
+}
+
+@layer utilities {
+  .app-mobile-bottom-inset {
+    padding-bottom: var(--app-mobile-bottom-inset);
+  }
+
+  .app-mobile-bottom-nav {
+    padding-bottom: var(--app-mobile-nav-safe-bottom);
+  }
+
+  .app-nimbus-mobile-anchor {
+    bottom: var(--app-mobile-bottom-inset);
+  }
+
+  @media (min-width: 768px) {
+    .app-mobile-bottom-inset {
+      padding-bottom: 0;
+    }
+
+    .app-nimbus-mobile-anchor {
+      bottom: auto;
+    }
   }
 }
 

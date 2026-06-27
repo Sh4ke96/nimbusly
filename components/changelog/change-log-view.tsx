@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { SiteFooter } from "@/components/landing/site-footer";
 import { SiteNavbar } from "@/components/landing/navbar";
+import { AppPage } from "@/components/app/app-page";
 import { AmbientBackground } from "@/components/ui/ambient-background";
 import { CHANGELOG_ENTRY_TYPE } from "@/lib/constants/changelog";
 import { getChangelogEntries } from "@/lib/changelog/entries";
@@ -104,7 +105,7 @@ export function ChangeLogView() {
       <div className="relative z-10 flex min-h-screen flex-col">
         <SiteNavbar />
 
-        <main className="flex-1 mx-auto w-full max-w-3xl px-4 py-10 space-y-8">
+        <AppPage width="compact">
           <div className="space-y-3">
             <Link
               href="/"
@@ -126,7 +127,7 @@ export function ChangeLogView() {
               <ChangelogEntryCard key={entry.version} entry={entry} lang={lang} />
             ))}
           </div>
-        </main>
+        </AppPage>
 
         <SiteFooter />
       </div>

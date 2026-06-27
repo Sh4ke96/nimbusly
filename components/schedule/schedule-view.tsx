@@ -6,6 +6,7 @@ import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
 import { AppHeader } from "@/components/app/app-header";
+import { AppPage } from "@/components/app/app-page";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { ScheduleCalendar } from "@/components/schedule/schedule-calendar";
 import { ScheduleEditDialog } from "@/components/schedule/schedule-edit-dialog";
@@ -147,12 +148,12 @@ export function ScheduleView() {
   });
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex flex-col md:min-h-screen">
       <div className="no-print">
         <AppHeader />
       </div>
 
-      <main className="flex-1 mx-auto w-full max-w-7xl px-4 py-10 space-y-6">
+      <AppPage width="full">
         <div className="no-print">
           <AccountBreadcrumbs current={t.schedule.title} />
         </div>
@@ -311,7 +312,7 @@ export function ScheduleView() {
           </Card>
         </div>
         )}
-      </main>
+      </AppPage>
 
       <ScheduleEditDialog
         entry={editingEntry}

@@ -8,6 +8,7 @@ import { useResolvedItemSelection } from "@/lib/hooks/use-resolved-item-selectio
 import { ModuleSectionHeading } from "@/components/ui/module-section-heading";
 import { Eye, EyeOff, BarChart3, Download, Printer, Scale, TrendingDown, TrendingUp, Wallet } from "lucide-react";
 import { AppHeader } from "@/components/app/app-header";
+import { AppPage } from "@/components/app/app-page";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { BudgetCard } from "@/components/budget/budget-card";
 import { BudgetFilters } from "@/components/budget/budget-filters";
@@ -274,19 +275,21 @@ export function BudgetView() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex flex-col md:min-h-screen">
       <AppHeader />
 
-      <main className="flex-1 mx-auto w-full max-w-6xl px-4 py-10 space-y-6">
+      <AppPage width="wide">
         <AccountBreadcrumbs current={t.budget.title} />
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between no-print">
-          <div className="space-y-1" data-nimbus-tour={NIMBUS_TOUR_TARGET.BUDGET_HEADER}>
-            <h1 className="font-heading font-bold text-2xl tracking-tight">{t.budget.title}</h1>
+          <div className="min-w-0 space-y-1" data-nimbus-tour={NIMBUS_TOUR_TARGET.BUDGET_HEADER}>
+            <h1 className="font-heading font-bold text-xl tracking-tight sm:text-2xl">
+              {t.budget.title}
+            </h1>
             <p className="text-sm text-muted-foreground">{t.budget.subtitle}</p>
           </div>
-          <div data-nimbus-tour={NIMBUS_TOUR_TARGET.BUDGET_ADD}>
-            <BudgetFormDialog onSuccess={onDataChanged} />
+          <div className="w-full sm:w-auto" data-nimbus-tour={NIMBUS_TOUR_TARGET.BUDGET_ADD}>
+            <BudgetFormDialog onSuccess={onDataChanged} triggerClassName="w-full sm:w-auto" />
           </div>
         </div>
 
@@ -319,9 +322,9 @@ export function BudgetView() {
             )}
           </div>
         ) : (
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
-            <section className="space-y-3 no-print" data-nimbus-tour={NIMBUS_TOUR_TARGET.BUDGET_LISTS}>
-              <div className="flex items-center justify-between gap-2">
+          <div className="grid min-w-0 gap-4 sm:gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
+            <section className="min-w-0 space-y-3 no-print" data-nimbus-tour={NIMBUS_TOUR_TARGET.BUDGET_LISTS}>
+              <div className="flex min-w-0 items-center justify-between gap-2">
                 <ModuleSectionHeading icon={Wallet}>
                   {t.budget.budgetsHeading}
                 </ModuleSectionHeading>
@@ -342,7 +345,9 @@ export function BudgetView() {
                       ) : (
                         <Eye className="size-4" />
                       )}
-                      {showHiddenBudgets ? t.budget.hideHiddenBtn : t.budget.showHiddenBtn}
+                      <span className="hidden sm:inline">
+                        {showHiddenBudgets ? t.budget.hideHiddenBtn : t.budget.showHiddenBtn}
+                      </span>
                     </Button>
                   ) : null}
                 </NimbusTourToolbarAnchor>
@@ -363,7 +368,7 @@ export function BudgetView() {
               </div>
             </section>
 
-            <section className="space-y-4" data-nimbus-tour={NIMBUS_TOUR_TARGET.BUDGET_DETAIL}>
+            <section className="min-w-0 space-y-4" data-nimbus-tour={NIMBUS_TOUR_TARGET.BUDGET_DETAIL}>
               <div className="space-y-4 no-print">
                 <ModuleSectionHeading icon={BarChart3}>
                   {activeBudget?.name ?? t.budget.detailsHeading}
@@ -371,34 +376,34 @@ export function BudgetView() {
 
                 <BudgetMonthPicker value={selectedMonthKey} onChange={setSelectedMonthKey} />
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-3">
-                  <div className="border border-primary/25 bg-primary/10 px-4 py-3 shadow-sm">
-                    <div className="flex items-center gap-2 text-primary">
-                      <TrendingUp className="size-4 shrink-0" />
-                      <p className="text-[11px] uppercase tracking-wider font-medium">
+                <div className="grid grid-cols-3 gap-1.5 sm:gap-3">
+                  <div className="border border-primary/25 bg-primary/10 px-2 py-2.5 shadow-sm sm:px-4 sm:py-3">
+                    <div className="flex items-center gap-1 text-primary sm:gap-2">
+                      <TrendingUp className="size-3.5 shrink-0 sm:size-4" />
+                      <p className="text-[9px] uppercase tracking-wider font-medium leading-tight sm:text-[11px]">
                         {t.budget.incomeLabel}
                       </p>
                     </div>
-                    <p className="font-heading text-xl font-semibold mt-1 text-primary">
+                    <p className="mt-1 truncate font-heading text-sm font-semibold text-primary sm:text-xl">
                       {formatBudgetAmount(incomeTotal, lang)}
                     </p>
                   </div>
 
-                  <div className="border border-orange-200/80 bg-orange-50/80 dark:border-orange-900/50 dark:bg-orange-950/30 px-4 py-3 shadow-sm">
-                    <div className="flex items-center gap-2 text-orange-700 dark:text-orange-400">
-                      <TrendingDown className="size-4 shrink-0" />
-                      <p className="text-[11px] uppercase tracking-wider font-medium">
+                  <div className="border border-orange-200/80 bg-orange-50/80 px-2 py-2.5 shadow-sm dark:border-orange-900/50 dark:bg-orange-950/30 sm:px-4 sm:py-3">
+                    <div className="flex items-center gap-1 text-orange-700 dark:text-orange-400 sm:gap-2">
+                      <TrendingDown className="size-3.5 shrink-0 sm:size-4" />
+                      <p className="text-[9px] uppercase tracking-wider font-medium leading-tight sm:text-[11px]">
                         {t.budget.expensesLabel}
                       </p>
                     </div>
-                    <p className="font-heading text-xl font-semibold mt-1 text-orange-800 dark:text-orange-300">
+                    <p className="mt-1 truncate font-heading text-sm font-semibold text-orange-800 dark:text-orange-300 sm:text-xl">
                       {formatBudgetAmount(expenseTotal, lang)}
                     </p>
                   </div>
 
                   <div
                     className={cn(
-                      "border px-4 py-3 shadow-sm",
+                      "border px-2 py-2.5 shadow-sm sm:px-4 sm:py-3",
                       balance >= 0
                         ? "border-border bg-card"
                         : "border-red-200/80 bg-red-50/80 dark:border-red-900/50 dark:bg-red-950/30"
@@ -406,20 +411,20 @@ export function BudgetView() {
                   >
                     <div
                       className={cn(
-                        "flex items-center gap-2",
+                        "flex items-center gap-1 sm:gap-2",
                         balance >= 0
                           ? "text-muted-foreground"
                           : "text-red-700 dark:text-red-400"
                       )}
                     >
-                      <Scale className="size-4 shrink-0" />
-                      <p className="text-[11px] uppercase tracking-wider font-medium">
+                      <Scale className="size-3.5 shrink-0 sm:size-4" />
+                      <p className="text-[9px] uppercase tracking-wider font-medium leading-tight sm:text-[11px]">
                         {t.budget.balanceLabel}
                       </p>
                     </div>
                     <p
                       className={cn(
-                        "font-heading text-xl font-semibold mt-1",
+                        "mt-1 truncate font-heading text-sm font-semibold sm:text-xl",
                         balance >= 0
                           ? "text-foreground"
                           : "text-red-800 dark:text-red-300"
@@ -432,19 +437,21 @@ export function BudgetView() {
 
                 {activeBudgetId && (
                   <div className="space-y-2">
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
                       <BudgetExpenseFormDialog
                         budgetId={activeBudgetId}
                         onSuccess={onDataChanged}
+                        triggerClassName="w-full sm:w-auto"
                       />
-                      <div data-nimbus-tour={NIMBUS_TOUR_TARGET.BUDGET_INCOME}>
+                      <div className="min-w-0" data-nimbus-tour={NIMBUS_TOUR_TARGET.BUDGET_INCOME}>
                         <BudgetIncomeFormDialog
                           budgetId={activeBudgetId}
                           onSuccess={onDataChanged}
+                          triggerClassName="w-full sm:w-auto"
                         />
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 overflow-x-auto">
+                    <div className="flex flex-wrap items-center gap-2">
                       <NimbusTourToolbarAnchor
                         tourTarget={NIMBUS_TOUR_TARGET.BUDGET_FILTERS}
                         visible={!!activeBudgetId}
@@ -458,27 +465,35 @@ export function BudgetView() {
                         />
                       </NimbusTourToolbarAnchor>
                       <div data-nimbus-tour={NIMBUS_TOUR_TARGET.BUDGET_WATCH}>
-                        <BudgetWatchButton budgetId={activeBudgetId} onChanged={onWatchChanged} />
+                        <BudgetWatchButton
+                          budgetId={activeBudgetId}
+                          compact
+                          onChanged={onWatchChanged}
+                        />
                       </div>
                       <div data-nimbus-tour={NIMBUS_TOUR_TARGET.BUDGET_EXPORT}>
                         <Button
                           type="button"
                           variant="outline"
-                          className="cursor-pointer shrink-0"
+                          size="icon"
+                          className="cursor-pointer sm:size-auto sm:px-3 sm:py-2"
                           onClick={handleExportCsv}
+                          aria-label={t.module.exportCsv}
                         >
                           <Download className="size-4" />
-                          {t.module.exportCsv}
+                          <span className="hidden sm:inline">{t.module.exportCsv}</span>
                         </Button>
                       </div>
                       <Button
                         type="button"
                         variant="outline"
-                        className="cursor-pointer shrink-0"
+                        size="icon"
+                        className="cursor-pointer sm:size-auto sm:px-3 sm:py-2"
                         onClick={handlePrint}
+                        aria-label={t.budget.printBtn}
                       >
                         <Printer className="size-4" />
-                        {t.budget.printBtn}
+                        <span className="hidden sm:inline">{t.budget.printBtn}</span>
                       </Button>
                     </div>
                   </div>
@@ -486,16 +501,16 @@ export function BudgetView() {
               </div>
 
               {(expenseCategoryTotals.length > 0 || incomeCategoryTotals.length > 0) && (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 no-print">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 md:grid-cols-3 no-print">
                   {incomeCategoryTotals.map((row) => (
                     <div
                       key={`income-${row.category}`}
-                      className="border border-border bg-card px-3 py-2 text-sm shadow-sm"
+                      className="flex min-w-0 items-center justify-between gap-2 border border-border bg-card px-3 py-2 text-sm shadow-sm sm:block"
                     >
-                      <p className="text-[11px] text-muted-foreground">
+                      <p className="min-w-0 truncate text-[11px] text-muted-foreground">
                         {t.budget.incomeCategoryLabels[row.category as BudgetIncomeCategory]}
                       </p>
-                      <p className="font-heading font-semibold text-primary">
+                      <p className="shrink-0 font-heading font-semibold text-primary">
                         +{formatBudgetAmount(row.total, lang)}
                       </p>
                     </div>
@@ -503,12 +518,12 @@ export function BudgetView() {
                   {expenseCategoryTotals.map((row) => (
                     <div
                       key={`expense-${row.category}`}
-                      className="border border-border bg-card px-3 py-2 text-sm shadow-sm"
+                      className="flex min-w-0 items-center justify-between gap-2 border border-border bg-card px-3 py-2 text-sm shadow-sm sm:block"
                     >
-                      <p className="text-[11px] text-muted-foreground">
+                      <p className="min-w-0 truncate text-[11px] text-muted-foreground">
                         {t.budget.categoryLabels[row.category as BudgetExpenseCategory]}
                       </p>
-                      <p className="font-heading font-semibold text-orange-700 dark:text-orange-400">
+                      <p className="shrink-0 font-heading font-semibold text-orange-700 dark:text-orange-400">
                         −{formatBudgetAmount(row.total, lang)}
                       </p>
                     </div>
@@ -539,7 +554,7 @@ export function BudgetView() {
             </section>
           </div>
         )}
-      </main>
+      </AppPage>
 
       <BudgetEditDialog
         budget={editingBudget}

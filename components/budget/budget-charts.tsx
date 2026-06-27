@@ -81,11 +81,11 @@ export function BudgetCharts({
         <CardHeader>
           <CardTitle className={cn(CARD_TITLE_ROW_CLASSNAME, "text-sm")}>{compareTitle}</CardTitle>
         </CardHeader>
-        <CardContent className="flex h-64 flex-col p-4">
+        <CardContent className="flex h-52 flex-col p-3 sm:h-64 sm:p-4">
           <BudgetResponsiveChart className="min-h-0 flex-1">
-            <BarChart data={comparisonData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-              <XAxis dataKey="name" tick={{ fontSize: 12 }} />
-              <YAxis tick={{ fontSize: 11 }} width={56} />
+            <BarChart data={comparisonData} margin={{ top: 8, right: 4, left: -8, bottom: 0 }}>
+              <XAxis dataKey="name" tick={{ fontSize: 11 }} />
+              <YAxis tick={{ fontSize: 10 }} width={44} />
               <Tooltip
                 formatter={(value) =>
                   budgetChartTooltipFormatter(value, lang, t.budget.totalLabel)
@@ -141,7 +141,7 @@ export function BudgetCharts({
             {isIncomeView ? t.budget.chartIncomePieTitle : t.budget.chartPieTitle}
           </CardTitle>
         </CardHeader>
-        <CardContent className="flex h-64 flex-col p-4">
+        <CardContent className="flex h-52 flex-col p-3 sm:h-64 sm:p-4">
           <BudgetResponsiveChart className="min-h-0 flex-1">
             <PieChart>
               <Pie
@@ -150,10 +150,11 @@ export function BudgetCharts({
                 nameKey="name"
                 cx="50%"
                 cy="50%"
-                outerRadius={88}
+                outerRadius="72%"
                 label={({ name, percent }) =>
                   `${name} ${((percent ?? 0) * 100).toFixed(0)}%`
                 }
+                labelLine={false}
               >
                 {chartData.map((entry) => (
                   <Cell key={entry.category} fill={entry.fill} />
@@ -175,18 +176,18 @@ export function BudgetCharts({
             {isIncomeView ? t.budget.chartIncomeBarTitle : t.budget.chartBarTitle}
           </CardTitle>
         </CardHeader>
-        <CardContent className="flex h-64 flex-col p-4">
+        <CardContent className="flex h-52 flex-col p-3 sm:h-64 sm:p-4">
           <BudgetResponsiveChart className="min-h-0 flex-1">
-            <BarChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+            <BarChart data={chartData} margin={{ top: 8, right: 4, left: -8, bottom: 0 }}>
               <XAxis
                 dataKey="name"
-                tick={{ fontSize: 11 }}
+                tick={{ fontSize: 10 }}
                 interval={0}
-                angle={-20}
+                angle={-35}
                 textAnchor="end"
-                height={56}
+                height={48}
               />
-              <YAxis tick={{ fontSize: 11 }} width={56} />
+              <YAxis tick={{ fontSize: 10 }} width={44} />
               <Tooltip
                 formatter={(value) =>
                   budgetChartTooltipFormatter(value, lang, t.budget.totalLabel)

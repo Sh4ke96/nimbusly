@@ -69,65 +69,76 @@ function EntryRow({
 
   return (
     <Card className="rounded-none py-0 shadow-sm">
-      <CardContent className="flex items-start gap-3 p-4">
-        <div className="flex-1 min-w-0 space-y-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <span
-              className={cn(
-                "font-heading font-semibold text-sm",
-                isIncome
-                  ? "text-emerald-700 dark:text-emerald-400"
-                  : "text-orange-700 dark:text-orange-400"
+      <CardContent className="p-3 sm:p-4">
+        <div className="flex items-start gap-2 sm:gap-3">
+          <div className="min-w-0 flex-1 space-y-2">
+            <div className="flex items-start justify-between gap-2">
+              <span
+                className={cn(
+                  "font-heading text-base font-semibold sm:text-sm",
+                  isIncome
+                    ? "text-emerald-700 dark:text-emerald-400"
+                    : "text-orange-700 dark:text-orange-400"
+                )}
+              >
+                {isIncome ? "+" : "−"}
+                {formatBudgetAmount(Number(entry.amount), lang)}
+              </span>
+              <span className="shrink-0 text-xs text-muted-foreground sm:hidden">
+                {entry.expense_date}
+              </span>
+            </div>
+
+            <div className="flex flex-wrap gap-1.5">
+              <span className="text-xs border border-border px-2 py-0.5 text-muted-foreground">
+                {typeLabel}
+              </span>
+              <span className="max-w-full truncate text-xs border border-border px-2 py-0.5 text-muted-foreground">
+                {categoryLabel}
+              </span>
+              <span className="hidden text-xs text-muted-foreground sm:inline">
+                {entry.expense_date}
+              </span>
+              {isRecurring && (
+                <span className="inline-flex items-center gap-1 text-xs border border-border px-2 py-0.5 text-muted-foreground">
+                  <Repeat className="size-3 shrink-0" />
+                  <span className="truncate">{t.budget.recurrenceLabels[entry.recurrence]}</span>
+                </span>
               )}
-            >
-              {isIncome ? "+" : "−"}
-              {formatBudgetAmount(Number(entry.amount), lang)}
-            </span>
-            <span className="text-xs border border-border px-2 py-0.5 text-muted-foreground">
-              {typeLabel}
-            </span>
-            <span className="text-xs border border-border px-2 py-0.5 text-muted-foreground">
-              {categoryLabel}
-            </span>
-            <span className="text-xs text-muted-foreground">{entry.expense_date}</span>
-            {isRecurring && (
-              <span className="inline-flex items-center gap-1 text-xs border border-border px-2 py-0.5 text-muted-foreground">
-                <Repeat className="size-3" />
-                {t.budget.recurrenceLabels[entry.recurrence]}
-              </span>
+              {!isIncome && entry.payment_reminder_enabled && (
+                <span className="inline-flex items-center gap-1 text-xs border border-primary/30 bg-primary/5 px-2 py-0.5 text-primary">
+                  <Bell className="size-3 shrink-0" />
+                  <span className="truncate">{t.budget.paymentReminderBadge}</span>
+                </span>
+              )}
+            </div>
+
+            {entry.description.trim() && (
+              <p className="text-sm text-foreground wrap-break-word">{entry.description}</p>
             )}
-            {!isIncome && entry.payment_reminder_enabled && (
-              <span className="inline-flex items-center gap-1 text-xs border border-primary/30 bg-primary/5 px-2 py-0.5 text-primary">
-                <Bell className="size-3" />
-                {t.budget.paymentReminderBadge}
-              </span>
+            {creator && (
+              <p className="text-[11px] text-muted-foreground truncate">
+                {t.budget.addedBy}: {creator}
+              </p>
             )}
           </div>
-          {entry.description.trim() && (
-            <p className="text-sm text-foreground">{entry.description}</p>
-          )}
-          {creator && (
-            <p className="text-[11px] text-muted-foreground">
-              {t.budget.addedBy}: {creator}
-            </p>
-          )}
+          <form action={deleteAction} className="shrink-0">
+            <input type="hidden" name={BUDGET_FORM_FIELD.ID} value={entry.id} />
+            <input type="hidden" name={BUDGET_FORM_FIELD.BUDGET_ID} value={budgetId} />
+            <Button
+              type="submit"
+              variant="ghost"
+              size="icon"
+              disabled={deletePending}
+              className="cursor-pointer text-muted-foreground hover:text-destructive"
+              aria-label={
+                isIncome ? t.budget.deleteIncomeBtn : t.budget.deleteExpenseBtn
+              }
+            >
+              <Trash2 className="size-4" />
+            </Button>
+          </form>
         </div>
-        <form action={deleteAction}>
-          <input type="hidden" name={BUDGET_FORM_FIELD.ID} value={entry.id} />
-          <input type="hidden" name={BUDGET_FORM_FIELD.BUDGET_ID} value={budgetId} />
-          <Button
-            type="submit"
-            variant="ghost"
-            size="icon"
-            disabled={deletePending}
-            className="cursor-pointer text-muted-foreground hover:text-destructive"
-            aria-label={
-              isIncome ? t.budget.deleteIncomeBtn : t.budget.deleteExpenseBtn
-            }
-          >
-            <Trash2 className="size-4" />
-          </Button>
-        </form>
       </CardContent>
     </Card>
   );

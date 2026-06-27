@@ -17,7 +17,7 @@ export function OnboardingView() {
   const [logoutOpen, setLogoutOpen] = useState<boolean>(false);
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex flex-col md:min-h-screen">
       <header className="flex items-center justify-between px-6 py-4">
         <Logo size="sm" />
         <div className="flex items-center gap-2">

@@ -18,6 +18,7 @@ import {
   type ShoppingListCategory,
 } from "@/lib/shopping-lists/categories";
 import { useT } from "@/lib/lang-context";
+import { cn } from "@/lib/utils";
 
 interface ShoppingCategorySettingsRowProps {
   category: ShoppingListCategory;
@@ -47,10 +48,11 @@ export function ShoppingCategorySettingsRow({
     setNodeRef,
     transform,
     transition,
+    isDragging,
   } = useSortable({ id: category.id });
 
   const style = {
-    transform: CSS.Transform.toString(transform),
+    transform: CSS.Translate.toString(transform),
     transition,
   };
 
@@ -58,11 +60,14 @@ export function ShoppingCategorySettingsRow({
     <div
       ref={setNodeRef}
       style={style}
-      className="flex flex-col gap-3 border border-border bg-card p-3 shadow-sm sm:flex-row sm:items-end"
+      className={cn(
+        "flex flex-col gap-3 border border-border bg-card p-3 shadow-sm sm:flex-row sm:items-end",
+        isDragging && "z-10 opacity-90 shadow-md ring-2 ring-primary/30"
+      )}
     >
       <button
         type="button"
-        className="cursor-grab self-start text-muted-foreground hover:text-foreground active:cursor-grabbing"
+        className="cursor-grab touch-none self-start text-muted-foreground hover:text-foreground active:cursor-grabbing"
         aria-label={t.shoppingCategories.dragHandleLabel}
         {...attributes}
         {...listeners}

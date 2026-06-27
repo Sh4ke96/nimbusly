@@ -5,6 +5,7 @@ import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { useResolvedItemSelection } from "@/lib/hooks/use-resolved-item-selection";
 import { AppHeader } from "@/components/app/app-header";
+import { AppPage } from "@/components/app/app-page";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { ShoppingListCard } from "@/components/shopping/shopping-list-card";
 import { ShoppingListEditDialog } from "@/components/shopping/shopping-list-edit-dialog";
@@ -114,10 +115,10 @@ export function ShoppingListsView() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex flex-col md:min-h-screen">
       <AppHeader />
 
-      <main className="flex-1 mx-auto w-full max-w-6xl px-4 py-10 space-y-6">
+      <AppPage width="wide">
         <AccountBreadcrumbs current={t.shoppingLists.title} />
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -209,7 +210,7 @@ export function ShoppingListsView() {
             </section>
           </div>
         )}
-      </main>
+      </AppPage>
 
       <ShoppingListEditDialog
         list={editingList}

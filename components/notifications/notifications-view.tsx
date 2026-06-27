@@ -4,6 +4,7 @@ import { Fragment, useActionState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Bell, CheckCheck, Inbox, type LucideIcon } from "lucide-react";
 import { AppHeader } from "@/components/app/app-header";
+import { AppPage } from "@/components/app/app-page";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { NotificationListItem } from "@/components/notifications/notification-list-item";
 import { NotificationsPagination } from "@/components/notifications/notifications-pagination";
@@ -137,10 +138,10 @@ export function NotificationsView() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex flex-col md:min-h-screen">
       <AppHeader />
 
-      <main className="flex-1 mx-auto w-full max-w-4xl px-4 py-10 space-y-6">
+      <AppPage width="narrow">
         <AccountBreadcrumbs current={t.notifications.title} />
 
         <div
@@ -255,7 +256,7 @@ export function NotificationsView() {
         <p className="text-xs text-center text-muted-foreground">
           {t.notifications.emailComingSoon}
         </p>
-      </main>
+      </AppPage>
     </div>
   );
 }

@@ -15,7 +15,7 @@ export function BudgetMonthPicker({ value, onChange }: BudgetMonthPickerProps) {
   const label = formatMonthKeyLabel(value, t.birthdays.calendarMonths);
 
   return (
-    <div className="flex items-center justify-between gap-2 border border-border bg-card px-3 py-2 shadow-sm">
+    <div className="flex items-center justify-between gap-2 border border-border bg-card px-2 py-2 shadow-sm sm:px-3">
       <Button
         type="button"
         variant="ghost"

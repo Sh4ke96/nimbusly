@@ -7,6 +7,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { VersionBadge } from "@/components/app/version-badge";
 import { AuthSessionSync } from "@/components/auth/auth-session-sync";
+import { PwaRegister } from "@/components/pwa/pwa-register";
 import { LANG, LANG_COOKIE, type Lang } from "@/lib/constants/lang";
 import { dict } from "@/lib/i18n";
 import "./globals.css";
@@ -88,9 +89,19 @@ export default async function RootLayout({
           <LangProvider initialLang={lang}>
             <TooltipProvider>
               <AuthSessionSync />
+              <PwaRegister />
               {children}
               <VersionBadge />
-              <Toaster closeButton position="top-right" />
+              <Toaster
+                closeButton
+                position="top-center"
+                className="!top-[max(0.75rem,env(safe-area-inset-top))] sm:!top-4"
+                toastOptions={{
+                  classNames: {
+                    toast: "rounded-none",
+                  },
+                }}
+              />
             </TooltipProvider>
           </LangProvider>
         </ThemeProvider>

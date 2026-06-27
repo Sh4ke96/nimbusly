@@ -20,6 +20,24 @@ export const pl: Dict = {
     paginationAriaLabel: "Paginacja",
     paginationMorePages: "Więcej stron",
   },
+  mobileNav: {
+    ariaLabel: "Nawigacja aplikacji",
+    home: "Panel",
+    modules: "Moduły",
+    notifications: "Powiadomienia",
+    settings: "Konto",
+  },
+  pwa: {
+    offlineTitle: "Brak połączenia",
+    offlineDesc:
+      "Nimbusly potrzebuje internetu do synchronizacji danych rodziny. Sprawdź sieć i spróbuj ponownie.",
+    offlineHome: "Przejdź do panelu",
+    offlineRetry: "Odśwież",
+    installTitle: "Zainstaluj Nimbusly",
+    installDesc: "Dodaj aplikację na ekran główny — szybszy dostęp bez paska przeglądarki.",
+    installBtn: "Zainstaluj",
+    installDismiss: "Nie teraz",
+  },
   nav: {
     features: "Funkcje",
     featuresSlug: "funkcje",

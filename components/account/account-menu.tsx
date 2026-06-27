@@ -56,15 +56,14 @@ export function AccountMenu() {
   const modeLabel = isFamily ? t.account.modeFamily : t.account.modeSolo;
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-1 sm:gap-2">
       {profile && (
         <Tooltip>
           <TooltipTrigger asChild>
             <button
               type="button"
               className={cn(
-                HEADER_CONTROL_HEIGHT,
-                "inline-flex w-8 shrink-0 cursor-pointer items-center justify-center rounded-none border transition-colors",
+                "hidden sm:inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-none border transition-colors",
                 isFamily
                   ? "border-primary/30 bg-primary/10 text-primary"
                   : "border-border bg-muted/50 text-muted-foreground"
@@ -86,7 +85,7 @@ export function AccountMenu() {
             size="sm"
             className={cn(
               HEADER_CONTROL_HEIGHT,
-              "rounded-none py-0 pl-1 pr-2 gap-1.5 hover:border-primary/40 hover:bg-primary/5"
+              "h-10 sm:h-8 min-w-10 sm:min-w-0 rounded-none py-0 pl-1 pr-1 sm:pr-2 gap-1.5 hover:border-primary/40 hover:bg-primary/5"
             )}
           >
             <MemberAvatar name={displayName} color={profile?.avatar_color} size="xs" />

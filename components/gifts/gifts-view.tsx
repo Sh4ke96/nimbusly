@@ -5,6 +5,7 @@ import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
 import { AppHeader } from "@/components/app/app-header";
+import { AppPage } from "@/components/app/app-page";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { GiftEditDialog } from "@/components/gifts/gift-edit-dialog";
 import { GiftFormDialog } from "@/components/gifts/gift-form-dialog";
@@ -73,10 +74,10 @@ export function GiftsView() {
   const hasActiveFilter = countActiveFilters([filterKey], GIFT_FILTER_ALL) > 0;
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="flex flex-col md:min-h-screen">
       <AppHeader />
 
-      <main className="flex-1 mx-auto w-full max-w-5xl px-4 py-10 space-y-6">
+      <AppPage width="default">
         <AccountBreadcrumbs current={t.gifts.title} />
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -132,7 +133,7 @@ export function GiftsView() {
             ))}
           </div>
         )}
-      </main>
+      </AppPage>
 
       <GiftEditDialog
         idea={editingIdea}

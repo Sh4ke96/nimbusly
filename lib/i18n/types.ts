@@ -16,6 +16,23 @@ export type Dict = {
     paginationAriaLabel: string;
     paginationMorePages: string;
   };
+  mobileNav: {
+    ariaLabel: string;
+    home: string;
+    modules: string;
+    notifications: string;
+    settings: string;
+  };
+  pwa: {
+    offlineTitle: string;
+    offlineDesc: string;
+    offlineHome: string;
+    offlineRetry: string;
+    installTitle: string;
+    installDesc: string;
+    installBtn: string;
+    installDismiss: string;
+  };
   nav: {
     features: string;
     featuresSlug: string;

@@ -56,7 +56,13 @@ export function NimbusCompanion() {
   if (tourActive) return null;
 
   return (
-    <div className="fixed bottom-10 right-2 z-50 flex flex-col items-end gap-2 sm:right-3">
+    <div
+      className={cn(
+        "fixed z-40 flex flex-col gap-2",
+        "max-md:inset-x-3 max-md:items-end app-nimbus-mobile-anchor",
+        "md:bottom-10 md:right-3 md:items-end"
+      )}
+    >
       {hintText && (
         <NimbusHintBubble
           message={hintText}
@@ -90,7 +96,8 @@ export function NimbusCompanion() {
                   )}
                   aria-hidden
                 />
-                <NimbusCharacter mood={mood} size={76} />
+                <NimbusCharacter mood={mood} size={56} className="max-md:scale-90 sm:hidden" />
+                <NimbusCharacter mood={mood} size={76} className="hidden sm:block" />
                 {(npcCalling || hintText) && (
                   <span className="absolute -top-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground nimbus-npc-ping">
                     !
@@ -108,7 +115,7 @@ export function NimbusCompanion() {
           side="top"
           align="end"
           sideOffset={12}
-          className="w-80 rounded-none p-0"
+          className="w-[min(20rem,calc(100vw-1rem))] rounded-none p-0 sm:w-80"
         >
           <NimbusCompanionMenu onClose={() => setMenuOpen(false)} />
         </PopoverContent>
