@@ -323,10 +323,16 @@ components/birthdays/
 ```bash
 npm run lint
 npm run build
-# optional:
 npm test
+# optional:
 npm run e2e          # needs .env.local + Supabase admin for full suite
 ```
+
+For **user-visible** changes, also update in the same PR:
+
+- `lib/changelog/entries.ts` + matching `version` in `package.json`
+- `README.md` (version, features, env vars, or testing notes)
+- Unit / E2E tests when behaviour changes
 
 Only create git commits when explicitly requested.
 
@@ -349,5 +355,6 @@ Only create git commits when explicitly requested.
 7. Client session/family state via **Zustand** + **ProfileBootstrap**
 8. Schema changes via **`supabase/migrations/`** + `npm run db:push`
 9. Visual style: **`rounded-none`**, theme tokens, Tailwind utilities
-10. Validate with **`npm run lint`** and **`npm run build`**
-11. Keep diffs **minimal** and consistent with surrounding code
+10. Validate with **`npm run lint`**, **`npm run build`**, and **`npm test`**
+11. User-visible releases: **`lib/changelog/entries.ts`**, **`package.json` version**, **`README.md`**, and tests — same change
+12. Keep diffs **minimal** and consistent with surrounding code

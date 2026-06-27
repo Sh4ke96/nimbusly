@@ -1,3 +1,4 @@
+@import "driver.js/dist/driver.css";
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -288,55 +289,6 @@
     animation: nimbus-npc-ground-pulse 0.85s ease-in-out infinite;
   }
 
-  /* Nimbus guided tour */
-  .nimbus-tour-dim {
-    fill: color-mix(in srgb, var(--foreground) 48%, transparent);
-  }
-  .nimbus-tour-mask-hole {
-    transition:
-      x 0.55s cubic-bezier(0.22, 1, 0.36, 1),
-      y 0.55s cubic-bezier(0.22, 1, 0.36, 1),
-      width 0.55s cubic-bezier(0.22, 1, 0.36, 1),
-      height 0.55s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  .nimbus-tour-ring {
-    border: 3px solid var(--primary);
-    background: transparent;
-    box-shadow:
-      0 0 0 1px color-mix(in srgb, var(--primary) 45%, transparent),
-      0 0 0 6px color-mix(in srgb, var(--primary) 22%, transparent),
-      0 8px 28px color-mix(in srgb, var(--primary) 26%, transparent);
-    transition:
-      top 0.55s cubic-bezier(0.22, 1, 0.36, 1),
-      left 0.55s cubic-bezier(0.22, 1, 0.36, 1),
-      width 0.55s cubic-bezier(0.22, 1, 0.36, 1),
-      height 0.55s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  .nimbus-tour-target-active {
-    position: relative;
-    z-index: 199;
-  }
-  .nimbus-tour-panel {
-    transition: opacity 0.35s ease, transform 0.35s ease;
-  }
-  .nimbus-tour-panel-syncing {
-    opacity: 0.92;
-  }
-  @keyframes nimbus-tour-step-fade {
-    0% { opacity: 0; transform: translateY(6px); }
-    100% { opacity: 1; transform: translateY(0); }
-  }
-  .nimbus-tour-step-copy {
-    animation: nimbus-tour-step-fade 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
-  @keyframes nimbus-tour-overlay-in {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
-  }
-  .nimbus-tour-overlay {
-    animation: nimbus-tour-overlay-in 0.35s ease both;
-  }
-
   /* Spring pop entrance */
   @keyframes nimbus-pop {
     0% { opacity: 0; transform: scale(0.85); }
@@ -536,10 +488,6 @@
     .app-mobile-bottom-inset {
       padding-bottom: 0;
     }
-
-    .app-nimbus-mobile-anchor {
-      bottom: auto;
-    }
   }
 }
 
@@ -560,4 +508,92 @@
 
 html[data-scroll-behavior="smooth"] {
   scroll-behavior: smooth;
+}
+
+/* Nimbus guided tour (driver.js) — unlayered so it wins over driver.css */
+.driver-popover.nimbus-driver-popover {
+  border-radius: 0;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--card) 98%, transparent);
+  color: var(--card-foreground);
+  box-shadow: 0 16px 40px color-mix(in srgb, var(--foreground) 16%, transparent);
+  max-width: min(32rem, calc(100vw - 2rem));
+  font-family: var(--font-sans);
+}
+.driver-popover.nimbus-driver-popover .driver-popover-title {
+  font: 600 1.125rem/1.3 var(--font-heading), "Quicksand", system-ui, sans-serif;
+  margin: 0;
+  text-align: left;
+}
+.driver-popover.nimbus-driver-popover .driver-popover-description,
+.driver-popover.nimbus-driver-popover .nimbus-driver-popover-description {
+  margin-bottom: 0.5rem;
+  font: 400 15px/1.6 var(--font-sans), "Nunito", system-ui, sans-serif;
+  color: var(--muted-foreground);
+}
+.driver-popover.nimbus-driver-popover .driver-popover-footer button {
+  border-radius: 0;
+  text-shadow: none;
+  font-size: 0.875rem;
+}
+.driver-popover.nimbus-driver-popover .driver-popover-prev-btn,
+.driver-popover.nimbus-driver-popover .driver-popover-next-btn {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border: 1px solid var(--primary);
+}
+.driver-popover.nimbus-driver-popover .driver-popover-close-btn {
+  color: var(--muted-foreground);
+}
+.nimbus-driver-popover-badge {
+  margin: 0 0 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--primary);
+}
+.nimbus-driver-keyboard-hint {
+  margin: 0 0 0.75rem;
+  padding: 0.5rem 0.625rem;
+  font-size: 0.6875rem;
+  line-height: 1.45;
+  color: var(--muted-foreground);
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--muted) 35%, transparent);
+}
+.driver-active-element,
+.driver-overlay {
+  border-radius: 0 !important;
+}
+.driver-active .nimbus-tour-companion-anchor,
+.driver-active .nimbus-tour-companion-anchor * {
+  pointer-events: auto;
+}
+.nimbus-driver-popover-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-right: 1.75rem;
+}
+.nimbus-driver-popover-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+.nimbus-driver-popover-header-copy {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.125rem;
+}
+.nimbus-driver-popover-avatar {
+  display: inline-flex;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 0;
 }

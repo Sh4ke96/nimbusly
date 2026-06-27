@@ -9,23 +9,6 @@ import { dismissContextHint } from "@/lib/nimbus/hint-frequency";
 import { markChangelogSeen } from "@/lib/nimbus/changelog-seen";
 import type { NimbusContextHintKey } from "@/lib/nimbus/context-hints";
 
-export interface NimbusTourLayout {
-  rect: {
-    top: number;
-    left: number;
-    width: number;
-    height: number;
-  } | null;
-  targetMissing: boolean;
-  syncing: boolean;
-}
-
-const INITIAL_TOUR_LAYOUT: NimbusTourLayout = {
-  rect: null,
-  targetMissing: false,
-  syncing: false,
-};
-
 export type NimbusHintKind =
   | "random"
   | "context"
@@ -52,7 +35,6 @@ interface NimbusStore {
   tourActive: boolean;
   activeTourId: NimbusTourId | null;
   tourStepIndex: number;
-  tourLayout: NimbusTourLayout;
   hintIndex: number | null;
   hintMessage: string | null;
   hintKind: NimbusHintKind | null;
@@ -60,8 +42,6 @@ interface NimbusStore {
   npcCalling: boolean;
   setMenuOpen: (open: boolean) => void;
   setMenuView: (view: "main" | "faq" | "snooze") => void;
-  setTourLayout: (layout: NimbusTourLayout) => void;
-  patchTourLayout: (patch: Partial<NimbusTourLayout>) => void;
   setNpcCalling: (calling: boolean) => void;
   showHint: (index: number) => void;
   showCustomHint: (
@@ -81,8 +61,6 @@ interface NimbusStore {
     markChangelogSeen?: boolean;
   }) => void;
   startTour: (tourId?: NimbusTourId, options?: { stepIndex?: number }) => void;
-  nextTourStep: () => boolean;
-  prevTourStep: () => void;
   pauseTour: () => void;
   endTour: (options?: { clearResume?: boolean }) => void;
 }
@@ -93,7 +71,6 @@ export const useNimbusStore = create<NimbusStore>((set, get) => ({
   tourActive: false,
   activeTourId: null,
   tourStepIndex: 0,
-  tourLayout: INITIAL_TOUR_LAYOUT,
   hintIndex: null,
   hintMessage: null,
   hintKind: null,
@@ -110,11 +87,6 @@ export const useNimbusStore = create<NimbusStore>((set, get) => ({
     }),
 
   setMenuView: (view) => set({ menuView: view }),
-
-  setTourLayout: (layout) => set({ tourLayout: layout }),
-
-  patchTourLayout: (patch) =>
-    set({ tourLayout: { ...get().tourLayout, ...patch } }),
 
   setNpcCalling: (calling) => set({ npcCalling: calling }),
 
@@ -214,41 +186,11 @@ export const useNimbusStore = create<NimbusStore>((set, get) => ({
       tourActive: true,
       activeTourId: tourId,
       tourStepIndex: stepIndex,
-      tourLayout: INITIAL_TOUR_LAYOUT,
       hintIndex: null,
       hintMessage: null,
       hintKind: null,
       hintAction: null,
       npcCalling: false,
-    });
-  },
-
-  nextTourStep: () => {
-    const { activeTourId, tourStepIndex } = get();
-    if (!activeTourId) return false;
-    const steps = getNimbusTourSteps(activeTourId);
-    const next = tourStepIndex + 1;
-    if (next >= steps.length) {
-      clearTourResume();
-      set({
-        tourActive: false,
-        activeTourId: null,
-        tourStepIndex: 0,
-        tourLayout: INITIAL_TOUR_LAYOUT,
-      });
-      return false;
-    }
-    set({
-      tourStepIndex: next,
-      tourLayout: { ...get().tourLayout, syncing: true, targetMissing: false },
-    });
-    return true;
-  },
-
-  prevTourStep: () => {
-    set({
-      tourStepIndex: Math.max(0, get().tourStepIndex - 1),
-      tourLayout: { ...get().tourLayout, syncing: true, targetMissing: false },
     });
   },
 
@@ -261,7 +203,6 @@ export const useNimbusStore = create<NimbusStore>((set, get) => ({
       tourActive: false,
       activeTourId: null,
       tourStepIndex: 0,
-      tourLayout: INITIAL_TOUR_LAYOUT,
     });
   },
 
@@ -271,7 +212,6 @@ export const useNimbusStore = create<NimbusStore>((set, get) => ({
       tourActive: false,
       activeTourId: null,
       tourStepIndex: 0,
-      tourLayout: INITIAL_TOUR_LAYOUT,
     });
   },
 }));

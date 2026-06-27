@@ -40,7 +40,7 @@ See also: [`project-fundamentals.instructions.md`](project-fundamentals.instruct
 - Emails, metadata, calendar month names, and role labels → translation files, not inline PL/EN objects.
 - Both **Polish and English** are required for every new module.
 
-### Change log & app version (mandatory for user-visible releases)
+### Change log, README, version & tests (mandatory for user-visible releases)
 
 When shipping a **new module**, **larger feature**, or **user-visible fix**:
 
@@ -48,6 +48,8 @@ When shipping a **new module**, **larger feature**, or **user-visible fix**:
 2. Set `version` in `package.json` to the **same** version string as that entry.
 3. Fill `title` and `changes` in **both** `pl` and `en`.
 4. Pick `type`: `CHANGELOG_ENTRY_TYPE.MAJOR` (big launch), `MINOR` (feature), or `FIX` (bugfix).
+5. Update **`README.md`** in the same change — at minimum the current version; also features, env vars, scripts, or testing notes when behaviour changed.
+6. Add or update **tests** for new logic (`tests/unit/`, `tests/integration/`, `tests/e2e/` as appropriate) and run `npm test`.
 
 `/change-log` is public (no login). The version badge (`vX.Y.Z`, bottom-right) links there.
 
@@ -303,6 +305,7 @@ Reference: `tests/unit/family/invite.test.ts`.
 - [ ] `npm test`
 - [ ] Cypress updated/passing for affected flows
 - [ ] Change log entry in `lib/changelog/entries.ts` + `package.json` version bump (if user-visible)
+- [ ] `README.md` updated (version, features, env, or testing notes if changed)
 
 ---
 
@@ -337,7 +340,7 @@ lib/nimbus/           tours, hints, suggestions, faq, celebrations
 lib/constants/nimbus-tour.ts
 lib/i18n/nimbus-messages.ts
 lib/i18n/nimbus-tour-summaries.ts
-components/nimbus/    companion UI, overlay, menu
+components/nimbus/    companion UI, driver tour, menu
 tests/unit/nimbus/
 ```
 

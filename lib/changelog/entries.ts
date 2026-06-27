@@ -11,6 +11,31 @@ export { CHANGELOG_ENTRY_TYPE, type ChangelogEntry };
  */
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "0.4.1",
+    date: "2026-06-27",
+    type: CHANGELOG_ENTRY_TYPE.FIX,
+    title: {
+      pl: "Nimbus — toury na driver.js",
+      en: "Nimbus — tours on driver.js",
+    },
+    changes: {
+      pl: [
+        "Przewodniki Nimbusa korzystają z driver.js zamiast własnego overlay",
+        "Popover touru: avatar, nagłówek z nazwą kroku, ramka ze skrótami klawiatury",
+        "Skróty A/D i strzałki do nawigacji między krokami; Esc — pauza touru",
+        "Nimbus pozostaje widoczny podczas touru (mobile i desktop)",
+        "Style popovera poza warstwą Tailwind, aby nadpisać domyślne CSS driver.js",
+      ],
+      en: [
+        "Nimbus guided tours use driver.js instead of a custom overlay",
+        "Tour popover: avatar, step title header, bordered keyboard-hint panel",
+        "A/D and arrow keys to move between steps; Esc pauses the tour",
+        "Nimbus stays visible during tours on mobile and desktop",
+        "Popover styles live outside Tailwind layers to override driver.js defaults",
+      ],
+    },
+  },
+  {
     version: "0.4.0",
     date: "2026-06-23",
     type: CHANGELOG_ENTRY_TYPE.MINOR,

@@ -37,7 +37,6 @@ export function resetAllClientStores() {
     tourActive: false,
     activeTourId: null,
     tourStepIndex: 0,
-    tourLayout: { rect: null, targetMissing: false, syncing: false },
     hintIndex: null,
     hintMessage: null,
     hintKind: null,

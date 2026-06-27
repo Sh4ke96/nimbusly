@@ -21,6 +21,8 @@ When you ship a **new module**, **meaningful feature**, or **user-visible fix**:
 2. Bump `version` in `package.json` to match that entry (`major` / `minor` / `fix` — semver-style).
 3. Write **both** PL and EN `title` + `changes` bullets in the entry.
 4. Use `CHANGELOG_ENTRY_TYPE` from `lib/constants/changelog.ts` (`major` | `minor` | `fix`).
+5. Update **`README.md`** — current version plus any new features, env vars, or testing notes.
+6. Add or update **tests** for changed behaviour; run `npm test`.
 
 The public page `/change-log` and the bottom-right version badge read from this file automatically.
 

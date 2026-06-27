@@ -22,7 +22,8 @@ Instructions live in **`.cursor/rules/`**. Read and follow them before coding.
 - **Copy:** i18n via `useT()` / `getServerT()` — update `types.ts`, `pl.ts`, `en.ts` (PL + EN always)
 - **Constants:** domain values in `lib/constants/` (`as const` + types) — no magic strings for modes, roles, tabs, langs
 - **Data:** Server Actions + Supabase; migrations in `supabase/migrations/`
-- **Tests:** add/update `lib/**/*.test.ts` and Cypress specs; run `npm test`
+- **Tests:** add/update `tests/unit/`, `tests/e2e/`, run `npm test`
+- **Releases:** changelog (`lib/changelog/entries.ts`), `package.json` version, `README.md` — same PR
 - **Safety:** validate on server, check existence/ownership, no SQL injection, no secrets in code
 - **React state:** explicit `useState<Type>(...)` on every `useState` call
 

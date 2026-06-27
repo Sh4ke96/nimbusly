@@ -3,8 +3,7 @@
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { NimbusCompanion } from "@/components/nimbus/nimbus-companion";
-import { NimbusTourOverlay } from "@/components/nimbus/nimbus-tour-overlay";
-import { NimbusTourSync } from "@/components/nimbus/nimbus-tour-sync";
+import { NimbusDriverTour } from "@/components/nimbus/nimbus-driver-tour";
 import {
   NIMBUS_HINT_COUNT,
   NIMBUS_HINT_FIRST_DELAY_MS,
@@ -313,9 +312,8 @@ export function NimbusCompanionHost() {
 
   return (
     <>
-      <NimbusTourSync />
+      <NimbusDriverTour />
       <NimbusCompanion />
-      <NimbusTourOverlay />
     </>
   );
 }

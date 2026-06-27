@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Tooltip,
@@ -28,17 +28,20 @@ export function NimbusCompanion() {
   const dismissHint = useNimbusStore((s) => s.dismissHint);
 
   const mood: NimbusMood =
-    npcCalling || hintIndex !== null || hintMessage !== null
+    tourActive || npcCalling || hintIndex !== null || hintMessage !== null
       ? "calling"
       : hovered || menuOpen
         ? "hover"
         : "idle";
 
   const hintText =
-    hintMessage ??
-    (hintIndex !== null ? (t.companion.hints[hintIndex] ?? t.companion.hints[0]) : null);
+    tourActive
+      ? null
+      : hintMessage ??
+        (hintIndex !== null ? (t.companion.hints[hintIndex] ?? t.companion.hints[0]) : null);
 
   function handleOpenChange(open: boolean) {
+    if (tourActive) return;
     setMenuOpen(open);
     if (open) dismissHint();
   }
@@ -53,13 +56,18 @@ export function NimbusCompanion() {
     });
   }
 
-  if (tourActive) return null;
+  useEffect(() => {
+    if (tourActive && menuOpen) {
+      setMenuOpen(false);
+    }
+  }, [tourActive, menuOpen, setMenuOpen]);
 
   return (
     <div
       className={cn(
-        "fixed z-40 flex flex-col gap-2",
-        "max-md:inset-x-3 max-md:items-end app-nimbus-mobile-anchor",
+        "fixed flex flex-col gap-2",
+        tourActive ? "z-[10001] nimbus-tour-companion-anchor" : "z-40",
+        "max-md:inset-x-3 max-md:items-end max-md:app-nimbus-mobile-anchor",
         "md:bottom-10 md:right-3 md:items-end"
       )}
     >
@@ -72,7 +80,7 @@ export function NimbusCompanion() {
         />
       )}
 
-      <Popover open={menuOpen} onOpenChange={handleOpenChange}>
+      <Popover open={menuOpen && !tourActive} onOpenChange={handleOpenChange}>
         <Tooltip>
           <TooltipTrigger asChild>
             <PopoverTrigger asChild>
@@ -98,7 +106,7 @@ export function NimbusCompanion() {
                 />
                 <NimbusCharacter mood={mood} size={56} className="max-md:scale-90 sm:hidden" />
                 <NimbusCharacter mood={mood} size={76} className="hidden sm:block" />
-                {(npcCalling || hintText) && (
+                {(tourActive || npcCalling || hintText) && (
                   <span className="absolute -top-0.5 -right-0.5 flex size-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground nimbus-npc-ping">
                     !
                   </span>
