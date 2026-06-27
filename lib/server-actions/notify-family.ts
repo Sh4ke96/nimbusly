@@ -46,7 +46,7 @@ export async function notifyFamilyMembers(
     p_payload: params.payload as Json,
   });
 
-  pushNotificationsToRecipients({
+  await pushNotificationsToRecipients({
     recipientIds,
     title,
     body: params.body,

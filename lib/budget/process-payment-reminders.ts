@@ -197,7 +197,7 @@ export async function processBudgetPaymentReminders(
         }
         sent += 1;
 
-        pushNotificationsToRecipients({
+        await pushNotificationsToRecipients({
           recipientIds: [recipientId],
           title,
           body,

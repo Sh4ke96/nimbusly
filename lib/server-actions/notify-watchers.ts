@@ -49,7 +49,7 @@ export async function notifyEntityWatchers(
     p_payload: params.payload as Json,
   });
 
-  pushNotificationsToRecipients({
+  await pushNotificationsToRecipients({
     recipientIds,
     title: params.title,
     body: params.body,

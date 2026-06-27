@@ -55,6 +55,13 @@ export async function dispatchPushNotifications(
       continue;
     }
 
+    if (!result.expired) {
+      console.error("[push] subscription not delivered", {
+        subscriptionId: subscription.id,
+        endpoint: subscription.endpoint.slice(0, 48),
+      });
+    }
+
     if (result.expired) {
       await supabase.from("push_subscriptions").delete().eq("id", subscription.id);
       removed += 1;

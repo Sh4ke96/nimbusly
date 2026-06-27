@@ -35,6 +35,13 @@ export async function sendWebPushToSubscription(
       error && typeof error === "object" && "statusCode" in error
         ? Number((error as { statusCode: number }).statusCode)
         : 0;
+    const body =
+      error && typeof error === "object" && "body" in error
+        ? String((error as { body: string }).body)
+        : "";
+    if (statusCode) {
+      console.error("[push] send failed", { statusCode, body: body.slice(0, 200) });
+    }
     return { ok: false, expired: statusCode === 404 || statusCode === 410 };
   }
 }
