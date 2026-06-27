@@ -1151,6 +1151,18 @@ export type Database = {
         }
         Returns: undefined
       }
+      create_watcher_notifications: {
+        Args: {
+          p_body: string
+          p_entity_id: string
+          p_payload?: Json
+          p_recipient_ids: string[]
+          p_title: string
+          p_type: string
+          p_watch_kind: string
+        }
+        Returns: undefined
+      }
       current_user_family_id: { Args: never; Returns: string }
       ensure_family_invite_code: {
         Args: { p_family_id: string }

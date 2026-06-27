@@ -1,12 +1,15 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import {
+  WATCH_TABLE,
+  watchEntityKindFromTable,
+  type WatchTable,
+} from "@/lib/constants/watches";
 import { excludeActorFromWatcherIds } from "@/lib/notifications/watches";
 import { pushNotificationsToRecipients } from "@/lib/notifications/push-recipients";
 import type { NotificationType } from "@/lib/constants/notifications";
 import type { Json } from "@/lib/supabase/database.types";
-
-type WatchTable = "budget_watches" | "shopping_list_watches";
 
 export async function notifyEntityWatchers(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -22,7 +25,7 @@ export async function notifyEntityWatchers(
   }
 ): Promise<void> {
   const watchesQuery =
-    params.watchTable === "budget_watches"
+    params.watchTable === WATCH_TABLE.BUDGET
       ? supabase
           .from("budget_watches")
           .select("user_id")
@@ -32,7 +35,12 @@ export async function notifyEntityWatchers(
           .select("user_id")
           .eq("list_id", params.entityId);
 
-  const { data: watches } = await watchesQuery;
+  const { data: watches, error: watchesError } = await watchesQuery;
+
+  if (watchesError) {
+    console.error("[notifications] load watchers failed", watchesError.message);
+    return;
+  }
 
   const recipientIds = excludeActorFromWatcherIds(
     (watches ?? []).map((watch) => watch.user_id),
@@ -41,13 +49,20 @@ export async function notifyEntityWatchers(
 
   if (recipientIds.length === 0) return;
 
-  await supabase.rpc("create_family_notifications", {
+  const { error } = await supabase.rpc("create_watcher_notifications", {
+    p_watch_kind: watchEntityKindFromTable(params.watchTable),
+    p_entity_id: params.entityId,
     p_recipient_ids: recipientIds,
     p_type: params.type,
     p_title: params.title,
     p_body: params.body,
     p_payload: params.payload as Json,
   });
+
+  if (error) {
+    console.error("[notifications] watcher notify failed", error.message);
+    return;
+  }
 
   await pushNotificationsToRecipients({
     recipientIds,
