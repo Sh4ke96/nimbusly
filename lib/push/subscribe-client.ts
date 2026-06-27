@@ -1,6 +1,8 @@
 import { PWA_SW_PATH } from "@/lib/constants/pwa";
 import { urlBase64ToUint8Array } from "@/lib/push/url-base64";
 import { isPushSupported } from "@/lib/push/client-support";
+import { normalizeVapidPublicKey } from "@/lib/push/normalize-vapid-public-key";
+import { waitForServiceWorkerControl } from "@/lib/push/wait-for-sw-control";
 
 export type ClientPushSubscription = {
   endpoint: string;
@@ -10,7 +12,9 @@ export type ClientPushSubscription = {
 export const SUBSCRIBE_PUSH_FAILURE = {
   UNSUPPORTED: "unsupported",
   NO_VAPID: "no_vapid",
+  VAPID_INVALID: "vapid_invalid",
   NO_SW: "no_sw",
+  SW_NOT_CONTROLLING: "sw_not_controlling",
   DENIED: "denied",
   INVALID: "invalid",
   SUBSCRIBE_ERROR: "subscribe_error",
@@ -36,7 +40,7 @@ function subscriptionFromPushSubscription(
   };
 }
 
-/** Register service worker if needed and wait until it controls the page. */
+/** Register service worker if needed and wait until it is active. */
 export async function ensureServiceWorkerRegistration(): Promise<ServiceWorkerRegistration | null> {
   if (!("serviceWorker" in navigator)) return null;
 
@@ -46,6 +50,21 @@ export async function ensureServiceWorkerRegistration(): Promise<ServiceWorkerRe
   } catch {
     return null;
   }
+}
+
+async function createPushSubscription(
+  registration: ServiceWorkerRegistration,
+  publicKey: string
+): Promise<PushSubscription> {
+  const existing = await registration.pushManager.getSubscription();
+  if (existing) {
+    await existing.unsubscribe();
+  }
+
+  return registration.pushManager.subscribe({
+    userVisibleOnly: true,
+    applicationServerKey: urlBase64ToUint8Array(publicKey),
+  });
 }
 
 export async function readBrowserPushSubscription(): Promise<ClientPushSubscription | null> {
@@ -61,14 +80,22 @@ export async function subscribeBrowserToPush(): Promise<SubscribePushResult> {
     return { ok: false, reason: SUBSCRIBE_PUSH_FAILURE.UNSUPPORTED };
   }
 
-  const publicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
-  if (!publicKey) {
+  const publicKey = normalizeVapidPublicKey(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY);
+  if (!process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY) {
     return { ok: false, reason: SUBSCRIBE_PUSH_FAILURE.NO_VAPID };
+  }
+  if (!publicKey) {
+    return { ok: false, reason: SUBSCRIBE_PUSH_FAILURE.VAPID_INVALID };
   }
 
   const registration = await ensureServiceWorkerRegistration();
   if (!registration) {
     return { ok: false, reason: SUBSCRIBE_PUSH_FAILURE.NO_SW };
+  }
+
+  const controlling = await waitForServiceWorkerControl(registration);
+  if (!controlling) {
+    return { ok: false, reason: SUBSCRIBE_PUSH_FAILURE.SW_NOT_CONTROLLING };
   }
 
   const permission = await Notification.requestPermission();
@@ -77,21 +104,27 @@ export async function subscribeBrowserToPush(): Promise<SubscribePushResult> {
   }
 
   try {
-    const existing = await registration.pushManager.getSubscription();
-    const subscription =
-      existing ??
-      (await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(publicKey),
-      }));
-
+    const subscription = await createPushSubscription(registration, publicKey);
     const parsed = subscriptionFromPushSubscription(subscription);
     if (!parsed) {
       return { ok: false, reason: SUBSCRIBE_PUSH_FAILURE.INVALID };
     }
     return { ok: true, subscription: parsed };
   } catch {
-    return { ok: false, reason: SUBSCRIBE_PUSH_FAILURE.SUBSCRIBE_ERROR };
+    try {
+      const stale = await registration.pushManager.getSubscription();
+      if (stale) {
+        await stale.unsubscribe();
+      }
+      const subscription = await createPushSubscription(registration, publicKey);
+      const parsed = subscriptionFromPushSubscription(subscription);
+      if (!parsed) {
+        return { ok: false, reason: SUBSCRIBE_PUSH_FAILURE.INVALID };
+      }
+      return { ok: true, subscription: parsed };
+    } catch {
+      return { ok: false, reason: SUBSCRIBE_PUSH_FAILURE.SUBSCRIBE_ERROR };
+    }
   }
 }
 

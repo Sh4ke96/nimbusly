@@ -109,6 +109,8 @@ export function PwaPushSetting() {
     hint = t.pwa.pushIosInstallRequired;
   } else if (unsupportedReason === PUSH_UNSUPPORTED_REASON.NO_VAPID) {
     hint = t.pwa.pushNotConfigured;
+  } else if (unsupportedReason === PUSH_UNSUPPORTED_REASON.VAPID_INVALID) {
+    hint = t.pwa.pushVapidInvalid;
   } else if (!supported && unsupportedReason === PUSH_UNSUPPORTED_REASON.NO_API) {
     hint = t.pwa.pushUnsupported;
   } else if (permission === "denied") {

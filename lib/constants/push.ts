@@ -8,6 +8,7 @@ export const PUSH_DISMISS_KEY = "nimbusly:push-prompt-dismissed" as const;
 
 export const PUSH_UNSUPPORTED_REASON = {
   NO_VAPID: "no_vapid",
+  VAPID_INVALID: "vapid_invalid",
   NO_API: "no_api",
   IOS_NOT_INSTALLED: "ios_not_installed",
 } as const;

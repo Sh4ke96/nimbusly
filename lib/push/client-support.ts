@@ -3,6 +3,7 @@ import {
   PUSH_UNSUPPORTED_REASON,
   type PushUnsupportedReason,
 } from "@/lib/constants/push";
+import { normalizeVapidPublicKey } from "@/lib/push/normalize-vapid-public-key";
 
 function isIosDevice(): boolean {
   if (typeof navigator === "undefined") return false;
@@ -21,6 +22,9 @@ export function getPushUnsupportedReason(): PushUnsupportedReason | null {
   if (typeof window === "undefined") return PUSH_UNSUPPORTED_REASON.NO_API;
   if (!process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY) {
     return PUSH_UNSUPPORTED_REASON.NO_VAPID;
+  }
+  if (!normalizeVapidPublicKey(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY)) {
+    return PUSH_UNSUPPORTED_REASON.VAPID_INVALID;
   }
   if (!("serviceWorker" in navigator) || !("PushManager" in window) || !("Notification" in window)) {
     return PUSH_UNSUPPORTED_REASON.NO_API;

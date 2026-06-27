@@ -59,6 +59,8 @@ export type Dict = {
     pushSwNotReady: string;
     pushSubscribeFailed: string;
     pushGrantedTapEnable: string;
+    pushVapidInvalid: string;
+    pushReloadApp: string;
   };
   nav: {
     features: string;

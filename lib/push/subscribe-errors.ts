@@ -15,6 +15,10 @@ export function getSubscribePushErrorMessage(
       return t.pushSwNotReady;
     case SUBSCRIBE_PUSH_FAILURE.NO_VAPID:
       return t.pushNotConfigured;
+    case SUBSCRIBE_PUSH_FAILURE.VAPID_INVALID:
+      return t.pushVapidInvalid;
+    case SUBSCRIBE_PUSH_FAILURE.SW_NOT_CONTROLLING:
+      return t.pushReloadApp;
     case SUBSCRIBE_PUSH_FAILURE.UNSUPPORTED:
       return t.pushUnsupported;
     case SUBSCRIBE_PUSH_FAILURE.SUBSCRIBE_ERROR:

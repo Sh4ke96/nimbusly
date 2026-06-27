@@ -70,6 +70,10 @@ export const en: Dict = {
     pushSubscribeFailed: "Could not create a push subscription in the browser.",
     pushGrantedTapEnable:
       "System permission alone is not enough — tap “Enable push” to save the subscription on the server.",
+    pushVapidInvalid:
+      "Invalid VAPID key — check NEXT_PUBLIC_VAPID_PUBLIC_KEY in Vercel (npm run push:vapid, no quotes).",
+    pushReloadApp:
+      "The service worker has not taken control yet — fully close Nimbusly and reopen it from the home screen icon.",
   },
   nav: {
     features: "Features",
