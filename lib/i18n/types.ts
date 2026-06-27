@@ -39,6 +39,23 @@ export type Dict = {
     installDesc: string;
     installBtn: string;
     installDismiss: string;
+    pushPromptTitle: string;
+    pushPromptDesc: string;
+    pushPromptBtn: string;
+    pushPromptDismiss: string;
+    pushSettingLabel: string;
+    pushSettingDesc: string;
+    pushEnableBtn: string;
+    pushDisableBtn: string;
+    pushEnabled: string;
+    pushDisabled: string;
+    pushDenied: string;
+    pushDeniedHint: string;
+    pushError: string;
+    pushUnsupported: string;
+    pushIosInstallRequired: string;
+    pushNotConfigured: string;
+    pushDevOnly: string;
   };
   nav: {
     features: string;

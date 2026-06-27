@@ -3,6 +3,7 @@ import { ProfileBootstrap } from "@/components/profile/profile-bootstrap";
 import { NimbusCompanionHost } from "@/components/nimbus/nimbus-companion-host";
 import { MobileBottomNav } from "@/components/app/mobile-bottom-nav";
 import { PwaInstallPrompt } from "@/components/pwa/pwa-install-prompt";
+import { PwaPushPrompt } from "@/components/pwa/pwa-push-prompt";
 import { AmbientBackground } from "@/components/ui/ambient-background";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
@@ -16,6 +17,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <MobileBottomNav />
         </Suspense>
         <PwaInstallPrompt />
+        <PwaPushPrompt />
       </div>
     </ProfileBootstrap>
   );

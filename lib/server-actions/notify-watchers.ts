@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { excludeActorFromWatcherIds } from "@/lib/notifications/watches";
+import { pushNotificationsToRecipients } from "@/lib/notifications/push-recipients";
 import type { NotificationType } from "@/lib/constants/notifications";
 import type { Json } from "@/lib/supabase/database.types";
 
@@ -46,5 +47,11 @@ export async function notifyEntityWatchers(
     p_title: params.title,
     p_body: params.body,
     p_payload: params.payload as Json,
+  });
+
+  pushNotificationsToRecipients({
+    recipientIds,
+    title: params.title,
+    body: params.body,
   });
 }

@@ -166,5 +166,6 @@ export const t = {
     installTitle: "Zainstaluj Nimbusly",
     installBtn: "Zainstaluj",
     installDismiss: "Nie teraz",
+    pushSettingLabel: "Powiadomienia push (PWA)",
   },
 } as const;

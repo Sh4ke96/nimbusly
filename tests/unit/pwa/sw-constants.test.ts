@@ -16,5 +16,8 @@ describe("PWA service worker constants", () => {
     for (const url of PWA_PRECACHE_URLS) {
       assert.match(swSource, new RegExp(`"${url.replace("/", "\\/")}"`));
     }
+
+    assert.match(swSource, /addEventListener\("push"/);
+    assert.match(swSource, /addEventListener\("notificationclick"/);
   });
 });

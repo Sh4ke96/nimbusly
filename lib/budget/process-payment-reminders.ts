@@ -12,6 +12,7 @@ import {
   getBudgetReminderOffsetsToSend,
   resolveBudgetReminderDueDate,
 } from "@/lib/budget/reminders";
+import { pushNotificationsToRecipients } from "@/lib/notifications/push-recipients";
 import type { Json } from "@/lib/supabase/database.types";
 
 const REMINDER_ACTOR = "Nimbusly";
@@ -174,7 +175,7 @@ export async function processBudgetPaymentReminders(
           offsetDays: offset,
         });
 
-        const { error: notifyError } = await supabase.rpc("create_family_notifications", {
+        const { error: notifyError } = await supabase.rpc("create_system_notifications", {
           p_recipient_ids: [recipientId],
           p_type: NOTIFICATION_TYPE.BUDGET_EXPENSE_DUE_REMINDER,
           p_title: title,
@@ -195,6 +196,12 @@ export async function processBudgetPaymentReminders(
           continue;
         }
         sent += 1;
+
+        pushNotificationsToRecipients({
+          recipientIds: [recipientId],
+          title,
+          body,
+        });
       }
 
       newKeys.push(key);

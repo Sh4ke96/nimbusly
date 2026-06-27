@@ -11,6 +11,29 @@ export { CHANGELOG_ENTRY_TYPE, type ChangelogEntry };
  */
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "0.5.0",
+    date: "2026-06-27",
+    type: CHANGELOG_ENTRY_TYPE.MINOR,
+    title: {
+      pl: "Powiadomienia push w PWA",
+      en: "PWA push notifications",
+    },
+    changes: {
+      pl: [
+        "Web Push po zainstalowaniu aplikacji — Android i iOS 16.4+ z ekranu głównego",
+        "Włączanie w ustawieniach profilu i baner po instalacji PWA",
+        "Push przy powiadomieniach rodzinnych i przypomnieniach budżetu",
+        "Klucze VAPID (npm run push:vapid) — migracja push_subscriptions",
+      ],
+      en: [
+        "Web Push after installing the app — Android and iOS 16.4+ from the home screen",
+        "Enable in profile settings and prompt after PWA install",
+        "Push for family notifications and budget payment reminders",
+        "VAPID keys (npm run push:vapid) — push_subscriptions migration",
+      ],
+    },
+  },
+  {
     version: "0.4.3",
     date: "2026-06-27",
     type: CHANGELOG_ENTRY_TYPE.FIX,

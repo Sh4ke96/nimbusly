@@ -4,7 +4,7 @@
 
 Nimbusly is a family hub web app: shared budget, shopping, gifts, birthdays, schedule, medicine cabinet, watchlist, restaurants, pets, household chores, notes, and family account management. Each member has their own profile; family data stays in sync.
 
-Available in **Polish** and **English**. Current version: **0.4.3** — see `/change-log` or the in-app version badge.
+Available in **Polish** and **English**. Current version: **0.5.0** — see `/change-log` or the in-app version badge.
 
 ---
 
@@ -28,7 +28,7 @@ Available in **Polish** and **English**. Current version: **0.4.3** — see `/ch
 Additional:
 
 - **Mobile-first layout** — bottom navigation, larger touch targets, safe-area insets, module grid via `?view=modules`
-- **PWA** — web manifest, service worker, offline fallback page, and install prompt (optional icons in `public/pwa-icon-*.png`)
+- **PWA** — web manifest, service worker, offline fallback, install prompt, **Web Push** (iOS 16.4+ / Android)
 - **Nimbus** — in-app companion (bottom-right): guided tours (driver.js) for the app and every module, contextual hints, FAQ, cross-module suggestions, celebrations, quiet mode, tour resume (Esc), keyboard shortcuts (A/D, arrows), and Needs attention awareness
 - **Dashboard** (`/dashboard`) — Summary / Modules tabs, customizable overview cards, brown “needs attention” banner
 - **Global search** — quick jump to modules, lists, budgets, notes, chores, and more (`Ctrl+K` / `Cmd+K` in the navbar)
@@ -106,9 +106,24 @@ See [`.env.example`](.env.example) for the full list.
 | `RESEND_API_KEY` | Optional | Family invite & reminder emails |
 | `RESEND_FROM_EMAIL` | Optional | Sender address for Resend |
 | `CRON_SECRET` | Optional | Protects cron API routes |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | Optional | Web Push — client subscription (`npm run push:vapid`) |
+| `VAPID_PRIVATE_KEY` | Optional | Web Push — server send (never expose to client) |
 | `SUPABASE_ACCESS_TOKEN` | Optional | Supabase CLI (`db:push`, etc.) |
 
 Never commit `.env.local` or secrets.
+
+---
+
+## Web Push (optional)
+
+When `NEXT_PUBLIC_VAPID_PUBLIC_KEY` and `VAPID_PRIVATE_KEY` are set (generate with `npm run push:vapid`):
+
+1. Deploy a **production** build over **HTTPS**
+2. User installs the PWA (Android prompt or iOS home screen)
+3. User enables push in **Profile → Settings** or via the in-app prompt
+4. Family in-app notifications and budget reminders also trigger push
+
+**iOS:** requires iOS 16.4+, Safari, app added to home screen — no push in the browser tab.
 
 ---
 
@@ -221,5 +236,6 @@ npm run e2e
 | `22-mobile-nav` | Mobile bottom nav and `?view=modules` |
 | `23-offline` | Offline fallback page |
 | `24-pwa-install` | PWA install prompt (`beforeinstallprompt`) |
+| `25-pwa-push` | Push setting in profile settings |
 
 Cypress `baseUrl` uses `NEXT_PUBLIC_SITE_URL` or defaults to `http://localhost:3000`.

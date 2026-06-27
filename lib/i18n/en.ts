@@ -45,6 +45,27 @@ export const en: Dict = {
     installDesc: "Add the app to your home screen for faster access without the browser bar.",
     installBtn: "Install",
     installDismiss: "Not now",
+    pushPromptTitle: "Push notifications",
+    pushPromptDesc:
+      "Enable phone alerts — get notified when a family member makes a change or a due date is approaching.",
+    pushPromptBtn: "Enable notifications",
+    pushPromptDismiss: "Later",
+    pushSettingLabel: "Push notifications (PWA)",
+    pushSettingDesc:
+      "Lock-screen alerts after installing the app. Works on Android and on iOS 16.4+ from the home screen.",
+    pushEnableBtn: "Enable push",
+    pushDisableBtn: "Disable push",
+    pushEnabled: "Push notifications enabled.",
+    pushDisabled: "Push notifications disabled.",
+    pushDenied: "Notification permission was denied.",
+    pushDeniedHint:
+      "Notifications are blocked in browser or system settings — unblock them to enable push.",
+    pushError: "Could not save the push subscription.",
+    pushUnsupported: "This browser does not support push notifications.",
+    pushIosInstallRequired:
+      "On iPhone, add Nimbusly to your home screen (Safari → Share), then enable push in profile settings.",
+    pushNotConfigured: "Push is not configured on the server (missing VAPID keys).",
+    pushDevOnly: "Push notifications only work in a production build (npm run build && start).",
   },
   nav: {
     features: "Features",
@@ -1490,7 +1511,8 @@ export const en: Dict = {
     pageSummary: "Page {page} of {total}",
     pageNumberLabel: "Page {page}",
     openBirthdays: "Open birthday calendar",
-    emailComingSoon: "Email reminders are sent via cron (/api/cron/reminders) when Resend is configured.",
+    emailComingSoon:
+      "Push alerts work in the installed PWA (profile settings). Daily email digests are sent via cron when Resend is configured.",
     reminderEmailSubject: "Nimbusly — {count} items need attention",
     reminderEmailHeading: "Needs attention",
     reminderEmailIntro: "Here is a digest of upcoming deadlines and tasks from your home dashboard:",

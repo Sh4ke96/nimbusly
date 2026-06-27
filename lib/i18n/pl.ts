@@ -45,6 +45,27 @@ export const pl: Dict = {
     installDesc: "Dodaj aplikację na ekran główny — szybszy dostęp bez paska przeglądarki.",
     installBtn: "Zainstaluj",
     installDismiss: "Nie teraz",
+    pushPromptTitle: "Powiadomienia push",
+    pushPromptDesc:
+      "Włącz alerty na telefonie — dowiesz się od razu, gdy ktoś z rodziny coś zmieni lub zbliża się termin.",
+    pushPromptBtn: "Włącz powiadomienia",
+    pushPromptDismiss: "Później",
+    pushSettingLabel: "Powiadomienia push (PWA)",
+    pushSettingDesc:
+      "Alerty na ekranie blokady po zainstalowaniu aplikacji. Działają na Androidzie i na iOS 16.4+ z ekranu głównego.",
+    pushEnableBtn: "Włącz push",
+    pushDisableBtn: "Wyłącz push",
+    pushEnabled: "Powiadomienia push włączone.",
+    pushDisabled: "Powiadomienia push wyłączone.",
+    pushDenied: "Brak zgody na powiadomienia w przeglądarce.",
+    pushDeniedHint:
+      "Powiadomienia są zablokowane w ustawieniach przeglądarki lub systemu — odblokuj je, aby włączyć push.",
+    pushError: "Nie udało się zapisać subskrypcji push.",
+    pushUnsupported: "Ta przeglądarka nie obsługuje powiadomień push.",
+    pushIosInstallRequired:
+      "Na iPhonie dodaj Nimbusly do ekranu głównego (Safari → Udostępnij), potem włącz push w ustawieniach profilu.",
+    pushNotConfigured: "Push nie jest skonfigurowany na serwerze (brak kluczy VAPID).",
+    pushDevOnly: "Powiadomienia push działają tylko w buildzie produkcyjnym (npm run build && start).",
   },
   nav: {
     features: "Funkcje",
@@ -1490,7 +1511,8 @@ export const pl: Dict = {
     pageSummary: "Strona {page} z {total}",
     pageNumberLabel: "Strona {page}",
     openBirthdays: "Otwórz kalendarz urodzin",
-    emailComingSoon: "Przypomnienia mailowe wysyłane są przez cron (/api/cron/reminders) gdy skonfigurowany jest Resend.",
+    emailComingSoon:
+      "Push alerts work in the installed PWA (profile settings). Daily email digests are sent via cron when Resend is configured.",
     reminderEmailSubject: "Nimbusly — {count} rzeczy wymaga uwagi",
     reminderEmailHeading: "Wymaga uwagi",
     reminderEmailIntro: "Oto skrót terminów i zadań z Twojego domowego panelu:",
