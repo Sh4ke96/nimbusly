@@ -1,11 +1,8 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import {
-  WATCH_TABLE,
-  watchEntityKindFromTable,
-  type WatchTable,
-} from "@/lib/constants/watches";
+import { type WatchTable, watchEntityKindFromTable } from "@/lib/constants/watches";
+import { loadWatcherRecipientIds } from "@/lib/notifications/load-watcher-recipient-ids";
 import { excludeActorFromWatcherIds } from "@/lib/notifications/watches";
 import { pushNotificationsToRecipients } from "@/lib/notifications/push-recipients";
 import type { NotificationType } from "@/lib/constants/notifications";
@@ -24,28 +21,9 @@ export async function notifyEntityWatchers(
     payload: Record<string, unknown>;
   }
 ): Promise<void> {
-  const watchesQuery =
-    params.watchTable === WATCH_TABLE.BUDGET
-      ? supabase
-          .from("budget_watches")
-          .select("user_id")
-          .eq("budget_id", params.entityId)
-      : supabase
-          .from("shopping_list_watches")
-          .select("user_id")
-          .eq("list_id", params.entityId);
+  const watcherUserIds = await loadWatcherRecipientIds(params.watchTable, params.entityId);
 
-  const { data: watches, error: watchesError } = await watchesQuery;
-
-  if (watchesError) {
-    console.error("[notifications] load watchers failed", watchesError.message);
-    return;
-  }
-
-  const recipientIds = excludeActorFromWatcherIds(
-    (watches ?? []).map((watch) => watch.user_id),
-    params.actorId
-  );
+  const recipientIds = excludeActorFromWatcherIds(watcherUserIds, params.actorId);
 
   if (recipientIds.length === 0) return;
 
