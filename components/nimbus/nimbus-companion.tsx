@@ -38,7 +38,7 @@ export function NimbusCompanion() {
     tourActive
       ? null
       : hintMessage ??
-        (hintIndex !== null ? (t.companion.hints[hintIndex] ?? t.companion.hints[0]) : null);
+      (hintIndex !== null ? (t.companion.hints[hintIndex] ?? t.companion.hints[0]) : null);
 
   function handleOpenChange(open: boolean) {
     if (tourActive) return;
@@ -66,7 +66,7 @@ export function NimbusCompanion() {
     <div
       className={cn(
         "fixed flex flex-col gap-2",
-        tourActive ? "z-[10001] nimbus-tour-companion-anchor" : "z-40",
+        tourActive ? "z-10001 nimbus-tour-companion-anchor" : "z-40",
         "max-md:inset-x-3 max-md:items-end max-md:app-nimbus-mobile-anchor",
         "md:bottom-10 md:right-3 md:items-end"
       )}

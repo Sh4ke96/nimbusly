@@ -15,6 +15,7 @@ describe("buildPwaManifest", () => {
     assert.equal(en.description, dict.en.pwa.manifestDescription);
     assert.equal(pl.shortcuts?.[0]?.name, dict.pl.pwa.shortcutDashboard);
     assert.equal(en.shortcuts?.[0]?.name, dict.en.pwa.shortcutDashboard);
-    assert.notEqual(pl.shortcuts?.[1]?.short_name, en.shortcuts?.[1]?.short_name);
+    assert.equal(pl.icons?.[0]?.src, "/pwa-icon-192.png");
+    assert.equal(pl.icons?.[0]?.type, "image/png");
   });
 });

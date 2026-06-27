@@ -1,11 +1,16 @@
 import type { MetadataRoute } from "next";
 import type { Lang } from "@/lib/constants/lang";
+import {
+  PWA_ICON_192,
+  PWA_ICON_512,
+  PWA_ICON_SVG,
+} from "@/lib/constants/pwa";
 import type { Dict } from "@/lib/i18n/types";
 
 const PWA_SHORTCUT_ICON = {
-  src: "/pwa-icon.svg",
-  sizes: "any",
-  type: "image/svg+xml",
+  src: PWA_ICON_192,
+  sizes: "192x192",
+  type: "image/png",
 } as const;
 
 export function buildPwaManifest(t: Dict, lang: Lang): MetadataRoute.Manifest {
@@ -46,21 +51,28 @@ export function buildPwaManifest(t: Dict, lang: Lang): MetadataRoute.Manifest {
     ],
     icons: [
       {
-        src: "/pwa-icon.svg",
-        sizes: "any",
-        type: "image/svg+xml",
+        src: PWA_ICON_192,
+        sizes: "192x192",
+        type: "image/png",
         purpose: "any",
       },
       {
-        src: "/pwa-icon.svg",
+        src: PWA_ICON_512,
         sizes: "512x512",
-        type: "image/svg+xml",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: PWA_ICON_512,
+        sizes: "512x512",
+        type: "image/png",
         purpose: "maskable",
       },
       {
-        src: "/icon.svg",
+        src: PWA_ICON_SVG,
         sizes: "any",
         type: "image/svg+xml",
+        purpose: "any",
       },
     ],
   };

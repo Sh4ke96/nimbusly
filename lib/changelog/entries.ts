@@ -11,6 +11,27 @@ export { CHANGELOG_ENTRY_TYPE, type ChangelogEntry };
  */
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "0.4.3",
+    date: "2026-06-27",
+    type: CHANGELOG_ENTRY_TYPE.FIX,
+    title: {
+      pl: "PWA — ikona na ekranie głównym iOS",
+      en: "PWA — iOS home screen icon",
+    },
+    changes: {
+      pl: [
+        "Ikony PNG (180, 192, 512 px) i apple-touch-icon — iOS nie obsługuje SVG na ekranie głównym",
+        "Manifest i metadane strony wskazują na PNG zamiast samego SVG",
+        "Skrypt npm run pwa:icons do regeneracji ikon z public/pwa-icon.svg",
+      ],
+      en: [
+        "PNG icons (180, 192, 512 px) and apple-touch-icon — iOS does not use SVG on the home screen",
+        "Manifest and page metadata point to PNG instead of SVG only",
+        "npm run pwa:icons script to regenerate icons from public/pwa-icon.svg",
+      ],
+    },
+  },
+  {
     version: "0.4.2",
     date: "2026-06-27",
     type: CHANGELOG_ENTRY_TYPE.FIX,

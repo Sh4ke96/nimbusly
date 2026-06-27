@@ -55,8 +55,8 @@ export function PwaInstallPrompt() {
     <div
       data-testid="pwa-install-prompt"
       className={cn(
-        "fixed inset-x-4 z-[60] md:inset-x-auto md:right-4 md:max-w-sm",
-        "bottom-[var(--app-mobile-bottom-inset)] md:bottom-4",
+        "fixed inset-x-4 z-60 md:inset-x-auto md:right-4 md:max-w-sm",
+        "bottom-(--app-mobile-bottom-inset) md:bottom-4",
         "rounded-none border border-border bg-card p-4 shadow-lg"
       )}
       role="region"

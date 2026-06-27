@@ -61,12 +61,12 @@ export default function ProfileSettingsPage() {
       : []),
     ...(showShoppingCategories
       ? [
-          {
-            value: SETTINGS_TAB.SHOPPING_CATEGORIES,
-            icon: ListChecks,
-            label: t.account.menuShoppingCategories,
-          },
-        ]
+        {
+          value: SETTINGS_TAB.SHOPPING_CATEGORIES,
+          icon: ListChecks,
+          label: t.account.menuShoppingCategories,
+        },
+      ]
       : []),
     { value: SETTINGS_TAB.PASSWORD, icon: KeyRound, label: t.account.menuPassword },
   ];
@@ -171,7 +171,7 @@ export default function ProfileSettingsPage() {
                           value={value}
                           className={cn(
                             SIDEBAR_TRIGGER_CLASS,
-                            "md:w-full shrink-0 md:shrink min-w-[9.5rem] md:min-w-0"
+                            "md:w-full shrink-0 md:shrink min-w-38 md:min-w-0"
                           )}
                           data-nimbus-tour={
                             value === SETTINGS_TAB.FAMILY

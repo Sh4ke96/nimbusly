@@ -9,6 +9,7 @@ import { VersionBadge } from "@/components/app/version-badge";
 import { AuthSessionSync } from "@/components/auth/auth-session-sync";
 import { PwaRegister } from "@/components/pwa/pwa-register";
 import { LANG, LANG_COOKIE, type Lang } from "@/lib/constants/lang";
+import { PWA_ICON_APPLE_TOUCH } from "@/lib/constants/pwa";
 import { dict } from "@/lib/i18n";
 import "./globals.css";
 
@@ -47,9 +48,14 @@ export async function generateMetadata(): Promise<Metadata> {
       telephone: false,
     },
     icons: {
-      icon: "/icon.svg",
-      shortcut: "/icon.svg",
-      apple: "/pwa-icon.svg",
+      icon: [
+        { url: "/icon.svg", type: "image/svg+xml" },
+        { url: "/pwa-icon-192.png", sizes: "192x192", type: "image/png" },
+      ],
+      shortcut: "/pwa-icon-192.png",
+      apple: [
+        { url: PWA_ICON_APPLE_TOUCH, sizes: "180x180", type: "image/png" },
+      ],
     },
   };
 }

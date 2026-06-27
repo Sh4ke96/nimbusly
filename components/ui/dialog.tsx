@@ -153,11 +153,11 @@ function DialogContent({
           "fixed z-50 rounded-none bg-popover text-sm text-popover-foreground ring-1 ring-foreground/10 duration-100 outline-none",
           "max-sm:inset-x-0 max-sm:bottom-0 max-sm:flex max-sm:w-full max-sm:max-w-none max-sm:flex-col max-sm:gap-0 max-sm:translate-x-0 max-sm:translate-y-0 max-sm:p-0",
           MOBILE_DIALOG_POSITION_CLASS,
-          "sm:top-1/2 sm:left-1/2 sm:grid sm:w-full sm:max-w-[calc(100%-2rem)] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:gap-4 sm:p-4 sm:max-w-sm",
+          "sm:top-1/2 sm:left-1/2 sm:grid sm:w-full sm:-translate-x-1/2 sm:-translate-y-1/2 sm:gap-4 sm:p-4 sm:max-w-sm",
           "data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
           "max-sm:data-open:slide-in-from-bottom-4 max-sm:data-closed:slide-out-to-bottom-4",
           className,
-          hasPinnedHeader && "max-sm:!overflow-hidden"
+          hasPinnedHeader && "max-sm:overflow-hidden"
         )}
         style={style}
         {...props}

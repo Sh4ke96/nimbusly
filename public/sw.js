@@ -1,5 +1,12 @@
 const CACHE_NAME = "nimbusly-shell-v1";
-const PRECACHE_URLS = ["/offline", "/pwa-icon.svg", "/icon.svg"];
+const PRECACHE_URLS = [
+  "/offline",
+  "/apple-touch-icon.png",
+  "/pwa-icon-192.png",
+  "/pwa-icon-512.png",
+  "/pwa-icon.svg",
+  "/icon.svg",
+];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
