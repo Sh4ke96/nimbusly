@@ -1,6 +1,7 @@
 import { DASHBOARD_VIEW } from "@/lib/constants/dashboard";
 import {
   NIMBUS_DASHBOARD_VIEW_EVENT,
+  NIMBUS_SETTINGS_TAB_EVENT,
   NIMBUS_TOUR_HIGHLIGHT_PADDING,
 } from "@/lib/constants/nimbus";
 import { SETTINGS_TAB } from "@/lib/constants/settings";
@@ -20,7 +21,7 @@ export function dispatchDashboardView(view: (typeof DASHBOARD_VIEW)[keyof typeof
 }
 
 export function dispatchSettingsTab(tab: string) {
-  window.dispatchEvent(new CustomEvent("nimbusly:settings-tab", { detail: tab }));
+  window.dispatchEvent(new CustomEvent(NIMBUS_SETTINGS_TAB_EVENT, { detail: tab }));
 }
 
 export function prepareTourStep(prepare: NimbusTourPrepare | undefined) {

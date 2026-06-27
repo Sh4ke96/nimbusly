@@ -28,6 +28,14 @@ export const en: Dict = {
     settings: "Account",
   },
   pwa: {
+    manifestDescription:
+      "Family hub — budget, shopping, schedule, chores, notes, and more in one place.",
+    shortcutDashboard: "Dashboard",
+    shortcutDashboardShort: "Home",
+    shortcutShopping: "Shopping lists",
+    shortcutShoppingShort: "Shopping",
+    shortcutNotifications: "Notifications",
+    shortcutNotificationsShort: "Alerts",
     offlineTitle: "You're offline",
     offlineDesc:
       "Nimbusly needs an internet connection to sync your family data. Check your network and try again.",
@@ -337,6 +345,7 @@ export const en: Dict = {
     errorGeneric: "Failed to save your profile. Please try again.",
   },
   account: {
+    menuTriggerAria: "Account menu",
     menuProfile: "Profile & avatar",
     menuAccountType: "Account type",
     modeFamily: "Family account",

@@ -3,6 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { NIMBUS_HINT_ACTION_LABEL } from "@/lib/constants/nimbus";
 import { useT } from "@/lib/lang-context";
 import { useNimbusStore, type NimbusHintAction } from "@/lib/stores/nimbus-store";
 import { cn } from "@/lib/utils";
@@ -27,11 +28,14 @@ export function NimbusHintBubble({ message, action, kind, onDismiss }: NimbusHin
 
   const showSuppressSuggestion = kind === "suggestion" && action?.suggestionId;
   const showSuppressContext = kind === "context" && action?.contextKey;
-  const showTour = action?.actionLabel === "tour" || (!!action?.tourId && action?.actionLabel !== "show");
-  const showShow = action?.actionLabel === "show" || !!action?.scrollTarget;
+  const showTour =
+    action?.actionLabel === NIMBUS_HINT_ACTION_LABEL.TOUR ||
+    (!!action?.tourId && action?.actionLabel !== NIMBUS_HINT_ACTION_LABEL.SHOW);
+  const showShow =
+    action?.actionLabel === NIMBUS_HINT_ACTION_LABEL.SHOW || !!action?.scrollTarget;
   const showGo =
     !!action?.href &&
-    action?.actionLabel !== "show" &&
+    action?.actionLabel !== NIMBUS_HINT_ACTION_LABEL.SHOW &&
     !action?.scrollTarget;
 
   function handleTour() {

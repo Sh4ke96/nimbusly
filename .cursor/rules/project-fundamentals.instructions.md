@@ -52,12 +52,12 @@ Nimbusly is a **family hub** web app: shared budget, shopping, gifts, birthdays,
 
 1. **Node.js** 20+ (LTS recommended)
 2. **npm**
-3. **Supabase project** — URL + anon key in `.env.local` (see `.env.local.example`)
+3. **Supabase project** — URL + anon key in `.env.local` (see `.env.example`)
 
 ### Setup
 
 ```bash
-cp .env.local.example .env.local
+cp .env.example .env.local
 # Fill in NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, etc.
 
 npm install

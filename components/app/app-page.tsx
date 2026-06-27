@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import { appPageClass, type AppPageWidth } from "@/lib/ui/app-layout";
-import { cn } from "@/lib/utils";
 
 interface AppPageProps {
   children: ReactNode;

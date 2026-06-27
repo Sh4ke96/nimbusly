@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { NIMBUS_CALLING_LEAD_MS } from "@/lib/constants/nimbus";
+import { NIMBUS_CALLING_LEAD_MS, type NimbusHintActionLabel } from "@/lib/constants/nimbus";
 import { NIMBUS_TOUR_ID, type NimbusTourId } from "@/lib/constants/nimbus-tour";
 import { getNimbusTourSteps } from "@/lib/nimbus/tour-catalog";
 import { clearTourResume, saveTourResume } from "@/lib/nimbus/tour-resume";
@@ -25,7 +25,7 @@ export interface NimbusHintAction {
   suggestionId?: NimbusSuggestionId;
   contextKey?: string;
   scrollTarget?: string;
-  actionLabel?: "go" | "show" | "tour";
+  actionLabel?: NimbusHintActionLabel;
   changelog?: boolean;
 }
 

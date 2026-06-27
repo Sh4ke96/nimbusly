@@ -1,3 +1,4 @@
+import { NIMBUS_SETTINGS_TAB_EVENT } from "@/lib/constants/nimbus";
 import {
   SETTINGS_TAB,
   SETTINGS_TAB_DEFAULT,
@@ -25,7 +26,7 @@ export function navigateSettingsTab(tab: SettingsTab, pathname: string, hash = "
   if (pathname !== "/profile/settings") return false;
 
   window.history.replaceState(window.history.state, "", `${settingsTabHref(tab)}${hash}`);
-  window.dispatchEvent(new CustomEvent("nimbusly:settings-tab", { detail: tab }));
+  window.dispatchEvent(new CustomEvent(NIMBUS_SETTINGS_TAB_EVENT, { detail: tab }));
 
   if (hash.startsWith("#")) {
     requestAnimationFrame(() => {

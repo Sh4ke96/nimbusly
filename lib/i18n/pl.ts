@@ -28,6 +28,14 @@ export const pl: Dict = {
     settings: "Konto",
   },
   pwa: {
+    manifestDescription:
+      "Rodzinny hub — budżet, zakupy, grafik, obowiązki, notatki i więcej w jednym miejscu.",
+    shortcutDashboard: "Panel",
+    shortcutDashboardShort: "Panel",
+    shortcutShopping: "Listy zakupów",
+    shortcutShoppingShort: "Zakupy",
+    shortcutNotifications: "Powiadomienia",
+    shortcutNotificationsShort: "Alerty",
     offlineTitle: "Brak połączenia",
     offlineDesc:
       "Nimbusly potrzebuje internetu do synchronizacji danych rodziny. Sprawdź sieć i spróbuj ponownie.",
@@ -337,6 +345,7 @@ export const pl: Dict = {
     errorGeneric: "Nie udało się zapisać profilu. Spróbuj ponownie.",
   },
   account: {
+    menuTriggerAria: "Menu konta",
     menuProfile: "Profil i avatar",
     menuAccountType: "Typ konta",
     modeFamily: "Konto rodzinne",

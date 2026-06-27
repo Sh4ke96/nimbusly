@@ -1,5 +1,5 @@
 const CACHE_NAME = "nimbusly-shell-v1";
-const PRECACHE_URLS = ["/offline", "/pwa-icon.svg"];
+const PRECACHE_URLS = ["/offline", "/pwa-icon.svg", "/icon.svg"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(

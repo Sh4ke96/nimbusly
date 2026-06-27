@@ -1,8 +1,10 @@
+import packageJson from "../../package.json";
+
 describe("Historia zmian", () => {
   it("ładuje stronę bez logowania", () => {
     cy.visit("/change-log");
     cy.contains("Historia zmian").should("be.visible");
-    cy.contains("v0.2.0").should("be.visible");
+    cy.contains(`v${packageJson.version}`).should("be.visible");
   });
 
   it("nie przekierowuje na login", () => {

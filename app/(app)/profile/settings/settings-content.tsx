@@ -28,6 +28,7 @@ import {
   SETTINGS_TAB,
   type SettingsTab,
 } from "@/lib/profile/settings-tabs";
+import { NIMBUS_SETTINGS_TAB_EVENT } from "@/lib/constants/nimbus";
 import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus-tour";
 
 const SIDEBAR_TRIGGER_CLASS = cn(
@@ -115,10 +116,10 @@ export default function ProfileSettingsPage() {
     }
 
     window.addEventListener("popstate", onPopState);
-    window.addEventListener("nimbusly:settings-tab", onSettingsTab);
+    window.addEventListener(NIMBUS_SETTINGS_TAB_EVENT, onSettingsTab);
     return () => {
       window.removeEventListener("popstate", onPopState);
-      window.removeEventListener("nimbusly:settings-tab", onSettingsTab);
+      window.removeEventListener(NIMBUS_SETTINGS_TAB_EVENT, onSettingsTab);
     };
   }, []);
 

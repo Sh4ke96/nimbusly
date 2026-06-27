@@ -5,7 +5,9 @@ import { DashboardOverview } from "@/components/dashboard/dashboard-overview";
 import { DashboardViewTabs } from "@/components/dashboard/dashboard-view-tabs";
 import { DASHBOARD_VIEW, type DashboardView } from "@/lib/constants/dashboard";
 import { NIMBUS_DASHBOARD_VIEW_EVENT, NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus";
-import { useEffect, useState } from "react";
+import { buildDashboardHref } from "@/lib/dashboard/view-href";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 
 interface DashboardHomeProps {
   modules: DashboardModuleItem[];
@@ -16,7 +18,28 @@ export function DashboardHome({
   modules,
   initialView = DASHBOARD_VIEW.SUMMARY,
 }: DashboardHomeProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [view, setView] = useState<DashboardView>(initialView);
+
+  const applyView = useCallback(
+    (nextView: DashboardView) => {
+      setView(nextView);
+      if (pathname !== "/dashboard") return;
+
+      const href = buildDashboardHref(nextView);
+      const currentHref =
+        searchParams.toString().length > 0
+          ? `${pathname}?${searchParams.toString()}`
+          : pathname;
+
+      if (currentHref !== href) {
+        router.replace(href, { scroll: false });
+      }
+    },
+    [pathname, router, searchParams]
+  );
 
   useEffect(() => {
     setView(initialView);
@@ -24,17 +47,17 @@ export function DashboardHome({
 
   useEffect(() => {
     function onDashboardView(event: Event) {
-      setView((event as CustomEvent<DashboardView>).detail);
+      applyView((event as CustomEvent<DashboardView>).detail);
     }
 
     window.addEventListener(NIMBUS_DASHBOARD_VIEW_EVENT, onDashboardView);
     return () => window.removeEventListener(NIMBUS_DASHBOARD_VIEW_EVENT, onDashboardView);
-  }, []);
+  }, [applyView]);
 
   return (
     <div className="space-y-6">
       <div data-nimbus-tour={NIMBUS_TOUR_TARGET.DASHBOARD_VIEW_TABS}>
-        <DashboardViewTabs value={view} onChange={setView} />
+        <DashboardViewTabs value={view} onChange={applyView} />
       </div>
 
       {view === DASHBOARD_VIEW.SUMMARY ? (

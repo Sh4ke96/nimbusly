@@ -29,6 +29,7 @@ export const t = {
   dashboard: {
     greeting: "Dzień dobry",
     modules: "Moduły",
+    overviewHeading: "Podsumowanie",
     logout: "Wyloguj",
     logoutConfirmTitle: "Wylogować się?",
     moduleLabels: [
@@ -151,5 +152,19 @@ export const t = {
   notifications: {
     title: "Powiadomienia",
     subtitle: "Aktywność w rodzinie i przypomnienia.",
+  },
+  mobileNav: {
+    ariaLabel: "Nawigacja aplikacji",
+    home: "Panel",
+    modules: "Moduły",
+    notifications: "Powiadomienia",
+    settings: "Konto",
+  },
+  pwa: {
+    offlineTitle: "Brak połączenia",
+    offlineHome: "Przejdź do panelu",
+    installTitle: "Zainstaluj Nimbusly",
+    installBtn: "Zainstaluj",
+    installDismiss: "Nie teraz",
   },
 } as const;

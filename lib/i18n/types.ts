@@ -24,6 +24,13 @@ export type Dict = {
     settings: string;
   };
   pwa: {
+    manifestDescription: string;
+    shortcutDashboard: string;
+    shortcutDashboardShort: string;
+    shortcutShopping: string;
+    shortcutShoppingShort: string;
+    shortcutNotifications: string;
+    shortcutNotificationsShort: string;
     offlineTitle: string;
     offlineDesc: string;
     offlineHome: string;
@@ -193,6 +200,7 @@ export type Dict = {
     errorGeneric: string;
   };
   account: {
+    menuTriggerAria: string;
     menuProfile: string;
     menuAccountType: string;
     modeFamily: string;

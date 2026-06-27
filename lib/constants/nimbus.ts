@@ -1,6 +1,16 @@
 export { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus-tour";
 
 export const NIMBUS_DASHBOARD_VIEW_EVENT = "nimbusly:dashboard-view";
+export const NIMBUS_SETTINGS_TAB_EVENT = "nimbusly:settings-tab";
+
+export const NIMBUS_HINT_ACTION_LABEL = {
+  GO: "go",
+  SHOW: "show",
+  TOUR: "tour",
+} as const;
+
+export type NimbusHintActionLabel =
+  (typeof NIMBUS_HINT_ACTION_LABEL)[keyof typeof NIMBUS_HINT_ACTION_LABEL];
 
 export const NIMBUS_HINT_FIRST_DELAY_MS = 30_000;
 export const NIMBUS_HINT_INTERVAL_MS = 180_000;

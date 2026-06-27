@@ -97,7 +97,7 @@ Cypress.Commands.add("login", (email: string, password: string) => {
 });
 
 Cypress.Commands.add("openAccountMenu", () => {
-  cy.get('header button[class*="pl-1"][class*="pr-2"]').click();
+  cy.get('[data-testid="account-menu-trigger"]').click();
 });
 
 Cypress.Commands.add("expectToast", (text: string) => {

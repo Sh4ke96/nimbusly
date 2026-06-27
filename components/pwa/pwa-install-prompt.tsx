@@ -53,6 +53,7 @@ export function PwaInstallPrompt() {
 
   return (
     <div
+      data-testid="pwa-install-prompt"
       className={cn(
         "fixed inset-x-4 z-[60] md:inset-x-auto md:right-4 md:max-w-sm",
         "bottom-[var(--app-mobile-bottom-inset)] md:bottom-4",

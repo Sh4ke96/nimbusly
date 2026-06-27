@@ -83,6 +83,8 @@ export function AccountMenu() {
           <Button
             variant="outline"
             size="sm"
+            data-testid="account-menu-trigger"
+            aria-label={t.account.menuTriggerAria}
             className={cn(
               HEADER_CONTROL_HEIGHT,
               "h-10 sm:h-8 min-w-10 sm:min-w-0 rounded-none py-0 pl-1 pr-1 sm:pr-2 gap-1.5 hover:border-primary/40 hover:bg-primary/5"

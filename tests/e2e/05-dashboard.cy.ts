@@ -32,6 +32,7 @@ describe("Dashboard", () => {
 
   it("pokazuje wszystkie moduły", () => {
     cy.contains('[role="tab"]', t.dashboard.modules).click();
+    cy.url().should("include", "view=modules");
     t.dashboard.moduleLabels.forEach((label) => {
       cy.contains("p", label).should("be.visible");
     });

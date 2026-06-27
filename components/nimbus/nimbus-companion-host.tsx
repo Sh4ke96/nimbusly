@@ -13,6 +13,7 @@ import {
   NIMBUS_JOKE_CHANCE,
   NIMBUS_SESSION_GREETING_DELAY_MS,
 } from "@/lib/constants/nimbus";
+import { NIMBUS_HINT_ACTION_LABEL } from "@/lib/constants/nimbus";
 import { NIMBUS_TOUR_ID, NIMBUS_TOUR_TARGET, getModuleTourIdForPath } from "@/lib/constants/nimbus-tour";
 import { countAttentionFromSnapshot } from "@/lib/nimbus/attention-count";
 import { formatNimbusSessionGreeting, pickRandomNimbusJoke } from "@/lib/nimbus/banter";
@@ -139,7 +140,7 @@ export function NimbusCompanionHost() {
       message,
       action: {
         href: "/change-log",
-        actionLabel: "go",
+        actionLabel: NIMBUS_HINT_ACTION_LABEL.GO,
         changelog: true,
       },
       onConsumed: () => markChangelogSeen(),
@@ -157,7 +158,7 @@ export function NimbusCompanionHost() {
       kind: "context",
       delayMs: 8_000,
       message: t.companion.onboardingIntroOffer,
-      action: { tourId: NIMBUS_TOUR_ID.INTRO, actionLabel: "tour" },
+      action: { tourId: NIMBUS_TOUR_ID.INTRO, actionLabel: NIMBUS_HINT_ACTION_LABEL.TOUR },
       onConsumed: markIntroTourOffered,
     });
   }, [visible, quiet, tourActive, menuOpen, t]);
@@ -173,7 +174,7 @@ export function NimbusCompanionHost() {
         kind: "context",
         delayMs: 6_000,
         message: t.companion.firstVisitTourOffer,
-        action: { tourId: moduleTourId, actionLabel: "tour" },
+        action: { tourId: moduleTourId, actionLabel: NIMBUS_HINT_ACTION_LABEL.TOUR },
         onConsumed: () => markModuleVisited(pathname),
       });
       return;
@@ -190,7 +191,7 @@ export function NimbusCompanionHost() {
       delayMs: 12_000,
       message: t.companion.context[contextKey],
       action: tourId
-        ? { tourId, actionLabel: "tour", contextKey }
+        ? { tourId, actionLabel: NIMBUS_HINT_ACTION_LABEL.TOUR, contextKey }
         : { contextKey },
       onConsumed: () => markContextHintShown(contextKey),
     });
@@ -214,7 +215,7 @@ export function NimbusCompanionHost() {
       message,
       {
         scrollTarget: NIMBUS_TOUR_TARGET.DASHBOARD_ATTENTION,
-        actionLabel: "show",
+        actionLabel: NIMBUS_HINT_ACTION_LABEL.SHOW,
       },
       {
         delayMs: 5_000,
@@ -245,7 +246,7 @@ export function NimbusCompanionHost() {
           action: {
             suggestionId: id,
             href: NIMBUS_SUGGESTION_HREF[id],
-            actionLabel: "go",
+            actionLabel: NIMBUS_HINT_ACTION_LABEL.GO,
           },
         });
         return;

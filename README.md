@@ -4,7 +4,7 @@
 
 Nimbusly is a family hub web app: shared budget, shopping, gifts, birthdays, schedule, medicine cabinet, watchlist, restaurants, pets, household chores, notes, and family account management. Each member has their own profile; family data stays in sync.
 
-Available in **Polish** and **English**. Current version: **0.4.1** — see `/change-log` or the in-app version badge.
+Available in **Polish** and **English**. Current version: **0.4.2** — see `/change-log` or the in-app version badge.
 
 ---
 
@@ -218,5 +218,8 @@ npm run e2e
 | `10-cron` | Cron auth |
 | `11-change-log` | Public change log |
 | `11-modules-smoke` | All module pages load |
+| `22-mobile-nav` | Mobile bottom nav and `?view=modules` |
+| `23-offline` | Offline fallback page |
+| `24-pwa-install` | PWA install prompt (`beforeinstallprompt`) |
 
 Cypress `baseUrl` uses `NEXT_PUBLIC_SITE_URL` or defaults to `http://localhost:3000`.

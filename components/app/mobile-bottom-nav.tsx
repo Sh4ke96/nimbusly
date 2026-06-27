@@ -8,6 +8,7 @@ import {
   MOBILE_NAV_ITEM,
   type MobileNavItem,
 } from "@/lib/constants/mobile-nav";
+import { isMobileNavActive } from "@/lib/mobile-nav/is-nav-active";
 import { useT } from "@/lib/lang-context";
 import { cn } from "@/lib/utils";
 
@@ -17,19 +18,6 @@ const NAV_ITEMS: { id: MobileNavItem; icon: typeof LayoutDashboard }[] = [
   { id: MOBILE_NAV_ITEM.NOTIFICATIONS, icon: Bell },
   { id: MOBILE_NAV_ITEM.SETTINGS, icon: Settings },
 ];
-
-function isNavActive(pathname: string, search: string, item: MobileNavItem): boolean {
-  if (item === MOBILE_NAV_ITEM.HOME) {
-    return pathname === "/dashboard" && !search.includes("view=modules");
-  }
-  if (item === MOBILE_NAV_ITEM.MODULES) {
-    return pathname === "/dashboard" && search.includes("view=modules");
-  }
-  if (item === MOBILE_NAV_ITEM.NOTIFICATIONS) {
-    return pathname === "/notifications";
-  }
-  return pathname.startsWith("/profile/settings");
-}
 
 export function MobileBottomNav() {
   const t = useT();
@@ -55,7 +43,7 @@ export function MobileBottomNav() {
     >
       <ul className="grid h-14 grid-cols-4">
         {NAV_ITEMS.map(({ id, icon: Icon }) => {
-          const active = isNavActive(pathname, search, id);
+          const active = isMobileNavActive(pathname, search, id);
           return (
             <li key={id} className="min-w-0">
               <Link

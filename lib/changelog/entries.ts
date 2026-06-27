@@ -11,6 +11,31 @@ export { CHANGELOG_ENTRY_TYPE, type ChangelogEntry };
  */
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "0.4.2",
+    date: "2026-06-27",
+    type: CHANGELOG_ENTRY_TYPE.FIX,
+    title: {
+      pl: "Mobile, PWA i jakość testów",
+      en: "Mobile, PWA, and test quality",
+    },
+    changes: {
+      pl: [
+        "Manifest PWA z tłumaczeniami PL/EN (opis, skróty, język)",
+        "Dashboard synchronizuje zakładki z parametrem ?view=modules w URL",
+        "Stałe Nimbus dla actionLabel i zdarzenia zakładek ustawień",
+        "Testy E2E: dolna nawigacja mobile, offline, prompt instalacji PWA",
+        "Stabilniejszy selektor menu konta (data-testid)",
+      ],
+      en: [
+        "PWA manifest with PL/EN translations (description, shortcuts, lang)",
+        "Dashboard tabs stay in sync with ?view=modules in the URL",
+        "Nimbus constants for actionLabel and settings-tab event",
+        "E2E tests: mobile bottom nav, offline page, PWA install prompt",
+        "Stable account menu selector (data-testid)",
+      ],
+    },
+  },
+  {
     version: "0.4.1",
     date: "2026-06-27",
     type: CHANGELOG_ENTRY_TYPE.FIX,
