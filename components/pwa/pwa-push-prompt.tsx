@@ -12,6 +12,7 @@ import {
   shouldOfferPushPrompt,
   isPushSupported,
 } from "@/lib/push/client-support";
+import { getSubscribePushErrorMessage } from "@/lib/push/subscribe-errors";
 import {
   hasActivePushSubscription,
   subscribeBrowserToPush,
@@ -44,17 +45,16 @@ export function PwaPushPrompt() {
   async function handleEnable() {
     setBusy(true);
     try {
-      const subscription = await subscribeBrowserToPush();
-      if (!subscription) {
-        toast.error(t.pwa.pushDenied);
-        handleDismiss();
+      const result = await subscribeBrowserToPush();
+      if (!result.ok) {
+        toast.error(getSubscribePushErrorMessage(result.reason, t.pwa));
         return;
       }
-      const result = await savePushSubscription(
-        subscription,
+      const saveResult = await savePushSubscription(
+        result.subscription,
         typeof navigator !== "undefined" ? navigator.userAgent : null
       );
-      if (result?.error) {
+      if (saveResult?.error) {
         toast.error(t.pwa.pushError);
         return;
       }

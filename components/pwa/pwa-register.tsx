@@ -8,7 +8,9 @@ export function PwaRegister() {
     if (process.env.NODE_ENV !== "production") return;
     if (!("serviceWorker" in navigator)) return;
 
-    void navigator.serviceWorker.register(PWA_SW_PATH, { scope: "/" }).catch(() => {
+    void navigator.serviceWorker.register(PWA_SW_PATH, { scope: "/" }).then(() => {
+      void navigator.serviceWorker.ready;
+    }).catch(() => {
       // SW registration is best-effort; app works without it.
     });
   }, []);

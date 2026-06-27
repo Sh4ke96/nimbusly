@@ -11,12 +11,21 @@ import {
   getPushUnsupportedReason,
   isPushSupported,
 } from "@/lib/push/client-support";
+import { getSubscribePushErrorMessage } from "@/lib/push/subscribe-errors";
 import {
   hasActivePushSubscription,
+  readBrowserPushSubscription,
   subscribeBrowserToPush,
   unsubscribeBrowserFromPush,
 } from "@/lib/push/subscribe-client";
 import { PUSH_UNSUPPORTED_REASON } from "@/lib/constants/push";
+
+async function persistPushSubscription(userAgent: string | null): Promise<boolean> {
+  const subscription = await readBrowserPushSubscription();
+  if (!subscription) return false;
+  const result = await savePushSubscription(subscription, userAgent);
+  return !result?.error;
+}
 
 export function PwaPushSetting() {
   const t = useT();
@@ -37,31 +46,37 @@ export function PwaPushSetting() {
     setSupported(ok);
     setPermission(typeof Notification !== "undefined" ? Notification.permission : "denied");
 
-    if (ok) {
-      void hasActivePushSubscription().then((active) => {
-        setSubscribed(active);
-        setLoaded(true);
-      });
+    if (!ok) {
+      setLoaded(true);
       return;
     }
 
-    setLoaded(true);
+    void (async () => {
+      const active = await hasActivePushSubscription();
+      if (active) {
+        const saved = await persistPushSubscription(
+          typeof navigator !== "undefined" ? navigator.userAgent : null
+        );
+        setSubscribed(saved || active);
+      }
+      setLoaded(true);
+    })();
   }, []);
 
   async function handleEnable() {
     setBusy(true);
     try {
-      const subscription = await subscribeBrowserToPush();
+      const result = await subscribeBrowserToPush();
       setPermission(Notification.permission);
-      if (!subscription) {
-        toast.error(t.pwa.pushDenied);
+      if (!result.ok) {
+        toast.error(getSubscribePushErrorMessage(result.reason, t.pwa));
         return;
       }
-      const result = await savePushSubscription(
-        subscription,
+      const saveResult = await savePushSubscription(
+        result.subscription,
         typeof navigator !== "undefined" ? navigator.userAgent : null
       );
-      if (result?.error) {
+      if (saveResult?.error) {
         toast.error(t.pwa.pushError);
         return;
       }
@@ -98,6 +113,8 @@ export function PwaPushSetting() {
     hint = t.pwa.pushUnsupported;
   } else if (permission === "denied") {
     hint = t.pwa.pushDeniedHint;
+  } else if (permission === "granted" && !subscribed) {
+    hint = t.pwa.pushGrantedTapEnable;
   }
 
   const canToggle =

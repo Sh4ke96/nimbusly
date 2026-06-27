@@ -66,6 +66,10 @@ export const en: Dict = {
       "On iPhone, add Nimbusly to your home screen (Safari → Share), then enable push in profile settings.",
     pushNotConfigured: "Push is not configured on the server (missing VAPID keys).",
     pushDevOnly: "Push notifications only work in a production build (npm run build && start).",
+    pushSwNotReady: "The service worker is still loading — refresh the app and try again.",
+    pushSubscribeFailed: "Could not create a push subscription in the browser.",
+    pushGrantedTapEnable:
+      "System permission alone is not enough — tap “Enable push” to save the subscription on the server.",
   },
   nav: {
     features: "Features",

@@ -66,6 +66,10 @@ export const pl: Dict = {
       "Na iPhonie dodaj Nimbusly do ekranu głównego (Safari → Udostępnij), potem włącz push w ustawieniach profilu.",
     pushNotConfigured: "Push nie jest skonfigurowany na serwerze (brak kluczy VAPID).",
     pushDevOnly: "Powiadomienia push działają tylko w buildzie produkcyjnym (npm run build && start).",
+    pushSwNotReady: "Service worker jeszcze się ładuje — odśwież aplikację i spróbuj ponownie.",
+    pushSubscribeFailed: "Nie udało się utworzyć subskrypcji push w przeglądarce.",
+    pushGrantedTapEnable:
+      "Zgoda w systemie to za mało — naciśnij „Włącz push”, żeby zapisać subskrypcję na serwerze.",
   },
   nav: {
     features: "Funkcje",

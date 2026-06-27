@@ -56,6 +56,9 @@ export type Dict = {
     pushIosInstallRequired: string;
     pushNotConfigured: string;
     pushDevOnly: string;
+    pushSwNotReady: string;
+    pushSubscribeFailed: string;
+    pushGrantedTapEnable: string;
   };
   nav: {
     features: string;
