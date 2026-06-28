@@ -16,6 +16,7 @@ import { NimbusTourToolbarAnchor } from "@/components/nimbus/nimbus-tour-toolbar
 import { ShoppingCategoriesSection } from "@/components/profile/settings/shopping-categories-section";
 import { PasswordSection } from "@/components/profile/settings/password-section";
 import { SettingsTabHeader } from "@/components/profile/settings/settings-tab-header";
+import { SettingsSkeleton } from "@/components/profile/settings/settings-skeleton";
 import { AppVersionFooter } from "@/components/profile/settings/app-version-footer";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useT } from "@/lib/lang-context";
