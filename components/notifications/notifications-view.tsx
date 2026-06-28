@@ -254,7 +254,7 @@ export function NotificationsView() {
         </Card>
 
         <p className="text-xs text-center text-muted-foreground">
-          {t.notifications.emailComingSoon}
+          {t.notifications.deliveryChannelsHint}
         </p>
       </AppPage>
     </div>

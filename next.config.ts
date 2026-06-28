@@ -9,13 +9,21 @@ const sentryOrg = process.env.SENTRY_ORG;
 const sentryProject = process.env.SENTRY_PROJECT;
 const sentryAuthToken = process.env.SENTRY_AUTH_TOKEN;
 
-export default withSentryConfig(nextConfig, {
+const sentryBuildOptions = {
   org: sentryOrg,
   project: sentryProject,
   authToken: sentryAuthToken,
   silent: !process.env.CI,
   widenClientFileUpload: true,
-  disableLogger: true,
-  automaticVercelMonitors: true,
   tunnelRoute: "/monitoring",
-});
+  webpack: {
+    treeshake: {
+      removeDebugLogging: true,
+    },
+    automaticVercelMonitors: true,
+  },
+} as const;
+
+export default process.env.NODE_ENV === "production"
+  ? withSentryConfig(nextConfig, sentryBuildOptions)
+  : nextConfig;

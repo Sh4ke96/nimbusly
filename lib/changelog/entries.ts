@@ -11,6 +11,37 @@ export { CHANGELOG_ENTRY_TYPE, type ChangelogEntry };
  */
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "0.5.4",
+    date: "2026-06-28",
+    type: CHANGELOG_ENTRY_TYPE.MINOR,
+    title: {
+      pl: "Powiadomienia na żywo, preferencje i deep linki",
+      en: "Live notifications, preferences, and deep links",
+    },
+    changes: {
+      pl: [
+        "Dzwonek powiadomień odświeża się na żywo (Supabase Realtime)",
+        "Preferencje w profilu: push z serwera i codzienny digest e-mail",
+        "Push i deep linki do listy zakupów (/shopping?list=…) i budżetu",
+        "Poprawka notify-family — sprawdzanie błędu RPC przed pushem",
+        "ESLint wymusza importy @/ zamiast ../ w kodzie produkcyjnym",
+        "Yarn jako menedżer pakietów (yarn.lock, CI i dokumentacja)",
+        "Sentry aktywny tylko na produkcji — szybszy yarn dev",
+        "Usunięte podpisy „wkrótce” i placeholdery funkcji w UI",
+      ],
+      en: [
+        "Notification bell updates live via Supabase Realtime",
+        "Profile preferences: server push and daily email digest",
+        "Push deep links to shopping lists (/shopping?list=…) and budgets",
+        "notify-family fix — RPC error check before push dispatch",
+        "ESLint enforces @/ imports instead of ../ in production code",
+        "Yarn as package manager (yarn.lock, CI, and docs)",
+        "Sentry enabled only in production — faster yarn dev",
+        "Removed “coming soon” teasers and placeholder copy in the UI",
+      ],
+    },
+  },
+  {
     version: "0.5.3",
     date: "2026-06-28",
     type: CHANGELOG_ENTRY_TYPE.MINOR,
@@ -90,13 +121,13 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
         "Web Push po zainstalowaniu aplikacji — Android i iOS 16.4+ z ekranu głównego",
         "Włączanie w ustawieniach profilu i baner po instalacji PWA",
         "Push przy powiadomieniach rodzinnych i przypomnieniach budżetu",
-        "Klucze VAPID (npm run push:vapid) — migracja push_subscriptions",
+        "Klucze VAPID (yarn push:vapid) — migracja push_subscriptions",
       ],
       en: [
         "Web Push after installing the app — Android and iOS 16.4+ from the home screen",
         "Enable in profile settings and prompt after PWA install",
         "Push for family notifications and budget payment reminders",
-        "VAPID keys (npm run push:vapid) — push_subscriptions migration",
+        "VAPID keys (yarn push:vapid) — push_subscriptions migration",
       ],
     },
   },
@@ -112,12 +143,12 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
       pl: [
         "Ikony PNG (180, 192, 512 px) i apple-touch-icon — iOS nie obsługuje SVG na ekranie głównym",
         "Manifest i metadane strony wskazują na PNG zamiast samego SVG",
-        "Skrypt npm run pwa:icons do regeneracji ikon z public/pwa-icon.svg",
+        "Skrypt yarn pwa:icons do regeneracji ikon z public/pwa-icon.svg",
       ],
       en: [
         "PNG icons (180, 192, 512 px) and apple-touch-icon — iOS does not use SVG on the home screen",
         "Manifest and page metadata point to PNG instead of SVG only",
-        "npm run pwa:icons script to regenerate icons from public/pwa-icon.svg",
+        "yarn pwa:icons script to regenerate icons from public/pwa-icon.svg",
       ],
     },
   },

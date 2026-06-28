@@ -778,6 +778,8 @@ export type Database = {
           nimbus_companion_quiet: boolean
           onboarding_completed: boolean
           preferred_lang: string
+          push_notifications_enabled: boolean
+          email_digest_enabled: boolean
           updated_at: string
         }
         Insert: {
@@ -794,6 +796,8 @@ export type Database = {
           nimbus_companion_quiet?: boolean
           onboarding_completed?: boolean
           preferred_lang?: string
+          push_notifications_enabled?: boolean
+          email_digest_enabled?: boolean
           updated_at?: string
         }
         Update: {
@@ -810,6 +814,8 @@ export type Database = {
           nimbus_companion_quiet?: boolean
           onboarding_completed?: boolean
           preferred_lang?: string
+          push_notifications_enabled?: boolean
+          email_digest_enabled?: boolean
           updated_at?: string
         }
         Relationships: [

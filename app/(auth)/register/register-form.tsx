@@ -3,7 +3,7 @@
 import { AUTH_FORM_FIELD } from "@/lib/auth/form";
 import { useActionState, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { register, type AuthState } from "../actions";
+import { register, type AuthState } from "@/app/(auth)/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

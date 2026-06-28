@@ -22,6 +22,8 @@ interface ProfileStore {
   patchDashboardOverviewLayout: (layout: unknown) => void;
   patchNimbusCompanionEnabled: (enabled: boolean) => void;
   patchNimbusCompanionQuiet: (quiet: boolean) => void;
+  patchPushNotificationsEnabled: (enabled: boolean) => void;
+  patchEmailDigestEnabled: (enabled: boolean) => void;
   reset: () => void;
 }
 
@@ -228,6 +230,28 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
       profile: {
         ...profile,
         nimbus_companion_quiet: quiet,
+      },
+    });
+  },
+
+  patchPushNotificationsEnabled: (enabled: boolean) => {
+    const profile = get().profile;
+    if (!profile) return;
+    set({
+      profile: {
+        ...profile,
+        push_notifications_enabled: enabled,
+      },
+    });
+  },
+
+  patchEmailDigestEnabled: (enabled: boolean) => {
+    const profile = get().profile;
+    if (!profile) return;
+    set({
+      profile: {
+        ...profile,
+        email_digest_enabled: enabled,
       },
     });
   },

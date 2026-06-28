@@ -8,7 +8,7 @@ This document is the single source of truth for coding standards, conventions, a
 
 **CRITICAL:** This is **Next.js 16** with breaking changes vs older versions. Before writing or changing framework code, read the relevant guide in `node_modules/next/dist/docs/`. Heed deprecation notices (see also `AGENTS.md`).
 
-**CRITICAL:** Use **`npm`**, not Yarn (`package-lock.json` is the lockfile).
+**CRITICAL:** Use **`yarn`**, not npm (`yarn.lock` is the lockfile).
 
 **CRITICAL:** Always use **absolute imports** with the `@/` alias (maps to project root).
 
@@ -40,7 +40,7 @@ Nimbusly is a **family hub** web app: shared budget, shopping, gifts, birthdays,
 | **Framework** | Next.js 16, React 19, Tailwind CSS v4, shadcn/ui, Radix UI |
 | **State** | Zustand (client stores), Server Actions (mutations) |
 | **Backend** | Supabase + SQL migrations in `supabase/migrations/` |
-| **Package manager** | npm |
+| **Package manager** | yarn |
 | **E2E** | Cypress (`tests/e2e/`) |
 | **Unit tests** | Node test runner (`tests/unit/**/*.test.ts`) |
 
@@ -51,7 +51,7 @@ Nimbusly is a **family hub** web app: shared budget, shopping, gifts, birthdays,
 ### Required
 
 1. **Node.js** 20+ (LTS recommended)
-2. **npm**
+2. **yarn**
 3. **Supabase project** — URL + anon key in `.env.local` (see `.env.example`)
 
 ### Setup
@@ -60,16 +60,16 @@ Nimbusly is a **family hub** web app: shared budget, shopping, gifts, birthdays,
 cp .env.example .env.local
 # Fill in NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, etc.
 
-npm install
-npm run lint
-npm run build
+yarn install
+yarn lint
+yarn build
 ```
 
 For local DB schema work (remote Supabase):
 
 ```bash
-npm run db:push      # apply migrations
-npm run db:status    # list migrations
+yarn db:push      # apply migrations
+yarn db:status    # list migrations
 ```
 
 ---
@@ -79,24 +79,24 @@ npm run db:status    # list migrations
 ### Development
 
 ```bash
-npm run dev          # http://localhost:3000
+yarn dev          # http://localhost:3000
 ```
 
 ### Building and validation
 
 ```bash
-npm run lint         # ESLint
-npm run build        # production build — run before submitting changes
-npm run start        # production server
+yarn lint         # ESLint
+yarn build        # production build — run before submitting changes
+yarn start        # production server
 ```
 
 ### Testing
 
 ```bash
-npm test             # unit tests (Node test runner)
-npm run e2e          # Cypress headless (starts dev server)
-npm run e2e:open     # Cypress interactive
-npm run cy:run       # Cypress only (server must already run)
+yarn test             # unit tests (Node test runner)
+yarn e2e          # Cypress headless (starts dev server)
+yarn e2e:open     # Cypress interactive
+yarn cy:run       # Cypress only (server must already run)
 ```
 
 | Layer | Location |
@@ -233,7 +233,7 @@ export type AccountMode = (typeof ACCOUNT_MODE)[keyof typeof ACCOUNT_MODE];
 
 - **Migrations:** add numbered files in `supabase/migrations/` (e.g. `009_feature.sql`)
 - **RLS:** default for all tables; use `security definer` RPCs when cross-user writes are needed
-- **Apply:** `npm run db:push` (uses `.env.local`)
+- **Apply:** `yarn db:push` (uses `.env.local`)
 - **Clients:** `lib/supabase/client.ts` (browser), `lib/supabase/server.ts` (Server Components / Actions)
 - Do not bypass RLS from the client for privileged operations — use Server Actions or RPC
 
@@ -302,7 +302,7 @@ components/birthdays/
 
 | Check | Requirement |
 |-------|-------------|
-| ESLint | `npm run lint` must pass |
+| ESLint | `yarn lint` must pass |
 | TypeScript | `strict: true` — `npx tsc --noEmit` clean |
 | i18n | New UI strings in `types.ts` + `pl.ts` + `en.ts` |
 | Scope | Smallest correct change; no drive-by refactors |
@@ -321,11 +321,11 @@ components/birthdays/
 ## Validation Before Commit
 
 ```bash
-npm run lint
-npm run build
-npm test
+yarn lint
+yarn build
+yarn test
 # optional:
-npm run e2e          # needs .env.local + Supabase admin for full suite
+yarn e2e          # needs .env.local + Supabase admin for full suite
 ```
 
 For **any shipped change** (feature, fix, infra users care about — PWA, push, analytics, env vars, etc.), update in the **same PR / same commit batch**:
@@ -350,14 +350,14 @@ Only create git commits when explicitly requested.
 ## Summary of Critical Rules
 
 1. Read **Next.js 16 docs** in `node_modules/next/dist/docs/` before framework changes
-2. Use **`npm`**, not Yarn
+2. Use **`yarn`**, not npm
 3. Use **`@/`** absolute imports only
 4. Use **`useT()` / `getServerT()`** — no hardcoded user-facing text
 5. Reuse **`components/ui/`** shadcn primitives
 6. Mutations via **Server Actions** + Supabase server client
 7. Client session/family state via **Zustand** + **ProfileBootstrap**
-8. Schema changes via **`supabase/migrations/`** + `npm run db:push`
+8. Schema changes via **`supabase/migrations/`** + `yarn db:push`
 9. Visual style: **`rounded-none`**, theme tokens, Tailwind utilities
-10. Validate with **`npm run lint`**, **`npm run build`**, and **`npm test`**
+10. Validate with **`yarn lint`**, **`yarn build`**, and **`yarn test`**
 11. **Changelog always** (when behaviour changes): `lib/changelog/entries.ts` (top entry, PL + EN), matching **`package.json` version**, **`README.md`**, tests — same change
 12. Keep diffs **minimal** and consistent with surrounding code

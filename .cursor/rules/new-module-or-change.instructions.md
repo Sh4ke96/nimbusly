@@ -51,7 +51,7 @@ When shipping:
 3. Fill `title` and `changes` in **both** `pl` and `en`.
 4. Pick `type`: `CHANGELOG_ENTRY_TYPE.MAJOR` (big launch), `MINOR` (feature), or `FIX` (bugfix).
 5. Update **`README.md`** in the same change — at minimum the current version; also features, env vars, scripts, or testing notes when behaviour changed.
-6. Add or update **tests** for new logic (`tests/unit/`, `tests/integration/`, `tests/e2e/` as appropriate) and run `npm test`.
+6. Add or update **tests** for new logic (`tests/unit/`, `tests/integration/`, `tests/e2e/` as appropriate) and run `yarn test`.
 
 `/change-log` is public (no login). The version badge (`vX.Y.Z`, bottom-right) links there.
 
@@ -223,7 +223,7 @@ When adding tables, columns, or policies:
 2. Enable RLS on new tables
 3. Add policies for select/insert/update/delete aligned with family/solo model
 4. Use `security definer` RPCs only when RLS cannot express the rule safely
-5. Run `npm run db:push`
+5. Run `yarn db:push`
 6. Update TypeScript types in `lib/<domain>/types.ts`
 
 ---
@@ -241,8 +241,8 @@ When adding tables, columns, or policies:
 ### Commands
 
 ```bash
-npm test              # unit tests
-npm run e2e           # full E2E (dev server + Cypress)
+yarn test              # unit tests
+yarn e2e           # full E2E (dev server + Cypress)
 ```
 
 ### Unit test pattern
@@ -265,7 +265,7 @@ Reference: `tests/unit/family/invite.test.ts`.
 
 - [ ] New tests added for new logic
 - [ ] Existing tests updated if behavior changed
-- [ ] `npm test` passes
+- [ ] `yarn test` passes
 - [ ] Relevant Cypress spec passes (or note env requirements)
 
 ---
@@ -304,9 +304,9 @@ Reference: `tests/unit/family/invite.test.ts`.
 
 ### Quality
 
-- [ ] `npm run lint`
-- [ ] `npm run build`
-- [ ] `npm test`
+- [ ] `yarn lint`
+- [ ] `yarn build`
+- [ ] `yarn test`
 - [ ] Cypress updated/passing for affected flows
 - [ ] **Changelog:** new entry at top of `lib/changelog/entries.ts` (PL + EN) + `package.json` version bump (required for any shipped feature/fix)
 - [ ] `README.md` updated (version, features, env, or testing notes if changed)

@@ -4,7 +4,7 @@
 
 Nimbusly is a family hub web app: shared budget, shopping, gifts, birthdays, schedule, medicine cabinet, watchlist, restaurants, pets, household chores, notes, and family account management. Each member has their own profile; family data stays in sync.
 
-Available in **Polish** and **English**. Current version: **0.5.3** — see `/change-log` or the in-app version badge.
+Available in **Polish** and **English**. Current version: **0.5.4** — see `/change-log` or the in-app version badge.
 
 ---
 
@@ -54,7 +54,7 @@ Additional:
 ## Prerequisites
 
 - Node.js 20+
-- npm
+- yarn
 - A [Supabase](https://supabase.com) project
 
 ---
@@ -81,8 +81,8 @@ cp .env.example .env.local
 4. Install and start:
 
 ```bash
-npm install
-npm run dev
+yarn install
+yarn dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
@@ -90,7 +90,7 @@ Open [http://localhost:3000](http://localhost:3000).
 5. Apply database schema (remote Supabase):
 
 ```bash
-npm run db:push
+yarn db:push
 ```
 
 ---
@@ -108,7 +108,7 @@ See [`.env.example`](.env.example) for the full list.
 | `RESEND_API_KEY` | Optional | Family invite & reminder emails |
 | `RESEND_FROM_EMAIL` | Optional | Sender address for Resend |
 | `CRON_SECRET` | Optional | Protects cron API routes |
-| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | Optional | Web Push — client subscription (`npm run push:vapid`) |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | Optional | Web Push — client subscription (`yarn push:vapid`) |
 | `VAPID_PRIVATE_KEY` | Optional | Web Push — server send (never expose to client) |
 | `NEXT_PUBLIC_SENTRY_DSN` | Optional | Sentry error monitoring (client + server) |
 | `SENTRY_AUTH_TOKEN` | Optional | Sentry source maps upload on Vercel build |
@@ -122,7 +122,7 @@ Never commit `.env.local` or secrets.
 
 ## Web Push (optional)
 
-When `NEXT_PUBLIC_VAPID_PUBLIC_KEY` and `VAPID_PRIVATE_KEY` are set (generate with `npm run push:vapid`):
+When `NEXT_PUBLIC_VAPID_PUBLIC_KEY` and `VAPID_PRIVATE_KEY` are set (generate with `yarn push:vapid`):
 
 1. Deploy a **production** build over **HTTPS**
 2. User installs the PWA (Android prompt or iOS home screen)
@@ -140,7 +140,7 @@ When `NEXT_PUBLIC_VAPID_PUBLIC_KEY` and `VAPID_PRIVATE_KEY` are set (generate wi
 3. (Recommended) Create an **Auth Token** with `project:releases` and set `SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, `SENTRY_PROJECT` on Vercel for readable stack traces.
 4. Deploy — errors from the browser, Server Actions, `/api/*`, and crons appear in Sentry.
 
-Without a DSN the SDK stays disabled; local `npm run dev` works unchanged.
+Without a DSN the SDK stays disabled; local `yarn dev` works unchanged.
 
 ---
 
@@ -168,17 +168,17 @@ Authorization: Bearer <CRON_SECRET>
 
 | Command | Description |
 |---------|-------------|
-| `npm run dev` | Development server |
-| `npm run build` | Production build |
-| `npm run start` | Production server |
-| `npm run lint` | ESLint |
-| `npm test` | Unit tests (`tests/unit/**/*.test.ts`) |
-| `npm run test:types` | Typecheck test tsconfig |
-| `npm run e2e` | Cypress headless (starts dev server) |
-| `npm run e2e:open` | Cypress interactive |
-| `npm run db:push` | Apply SQL migrations to linked Supabase project |
-| `npm run db:status` | List migrations |
-| `npm run db:link` | Link local CLI to Supabase project |
+| `yarn dev` | Development server |
+| `yarn build` | Production build |
+| `yarn start` | Production server |
+| `yarn lint` | ESLint |
+| `yarn test` | Unit tests (`tests/unit/**/*.test.ts`) |
+| `yarn test:types` | Typecheck test tsconfig |
+| `yarn e2e` | Cypress headless (starts dev server) |
+| `yarn e2e:open` | Cypress interactive |
+| `yarn db:push` | Apply SQL migrations to linked Supabase project |
+| `yarn db:status` | List migrations |
+| `yarn db:link` | Link local CLI to Supabase project |
 
 ---
 
@@ -201,7 +201,7 @@ When you ship a **user-visible** feature, fix, or module:
 1. Prepend an entry to `lib/changelog/entries.ts` (PL + EN `title` and `changes`).
 2. Bump `version` in `package.json` to match that entry.
 3. Update **`README.md`** — current version, feature list, env vars, or testing notes if they changed.
-4. Add or update **tests** (`tests/unit/`, `tests/e2e/`) for new behaviour; run `npm test`.
+4. Add or update **tests** (`tests/unit/`, `tests/e2e/`) for new behaviour; run `yarn test`.
 
 ### Nimbus companion (`lib/nimbus/`, `components/nimbus/`)
 
@@ -227,7 +227,7 @@ See [`.cursor/rules/new-module-or-change.instructions.md`](.cursor/rules/new-mod
 **Unit tests**
 
 ```bash
-npm test
+yarn test
 ```
 
 Covers domain logic (budget, chores, notes, search, changelog, nimbus driver steps, etc.).
@@ -235,7 +235,7 @@ Covers domain logic (budget, chores, notes, search, changelog, nimbus driver ste
 **E2E (requires Supabase service role in `.env.local` for full flows)**
 
 ```bash
-npm run e2e
+yarn e2e
 ```
 
 | Spec | Scope |

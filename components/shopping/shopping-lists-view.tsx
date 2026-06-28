@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { useResolvedItemSelection } from "@/lib/hooks/use-resolved-item-selection";
@@ -19,6 +20,7 @@ import { useShoppingListsRealtime } from "@/lib/hooks/use-shopping-lists-realtim
 import { downloadShoppingListCsv } from "@/lib/shopping-lists/export-csv";
 import { useT } from "@/lib/lang-context";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
+import { NOTIFICATION_DEEP_LINK_QUERY } from "@/lib/constants/notification-deep-links";
 import { NimbusTourToolbarAnchor } from "@/components/nimbus/nimbus-tour-toolbar-anchor";
 import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus-tour";
 import { useProfileStore } from "@/lib/stores/profile-store";
@@ -46,6 +48,8 @@ export function ShoppingListsView() {
   const fetchItems = useShoppingListsStore((s) => s.fetchItems);
 
   const listIdsKey = useMemo(() => lists.map((list) => list.id).join("|"), [lists]);
+  const searchParams = useSearchParams();
+  const listFromUrl = searchParams.get(NOTIFICATION_DEEP_LINK_QUERY.SHOPPING_LIST);
   const [activeListId, setSelectedListId] = useResolvedItemSelection(listIdsKey);
   const [editingList, setEditingList] = useState<ShoppingList | null>(null);
   const [editOpen, setEditOpen] = useState<boolean>(false);
@@ -56,6 +60,13 @@ export function ShoppingListsView() {
       : null;
 
   useStoreBootstrap(loaded, error, fetchLists);
+
+  useEffect(() => {
+    if (!listFromUrl || lists.length === 0) return;
+    if (lists.some((list) => list.id === listFromUrl)) {
+      setSelectedListId(listFromUrl);
+    }
+  }, [listFromUrl, lists, setSelectedListId]);
 
   useEffect(() => {
     void fetchWatches();

@@ -2,5 +2,5 @@
 set -e
 
 echo "pre-push: running verify (lint, types, tests, build)..."
-npm run verify
+yarn verify
 echo "pre-push: all checks passed."

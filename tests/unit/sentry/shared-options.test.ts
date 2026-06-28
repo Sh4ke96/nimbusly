@@ -4,6 +4,7 @@ import {
   getSentryTracesSampleRate,
   isSentryEnabled,
   scrubSentryEvent,
+  shouldActivateSentryRuntime,
 } from "@/lib/sentry/shared-options";
 
 describe("isSentryEnabled", () => {
@@ -19,6 +20,16 @@ describe("isSentryEnabled", () => {
     process.env.NEXT_PUBLIC_SENTRY_DSN = "https://example@o0.ingest.sentry.io/0";
     assert.equal(isSentryEnabled(), true);
     if (previous) process.env.NEXT_PUBLIC_SENTRY_DSN = previous;
+    else delete process.env.NEXT_PUBLIC_SENTRY_DSN;
+  });
+});
+
+describe("shouldActivateSentryRuntime", () => {
+  it("is false in development even with DSN", () => {
+    const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
+    process.env.NEXT_PUBLIC_SENTRY_DSN = "https://example@o0.ingest.sentry.io/0";
+    assert.equal(shouldActivateSentryRuntime(), false);
+    if (dsn) process.env.NEXT_PUBLIC_SENTRY_DSN = dsn;
     else delete process.env.NEXT_PUBLIC_SENTRY_DSN;
   });
 });

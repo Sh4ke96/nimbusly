@@ -4,9 +4,13 @@ import { createClient } from "@/lib/supabase/server";
 import { type WatchTable, watchEntityKindFromTable } from "@/lib/constants/watches";
 import { loadWatcherRecipientIds } from "@/lib/notifications/load-watcher-recipient-ids";
 import { excludeActorFromWatcherIds } from "@/lib/notifications/watches";
-import { pushNotificationsToRecipients } from "@/lib/notifications/push-recipients";
+import { dispatchInAppAndPushNotifications } from "@/lib/notifications/dispatch-notifications";
 import type { NotificationType } from "@/lib/constants/notifications";
 import type { Json } from "@/lib/supabase/database.types";
+
+type NotifyEntityWatchersDeps = {
+  loadWatcherRecipientIds?: typeof loadWatcherRecipientIds;
+};
 
 export async function notifyEntityWatchers(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -19,9 +23,11 @@ export async function notifyEntityWatchers(
     title: string;
     body: string;
     payload: Record<string, unknown>;
-  }
+  },
+  deps: NotifyEntityWatchersDeps = {}
 ): Promise<void> {
-  const watcherUserIds = await loadWatcherRecipientIds(params.watchTable, params.entityId);
+  const loadWatchers = deps.loadWatcherRecipientIds ?? loadWatcherRecipientIds;
+  const watcherUserIds = await loadWatchers(params.watchTable, params.entityId);
 
   const recipientIds = excludeActorFromWatcherIds(watcherUserIds, params.actorId);
 
@@ -37,14 +43,13 @@ export async function notifyEntityWatchers(
     p_payload: params.payload as Json,
   });
 
-  if (error) {
-    console.error("[notifications] watcher notify failed", error.message);
-    return;
-  }
-
-  await pushNotificationsToRecipients({
+  await dispatchInAppAndPushNotifications({
+    rpcError: error,
+    logContext: "watcher notify",
     recipientIds,
+    type: params.type,
     title: params.title,
     body: params.body,
+    payload: params.payload,
   });
 }

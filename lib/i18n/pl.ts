@@ -70,13 +70,13 @@ export const pl: Dict = {
     pushIosInstallRequired:
       "Na iPhonie dodaj Nimbusly do ekranu głównego (Safari → Udostępnij), potem włącz push w ustawieniach profilu.",
     pushNotConfigured: "Push nie jest skonfigurowany na serwerze (brak kluczy VAPID).",
-    pushDevOnly: "Powiadomienia push działają tylko w buildzie produkcyjnym (npm run build && start).",
+    pushDevOnly: "Powiadomienia push działają tylko w buildzie produkcyjnym (yarn build && yarn start).",
     pushSwNotReady: "Service worker jeszcze się ładuje — odśwież aplikację i spróbuj ponownie.",
     pushSubscribeFailed: "Nie udało się utworzyć subskrypcji push w przeglądarce.",
     pushGrantedTapEnable:
       "Zgoda w systemie to za mało — naciśnij „Włącz push”, żeby zapisać subskrypcję na serwerze.",
     pushVapidInvalid:
-      "Nieprawidłowy klucz VAPID — w Vercel sprawdź NEXT_PUBLIC_VAPID_PUBLIC_KEY (npm run push:vapid, bez cudzysłowów).",
+      "Nieprawidłowy klucz VAPID — w Vercel sprawdź NEXT_PUBLIC_VAPID_PUBLIC_KEY (yarn push:vapid, bez cudzysłowów).",
     pushReloadApp:
       "Service worker nie przejął jeszcze aplikacji — zamknij Nimbusly całkowicie i uruchom ponownie z ikony na ekranie głównym.",
   },
@@ -470,9 +470,6 @@ export const pl: Dict = {
     permissionsMakeMember: "Odbierz admina",
     permissionsMemberHint:
       "Tylko administratorzy mogą zmieniać role. Skontaktuj się z założycielem lub administratorem rodziny.",
-    permissionsMoreTitle: "Więcej opcji wkrótce",
-    permissionsMoreDesc:
-      "W kolejnych wersjach pojawią się dodatkowe ustawienia uprawnień dla członków rodziny.",
     permissionsPromotedSuccess: "Nadano uprawnienia administratora.",
     permissionsDemotedSuccess: "Odebrano uprawnienia administratora.",
     soloWarning: "Przejście na konto solo odłączy Cię od rodziny. Inni członkowie pozostaną w grupie.",
@@ -510,6 +507,12 @@ export const pl: Dict = {
     changePasswordSuccessTitle: "Sprawdź swoją skrzynkę!",
     changePasswordSuccessMessage: "Wysłaliśmy link do zmiany hasła. Kliknij go w mailu, aby ustawić nowe hasło.",
     changePasswordBack: "Wróć do panelu",
+    pushNotificationsPrefLabel: "Powiadomienia push z serwera",
+    pushNotificationsPrefDesc:
+      "Gdy wyłączone, Nimbusly nie wysyła powiadomień push o zmianach w rodzinie (subskrypcja urządzenia może pozostać aktywna).",
+    emailDigestPrefLabel: "Codzienny digest e-mail",
+    emailDigestPrefDesc:
+      "Przypomnienia o zadaniach, lekach, urodzinach i innych sprawach wysyłane raz dziennie na Twój adres logowania.",
     settingsTitle: "Ustawienia konta",
     settingsSubtitle: "Zarządzaj profilem, rodziną i bezpieczeństwem konta.",
     settingsBack: "Wróć do panelu",
@@ -536,7 +539,6 @@ export const pl: Dict = {
     greeting: "Dzień dobry",
     loggedAs: "Zalogowany jako",
     modules: "Moduły",
-    moduleComingSoon: "Wkrótce dostępne",
     logout: "Wyloguj",
     logoutConfirmTitle: "Wylogować się?",
     logoutConfirmDesc: "Na pewno chcesz się wylogować z Nimbusly?",
@@ -1524,13 +1526,14 @@ export const pl: Dict = {
     pageSummary: "Strona {page} z {total}",
     pageNumberLabel: "Strona {page}",
     openBirthdays: "Otwórz kalendarz urodzin",
-    emailComingSoon:
-      "Push alerts work in the installed PWA (profile settings). Daily email digests are sent via cron when Resend is configured.",
+    deliveryChannelsHint:
+      "Push działa w zainstalowanej PWA (ustawienia profilu). Codzienny digest e-mail wysyła cron, gdy skonfigurowany jest Resend — wyłączysz go w profilu.",
     reminderEmailSubject: "Nimbusly — {count} rzeczy wymaga uwagi",
     reminderEmailHeading: "Wymaga uwagi",
     reminderEmailIntro: "Oto skrót terminów i zadań z Twojego domowego panelu:",
     reminderEmailCta: "Otwórz panel",
-    reminderEmailFooter: "Możesz wyłączyć te maile, usuwając klucz Resend lub cron.",
+    reminderEmailFooter:
+      "Digest wyłączysz w ustawieniach profilu (Codzienny digest e-mail).",
     errorGeneric: "Nie udało się zaktualizować powiadomień.",
     menu: "Powiadomienia",
     birthdayAddedTitle: "{actor} dodał urodziny",

@@ -23,10 +23,24 @@ export async function dispatchPushNotifications(
   }
 
   const supabase = createServiceRoleClient();
+
+  const { data: enabledProfiles } = await supabase
+    .from("profiles")
+    .select("id")
+    .in("id", uniqueRecipientIds)
+    .eq("push_notifications_enabled", true);
+
+  const pushEnabledIds = new Set((enabledProfiles ?? []).map((row) => row.id));
+  const eligibleRecipientIds = uniqueRecipientIds.filter((id) => pushEnabledIds.has(id));
+
+  if (eligibleRecipientIds.length === 0) {
+    return { sent: 0, removed: 0 };
+  }
+
   const { data: subscriptions, error } = await supabase
     .from("push_subscriptions")
     .select("id, endpoint, p256dh, auth")
-    .in("user_id", uniqueRecipientIds);
+    .in("user_id", eligibleRecipientIds);
 
   if (error || !subscriptions?.length) {
     return { sent: 0, removed: 0 };

@@ -14,14 +14,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: npm
+          cache: yarn
 
-      - run: npm ci
+      - run: yarn install --frozen-lockfile
 
-      - run: npm test
+      - run: yarn test
 
-      - run: npm run lint
+      - run: yarn lint
 
-      - run: npm run build
+      - run: yarn build
 
-      - run: npx tsc -p tsconfig.test.json
+      - run: yarn test:types

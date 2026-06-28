@@ -2,7 +2,7 @@
 
 import { AUTH_FORM_FIELD } from "@/lib/auth/form";
 import { useActionState } from "react";
-import { login, type AuthState } from "../actions";
+import { login, type AuthState } from "@/app/(auth)/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

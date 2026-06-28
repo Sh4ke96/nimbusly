@@ -33,12 +33,14 @@ export async function GET(request: Request) {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
   const { data: profiles } = await supabase
     .from("profiles")
-    .select("id, family_id, first_name, last_name, preferred_lang");
+    .select("id, family_id, first_name, last_name, preferred_lang, email_digest_enabled");
 
   let sent = 0;
   const errors: string[] = [];
 
   for (const profile of profiles ?? []) {
+    if (profile.email_digest_enabled === false) continue;
+
     const { data: authUser } = await supabase.auth.admin.getUserById(profile.id);
     const email = authUser.user?.email;
     if (!email) continue;

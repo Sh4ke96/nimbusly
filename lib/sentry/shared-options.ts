@@ -13,6 +13,11 @@ export function isSentryEnabled(): boolean {
   return Boolean(getSentryDsn());
 }
 
+/** Sentry init + webpack plugin only on production builds with a DSN. */
+export function shouldActivateSentryRuntime(): boolean {
+  return process.env.NODE_ENV === "production" && isSentryEnabled();
+}
+
 export function getSentryEnvironment(): string {
   return process.env.VERCEL_ENV ?? process.env.NODE_ENV ?? "development";
 }

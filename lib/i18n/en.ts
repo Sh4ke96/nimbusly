@@ -70,13 +70,13 @@ export const en: Dict = {
     pushIosInstallRequired:
       "On iPhone, add Nimbusly to your home screen (Safari → Share), then enable push in profile settings.",
     pushNotConfigured: "Push is not configured on the server (missing VAPID keys).",
-    pushDevOnly: "Push notifications only work in a production build (npm run build && start).",
+    pushDevOnly: "Push notifications only work in a production build (yarn build && yarn start).",
     pushSwNotReady: "The service worker is still loading — refresh the app and try again.",
     pushSubscribeFailed: "Could not create a push subscription in the browser.",
     pushGrantedTapEnable:
       "System permission alone is not enough — tap “Enable push” to save the subscription on the server.",
     pushVapidInvalid:
-      "Invalid VAPID key — check NEXT_PUBLIC_VAPID_PUBLIC_KEY in Vercel (npm run push:vapid, no quotes).",
+      "Invalid VAPID key — check NEXT_PUBLIC_VAPID_PUBLIC_KEY in Vercel (yarn push:vapid, no quotes).",
     pushReloadApp:
       "The service worker has not taken control yet — fully close Nimbusly and reopen it from the home screen icon.",
   },
@@ -470,9 +470,6 @@ export const en: Dict = {
     permissionsMakeMember: "Remove admin",
     permissionsMemberHint:
       "Only admins can change roles. Contact your family founder or an admin.",
-    permissionsMoreTitle: "More options coming soon",
-    permissionsMoreDesc:
-      "Additional permission settings for family members will be added in future updates.",
     permissionsPromotedSuccess: "Admin permissions granted.",
     permissionsDemotedSuccess: "Admin permissions removed.",
     soloWarning: "Switching to solo will disconnect you from the family. Other members will stay in the group.",
@@ -510,6 +507,12 @@ export const en: Dict = {
     changePasswordSuccessTitle: "Check your inbox!",
     changePasswordSuccessMessage: "We sent a password reset link. Click it in the email to set your new password.",
     changePasswordBack: "Back to dashboard",
+    pushNotificationsPrefLabel: "Server push notifications",
+    pushNotificationsPrefDesc:
+      "When off, Nimbusly will not send push alerts about family changes (your device subscription may still be active).",
+    emailDigestPrefLabel: "Daily email digest",
+    emailDigestPrefDesc:
+      "Once-a-day reminders about chores, medicine, birthdays, and other items sent to your login email.",
     settingsTitle: "Account settings",
     settingsSubtitle: "Manage your profile, family, and account security.",
     settingsBack: "Back to dashboard",
@@ -536,7 +539,6 @@ export const en: Dict = {
     greeting: "Good morning",
     loggedAs: "Logged in as",
     modules: "Modules",
-    moduleComingSoon: "Available soon",
     logout: "Sign out",
     logoutConfirmTitle: "Sign out?",
     logoutConfirmDesc: "Are you sure you want to sign out of Nimbusly?",
@@ -1524,13 +1526,13 @@ export const en: Dict = {
     pageSummary: "Page {page} of {total}",
     pageNumberLabel: "Page {page}",
     openBirthdays: "Open birthday calendar",
-    emailComingSoon:
-      "Push alerts work in the installed PWA (profile settings). Daily email digests are sent via cron when Resend is configured.",
+    deliveryChannelsHint:
+      "Push works in the installed PWA (profile settings). The daily email digest runs via cron when Resend is configured — turn it off in your profile.",
     reminderEmailSubject: "Nimbusly — {count} items need attention",
     reminderEmailHeading: "Needs attention",
     reminderEmailIntro: "Here is a digest of upcoming deadlines and tasks from your home dashboard:",
     reminderEmailCta: "Open dashboard",
-    reminderEmailFooter: "Disable these emails by removing the Resend key or cron job.",
+    reminderEmailFooter: "Turn off the digest in profile settings (Daily email digest).",
     errorGeneric: "Failed to update notifications.",
     menu: "Notifications",
     birthdayAddedTitle: "{actor} added a birthday",

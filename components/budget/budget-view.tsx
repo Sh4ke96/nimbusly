@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
@@ -58,6 +59,7 @@ import {
 } from "@/lib/stores/budget-store";
 import { cn } from "@/lib/utils";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
+import { NOTIFICATION_DEEP_LINK_QUERY } from "@/lib/constants/notification-deep-links";
 
 export function BudgetView() {
   const t = useT();
@@ -90,6 +92,8 @@ export function BudgetView() {
     () => visibleBudgets.map((budget) => budget.id).join("|"),
     [visibleBudgets]
   );
+  const searchParams = useSearchParams();
+  const budgetFromUrl = searchParams.get(NOTIFICATION_DEEP_LINK_QUERY.BUDGET);
   const [activeBudgetId, setSelectedBudgetId] = useResolvedItemSelection(budgetIdsKey);
   const [selectedMonthKey, setSelectedMonthKey] = useState<string>(getCurrentMonthKey);
   const [typeFilter, setTypeFilter] = useState<string>(BUDGET_FILTER_ALL);
@@ -155,6 +159,13 @@ export function BudgetView() {
   );
 
   useStoreBootstrap(loaded, error, fetchBudgets);
+
+  useEffect(() => {
+    if (!budgetFromUrl || visibleBudgets.length === 0) return;
+    if (visibleBudgets.some((budget) => budget.id === budgetFromUrl)) {
+      setSelectedBudgetId(budgetFromUrl);
+    }
+  }, [budgetFromUrl, visibleBudgets, setSelectedBudgetId]);
 
   const onBudgetDataChanged = useCallback(() => {
     void fetchBudgets(true);

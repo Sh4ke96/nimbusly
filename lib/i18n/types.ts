@@ -308,8 +308,6 @@ export type Dict = {
     permissionsMakeAdmin: string;
     permissionsMakeMember: string;
     permissionsMemberHint: string;
-    permissionsMoreTitle: string;
-    permissionsMoreDesc: string;
     permissionsPromotedSuccess: string;
     permissionsDemotedSuccess: string;
     soloWarning: string;
@@ -342,6 +340,10 @@ export type Dict = {
     changePasswordSuccessTitle: string;
     changePasswordSuccessMessage: string;
     changePasswordBack: string;
+    pushNotificationsPrefLabel: string;
+    pushNotificationsPrefDesc: string;
+    emailDigestPrefLabel: string;
+    emailDigestPrefDesc: string;
     settingsTitle: string;
     settingsSubtitle: string;
     settingsBack: string;
@@ -368,7 +370,6 @@ export type Dict = {
     greeting: string;
     loggedAs: string;
     modules: string;
-    moduleComingSoon: string;
     logout: string;
     logoutConfirmTitle: string;
     logoutConfirmDesc: string;
@@ -1314,7 +1315,7 @@ export type Dict = {
     pageSummary: string;
     pageNumberLabel: string;
     openBirthdays: string;
-    emailComingSoon: string;
+    deliveryChannelsHint: string;
     reminderEmailSubject: string;
     reminderEmailHeading: string;
     reminderEmailIntro: string;

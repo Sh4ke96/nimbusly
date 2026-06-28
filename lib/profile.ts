@@ -39,6 +39,8 @@ export type Profile = {
   dashboard_overview_layout?: unknown;
   nimbus_companion_enabled?: boolean;
   nimbus_companion_quiet?: boolean;
+  push_notifications_enabled?: boolean;
+  email_digest_enabled?: boolean;
 };
 
 export type FamilyMember = Pick<
