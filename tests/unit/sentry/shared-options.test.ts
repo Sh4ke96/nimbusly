@@ -25,14 +25,27 @@ describe("isSentryEnabled", () => {
 
 describe("getSentryTracesSampleRate", () => {
   it("returns 0 outside production by default", () => {
-    const env = process.env.NODE_ENV;
     const vercel = process.env.VERCEL_ENV;
-    process.env.NODE_ENV = "development";
-    delete process.env.VERCEL_ENV;
+    const sample = process.env.SENTRY_TRACES_SAMPLE_RATE;
+    process.env.VERCEL_ENV = "preview";
     delete process.env.SENTRY_TRACES_SAMPLE_RATE;
     assert.equal(getSentryTracesSampleRate(), 0);
-    process.env.NODE_ENV = env;
     if (vercel) process.env.VERCEL_ENV = vercel;
+    else delete process.env.VERCEL_ENV;
+    if (sample) process.env.SENTRY_TRACES_SAMPLE_RATE = sample;
+    else delete process.env.SENTRY_TRACES_SAMPLE_RATE;
+  });
+
+  it("returns default sample rate in production", () => {
+    const vercel = process.env.VERCEL_ENV;
+    const sample = process.env.SENTRY_TRACES_SAMPLE_RATE;
+    process.env.VERCEL_ENV = "production";
+    delete process.env.SENTRY_TRACES_SAMPLE_RATE;
+    assert.equal(getSentryTracesSampleRate(), 0.1);
+    if (vercel) process.env.VERCEL_ENV = vercel;
+    else delete process.env.VERCEL_ENV;
+    if (sample) process.env.SENTRY_TRACES_SAMPLE_RATE = sample;
+    else delete process.env.SENTRY_TRACES_SAMPLE_RATE;
   });
 });
 
