@@ -4,7 +4,7 @@
 
 Nimbusly is a family hub web app: shared budget, shopping, gifts, birthdays, schedule, medicine cabinet, watchlist, restaurants, pets, household chores, notes, and family account management. Each member has their own profile; family data stays in sync.
 
-Available in **Polish** and **English**. Current version: **0.5.0** — see `/change-log` or the in-app version badge.
+Available in **Polish** and **English**. Current version: **0.5.2** — see `/change-log` or the in-app version badge.
 
 ---
 
@@ -29,6 +29,7 @@ Additional:
 
 - **Mobile-first layout** — bottom navigation, larger touch targets, safe-area insets, module grid via `?view=modules`
 - **PWA** — web manifest, service worker, offline fallback, install prompt, **Web Push** (iOS 16.4+ / Android)
+- **Vercel Analytics & Speed Insights** — traffic and Core Web Vitals in the Vercel project dashboard (production)
 - **Nimbus** — in-app companion (bottom-right): guided tours (driver.js) for the app and every module, contextual hints, FAQ, cross-module suggestions, celebrations, quiet mode, tour resume (Esc), keyboard shortcuts (A/D, arrows), and Needs attention awareness
 - **Dashboard** (`/dashboard`) — Summary / Modules tabs, customizable overview cards, brown “needs attention” banner
 - **Global search** — quick jump to modules, lists, budgets, notes, chores, and more (`Ctrl+K` / `Cmd+K` in the navbar)

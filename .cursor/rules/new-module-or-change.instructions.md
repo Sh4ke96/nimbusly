@@ -40,18 +40,22 @@ See also: [`project-fundamentals.instructions.md`](project-fundamentals.instruct
 - Emails, metadata, calendar month names, and role labels → translation files, not inline PL/EN objects.
 - Both **Polish and English** are required for every new module.
 
-### Change log, README, version & tests (mandatory for user-visible releases)
+### Change log, README, version & tests (mandatory)
 
-When shipping a **new module**, **larger feature**, or **user-visible fix**:
+**Always** update the changelog when completing work that changes the product (new module, feature, bugfix, PWA, notifications, emails, env vars, migrations with user impact, etc.). The agent must not wait for the user to ask for a changelog entry.
+
+When shipping:
 
 1. Prepend an entry to `lib/changelog/entries.ts` (newest release first).
-2. Set `version` in `package.json` to the **same** version string as that entry.
+2. Set `version` in `package.json` to the **same** version string as that top entry.
 3. Fill `title` and `changes` in **both** `pl` and `en`.
 4. Pick `type`: `CHANGELOG_ENTRY_TYPE.MAJOR` (big launch), `MINOR` (feature), or `FIX` (bugfix).
 5. Update **`README.md`** in the same change — at minimum the current version; also features, env vars, scripts, or testing notes when behaviour changed.
 6. Add or update **tests** for new logic (`tests/unit/`, `tests/integration/`, `tests/e2e/` as appropriate) and run `npm test`.
 
 `/change-log` is public (no login). The version badge (`vX.Y.Z`, bottom-right) links there.
+
+Skip a version bump only for purely internal refactors with no user-visible or operational impact; when unsure, add a `fix` entry.
 
 ### Domain constants (mandatory)
 
@@ -304,7 +308,7 @@ Reference: `tests/unit/family/invite.test.ts`.
 - [ ] `npm run build`
 - [ ] `npm test`
 - [ ] Cypress updated/passing for affected flows
-- [ ] Change log entry in `lib/changelog/entries.ts` + `package.json` version bump (if user-visible)
+- [ ] **Changelog:** new entry at top of `lib/changelog/entries.ts` (PL + EN) + `package.json` version bump (required for any shipped feature/fix)
 - [ ] `README.md` updated (version, features, env, or testing notes if changed)
 
 ---

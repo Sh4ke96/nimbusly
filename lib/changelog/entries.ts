@@ -11,6 +11,50 @@ export { CHANGELOG_ENTRY_TYPE, type ChangelogEntry };
  */
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "0.5.2",
+    date: "2026-06-28",
+    type: CHANGELOG_ENTRY_TYPE.MINOR,
+    title: {
+      pl: "Vercel Analytics i Speed Insights",
+      en: "Vercel Analytics and Speed Insights",
+    },
+    changes: {
+      pl: [
+        "Vercel Web Analytics — ruch i odwiedziny w panelu Vercel",
+        "Vercel Speed Insights — metryki wydajności (Core Web Vitals) na produkcji",
+      ],
+      en: [
+        "Vercel Web Analytics — traffic and visits in the Vercel dashboard",
+        "Vercel Speed Insights — performance metrics (Core Web Vitals) in production",
+      ],
+    },
+  },
+  {
+    version: "0.5.1",
+    date: "2026-06-28",
+    type: CHANGELOG_ENTRY_TYPE.FIX,
+    title: {
+      pl: "Push i powiadomienia obserwatorów",
+      en: "Push and watcher notifications",
+    },
+    changes: {
+      pl: [
+        "iOS — stabilniejsza subskrypcja push (service worker, walidacja VAPID, ponowna próba)",
+        "Push na Vercel — await wysyłki przed zakończeniem server action",
+        "Listy zakupów i budżet — powiadomienia dla obserwatorów (RPC create_watcher_notifications, migracja 039)",
+        "Naprawa RLS — serwer widzi wszystkich obserwatorów listy, nie tylko aktora",
+        "Poprawka VAPID subject (mailto:) przy wysyłce push",
+      ],
+      en: [
+        "iOS — more reliable push subscribe (service worker, VAPID validation, retry)",
+        "Push on Vercel — await dispatch before server action exits",
+        "Shopping lists and budget — watcher notifications (create_watcher_notifications RPC, migration 039)",
+        "RLS fix — server loads all list watchers, not only the actor",
+        "VAPID subject (mailto:) fix for push delivery",
+      ],
+    },
+  },
+  {
     version: "0.5.0",
     date: "2026-06-27",
     type: CHANGELOG_ENTRY_TYPE.MINOR,

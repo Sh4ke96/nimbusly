@@ -1,3 +1,5 @@
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata, Viewport } from "next";
 import { Quicksand, Nunito, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "next-themes";
@@ -108,6 +110,8 @@ export default async function RootLayout({
                   },
                 }}
               />
+              <Analytics />
+              <SpeedInsights />
             </TooltipProvider>
           </LangProvider>
         </ThemeProvider>

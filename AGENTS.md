@@ -13,18 +13,24 @@ Before implementing features or non-trivial changes, read and follow:
 
 When work touches a specific area, prefer matching existing patterns in that domain (`components/`, `lib/stores/`, `app/(app)/*/actions.ts`).
 
-## Versioning & change log
+## Versioning & change log (mandatory)
 
-When you ship a **new module**, **meaningful feature**, or **user-visible fix**:
+**Always** update the changelog when you finish a feature, bugfix, or any change users would notice (UI, API, env vars, PWA, emails, migrations, etc.). Do not leave changelog updates for later or for the user to ask.
+
+When you ship work:
 
 1. Add a new entry at the **top** of `lib/changelog/entries.ts` (newest first).
-2. Bump `version` in `package.json` to match that entry (`major` / `minor` / `fix` — semver-style).
+2. Bump `version` in `package.json` to **match that top entry** (`major` / `minor` / `fix` — semver-style).
 3. Write **both** PL and EN `title` + `changes` bullets in the entry.
 4. Use `CHANGELOG_ENTRY_TYPE` from `lib/constants/changelog.ts` (`major` | `minor` | `fix`).
-5. Update **`README.md`** — current version plus any new features, env vars, or testing notes.
+5. Update **`README.md`** — current version; also features, env vars, or testing notes when behaviour changed.
 6. Add or update **tests** for changed behaviour; run `npm test`.
 
-The public page `/change-log` and the bottom-right version badge read from this file automatically.
+Multiple fixes in one session → one new version per logical release, or a single entry that lists all shipped changes. Never commit user-visible work without a changelog entry.
+
+The public page `/change-log` and the bottom-right version badge read from `lib/changelog/entries.ts` automatically.
+
+Full checklist: [`.cursor/rules/new-module-or-change.instructions.md`](.cursor/rules/new-module-or-change.instructions.md) → **Change log**.
 
 ## Nimbus companion
 

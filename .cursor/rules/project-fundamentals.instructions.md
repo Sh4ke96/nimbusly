@@ -328,11 +328,14 @@ npm test
 npm run e2e          # needs .env.local + Supabase admin for full suite
 ```
 
-For **user-visible** changes, also update in the same PR:
+For **any shipped change** (feature, fix, infra users care about — PWA, push, analytics, env vars, etc.), update in the **same PR / same commit batch**:
 
-- `lib/changelog/entries.ts` + matching `version` in `package.json`
-- `README.md` (version, features, env vars, or testing notes)
+- `lib/changelog/entries.ts` — **new entry at the top**, PL + EN `title` and `changes`
+- `package.json` — `version` must equal the top changelog entry
+- `README.md` — current version; features, env vars, or testing notes when relevant
 - Unit / E2E tests when behaviour changes
+
+**Do not** merge or hand off work without a changelog entry when the product behaviour changed. Internal-only refactors with zero user impact may skip a version bump — when in doubt, add an entry.
 
 Only create git commits when explicitly requested.
 
@@ -356,5 +359,5 @@ Only create git commits when explicitly requested.
 8. Schema changes via **`supabase/migrations/`** + `npm run db:push`
 9. Visual style: **`rounded-none`**, theme tokens, Tailwind utilities
 10. Validate with **`npm run lint`**, **`npm run build`**, and **`npm test`**
-11. User-visible releases: **`lib/changelog/entries.ts`**, **`package.json` version**, **`README.md`**, and tests — same change
+11. **Changelog always** (when behaviour changes): `lib/changelog/entries.ts` (top entry, PL + EN), matching **`package.json` version**, **`README.md`**, tests — same change
 12. Keep diffs **minimal** and consistent with surrounding code
