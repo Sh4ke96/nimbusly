@@ -11,6 +11,29 @@ export { CHANGELOG_ENTRY_TYPE, type ChangelogEntry };
  */
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "0.5.3",
+    date: "2026-06-28",
+    type: CHANGELOG_ENTRY_TYPE.MINOR,
+    title: {
+      pl: "Sentry — śledzenie błędów",
+      en: "Sentry error monitoring",
+    },
+    changes: {
+      pl: [
+        "Sentry dla błędów frontu, Server Actions, API routes i cronów",
+        "Filtrowanie wrażliwych danych (tokeny, e-mail) przed wysyłką",
+        "Strona global-error z i18n PL/EN i raportowaniem do Sentry",
+        "Opcjonalne source mapy przez SENTRY_AUTH_TOKEN na Vercel",
+      ],
+      en: [
+        "Sentry for frontend, Server Actions, API routes, and crons",
+        "Sensitive data scrubbing (tokens, email) before send",
+        "global-error page with PL/EN i18n and Sentry reporting",
+        "Optional source maps via SENTRY_AUTH_TOKEN on Vercel",
+      ],
+    },
+  },
+  {
     version: "0.5.2",
     date: "2026-06-28",
     type: CHANGELOG_ENTRY_TYPE.MINOR,

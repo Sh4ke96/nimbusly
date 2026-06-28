@@ -20,6 +20,11 @@ export const pl: Dict = {
     paginationAriaLabel: "Paginacja",
     paginationMorePages: "Więcej stron",
   },
+  errors: {
+    globalTitle: "Coś poszło nie tak",
+    globalDesc: "Wystąpił nieoczekiwany błąd. Spróbuj ponownie — zespół został powiadomiony.",
+    globalRetry: "Spróbuj ponownie",
+  },
   mobileNav: {
     ariaLabel: "Nawigacja aplikacji",
     home: "Panel",

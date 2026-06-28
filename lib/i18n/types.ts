@@ -16,6 +16,11 @@ export type Dict = {
     paginationAriaLabel: string;
     paginationMorePages: string;
   };
+  errors: {
+    globalTitle: string;
+    globalDesc: string;
+    globalRetry: string;
+  };
   mobileNav: {
     ariaLabel: string;
     home: string;

@@ -20,6 +20,11 @@ export const en: Dict = {
     paginationAriaLabel: "Pagination",
     paginationMorePages: "More pages",
   },
+  errors: {
+    globalTitle: "Something went wrong",
+    globalDesc: "An unexpected error occurred. Try again — our team has been notified.",
+    globalRetry: "Try again",
+  },
   mobileNav: {
     ariaLabel: "App navigation",
     home: "Dashboard",

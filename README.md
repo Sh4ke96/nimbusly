@@ -4,7 +4,7 @@
 
 Nimbusly is a family hub web app: shared budget, shopping, gifts, birthdays, schedule, medicine cabinet, watchlist, restaurants, pets, household chores, notes, and family account management. Each member has their own profile; family data stays in sync.
 
-Available in **Polish** and **English**. Current version: **0.5.2** — see `/change-log` or the in-app version badge.
+Available in **Polish** and **English**. Current version: **0.5.3** — see `/change-log` or the in-app version badge.
 
 ---
 
@@ -30,6 +30,7 @@ Additional:
 - **Mobile-first layout** — bottom navigation, larger touch targets, safe-area insets, module grid via `?view=modules`
 - **PWA** — web manifest, service worker, offline fallback, install prompt, **Web Push** (iOS 16.4+ / Android)
 - **Vercel Analytics & Speed Insights** — traffic and Core Web Vitals in the Vercel project dashboard (production)
+- **Sentry** — error monitoring for client, server, API routes, and crons (optional; see env vars)
 - **Nimbus** — in-app companion (bottom-right): guided tours (driver.js) for the app and every module, contextual hints, FAQ, cross-module suggestions, celebrations, quiet mode, tour resume (Esc), keyboard shortcuts (A/D, arrows), and Needs attention awareness
 - **Dashboard** (`/dashboard`) — Summary / Modules tabs, customizable overview cards, brown “needs attention” banner
 - **Global search** — quick jump to modules, lists, budgets, notes, chores, and more (`Ctrl+K` / `Cmd+K` in the navbar)
@@ -109,6 +110,10 @@ See [`.env.example`](.env.example) for the full list.
 | `CRON_SECRET` | Optional | Protects cron API routes |
 | `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | Optional | Web Push — client subscription (`npm run push:vapid`) |
 | `VAPID_PRIVATE_KEY` | Optional | Web Push — server send (never expose to client) |
+| `NEXT_PUBLIC_SENTRY_DSN` | Optional | Sentry error monitoring (client + server) |
+| `SENTRY_AUTH_TOKEN` | Optional | Sentry source maps upload on Vercel build |
+| `SENTRY_ORG` | Optional | Sentry organization slug (with auth token) |
+| `SENTRY_PROJECT` | Optional | Sentry project slug (with auth token) |
 | `SUPABASE_ACCESS_TOKEN` | Optional | Supabase CLI (`db:push`, etc.) |
 
 Never commit `.env.local` or secrets.
@@ -125,6 +130,17 @@ When `NEXT_PUBLIC_VAPID_PUBLIC_KEY` and `VAPID_PRIVATE_KEY` are set (generate wi
 4. Family in-app notifications and budget reminders also trigger push
 
 **iOS:** requires iOS 16.4+, Safari, app added to home screen — no push in the browser tab.
+
+---
+
+## Sentry (optional)
+
+1. Create a free project at [sentry.io](https://sentry.io) (platform: **Next.js**).
+2. Copy the **DSN** into `NEXT_PUBLIC_SENTRY_DSN` on Vercel and in `.env.local`.
+3. (Recommended) Create an **Auth Token** with `project:releases` and set `SENTRY_AUTH_TOKEN`, `SENTRY_ORG`, `SENTRY_PROJECT` on Vercel for readable stack traces.
+4. Deploy — errors from the browser, Server Actions, `/api/*`, and crons appear in Sentry.
+
+Without a DSN the SDK stays disabled; local `npm run dev` works unchanged.
 
 ---
 
