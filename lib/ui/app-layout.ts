@@ -24,6 +24,20 @@ export const APP_VIEW_SHELL_CLASS = "flex flex-col md:min-h-screen";
 /** Height of the mobile bottom nav row (matches `h-14` / `--app-mobile-nav-height`). */
 export const MOBILE_BOTTOM_NAV_ROW_HEIGHT = "3.5rem";
 
+/** Stacking: Nimbus hints < bottom nav < menu sheet < PWA prompts */
+export const APP_MOBILE_NIMBUS_HINT_Z = "z-40";
+export const APP_MOBILE_BOTTOM_NAV_Z = "z-50";
+
+/** Mobile bottom nav — always viewport-fixed; do not add `relative` here. */
+export const APP_MOBILE_BOTTOM_NAV_CLASS = cn(
+  "fixed inset-x-0 bottom-0 md:hidden app-mobile-bottom-nav",
+  APP_MOBILE_BOTTOM_NAV_Z,
+  "isolate border-t border-border bg-background",
+  "shadow-[0_-1px_0_0_var(--border),0_-8px_24px_-4px_rgba(0,0,0,0.08)]"
+);
+export const APP_NIMBUS_COMPANION_Z = "z-55";
+export const APP_NIMBUS_POPOVER_Z = "z-60";
+
 export const APP_PAGE_WIDTH = {
   compact: "max-w-3xl",
   narrow: "max-w-4xl",

@@ -29,8 +29,13 @@ export const pl: Dict = {
     ariaLabel: "Nawigacja aplikacji",
     home: "Panel",
     modules: "Moduły",
+    nimbus: "Nimbus",
     notifications: "Powiadomienia",
+    notificationsUnread: "Powiadomienia, {count} nieprzeczytanych",
     settings: "Konto",
+  },
+  navigation: {
+    loading: "Ładowanie strony",
   },
   pwa: {
     manifestDescription:
@@ -515,6 +520,8 @@ export const pl: Dict = {
       "Przypomnienia o zadaniach, lekach, urodzinach i innych sprawach wysyłane raz dziennie na Twój adres logowania.",
     settingsTitle: "Ustawienia konta",
     settingsSubtitle: "Zarządzaj profilem, rodziną i bezpieczeństwem konta.",
+    appVersionHint: "Zainstalowana wersja aplikacji",
+    appVersionLabel: "v{version}",
     settingsBack: "Wróć do panelu",
     breadcrumbDashboard: "Panel",
     errorUnauthorized: "Musisz być zalogowany.",

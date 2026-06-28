@@ -25,3 +25,11 @@ export const NIMBUS_TOUR_PREPARE_MS = 320;
 export const NIMBUS_TOUR_ROUTE_SETTLE_MS = 420;
 export const NIMBUS_TOUR_SCROLL_SETTLE_MS = 520;
 export const NIMBUS_TOUR_HIGHLIGHT_PADDING = 14;
+
+export const NIMBUS_HINT_SURFACE = {
+  FLOATING: "floating",
+  MOBILE_BAR: "mobile-bar",
+} as const;
+
+export type NimbusHintSurface =
+  (typeof NIMBUS_HINT_SURFACE)[keyof typeof NIMBUS_HINT_SURFACE];

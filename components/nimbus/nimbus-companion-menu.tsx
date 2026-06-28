@@ -40,7 +40,7 @@ import { useT } from "@/lib/lang-context";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
-const MENU_PANEL_CLASS = "flex w-80 flex-col rounded-none";
+const MENU_PANEL_CLASS = "flex w-full flex-col rounded-none md:w-80";
 const MENU_ICON_BOX_CLASS =
   "flex size-9 shrink-0 items-center justify-center border border-primary/30 bg-primary/10";
 const MENU_ICON_CLASS = "size-4 text-primary";
@@ -138,7 +138,7 @@ export function NimbusCompanionMenu({ onClose }: NimbusCompanionMenuProps) {
           </div>
         </div>
 
-        <ul className="max-h-[min(22rem,50vh)] space-y-2 overflow-y-auto p-2">
+        <ul className="max-h-[min(22rem,50dvh)] space-y-2 overflow-y-auto p-2 md:max-h-[min(22rem,50vh)]">
           {filteredFaqIds.length === 0 ? (
             <li className="px-3 py-8 text-center text-sm text-muted-foreground">
               {t.companion.faqEmpty}

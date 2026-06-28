@@ -17,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { NOTIFICATION_FILTER_TAB } from "@/lib/constants/notifications";
 import { HEADER_ICON_BUTTON_CLASS } from "@/lib/ui/header-controls";
 import { useNotificationsStore } from "@/lib/stores/notifications-store";
+import { NotificationUnreadBadge } from "@/components/notifications/notification-unread-badge";
 
 export function NotificationsBell() {
   const t = useT();
@@ -41,9 +42,10 @@ export function NotificationsBell() {
           aria-label={t.notifications.title}
         >
           <Bell className="size-4" />
-          <span className="absolute -top-1 -right-1 inline-flex min-w-4 h-4 items-center justify-center rounded-none bg-primary px-1 text-[10px] font-bold text-primary-foreground">
-            {unreadCount > 9 ? "9+" : unreadCount}
-          </span>
+          <NotificationUnreadBadge
+            count={unreadCount}
+            className="absolute -top-1 -right-1 min-w-4 h-4 text-[10px]"
+          />
         </Link>
       </Button>
     );

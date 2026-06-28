@@ -6,6 +6,7 @@ import { MobileBottomNav } from "@/components/app/mobile-bottom-nav";
 import { PwaInstallPrompt } from "@/components/pwa/pwa-install-prompt";
 import { PwaPushPrompt } from "@/components/pwa/pwa-push-prompt";
 import { AmbientBackground } from "@/components/ui/ambient-background";
+import { NavigationTransition } from "@/components/app/navigation-transition";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -14,13 +15,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <div className="relative">
         <AmbientBackground variant="app" />
         <div className="relative z-10 app-mobile-bottom-inset">{children}</div>
-        <NimbusCompanionHost />
-        <Suspense fallback={null}>
-          <MobileBottomNav />
-        </Suspense>
         <PwaInstallPrompt />
         <PwaPushPrompt />
+        <Suspense fallback={null}>
+          <NavigationTransition />
+        </Suspense>
       </div>
+      <NimbusCompanionHost />
+      <Suspense fallback={null}>
+        <MobileBottomNav />
+      </Suspense>
     </ProfileBootstrap>
   );
 }

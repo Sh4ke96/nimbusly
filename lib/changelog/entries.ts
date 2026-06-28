@@ -11,6 +11,46 @@ export { CHANGELOG_ENTRY_TYPE, type ChangelogEntry };
  */
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "0.5.6",
+    date: "2026-06-28",
+    type: CHANGELOG_ENTRY_TYPE.FIX,
+    title: {
+      pl: "Wersja i Nimbus na telefonie",
+      en: "Version and Nimbus on mobile",
+    },
+    changes: {
+      pl: [
+        "Wersja aplikacji widoczna w ustawieniach profilu (link do historii zmian)",
+        "Pełnoekranowy panel Nimbusa i podpowiedzi wysuwane od dołu na mobile",
+        "Licznik nieprzeczytanych powiadomień na dzwonku w dolnej nawigacji mobilnej",
+      ],
+      en: [
+        "App version shown in profile settings (link to change log)",
+        "Full-width Nimbus menu and hint bar slide up from the bottom on mobile",
+        "Unread notification count badge on the mobile bottom nav bell",
+      ],
+    },
+  },
+  {
+    version: "0.5.5",
+    date: "2026-06-28",
+    type: CHANGELOG_ENTRY_TYPE.MINOR,
+    title: {
+      pl: "Płynne przejścia między stronami",
+      en: "Smooth page transitions",
+    },
+    changes: {
+      pl: [
+        "Pełnoekranowy loader z pulsującym logo podczas nawigacji w aplikacji",
+        "Docelowa strona pojawia się dopiero po załadowaniu — z miękkim fade-out",
+      ],
+      en: [
+        "Full-screen loader with pulsing logo during in-app navigation",
+        "Destination page appears only after load — with a soft fade-out",
+      ],
+    },
+  },
+  {
     version: "0.5.4",
     date: "2026-06-28",
     type: CHANGELOG_ENTRY_TYPE.MINOR,

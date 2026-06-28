@@ -79,7 +79,7 @@ yarn db:status    # list migrations
 ### Development
 
 ```bash
-yarn dev          # http://localhost:3000
+yarn dev          # http://localhost:7777
 ```
 
 ### Building and validation
@@ -105,7 +105,7 @@ yarn cy:run       # Cypress only (server must already run)
 | Integration | `tests/integration/**/*.test.ts` |
 | Component | `tests/component/**/*.test.tsx` |
 | E2E | `tests/e2e/**/*.cy.ts` |
-| Cypress config | `cypress.config.ts` — `baseUrl` from `NEXT_PUBLIC_SITE_URL` or `http://localhost:3000` |
+| Cypress config | `cypress.config.ts` — `baseUrl` from `NEXT_PUBLIC_SITE_URL` or `http://localhost:7777` |
 | Supabase test tasks | `tests/tasks/supabase` |
 
 ---

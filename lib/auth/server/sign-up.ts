@@ -1,5 +1,6 @@
 import { parseSignUpFromForm } from "@/lib/auth/form";
 import { isValidInviteCodeFormat, normalizeInviteCode } from "@/lib/family/invite";
+import { DEV_SITE_URL } from "@/lib/constants/dev";
 import type { Dict } from "@/lib/i18n/types";
 import type { createClient } from "@/lib/supabase/server";
 
@@ -16,7 +17,7 @@ export type SignUpContext = {
 };
 
 export async function executeSignUp(
-  { t, supabase, siteUrl = "http://localhost:3000" }: SignUpContext,
+  { t, supabase, siteUrl = DEV_SITE_URL }: SignUpContext,
   formData: FormData
 ): Promise<SignUpResult> {
   const { email, password, confirmPassword, inviteCode } = parseSignUpFromForm(formData);

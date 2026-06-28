@@ -75,7 +75,7 @@ cp .env.example .env.local
 3. In Supabase Dashboard → **Authentication** → **URL Configuration**, add:
 
    ```
-   http://localhost:3000/api/auth/callback
+   http://localhost:7777/api/auth/callback
    ```
 
 4. Install and start:
@@ -85,7 +85,7 @@ yarn install
 yarn dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open [http://localhost:7777](http://localhost:7777).
 
 5. Apply database schema (remote Supabase):
 
@@ -255,4 +255,4 @@ yarn e2e
 | `24-pwa-install` | PWA install prompt (`beforeinstallprompt`) |
 | `25-pwa-push` | Push setting in profile settings |
 
-Cypress `baseUrl` uses `NEXT_PUBLIC_SITE_URL` or defaults to `http://localhost:3000`.
+Cypress `baseUrl` uses `NEXT_PUBLIC_SITE_URL` or defaults to `http://localhost:7777`.

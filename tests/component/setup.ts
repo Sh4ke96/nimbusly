@@ -3,7 +3,9 @@ import { Window } from "happy-dom";
 
 globalThis.React = React;
 
-const window = new Window({ url: "http://localhost:3000" });
+import { DEV_SITE_URL } from "@/lib/constants/dev";
+
+const window = new Window({ url: DEV_SITE_URL });
 
 globalThis.window = window as unknown as Window & typeof globalThis.window;
 globalThis.document = window.document as unknown as Document;

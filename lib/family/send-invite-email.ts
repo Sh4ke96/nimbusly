@@ -1,4 +1,5 @@
 import { buildFamilyInviteRegisterUrl } from "@/lib/family/invite";
+import { DEV_SITE_URL } from "@/lib/constants/dev";
 import { dict } from "@/lib/i18n";
 import type { Lang } from "@/lib/i18n";
 import { formatMessage } from "@/lib/i18n/format";
@@ -18,7 +19,7 @@ export async function sendFamilyInviteEmail({
   inviterName,
   lang,
 }: SendFamilyInviteEmailParams): Promise<{ sent: boolean; inviteUrl: string }> {
-  const origin = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const origin = process.env.NEXT_PUBLIC_SITE_URL ?? DEV_SITE_URL;
   const inviteUrl = buildFamilyInviteRegisterUrl(origin, inviteToken);
   const t = dict[lang].account;
   const apiKey = process.env.RESEND_API_KEY;

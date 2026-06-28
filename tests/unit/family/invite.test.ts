@@ -6,6 +6,7 @@ import {
   isValidInviteCodeFormat,
   normalizeInviteCode,
 } from "@/lib/family/invite";
+import { DEV_SITE_URL } from "@/lib/constants/dev";
 
 describe("family invite helpers", () => {
   it("normalizes invite codes", () => {
@@ -24,7 +25,7 @@ describe("family invite helpers", () => {
   });
 
   it("builds register URLs with invite token", () => {
-    const url = buildFamilyInviteRegisterUrl("http://localhost:3000", "token123");
-    assert.equal(url, "http://localhost:3000/register?invite=token123");
+    const url = buildFamilyInviteRegisterUrl(DEV_SITE_URL, "token123");
+    assert.equal(url, `${DEV_SITE_URL}/register?invite=token123`);
   });
 });

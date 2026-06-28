@@ -8,6 +8,7 @@ import { getPostAuthRedirectPath } from '@/lib/profile/server'
 import { INVITE_CODE_COOKIE, INVITE_MAX_AGE_SEC } from '@/lib/family/constants'
 import { executeSignIn } from '@/lib/auth/server/sign-in'
 import { executeSignUp } from '@/lib/auth/server/sign-up'
+import { DEV_SITE_URL } from '@/lib/constants/dev'
 
 export type AuthState = { error: string } | { success: string } | null
 
@@ -35,7 +36,7 @@ export async function register(
 ): Promise<AuthState> {
   const t = await getServerT()
   const supabase = await createClient()
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? DEV_SITE_URL
   const result = await executeSignUp({ t, supabase, siteUrl }, formData)
 
   if (!result.ok) {

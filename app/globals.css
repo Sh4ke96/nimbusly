@@ -85,9 +85,10 @@
   --chart-4: #b0c79a;
   --app-mobile-nav-height: 3.5rem;
   --app-mobile-nav-safe-bottom: env(safe-area-inset-bottom, 0px);
-  --app-mobile-bottom-inset: calc(
-    var(--app-mobile-nav-height) + var(--app-mobile-nav-safe-bottom) + 0.75rem
+  --app-mobile-nav-offset: calc(
+    var(--app-mobile-nav-height) + var(--app-mobile-nav-safe-bottom)
   );
+  --app-mobile-bottom-inset: calc(var(--app-mobile-nav-offset) + 0.75rem);
   --chart-5: #3f6b58;
   --radius: 0;
   --sidebar: #2b5748;
@@ -214,6 +215,20 @@
   }
   .nimbus-companion-float {
     animation: nimbus-companion-pulse 2.6s ease-in-out infinite;
+  }
+
+  @keyframes navigation-logo-pulse {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.08);
+      opacity: 0.88;
+    }
+  }
+  .animate-navigation-logo-pulse {
+    animation: navigation-logo-pulse 1.6s ease-in-out infinite;
   }
 
   /* Nimbus NPC companion */
@@ -484,6 +499,10 @@
     bottom: var(--app-mobile-bottom-inset);
   }
 
+  .app-nimbus-mobile-hint-anchor {
+    bottom: 0;
+  }
+
   @media (min-width: 768px) {
     .app-mobile-bottom-inset {
       padding-bottom: 0;
@@ -596,4 +615,31 @@ html[data-scroll-behavior="smooth"] {
   flex-shrink: 0;
   overflow: hidden;
   border-radius: 0;
+}
+
+@media (max-width: 767px) {
+  .driver-popover.nimbus-driver-popover {
+    position: fixed !important;
+    inset: auto 0 var(--app-mobile-nav-offset) 0 !important;
+    top: auto !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    transform: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: none !important;
+    max-height: min(72dvh, calc(100dvh - var(--app-mobile-nav-offset)));
+    overflow-y: auto;
+    box-shadow: 0 -12px 40px color-mix(in srgb, var(--foreground) 14%, transparent);
+    z-index: 10002 !important;
+  }
+
+  .driver-popover.nimbus-driver-popover .driver-popover-arrow {
+    display: none !important;
+  }
+
+  .nimbus-driver-keyboard-hint {
+    display: none;
+  }
 }

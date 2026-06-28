@@ -3,7 +3,7 @@
 import { usePathname, useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { NIMBUS_HINT_ACTION_LABEL } from "@/lib/constants/nimbus";
+import { NIMBUS_HINT_ACTION_LABEL, NIMBUS_HINT_SURFACE, type NimbusHintSurface } from "@/lib/constants/nimbus";
 import { useT } from "@/lib/lang-context";
 import { useNimbusStore, type NimbusHintAction } from "@/lib/stores/nimbus-store";
 import { cn } from "@/lib/utils";
@@ -12,6 +12,7 @@ interface NimbusHintBubbleProps {
   message: string;
   action?: NimbusHintAction | null;
   kind?: string | null;
+  surface?: NimbusHintSurface;
   onDismiss: (options?: { suppress?: boolean; markChangelogSeen?: boolean }) => void;
 }
 
@@ -20,11 +21,18 @@ function scrollToTourTarget(target: string) {
   element?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-export function NimbusHintBubble({ message, action, kind, onDismiss }: NimbusHintBubbleProps) {
+export function NimbusHintBubble({
+  message,
+  action,
+  kind,
+  surface = NIMBUS_HINT_SURFACE.FLOATING,
+  onDismiss,
+}: NimbusHintBubbleProps) {
   const t = useT();
   const pathname = usePathname();
   const startTour = useNimbusStore((s) => s.startTour);
   const router = useRouter();
+  const isMobileBar = surface === NIMBUS_HINT_SURFACE.MOBILE_BAR;
 
   const showSuppressSuggestion = kind === "suggestion" && action?.suggestionId;
   const showSuppressContext = kind === "context" && action?.contextKey;
@@ -76,9 +84,17 @@ export function NimbusHintBubble({ message, action, kind, onDismiss }: NimbusHin
   return (
     <div
       className={cn(
-        "relative w-full max-w-[min(18rem,calc(100vw-1.5rem))] animate-pop",
-        "rounded-none border border-primary/40 bg-card/95 px-3 py-2.5 shadow-lg backdrop-blur-sm",
-        "nimbus-npc-speech"
+        isMobileBar
+          ? cn(
+              "w-full max-w-none animate-rise",
+              "rounded-none border-x-0 border-b-0 border-t border-primary/40 bg-card shadow-[0_-10px_30px_-12px_rgba(0,0,0,0.2)]",
+              "px-4 pt-3 pb-[calc(var(--app-mobile-nav-offset)+0.5rem)]"
+            )
+          : cn(
+              "relative w-full max-w-[min(18rem,calc(100vw-1.5rem))] animate-pop",
+              "rounded-none border border-primary/40 bg-card/95 px-3 py-2.5 shadow-lg backdrop-blur-sm",
+              "nimbus-npc-speech"
+            )
       )}
       role="status"
     >
@@ -149,16 +165,21 @@ export function NimbusHintBubble({ message, action, kind, onDismiss }: NimbusHin
         type="button"
         variant="ghost"
         size="icon"
-        className="absolute top-1 right-1 size-6 rounded-none cursor-pointer"
+        className={cn(
+          "absolute top-1 right-1 size-6 rounded-none cursor-pointer",
+          isMobileBar && "top-2 right-2"
+        )}
         onClick={() => onDismiss(action?.changelog ? { markChangelogSeen: true } : undefined)}
         aria-label={t.companion.closeMenuAria}
       >
         <X className="size-3.5" />
       </Button>
-      <span
-        className="absolute -bottom-2 right-8 size-3 rotate-45 border-r border-b border-primary/40 bg-card/95"
-        aria-hidden
-      />
+      {!isMobileBar ? (
+        <span
+          className="absolute -bottom-2 right-8 size-3 rotate-45 border-r border-b border-primary/40 bg-card/95"
+          aria-hidden
+        />
+      ) : null}
     </div>
   );
 }

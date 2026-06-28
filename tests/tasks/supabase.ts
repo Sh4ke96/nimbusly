@@ -2,6 +2,7 @@ import { config as loadEnv } from "dotenv";
 import { resolve } from "path";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { ACCOUNT_MODE, FAMILY_ROLE, type AccountMode } from "@/lib/constants/account";
+import { DEV_SITE_URL } from "@/lib/constants/dev";
 import { TEST_USER_SEED_KIND } from "@/lib/constants/test";
 
 loadEnv({ path: resolve(process.cwd(), ".env.local") });
@@ -91,7 +92,7 @@ async function createAuthUserViaSignUp(
     email,
     password,
     options: {
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"}/api/auth/callback`,
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? DEV_SITE_URL}/api/auth/callback`,
     },
   });
 

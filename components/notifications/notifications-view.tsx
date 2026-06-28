@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useActionState, useEffect } from "react";
+import { Fragment, useActionState, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Bell, CheckCheck, Inbox, type LucideIcon } from "lucide-react";
 import { AppHeader } from "@/components/app/app-header";
@@ -32,12 +32,29 @@ import { markAllNotificationsRead } from "@/app/(app)/notifications/actions";
 import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus-tour";
 import { cn } from "@/lib/utils";
 
-const FILTER_TAB_TRIGGER_CLASS = cn(
+const MOBILE_FILTER_TAB_TRIGGER_CLASS = cn(
+  "flex w-full min-w-0 flex-col items-center justify-center gap-1 rounded-none",
+  "border-0 border-b-2 border-b-transparent px-1 py-3",
+  "text-[11px] font-heading font-semibold leading-tight text-muted-foreground",
+  "data-active:border-primary data-active:bg-primary/10 data-active:text-primary",
+  "after:hidden whitespace-normal"
+);
+
+const DESKTOP_FILTER_TAB_TRIGGER_CLASS = cn(
   "w-full flex-none justify-start gap-3 rounded-none border border-transparent px-4 py-3.5",
   "text-sm font-heading font-semibold text-muted-foreground",
   "hover:bg-muted/60 hover:text-foreground",
   "data-active:border-primary data-active:bg-primary/10 data-active:text-primary",
   "after:hidden"
+);
+
+const MOBILE_FILTER_TABS_LIST_CLASS = cn(
+  "!grid !h-auto !w-full max-w-none grid-cols-3 gap-0 rounded-none border-0",
+  "border-b border-border bg-muted/30 p-0"
+);
+
+const DESKTOP_FILTER_TABS_LIST_CLASS = cn(
+  "flex h-auto !w-full max-w-none flex-col items-stretch gap-0 rounded-none border-0 bg-transparent p-2"
 );
 
 function parsePage(value: string | null): number {
@@ -108,6 +125,16 @@ export function NotificationsView() {
 
   const activeFilter = filterTabs.find((tab) => tab.value === filter) ?? filterTabs[0];
 
+  const [desktopTabsLayout, setDesktopTabsLayout] = useState<boolean>(false);
+
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 768px)");
+    const update = () => setDesktopTabsLayout(media.matches);
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+
   useStoreBootstrap(loaded, error, fetchNotifications);
 
   useEffect(() => {
@@ -137,123 +164,155 @@ export function NotificationsView() {
     void fetchNotificationsPage({ filter, page });
   }
 
+  function renderFilterTabTriggers(mobile: boolean) {
+    return filterTabs.map((tab, index) => (
+      <Fragment key={tab.value}>
+        {!mobile && index > 0 ? <Separator /> : null}
+        <TabsTrigger
+          value={tab.value}
+          className={
+            mobile ? MOBILE_FILTER_TAB_TRIGGER_CLASS : DESKTOP_FILTER_TAB_TRIGGER_CLASS
+          }
+        >
+          <tab.icon className={cn("shrink-0", mobile ? "size-4" : "size-5")} />
+          <span
+            className={cn(
+              "flex min-w-0 items-center gap-2",
+              mobile ? "flex-col text-center" : "flex-1 justify-between text-left"
+            )}
+          >
+            <span className={mobile ? "line-clamp-2" : undefined}>{tab.label}</span>
+            {tab.badge !== undefined ? (
+              <span className="inline-flex h-4 min-w-4 shrink-0 items-center justify-center rounded-none bg-primary px-1 text-[10px] font-bold text-primary-foreground">
+                {tab.badge > 9 ? "9+" : tab.badge}
+              </span>
+            ) : null}
+          </span>
+        </TabsTrigger>
+      </Fragment>
+    ));
+  }
+
+  function renderNotificationsPanel() {
+    return (
+      <div
+        className="min-w-0 w-full max-md:p-0 p-4 sm:p-6 md:p-8"
+        data-nimbus-tour={NIMBUS_TOUR_TARGET.NOTIFICATIONS_LIST}
+      >
+        <SettingsTabHeader
+          icon={activeFilter.icon}
+          title={activeFilter.label}
+          className="hidden md:flex"
+        />
+
+        {pageError ? (
+          <ModuleFetchError
+            onRetry={() => void fetchNotificationsPage({ filter, page })}
+          />
+        ) : pageLoading ? (
+          <div className="space-y-2 max-md:px-4 md:px-0">
+            <Skeleton className="h-16 w-full rounded-none" />
+            <Skeleton className="h-16 w-full rounded-none" />
+          </div>
+        ) : pageItems.length === 0 ? (
+          <p className="py-8 text-center text-sm text-muted-foreground max-md:px-4 md:px-0">
+            {emptyMessageForFilter(filter, t)}
+          </p>
+        ) : (
+          <>
+            <ul className="w-full divide-y divide-border rounded-none border border-border max-md:border-x-0">
+              {pageItems.map((item) => (
+                <NotificationListItem
+                  key={item.id}
+                  item={item}
+                  locale={locale}
+                  onMarkReadLocally={markReadLocally}
+                  onMarkedRead={handleItemMarkedRead}
+                />
+              ))}
+            </ul>
+            <NotificationsPagination
+              page={page}
+              totalItems={pageTotal}
+              onPageChange={handlePageChange}
+            />
+          </>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col md:min-h-screen">
       <AppHeader />
 
-      <AppPage width="narrow">
-        <AccountBreadcrumbs current={t.notifications.title} />
+      <AppPage width="full" className="w-full max-md:max-w-none max-md:px-0">
+        <div className="space-y-5 px-4 sm:space-y-6 sm:px-0">
+          <AccountBreadcrumbs current={t.notifications.title} />
 
-        <div
-          className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
-          data-nimbus-tour={NIMBUS_TOUR_TARGET.NOTIFICATIONS_HEADER}
-        >
-          <div className="space-y-1">
-            <h1 className="font-heading font-bold text-2xl tracking-tight">
-              {t.notifications.title}
-            </h1>
-            <p className="text-sm text-muted-foreground">{t.notifications.subtitle}</p>
+          <div
+            className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+            data-nimbus-tour={NIMBUS_TOUR_TARGET.NOTIFICATIONS_HEADER}
+          >
+            <div className="space-y-1">
+              <h1 className="font-heading font-bold text-2xl tracking-tight">
+                {t.notifications.title}
+              </h1>
+              <p className="text-sm text-muted-foreground">{t.notifications.subtitle}</p>
+            </div>
+            {unreadCount > 0 && (
+              <form action={markAllAction}>
+                <Button type="submit" variant="outline">
+                  {t.notifications.markAllRead}
+                </Button>
+              </form>
+            )}
           </div>
-          {unreadCount > 0 && (
-            <form action={markAllAction}>
-              <Button type="submit" variant="outline">
-                {t.notifications.markAllRead}
-              </Button>
-            </form>
-          )}
         </div>
 
-        <Card className="gap-0 rounded-none py-0 shadow-sm overflow-hidden">
-          <CardContent className="p-0">
+        <Card className="gap-0 rounded-none border-x-0 py-0 shadow-sm overflow-hidden max-md:ring-0 sm:border-x">
+          <CardContent className="p-0 max-md:px-0">
             {error ? (
-              <div className="p-6 md:p-8">
+              <div className="p-4 sm:p-6 md:p-8">
                 <ModuleFetchError onRetry={() => void fetchNotifications(true)} />
               </div>
             ) : (
             <Tabs
-              orientation="vertical"
+              orientation={desktopTabsLayout ? "vertical" : "horizontal"}
               value={filter}
               onValueChange={handleFilterChange}
-              className="w-full"
+              className={cn("w-full", desktopTabsLayout ? undefined : "flex-col gap-0")}
             >
-              <div className="grid grid-cols-1 md:grid-cols-[15rem_minmax(0,1fr)]">
-                <aside
-                  className="border-b border-border bg-muted/30 md:border-b-0 md:border-r"
-                  data-nimbus-tour={NIMBUS_TOUR_TARGET.NOTIFICATIONS_FILTERS}
-                >
+              {desktopTabsLayout ? (
+                <div className="grid w-full grid-cols-[15rem_minmax(0,1fr)]">
+                  <aside
+                    className="border-r border-border bg-muted/30"
+                    data-nimbus-tour={NIMBUS_TOUR_TARGET.NOTIFICATIONS_FILTERS}
+                  >
+                    <TabsList variant="line" className={DESKTOP_FILTER_TABS_LIST_CLASS}>
+                      {renderFilterTabTriggers(false)}
+                    </TabsList>
+                  </aside>
+                  {renderNotificationsPanel()}
+                </div>
+              ) : (
+                <>
                   <TabsList
                     variant="line"
-                    className="flex h-auto w-full flex-col items-stretch gap-0 rounded-none border-0 bg-transparent p-2"
+                    className={MOBILE_FILTER_TABS_LIST_CLASS}
+                    data-nimbus-tour={NIMBUS_TOUR_TARGET.NOTIFICATIONS_FILTERS}
                   >
-                    {filterTabs.map((tab, index) => (
-                      <Fragment key={tab.value}>
-                        {index > 0 && <Separator />}
-                        <TabsTrigger value={tab.value} className={FILTER_TAB_TRIGGER_CLASS}>
-                          <tab.icon className="size-5 shrink-0" />
-                          <span className="flex min-w-0 flex-1 items-center justify-between gap-2 text-left">
-                            <span>{tab.label}</span>
-                            {tab.badge !== undefined && (
-                              <span className="inline-flex min-w-4 h-4 shrink-0 items-center justify-center rounded-none bg-primary px-1 text-[10px] font-bold text-primary-foreground">
-                                {tab.badge > 9 ? "9+" : tab.badge}
-                              </span>
-                            )}
-                          </span>
-                        </TabsTrigger>
-                      </Fragment>
-                    ))}
+                    {renderFilterTabTriggers(true)}
                   </TabsList>
-                </aside>
-
-                <div
-                  className="min-w-0 p-6 md:p-8"
-                  data-nimbus-tour={NIMBUS_TOUR_TARGET.NOTIFICATIONS_LIST}
-                >
-                  <SettingsTabHeader
-                    icon={activeFilter.icon}
-                    title={activeFilter.label}
-                  />
-
-                  {pageError ? (
-                    <ModuleFetchError
-                      onRetry={() => void fetchNotificationsPage({ filter, page })}
-                    />
-                  ) : pageLoading ? (
-                    <div className="space-y-2">
-                      <Skeleton className="h-16 w-full rounded-none" />
-                      <Skeleton className="h-16 w-full rounded-none" />
-                    </div>
-                  ) : pageItems.length === 0 ? (
-                    <p className="text-sm text-muted-foreground text-center py-8">
-                      {emptyMessageForFilter(filter, t)}
-                    </p>
-                  ) : (
-                    <>
-                      <ul className="divide-y divide-border rounded-none border border-border">
-                        {pageItems.map((item) => (
-                          <NotificationListItem
-                            key={item.id}
-                            item={item}
-                            locale={locale}
-                            onMarkReadLocally={markReadLocally}
-                            onMarkedRead={handleItemMarkedRead}
-                          />
-                        ))}
-                      </ul>
-                      <NotificationsPagination
-                        page={page}
-                        totalItems={pageTotal}
-                        onPageChange={handlePageChange}
-                      />
-                    </>
-                  )}
-                </div>
-              </div>
+                  {renderNotificationsPanel()}
+                </>
+              )}
             </Tabs>
             )}
           </CardContent>
         </Card>
 
-        <p className="text-xs text-center text-muted-foreground">
+        <p className="px-4 text-xs text-center text-muted-foreground sm:px-0">
           {t.notifications.deliveryChannelsHint}
         </p>
       </AppPage>

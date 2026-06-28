@@ -6,6 +6,8 @@ interface LogoProps {
   className?: string;
   size?: "sm" | "md" | "lg";
   href?: string;
+  /** When false, renders without a link wrapper */
+  asLink?: boolean;
 }
 
 const sizes = {
@@ -19,6 +21,7 @@ export function Logo({
   className,
   size = "md",
   href = "/",
+  asLink = true,
 }: LogoProps) {
   const { icon: iconSize, text: textClass } = sizes[size];
 
@@ -71,7 +74,7 @@ export function Logo({
     </span>
   );
 
-  if (href) {
+  if (asLink) {
     return (
       <Link href={href} className="inline-flex items-center shrink-0">
         {content}

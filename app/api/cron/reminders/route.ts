@@ -9,6 +9,7 @@ import {
   formatAttentionItemsAsLines,
 } from "@/lib/notifications/reminder-digest";
 import { sendReminderEmail } from "@/lib/notifications/send-email";
+import { DEV_SITE_URL } from "@/lib/constants/dev";
 import { createServiceRoleClient } from "@/lib/supabase/admin";
 
 function scopeFilter(familyId: string | null, userId: string) {
@@ -30,7 +31,7 @@ export async function GET(request: Request) {
   }
 
   const supabase = createServiceRoleClient();
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? DEV_SITE_URL;
   const { data: profiles } = await supabase
     .from("profiles")
     .select("id, family_id, first_name, last_name, preferred_lang, email_digest_enabled");

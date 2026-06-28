@@ -25,8 +25,13 @@ export type Dict = {
     ariaLabel: string;
     home: string;
     modules: string;
+    nimbus: string;
     notifications: string;
+    notificationsUnread: string;
     settings: string;
+  };
+  navigation: {
+    loading: string;
   };
   pwa: {
     manifestDescription: string;
@@ -346,6 +351,8 @@ export type Dict = {
     emailDigestPrefDesc: string;
     settingsTitle: string;
     settingsSubtitle: string;
+    appVersionHint: string;
+    appVersionLabel: string;
     settingsBack: string;
     breadcrumbDashboard: string;
     errorUnauthorized: string;

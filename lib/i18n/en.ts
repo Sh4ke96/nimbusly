@@ -29,8 +29,13 @@ export const en: Dict = {
     ariaLabel: "App navigation",
     home: "Dashboard",
     modules: "Modules",
+    nimbus: "Nimbus",
     notifications: "Notifications",
+    notificationsUnread: "Notifications, {count} unread",
     settings: "Account",
+  },
+  navigation: {
+    loading: "Loading page",
   },
   pwa: {
     manifestDescription:
@@ -515,6 +520,8 @@ export const en: Dict = {
       "Once-a-day reminders about chores, medicine, birthdays, and other items sent to your login email.",
     settingsTitle: "Account settings",
     settingsSubtitle: "Manage your profile, family, and account security.",
+    appVersionHint: "Installed app version",
+    appVersionLabel: "v{version}",
     settingsBack: "Back to dashboard",
     breadcrumbDashboard: "Dashboard",
     errorUnauthorized: "You must be signed in.",
