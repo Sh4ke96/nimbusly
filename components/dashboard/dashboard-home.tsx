@@ -7,7 +7,7 @@ import { DASHBOARD_VIEW, type DashboardView } from "@/lib/constants/dashboard";
 import { NIMBUS_DASHBOARD_VIEW_EVENT, NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus";
 import { buildDashboardHref } from "@/lib/dashboard/view-href";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 
 interface DashboardHomeProps {
   modules: DashboardModuleItem[];
@@ -21,11 +21,10 @@ export function DashboardHome({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const [view, setView] = useState<DashboardView>(initialView);
+  const view = initialView;
 
   const applyView = useCallback(
     (nextView: DashboardView) => {
-      setView(nextView);
       if (pathname !== "/dashboard") return;
 
       const href = buildDashboardHref(nextView);
@@ -40,10 +39,6 @@ export function DashboardHome({
     },
     [pathname, router, searchParams]
   );
-
-  useEffect(() => {
-    setView(initialView);
-  }, [initialView]);
 
   useEffect(() => {
     function onDashboardView(event: Event) {

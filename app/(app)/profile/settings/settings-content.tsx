@@ -1,7 +1,7 @@
 "use client";
 
-import { Fragment, useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { Fragment, useEffect, useMemo } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { KeyRound, ListChecks, Palette, User, Users, type LucideIcon } from "lucide-react";
 import { AppHeader } from "@/components/app/app-header";
 import { AppPage } from "@/components/app/app-page";
@@ -41,6 +41,7 @@ const SIDEBAR_TRIGGER_CLASS = cn(
 
 export default function ProfileSettingsPage() {
   const t = useT();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const user = useProfileStore((s) => s.user);
   const family = useProfileStore((s) => s.family);
@@ -51,7 +52,19 @@ export default function ProfileSettingsPage() {
   const showShoppingCategories = showFamily && isFamilyFounder(family, user?.id);
 
   const urlTab = parseSettingsTab(searchParams.get("tab"));
-  const [tab, setTab] = useState<SettingsTab>(urlTab);
+
+  const tab = useMemo(() => {
+    if (
+      (urlTab === SETTINGS_TAB.FAMILY || urlTab === SETTINGS_TAB.SHOPPING_CATEGORIES) &&
+      !showFamily
+    ) {
+      return SETTINGS_TAB.PROFILE;
+    }
+    if (urlTab === SETTINGS_TAB.SHOPPING_CATEGORIES && !showShoppingCategories) {
+      return SETTINGS_TAB.PROFILE;
+    }
+    return urlTab;
+  }, [urlTab, showFamily, showShoppingCategories]);
 
   const navItems: { value: SettingsTab; icon: LucideIcon; label: string }[] = [
     { value: SETTINGS_TAB.PROFILE, icon: Palette, label: t.account.menuProfile },
@@ -74,45 +87,26 @@ export default function ProfileSettingsPage() {
   const activeNav = navItems.find((item) => item.value === tab) ?? navItems[0];
 
   useEffect(() => {
-    setTab(urlTab);
-  }, [urlTab]);
+    if (!loaded) return;
+    if (searchParams.get("tab") === SETTINGS_TAB.PERMISSIONS) {
+      router.replace(settingsTabHref(SETTINGS_TAB.FAMILY), { scroll: false });
+    }
+  }, [loaded, searchParams, router]);
 
   useEffect(() => {
-    if (!loaded) return;
-    const rawTab = searchParams.get("tab");
-    if (rawTab === SETTINGS_TAB.PERMISSIONS) {
-      window.history.replaceState(window.history.state, "", settingsTabHref(SETTINGS_TAB.FAMILY));
-    }
-  }, [loaded, searchParams]);
-
-  useEffect(() => {
-    if (!loaded) return;
-    if (
-      (tab === SETTINGS_TAB.FAMILY || tab === SETTINGS_TAB.SHOPPING_CATEGORIES) &&
-      !showFamily
-    ) {
-      setTab(SETTINGS_TAB.PROFILE);
-      window.history.replaceState(window.history.state, "", settingsTabHref(SETTINGS_TAB.PROFILE));
-    }
-  }, [tab, showFamily, loaded]);
-
-  useEffect(() => {
-    if (!loaded) return;
-    if (tab === SETTINGS_TAB.SHOPPING_CATEGORIES && !showShoppingCategories) {
-      setTab(SETTINGS_TAB.PROFILE);
-      window.history.replaceState(window.history.state, "", settingsTabHref(SETTINGS_TAB.PROFILE));
-    }
-  }, [tab, showShoppingCategories, loaded]);
+    if (!loaded || tab === urlTab) return;
+    router.replace(settingsTabHref(tab), { scroll: false });
+  }, [loaded, tab, urlTab, router]);
 
   useEffect(() => {
     function onPopState() {
-      const params = new URLSearchParams(window.location.search);
-      setTab(parseSettingsTab(params.get("tab")));
+      const query = window.location.search;
+      router.replace(`${window.location.pathname}${query}`, { scroll: false });
     }
 
     function onSettingsTab(event: Event) {
       const next = parseSettingsTab((event as CustomEvent<string>).detail);
-      setTab(next);
+      router.replace(settingsTabHref(next), { scroll: false });
     }
 
     window.addEventListener("popstate", onPopState);
@@ -121,12 +115,11 @@ export default function ProfileSettingsPage() {
       window.removeEventListener("popstate", onPopState);
       window.removeEventListener(NIMBUS_SETTINGS_TAB_EVENT, onSettingsTab);
     };
-  }, []);
+  }, [router]);
 
   function onTabChange(value: string) {
     const next = parseSettingsTab(value);
-    setTab(next);
-    window.history.replaceState(window.history.state, "", settingsTabHref(next));
+    router.replace(settingsTabHref(next), { scroll: false });
   }
 
   if (!loaded) {

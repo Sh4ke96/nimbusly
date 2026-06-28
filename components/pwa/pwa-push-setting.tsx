@@ -20,6 +20,13 @@ import {
 } from "@/lib/push/subscribe-client";
 import { PUSH_UNSUPPORTED_REASON } from "@/lib/constants/push";
 
+type PushSettingState = {
+  supported: boolean;
+  subscribed: boolean;
+  permission: NotificationPermission;
+  loaded: boolean;
+};
+
 async function persistPushSubscription(userAgent: string | null): Promise<boolean> {
   const subscription = await readBrowserPushSubscription();
   if (!subscription) return false;
@@ -27,47 +34,62 @@ async function persistPushSubscription(userAgent: string | null): Promise<boolea
   return !result?.error;
 }
 
+function getInitialPushSettingState(): PushSettingState {
+  if (process.env.NODE_ENV !== "production") {
+    return {
+      supported: false,
+      subscribed: false,
+      permission: "default",
+      loaded: true,
+    };
+  }
+
+  const unsupported = getPushUnsupportedReason();
+  const supported = unsupported === null;
+
+  return {
+    supported,
+    subscribed: false,
+    permission: typeof Notification !== "undefined" ? Notification.permission : "denied",
+    loaded: !supported,
+  };
+}
+
 export function PwaPushSetting() {
   const t = useT();
-  const [supported, setSupported] = useState<boolean>(false);
-  const [subscribed, setSubscribed] = useState<boolean>(false);
-  const [permission, setPermission] = useState<NotificationPermission>("default");
+  const [pushState, setPushState] = useState<PushSettingState>(getInitialPushSettingState);
   const [busy, setBusy] = useState<boolean>(false);
-  const [loaded, setLoaded] = useState<boolean>(false);
+  const { supported, subscribed, permission, loaded } = pushState;
 
   useEffect(() => {
-    if (process.env.NODE_ENV !== "production") {
-      setLoaded(true);
-      return;
-    }
-
-    const unsupported = getPushUnsupportedReason();
-    const ok = unsupported === null;
-    setSupported(ok);
-    setPermission(typeof Notification !== "undefined" ? Notification.permission : "denied");
-
-    if (!ok) {
-      setLoaded(true);
-      return;
-    }
+    if (process.env.NODE_ENV !== "production" || !supported || loaded) return;
 
     void (async () => {
       const active = await hasActivePushSubscription();
+      let nextSubscribed = false;
       if (active) {
         const saved = await persistPushSubscription(
           typeof navigator !== "undefined" ? navigator.userAgent : null
         );
-        setSubscribed(saved || active);
+        nextSubscribed = saved || active;
       }
-      setLoaded(true);
+
+      setPushState((prev) => ({
+        ...prev,
+        subscribed: nextSubscribed,
+        loaded: true,
+      }));
     })();
-  }, []);
+  }, [supported, loaded]);
 
   async function handleEnable() {
     setBusy(true);
     try {
       const result = await subscribeBrowserToPush();
-      setPermission(Notification.permission);
+      setPushState((prev) => ({
+        ...prev,
+        permission: Notification.permission,
+      }));
       if (!result.ok) {
         toast.error(getSubscribePushErrorMessage(result.reason, t.pwa));
         return;
@@ -80,7 +102,7 @@ export function PwaPushSetting() {
         toast.error(t.pwa.pushError);
         return;
       }
-      setSubscribed(true);
+      setPushState((prev) => ({ ...prev, subscribed: true }));
       toast.success(t.pwa.pushEnabled);
     } finally {
       setBusy(false);
@@ -92,7 +114,7 @@ export function PwaPushSetting() {
     try {
       await unsubscribeBrowserFromPush();
       await removePushSubscription();
-      setSubscribed(false);
+      setPushState((prev) => ({ ...prev, subscribed: false }));
       toast.success(t.pwa.pushDisabled);
     } finally {
       setBusy(false);
