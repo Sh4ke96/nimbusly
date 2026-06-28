@@ -7,6 +7,11 @@ import { Logo } from "@/components/logo";
 import { LANG, type Lang } from "@/lib/constants/lang";
 import { dict } from "@/lib/i18n";
 
+function resolveGlobalErrorLang(): Lang {
+  if (typeof document === "undefined") return LANG.PL;
+  return document.documentElement.lang === LANG.EN ? LANG.EN : LANG.PL;
+}
+
 export default function GlobalError({
   error,
   reset,
@@ -14,16 +19,11 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  const [lang, setLang] = useState<Lang>(LANG.PL);
+  const [lang] = useState<Lang>(resolveGlobalErrorLang);
 
   useEffect(() => {
     Sentry.captureException(error);
   }, [error]);
-
-  useEffect(() => {
-    const htmlLang = document.documentElement.lang;
-    setLang(htmlLang === LANG.EN ? LANG.EN : LANG.PL);
-  }, []);
 
   const t = dict[lang].errors;
 
