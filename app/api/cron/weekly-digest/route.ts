@@ -74,6 +74,8 @@ export async function GET(request: Request) {
 
     const itemCount = sections.reduce((sum, section) => sum + section.lines.length, 0);
 
+    const t = dict[lang].notifications;
+
     try {
       const html = buildDailyDigestHtml({
         attentionLines: [],
@@ -81,6 +83,9 @@ export async function GET(request: Request) {
         moduleLabels,
         lang,
         siteUrl,
+        heading: t.digestWeeklyEmailHeading,
+        intro: t.digestWeeklyEmailIntro,
+        activityHeading: t.digestWeeklyActivityHeading,
       });
       const subject =
         lang === LANG.PL

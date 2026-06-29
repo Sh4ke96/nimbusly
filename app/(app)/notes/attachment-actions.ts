@@ -1,12 +1,7 @@
 "use server";
 
 import { getServerT } from "@/lib/i18n/server";
-import { NOTE_ATTACHMENT_MAX_COUNT } from "@/lib/constants/notes";
-import {
-  buildNoteAttachmentStoragePath,
-  isAllowedNoteAttachmentMime,
-  isValidNoteAttachmentSize,
-} from "@/lib/notes/attachments";
+import { uploadNoteAttachmentFile } from "@/lib/notes/server/upload-note-attachment-file";
 import { parseNoteIdFromForm } from "@/lib/notes/types";
 import type { AccountActionState } from "@/app/(app)/account/actions";
 import { requireUser } from "@/lib/server-actions/require-user";
@@ -32,54 +27,26 @@ export async function uploadNoteAttachment(
     return { error: t.notes.errorGeneric };
   }
 
-  const { data: note } = await supabase
-    .from("notes")
-    .select("id")
-    .eq("id", noteId)
-    .eq("created_by", user.id)
-    .maybeSingle();
-
-  if (!note) return { error: t.notes.errorNotOwner };
-
-  if (!isAllowedNoteAttachmentMime(file.type)) {
-    return { error: t.notes.attachmentInvalidType };
-  }
-  if (!isValidNoteAttachmentSize(file.size)) {
-    return { error: t.notes.attachmentTooLarge };
-  }
-
   const { count } = await supabase
     .from("note_attachments")
     .select("*", { count: "exact", head: true })
     .eq("note_id", noteId);
 
-  if ((count ?? 0) >= NOTE_ATTACHMENT_MAX_COUNT) {
-    return { error: t.notes.errorGeneric };
-  }
-
-  const storagePath = buildNoteAttachmentStoragePath(user.id, noteId, file.name);
-  const buffer = await file.arrayBuffer();
-
-  const { error: uploadError } = await supabase.storage
-    .from("note-attachments")
-    .upload(storagePath, buffer, { contentType: file.type, upsert: false });
-
-  if (uploadError) return { error: t.notes.errorGeneric };
-
-  const { error: insertError } = await supabase.from("note_attachments").insert({
-    note_id: noteId,
-    file_name: file.name,
-    storage_path: storagePath,
-    mime_type: file.type,
-    byte_size: file.size,
-    created_by: user.id,
+  const error = await uploadNoteAttachmentFile({
+    supabase,
+    userId: user.id,
+    noteId,
+    file,
+    existingCount: count ?? 0,
+    messages: {
+      invalidType: t.notes.attachmentInvalidType,
+      tooLarge: t.notes.attachmentTooLarge,
+      notOwner: t.notes.errorNotOwner,
+      generic: t.notes.errorGeneric,
+    },
   });
 
-  if (insertError) {
-    await supabase.storage.from("note-attachments").remove([storagePath]);
-    return { error: t.notes.errorGeneric };
-  }
-
+  if (error) return { error };
   return { success: t.notes.attachmentUploadedSuccess };
 }
 

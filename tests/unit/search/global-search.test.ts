@@ -7,7 +7,7 @@ import { pl } from "@/lib/i18n/pl";
 const baseInput = {
   moduleLabels: pl.dashboard.moduleLabels,
   moduleDescs: pl.dashboard.moduleDescs,
-  familyHref: "/profile/settings?tab=family",
+  familyHref: "/family",
   budgets: [{ id: "b1", name: "Domowy budżet" }],
   budgetEntries: [
     {

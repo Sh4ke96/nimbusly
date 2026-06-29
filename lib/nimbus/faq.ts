@@ -29,7 +29,7 @@ export type NimbusFaqId = (typeof NIMBUS_FAQ_ID)[keyof typeof NIMBUS_FAQ_ID];
 export const NIMBUS_FAQ_IDS = Object.values(NIMBUS_FAQ_ID) as NimbusFaqId[];
 
 export const NIMBUS_FAQ_HREF: Record<NimbusFaqId, string> = {
-  [NIMBUS_FAQ_ID.ADD_FAMILY_MEMBER]: "/profile/settings?tab=family",
+  [NIMBUS_FAQ_ID.ADD_FAMILY_MEMBER]: "/family",
   [NIMBUS_FAQ_ID.CHANGE_AVATAR]: "/profile/settings?tab=profile",
   [NIMBUS_FAQ_ID.ADD_BUDGET]: "/budget",
   [NIMBUS_FAQ_ID.SHOPPING_LIST]: "/shopping",
@@ -49,8 +49,8 @@ export const NIMBUS_FAQ_HREF: Record<NimbusFaqId, string> = {
   [NIMBUS_FAQ_ID.SHOPPING_CATEGORIES]: "/profile/settings?tab=shopping-categories",
   [NIMBUS_FAQ_ID.JOIN_FAMILY]: "/profile/settings?tab=account#join-family",
   [NIMBUS_FAQ_ID.CREATE_FAMILY]: "/profile/settings?tab=account",
-  [NIMBUS_FAQ_ID.LEAVE_FAMILY]: "/profile/settings?tab=family",
-  [NIMBUS_FAQ_ID.MANAGE_FAMILY_ROLES]: "/profile/settings?tab=family",
+  [NIMBUS_FAQ_ID.LEAVE_FAMILY]: "/family",
+  [NIMBUS_FAQ_ID.MANAGE_FAMILY_ROLES]: "/family",
   [NIMBUS_FAQ_ID.ACCOUNT_TYPE_SETUP]: "/profile/settings?tab=account",
 };
 

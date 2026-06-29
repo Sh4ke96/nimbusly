@@ -2,7 +2,7 @@
 
 import { Fragment, useEffect, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { KeyRound, ListChecks, Palette, User, Users, Bell, type LucideIcon } from "lucide-react";
+import { KeyRound, ListChecks, Palette, User, Bell, type LucideIcon } from "lucide-react";
 import { AppHeader } from "@/components/app/app-header";
 import { AppPage } from "@/components/app/app-page";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
@@ -11,7 +11,6 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProfileForm } from "@/components/profile/settings/profile-form";
 import { AccountSection } from "@/components/profile/settings/account-section";
-import { FamilySection } from "@/components/profile/settings/family-section";
 import { NimbusTourToolbarAnchor } from "@/components/nimbus/nimbus-tour-toolbar-anchor";
 import { ShoppingCategoriesSection } from "@/components/profile/settings/shopping-categories-section";
 import { PasswordSection } from "@/components/profile/settings/password-section";
@@ -58,25 +57,19 @@ export default function ProfileSettingsPage() {
   const urlTab = parseSettingsTab(searchParams.get("tab"));
 
   const tab = useMemo(() => {
-    if (
-      (urlTab === SETTINGS_TAB.FAMILY || urlTab === SETTINGS_TAB.SHOPPING_CATEGORIES) &&
-      !showFamily
-    ) {
-      return SETTINGS_TAB.PROFILE;
-    }
     if (urlTab === SETTINGS_TAB.SHOPPING_CATEGORIES && !showShoppingCategories) {
       return SETTINGS_TAB.PROFILE;
     }
+    if (urlTab === SETTINGS_TAB.FAMILY || urlTab === SETTINGS_TAB.PERMISSIONS) {
+      return SETTINGS_TAB.PROFILE;
+    }
     return urlTab;
-  }, [urlTab, showFamily, showShoppingCategories]);
+  }, [urlTab, showShoppingCategories]);
 
   const navItems: { value: SettingsTab; icon: LucideIcon; label: string }[] = [
     { value: SETTINGS_TAB.PROFILE, icon: Palette, label: t.account.menuProfile },
     { value: SETTINGS_TAB.NOTIFICATIONS, icon: Bell, label: t.account.menuNotifications },
     { value: SETTINGS_TAB.ACCOUNT, icon: User, label: t.account.menuAccountType },
-    ...(showFamily
-      ? [{ value: SETTINGS_TAB.FAMILY, icon: Users, label: t.account.menuFamily }]
-      : []),
     ...(showShoppingCategories
       ? [
         {
@@ -93,10 +86,10 @@ export default function ProfileSettingsPage() {
 
   useEffect(() => {
     if (!loaded) return;
-    if (searchParams.get("tab") === SETTINGS_TAB.PERMISSIONS) {
-      router.replace(settingsTabHref(SETTINGS_TAB.FAMILY), { scroll: false });
+    if (urlTab === SETTINGS_TAB.FAMILY || urlTab === SETTINGS_TAB.PERMISSIONS) {
+      router.replace("/family", { scroll: false });
     }
-  }, [loaded, searchParams, router]);
+  }, [loaded, urlTab, router]);
 
   useEffect(() => {
     if (!loaded || tab === urlTab) return;
@@ -172,8 +165,8 @@ export default function ProfileSettingsPage() {
                             "md:w-full shrink-0 md:shrink min-w-38 md:min-w-0"
                           )}
                           data-nimbus-tour={
-                            value === SETTINGS_TAB.FAMILY
-                              ? NIMBUS_TOUR_TARGET.FAMILY_SETTINGS_TAB
+                            value === SETTINGS_TAB.SHOPPING_CATEGORIES
+                              ? NIMBUS_TOUR_TARGET.SETTINGS_SHOPPING_CATEGORIES
                               : undefined
                           }
                         >
@@ -200,26 +193,19 @@ export default function ProfileSettingsPage() {
                     <AccountSection />
                   </TabsContent>
 
-                  {showFamily && (
-                    <>
-                      <TabsContent value={SETTINGS_TAB.FAMILY} className="mt-0 outline-none">
-                        <FamilySection />
-                      </TabsContent>
-                      {showShoppingCategories ? (
-                        <TabsContent
-                          value={SETTINGS_TAB.SHOPPING_CATEGORIES}
-                          className="mt-0 outline-none"
-                        >
-                          <NimbusTourToolbarAnchor
-                            tourTarget={NIMBUS_TOUR_TARGET.SETTINGS_SHOPPING_CATEGORIES}
-                            visible={showShoppingCategories}
-                          >
-                            <ShoppingCategoriesSection />
-                          </NimbusTourToolbarAnchor>
-                        </TabsContent>
-                      ) : null}
-                    </>
-                  )}
+                  {showShoppingCategories ? (
+                    <TabsContent
+                      value={SETTINGS_TAB.SHOPPING_CATEGORIES}
+                      className="mt-0 outline-none"
+                    >
+                      <NimbusTourToolbarAnchor
+                        tourTarget={NIMBUS_TOUR_TARGET.SETTINGS_SHOPPING_CATEGORIES}
+                        visible={showShoppingCategories}
+                      >
+                        <ShoppingCategoriesSection />
+                      </NimbusTourToolbarAnchor>
+                    </TabsContent>
+                  ) : null}
 
                   <TabsContent
                     value={SETTINGS_TAB.PASSWORD}

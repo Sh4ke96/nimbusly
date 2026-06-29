@@ -13,14 +13,17 @@ import {
   parseNoteCategoryRecordIdFromForm,
   parseNoteFromForm,
   parseNoteIdFromForm,
+  parseNoteAttachmentsFromForm,
   parseNoteVisibleMemberIdsFromForm,
 } from "@/lib/notes/types";
+import { NOTE_ATTACHMENT_MAX_COUNT } from "@/lib/constants/notes";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { NOTIFICATION_TYPE } from "@/lib/constants/notifications";
 import { getDisplayName } from "@/lib/profile";
 import type { AccountActionState } from "@/app/(app)/account/actions";
 import { requireUser, getProfileFamilyContext } from "@/lib/server-actions/require-user";
 import { notifyFamilyMembers } from "@/lib/server-actions/notify-family";
+import { uploadNoteAttachmentFile } from "@/lib/notes/server/upload-note-attachment-file";
 
 async function resolveVisibleMemberIds(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -194,6 +197,30 @@ export async function createNote(
     .single();
 
   if (error || !note) return { error: t.notes.errorGeneric };
+
+  const attachmentFiles = parseNoteAttachmentsFromForm(formData);
+  if (attachmentFiles.length > NOTE_ATTACHMENT_MAX_COUNT) {
+    return { error: t.notes.errorGeneric };
+  }
+
+  const uploadMessages = {
+    invalidType: t.notes.attachmentInvalidType,
+    tooLarge: t.notes.attachmentTooLarge,
+    notOwner: t.notes.errorNotOwner,
+    generic: t.notes.errorGeneric,
+  };
+
+  for (let index = 0; index < attachmentFiles.length; index += 1) {
+    const uploadError = await uploadNoteAttachmentFile({
+      supabase,
+      userId: user.id,
+      noteId: note.id,
+      file: attachmentFiles[index],
+      existingCount: index,
+      messages: uploadMessages,
+    });
+    if (uploadError) return { error: uploadError };
+  }
 
   if (familyId) {
     const actorName = profile ? getDisplayName(profile) : user.email ?? "Nimbusly";

@@ -533,11 +533,21 @@ export const en: Dict = {
     quietHoursDesc:
       "During this window, push alerts are paused so you are not woken at night. In-app notifications still work.",
     quietHoursEnabledLabel: "Enable quiet hours",
+    quietHoursEnabledDesc:
+      "During this window we skip push notifications to your phone and browser. The in-app bell still works. Digest emails are not blocked — times use your browser’s timezone.",
     quietHoursStartLabel: "From",
     quietHoursEndLabel: "To",
     weeklyDigestLabel: "Weekly email summary",
     weeklyDigestDesc:
-      "Every Monday morning, a recap of the last 7 days from selected modules.",
+      "Every Monday morning, a recap of the last 7 days from modules with email enabled in the table below.",
+    weeklyDigestPreviewTitle: "Sample email",
+    weeklyDigestPreviewDesc:
+      "Same HTML template as the daily digest — Nimbusly header, sections per module, event list, and a dashboard button. Preview below is static; real content depends on your activity.",
+    weeklyDigestExampleSubject: "Nimbusly — weekly summary (3)",
+    weeklyDigestExampleModuleShopping: "Shopping",
+    weeklyDigestExampleLineShopping: "Anna added “Milk” to the Groceries list",
+    weeklyDigestExampleModuleChores: "Chores",
+    weeklyDigestExampleLineChores: "Marcin marked “Take out trash” as done",
     settingsTitle: "Account settings",
     settingsSubtitle: "Manage your profile, family, and account security.",
     appVersionHint: "Installed app version",
@@ -1581,6 +1591,10 @@ export const en: Dict = {
       "Turn off the digest or pick modules in Settings → Notifications.",
     digestAttentionHeading: "Important today",
     digestActivityHeading: "Activity (24h)",
+    digestWeeklyEmailHeading: "Your weekly summary",
+    digestWeeklyEmailIntro:
+      "Highlights from the last 7 days for modules with email enabled:",
+    digestWeeklyActivityHeading: "Activity (7 days)",
     settingsLink: "Notification settings",
     moduleFilterAll: "All modules",
     reminderEmailSubject: "Nimbusly — {count} items need attention",

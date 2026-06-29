@@ -175,32 +175,22 @@ const NOTIFICATIONS_TOUR: NimbusTourStep[] = moduleSteps("/notifications", "noti
 
 const FAMILY_TOUR: NimbusTourStep[] = [
   {
-    id: "family-tab",
-    route: "/profile/settings",
-    target: NIMBUS_TOUR_TARGET.FAMILY_SETTINGS_TAB,
-    copyKey: "family.familyTab",
-    prepare: NIMBUS_TOUR_PREPARE.SETTINGS_FAMILY,
-  },
-  {
     id: "members",
-    route: "/profile/settings",
+    route: "/family",
     target: NIMBUS_TOUR_TARGET.FAMILY_MEMBERS,
     copyKey: "family.members",
-    prepare: NIMBUS_TOUR_PREPARE.SETTINGS_FAMILY,
   },
   {
     id: "member-roles",
-    route: "/profile/settings",
+    route: "/family",
     target: NIMBUS_TOUR_TARGET.FAMILY_PERMISSIONS,
     copyKey: "family.memberRoles",
-    prepare: NIMBUS_TOUR_PREPARE.SETTINGS_FAMILY,
   },
   {
     id: "leave-family",
-    route: "/profile/settings",
+    route: "/family",
     target: NIMBUS_TOUR_TARGET.FAMILY_LEAVE,
     copyKey: "family.leaveFamily",
-    prepare: NIMBUS_TOUR_PREPARE.SETTINGS_FAMILY,
   },
   {
     id: "realtime",

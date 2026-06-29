@@ -20,7 +20,7 @@ describe("nimbus faq", () => {
       NIMBUS_FAQ_HREF[NIMBUS_FAQ_ID.JOIN_FAMILY],
       "/profile/settings?tab=account#join-family"
     );
-    assert.equal(NIMBUS_FAQ_HREF[NIMBUS_FAQ_ID.LEAVE_FAMILY], "/profile/settings?tab=family");
+    assert.equal(NIMBUS_FAQ_HREF[NIMBUS_FAQ_ID.LEAVE_FAMILY], "/family");
   });
 
   it("links notifications and search faq to relevant routes", () => {

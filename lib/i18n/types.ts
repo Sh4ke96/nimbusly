@@ -362,10 +362,18 @@ export type Dict = {
     quietHoursTitle: string;
     quietHoursDesc: string;
     quietHoursEnabledLabel: string;
+    quietHoursEnabledDesc: string;
     quietHoursStartLabel: string;
     quietHoursEndLabel: string;
     weeklyDigestLabel: string;
     weeklyDigestDesc: string;
+    weeklyDigestPreviewTitle: string;
+    weeklyDigestPreviewDesc: string;
+    weeklyDigestExampleSubject: string;
+    weeklyDigestExampleModuleShopping: string;
+    weeklyDigestExampleLineShopping: string;
+    weeklyDigestExampleModuleChores: string;
+    weeklyDigestExampleLineChores: string;
     settingsTitle: string;
     settingsSubtitle: string;
     appVersionHint: string;
@@ -1364,6 +1372,9 @@ export type Dict = {
     digestEmailFooter: string;
     digestAttentionHeading: string;
     digestActivityHeading: string;
+    digestWeeklyEmailHeading: string;
+    digestWeeklyEmailIntro: string;
+    digestWeeklyActivityHeading: string;
     settingsLink: string;
     moduleFilterAll: string;
     reminderEmailSubject: string;

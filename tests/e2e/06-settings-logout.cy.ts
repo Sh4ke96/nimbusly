@@ -34,11 +34,11 @@ describe("Ustawienia konta", () => {
     });
   });
 
-  it("nie pokazuje osobnej zakładki uprawnień", () => {
+  it("nie pokazuje zakładki rodziny w ustawieniach", () => {
     cy.get('[data-slot="tabs-trigger"]').as("tabs");
     cy.get("@tabs").contains(t.account.menuProfile).should("be.visible");
     cy.get("@tabs").contains(t.account.menuAccountType).should("be.visible");
-    cy.get("@tabs").contains(t.account.menuFamily).should("be.visible");
+    cy.get("@tabs").contains(t.account.menuFamily).should("not.exist");
     cy.get("@tabs").contains(t.account.menuPassword).should("be.visible");
     cy.get("@tabs").contains(t.account.menuPermissions).should("not.exist");
   });
@@ -46,9 +46,6 @@ describe("Ustawienia konta", () => {
   it("przełącza zakładki przez sidebar", () => {
     cy.get('[data-slot="tabs-trigger"]').contains(t.account.menuAccountType).click();
     cy.url().should("include", `tab=${SETTINGS_TAB.ACCOUNT}`);
-
-    cy.get('[data-slot="tabs-trigger"]').contains(t.account.menuFamily).click();
-    cy.url().should("include", `tab=${SETTINGS_TAB.FAMILY}`);
 
     cy.get('[data-slot="tabs-trigger"]').contains(t.account.menuPassword).click();
     cy.url().should("include", `tab=${SETTINGS_TAB.PASSWORD}`);
@@ -70,15 +67,16 @@ describe("Ustawienia konta", () => {
   });
 
   it("pokazuje scaloną sekcję rodziny z członkami i uprawnieniami", () => {
-    cy.visit(`/profile/settings?tab=${SETTINGS_TAB.FAMILY}`);
+    cy.visit("/family");
+    cy.contains("h1", t.family.pageTitle).should("be.visible");
     cy.get("#settings-family-name").should("have.value", "Rodzina Ustawień");
     cy.contains("h3", t.account.permissionsMembersTitle).should("be.visible");
     cy.contains("button", t.account.leaveFamilyBtn).should("be.visible");
   });
 
-  it("przekierowuje legacy zakładkę permissions na family", () => {
+  it("przekierowuje legacy zakładki settings na /family", () => {
     cy.visit(`/profile/settings?tab=${SETTINGS_TAB.PERMISSIONS}`);
-    cy.url().should("include", `tab=${SETTINGS_TAB.FAMILY}`);
+    cy.url().should("include", "/family");
     cy.contains("h3", t.account.permissionsMembersTitle).should("be.visible");
   });
 

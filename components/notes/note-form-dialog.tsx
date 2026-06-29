@@ -10,6 +10,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { NoteEntryForm } from "@/components/notes/note-entry-form";
+import { NoteAttachmentsCreateField } from "@/components/notes/note-attachments-create-field";
+import { NOTE_FORM_FIELD } from "@/lib/notes/types";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import {
   isValidNoteVisibilitySelection,
@@ -51,6 +53,7 @@ export function NoteFormDialog({
   });
   const [isPinned, setIsPinned] = useState<boolean>(false);
   const [useMarkdown, setUseMarkdown] = useState<boolean>(false);
+  const [attachmentFiles, setAttachmentFiles] = useState<File[]>([]);
   const [state, action, pending] = useActionState(createNote, null);
 
   useActionFeedback(state, () => {
@@ -64,19 +67,26 @@ export function NoteFormDialog({
     setVisibility({ visibleToAll: true, memberIds: [] });
     setIsPinned(false);
     setUseMarkdown(false);
+    setAttachmentFiles([]);
     onSuccess();
   });
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     if (!title.trim()) {
-      e.preventDefault();
       toast.error(t.notes.errorTitleRequired);
       return;
     }
     if (isFamily && !isValidNoteVisibilitySelection(visibility)) {
-      e.preventDefault();
       toast.error(t.notes.errorInvalidVisibility);
+      return;
     }
+
+    const formData = new FormData(e.currentTarget);
+    for (const file of attachmentFiles) {
+      formData.append(NOTE_FORM_FIELD.ATTACHMENTS, file);
+    }
+    action(formData);
   }
 
   return (
@@ -108,6 +118,11 @@ export function NoteFormDialog({
             onUseMarkdownChange={setUseMarkdown}
             profile={profile}
             members={members}
+          />
+          <NoteAttachmentsCreateField
+            files={attachmentFiles}
+            onFilesChange={setAttachmentFiles}
+            disabled={pending}
           />
           <Button type="submit" className="w-full" disabled={pending}>
             {pending ? t.notes.saving : t.notes.saveBtn}

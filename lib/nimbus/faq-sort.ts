@@ -20,6 +20,7 @@ const PATH_FAQ_MODULE_BOOST: Record<string, FaqModuleLabelKey[]> = {
   "/watchlist": ["settings"],
   "/restaurants": ["settings"],
   "/pets": ["settings"],
+  "/family": ["settings"],
 };
 
 function getFaqModuleBoostForPath(pathname: string): FaqModuleLabelKey[] {

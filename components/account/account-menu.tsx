@@ -135,13 +135,18 @@ export function AccountMenu() {
               {t.account.menuAccountType}
             </Link>
           </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href="/family" className="flex items-center gap-2">
+              <Users className="size-4 text-primary" />
+              {t.family.pageTitle}
+            </Link>
+          </DropdownMenuItem>
           {profile?.account_mode === ACCOUNT_MODE.SOLO && !profile.family_id && (
             <DropdownMenuItem asChild>
               <Link
-                href={`${settingsTabHref(SETTINGS_TAB.ACCOUNT)}#join-family`}
+                href={settingsTabHref(SETTINGS_TAB.ACCOUNT)}
                 onClick={(e) =>
-                  navigateSettingsTab(SETTINGS_TAB.ACCOUNT, pathname, "#join-family") &&
-                  e.preventDefault()
+                  navigateSettingsTab(SETTINGS_TAB.ACCOUNT, pathname) && e.preventDefault()
                 }
                 className="flex items-center gap-2"
               >
@@ -150,37 +155,23 @@ export function AccountMenu() {
               </Link>
             </DropdownMenuItem>
           )}
-          {profile?.account_mode === ACCOUNT_MODE.FAMILY && profile.family_id && (
-            <>
+          {profile?.account_mode === ACCOUNT_MODE.FAMILY &&
+            profile.family_id &&
+            isFamilyFounder(family, user?.id) ? (
               <DropdownMenuItem asChild>
                 <Link
-                  href={settingsTabHref(SETTINGS_TAB.FAMILY)}
+                  href={settingsTabHref(SETTINGS_TAB.SHOPPING_CATEGORIES)}
                   onClick={(e) =>
-                    navigateSettingsTab(SETTINGS_TAB.FAMILY, pathname) && e.preventDefault()
+                    navigateSettingsTab(SETTINGS_TAB.SHOPPING_CATEGORIES, pathname) &&
+                    e.preventDefault()
                   }
                   className="flex items-center gap-2"
                 >
-                  <Users className="size-4 text-primary" />
-                  {t.account.menuFamily}
+                  <ListChecks className="size-4 text-primary" />
+                  {t.account.menuShoppingCategories}
                 </Link>
               </DropdownMenuItem>
-              {isFamilyFounder(family, user?.id) ? (
-                <DropdownMenuItem asChild>
-                  <Link
-                    href={settingsTabHref(SETTINGS_TAB.SHOPPING_CATEGORIES)}
-                    onClick={(e) =>
-                      navigateSettingsTab(SETTINGS_TAB.SHOPPING_CATEGORIES, pathname) &&
-                      e.preventDefault()
-                    }
-                    className="flex items-center gap-2"
-                  >
-                    <ListChecks className="size-4 text-primary" />
-                    {t.account.menuShoppingCategories}
-                  </Link>
-                </DropdownMenuItem>
-              ) : null}
-            </>
-          )}
+            ) : null}
           <DropdownMenuItem asChild>
             <Link
               href={settingsTabHref(SETTINGS_TAB.PASSWORD)}

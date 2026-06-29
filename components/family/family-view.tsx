@@ -19,7 +19,7 @@ export function FamilyView() {
   const showFamily = profile?.account_mode === ACCOUNT_MODE.FAMILY && !!profile.family_id;
 
   return (
-    <>
+    <div className="flex flex-col md:min-h-screen">
       <AppHeader />
       <AppPage width="default">
         <AccountBreadcrumbs current={t.family.pageTitle} />
@@ -31,20 +31,22 @@ export function FamilyView() {
           <p className="text-sm text-muted-foreground">{t.family.pageDesc}</p>
         </div>
 
-        {showFamily ? (
-          <FamilySection />
-        ) : (
-          <Card className="rounded-none shadow-none">
-            <CardContent className="pt-6 space-y-4">
-              <p className="text-sm text-muted-foreground">{t.family.soloHint}</p>
-              <AccountSection />
-              <Button asChild className="rounded-none cursor-pointer">
-                <Link href="/profile/settings?tab=account">{t.family.openAccountSettings}</Link>
-              </Button>
-            </CardContent>
-          </Card>
-        )}
+        <Card className="gap-0 rounded-none py-0 shadow-sm overflow-hidden">
+          <CardContent className="p-4 sm:p-6 md:p-8">
+            {showFamily ? (
+              <FamilySection />
+            ) : (
+              <div className="space-y-4 max-w-2xl">
+                <p className="text-sm text-muted-foreground">{t.family.soloHint}</p>
+                <AccountSection />
+                <Button asChild className="rounded-none cursor-pointer">
+                  <Link href="/profile/settings?tab=account">{t.family.openAccountSettings}</Link>
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </AppPage>
-    </>
+    </div>
   );
 }

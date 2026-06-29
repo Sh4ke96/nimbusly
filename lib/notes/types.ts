@@ -93,6 +93,7 @@ export const NOTE_FORM_FIELD = {
   VISIBLE_MEMBER_IDS: "visibleMemberIds",
   IS_PINNED: "isPinned",
   CONTENT_FORMAT: "contentFormat",
+  ATTACHMENTS: "attachments",
 } as const;
 
 export const NOTE_CATEGORY_FORM_FIELD = {
@@ -123,6 +124,12 @@ export function parseNoteFromForm(formData: FormData): {
 
 export function parseNoteIdFromForm(formData: FormData): string {
   return getFormTrimmedString(formData, NOTE_FORM_FIELD.ID);
+}
+
+export function parseNoteAttachmentsFromForm(formData: FormData): File[] {
+  return formData
+    .getAll(NOTE_FORM_FIELD.ATTACHMENTS)
+    .filter((entry): entry is File => entry instanceof File && entry.size > 0);
 }
 
 export function parseNoteCategoryFromForm(formData: FormData): {

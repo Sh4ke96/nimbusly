@@ -533,11 +533,21 @@ export const pl: Dict = {
     quietHoursDesc:
       "W tym przedziale push nie budzi Cię w nocy. Powiadomienia w aplikacji nadal działają.",
     quietHoursEnabledLabel: "Włącz godziny ciszy",
+    quietHoursEnabledDesc:
+      "W tym czasie nie wysyłamy powiadomień push na telefon ani przeglądarkę. Dzwonek w aplikacji nadal działa. E-maile z digestem nie są blokowane — czas wg strefy Twojej przeglądarki.",
     quietHoursStartLabel: "Od",
     quietHoursEndLabel: "Do",
     weeklyDigestLabel: "Tygodniowe podsumowanie e-mail",
     weeklyDigestDesc:
-      "W każdy poniedziałek rano skrót aktywności z ostatnich 7 dni z wybranych modułów.",
+      "W każdy poniedziałek rano skrót aktywności z ostatnich 7 dni z modułów z włączonym e-mailem w tabeli poniżej.",
+    weeklyDigestPreviewTitle: "Przykładowy e-mail",
+    weeklyDigestPreviewDesc:
+      "Ten sam szablon HTML co dzienny digest — nagłówek Nimbusly, sekcje per moduł, lista zdarzeń i przycisk do panelu. Poniżej statyczny podgląd; prawdziwa treść zależy od Twojej aktywności.",
+    weeklyDigestExampleSubject: "Nimbusly — tygodniowe podsumowanie (3)",
+    weeklyDigestExampleModuleShopping: "Zakupy",
+    weeklyDigestExampleLineShopping: "Anna dodała „Mleko” do listy Biedronka",
+    weeklyDigestExampleModuleChores: "Obowiązki",
+    weeklyDigestExampleLineChores: "Marcin oznaczył „Wynieść śmieci” jako zrobione",
     settingsTitle: "Ustawienia konta",
     settingsSubtitle: "Zarządzaj profilem, rodziną i bezpieczeństwem konta.",
     appVersionHint: "Zainstalowana wersja aplikacji",
@@ -1581,6 +1591,10 @@ export const pl: Dict = {
       "Wyłącz digest lub wybierz moduły w ustawieniach → Powiadomienia.",
     digestAttentionHeading: "Dziś ważne",
     digestActivityHeading: "Aktywność (24 h)",
+    digestWeeklyEmailHeading: "Twoje tygodniowe podsumowanie",
+    digestWeeklyEmailIntro:
+      "Skrót aktywności z ostatnich 7 dni z modułów z włączonym e-mailem:",
+    digestWeeklyActivityHeading: "Aktywność (7 dni)",
     settingsLink: "Ustawienia powiadomień",
     moduleFilterAll: "Wszystkie moduły",
     reminderEmailSubject: "Nimbusly — {count} rzeczy wymaga uwagi",
