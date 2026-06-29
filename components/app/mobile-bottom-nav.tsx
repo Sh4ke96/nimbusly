@@ -168,7 +168,6 @@ export function MobileBottomNav() {
 
         {NAV_ITEMS.slice(2).map(({ id, icon }) => renderNavItem(id, icon))}
       </ul>
-      <div className="app-mobile-bottom-nav-safe-area" aria-hidden />
     </nav>,
     document.body
   );
