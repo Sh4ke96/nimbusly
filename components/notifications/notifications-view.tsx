@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Fragment, useActionState, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Bell, CheckCheck, Inbox, type LucideIcon } from "lucide-react";
@@ -24,12 +25,15 @@ import { useLang, useT } from "@/lib/lang-context";
 import {
   notificationFilterHref,
   parseNotificationFilterTab,
+  parseNotificationModuleId,
 } from "@/lib/notifications/filter-tabs";
+import { NOTIFICATION_MODULE_IDS, type NotificationModuleId } from "@/lib/constants/notification-modules";
 import { useNotificationsStore } from "@/lib/stores/notifications-store";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
 import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { markAllNotificationsRead } from "@/app/(app)/notifications/actions";
 import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus-tour";
+import { SETTINGS_TAB, settingsTabHref } from "@/lib/profile/settings-tabs";
 import { cn } from "@/lib/utils";
 
 const MOBILE_FILTER_TAB_TRIGGER_CLASS = cn(
@@ -83,6 +87,7 @@ export function NotificationsView() {
   const searchParams = useSearchParams();
 
   const filter = parseNotificationFilterTab(searchParams.get("filter"));
+  const moduleId = parseNotificationModuleId(searchParams.get("module"));
   const page = parsePage(searchParams.get("page"));
 
   const unreadCount = useNotificationsStore((s) => s.unreadCount);
@@ -138,25 +143,31 @@ export function NotificationsView() {
   useStoreBootstrap(loaded, error, fetchNotifications);
 
   useEffect(() => {
-    void fetchNotificationsPage({ filter, page });
-  }, [filter, page, fetchNotificationsPage]);
+    void fetchNotificationsPage({ filter, page, moduleId });
+  }, [filter, page, moduleId, fetchNotificationsPage]);
 
   useActionFeedback(markAllState, () => {
     markAllReadLocally();
     void fetchNotifications(true);
-    void fetchNotificationsPage({ filter, page });
+    void fetchNotificationsPage({ filter, page, moduleId });
   });
 
   const locale = LOCALE_BY_LANG[lang];
 
   function handleFilterChange(nextFilter: string) {
     router.replace(
-      notificationFilterHref(nextFilter as NotificationFilterTab, 1)
+      notificationFilterHref(nextFilter as NotificationFilterTab, 1, moduleId)
     );
   }
 
   function handlePageChange(nextPage: number) {
-    router.replace(notificationFilterHref(filter, nextPage));
+    router.replace(notificationFilterHref(filter, nextPage, moduleId));
+  }
+
+  function handleModuleChange(nextModule: string) {
+    const nextModuleId =
+      nextModule === "all" ? null : (nextModule as NotificationModuleId);
+    router.replace(notificationFilterHref(filter, 1, nextModuleId));
   }
 
   function handleItemMarkedRead() {
@@ -205,9 +216,33 @@ export function NotificationsView() {
           className="hidden md:flex"
         />
 
+        <div className="mb-4 flex flex-wrap gap-2 max-md:px-4 md:px-0">
+          <Button
+            type="button"
+            size="sm"
+            variant={moduleId === null ? "default" : "outline"}
+            className="rounded-none"
+            onClick={() => handleModuleChange("all")}
+          >
+            {t.notifications.moduleFilterAll}
+          </Button>
+          {NOTIFICATION_MODULE_IDS.map((id) => (
+            <Button
+              key={id}
+              type="button"
+              size="sm"
+              variant={moduleId === id ? "default" : "outline"}
+              className="rounded-none"
+              onClick={() => handleModuleChange(id)}
+            >
+              {t.dashboard.moduleLabels[id]}
+            </Button>
+          ))}
+        </div>
+
         {pageError ? (
           <ModuleFetchError
-            onRetry={() => void fetchNotificationsPage({ filter, page })}
+            onRetry={() => void fetchNotificationsPage({ filter, page, moduleId })}
           />
         ) : pageLoading ? (
           <div className="space-y-2 max-md:px-4 md:px-0">
@@ -259,6 +294,12 @@ export function NotificationsView() {
                 {t.notifications.title}
               </h1>
               <p className="text-sm text-muted-foreground">{t.notifications.subtitle}</p>
+              <Link
+                href={settingsTabHref(SETTINGS_TAB.NOTIFICATIONS)}
+                className="text-xs font-medium text-primary hover:underline"
+              >
+                {t.notifications.settingsLink}
+              </Link>
             </div>
             {unreadCount > 0 && (
               <form action={markAllAction}>
@@ -311,10 +352,6 @@ export function NotificationsView() {
             )}
           </CardContent>
         </Card>
-
-        <p className="px-4 text-xs text-center text-muted-foreground sm:px-0">
-          {t.notifications.deliveryChannelsHint}
-        </p>
       </AppPage>
     </div>
   );

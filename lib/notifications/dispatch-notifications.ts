@@ -10,12 +10,14 @@ export async function dispatchInAppAndPushNotifications(params: {
   title: string;
   body: string;
   payload: Record<string, unknown>;
+  skipInApp?: boolean;
 }): Promise<void> {
   if (params.rpcError) {
     console.error(`[notifications] ${params.logContext} failed`, params.rpcError.message);
     return;
   }
 
+  if (params.skipInApp === true && params.recipientIds.length === 0) return;
   if (params.recipientIds.length === 0) return;
 
   await pushNotificationsToRecipients({

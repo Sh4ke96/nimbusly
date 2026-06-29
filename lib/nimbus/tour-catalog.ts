@@ -8,6 +8,7 @@ export const NIMBUS_TOUR_PREPARE = {
   SETTINGS_FAMILY: "settings-family",
   SETTINGS_PERMISSIONS: "settings-family",
   SETTINGS_PASSWORD: "settings-password",
+  SETTINGS_NOTIFICATIONS: "settings-notifications",
 } as const;
 
 export type NimbusTourPrepare =
@@ -119,6 +120,13 @@ const INTRO_TOUR: NimbusTourStep[] = [
     copyKey: "intro.settingsProfile",
     prepare: NIMBUS_TOUR_PREPARE.SETTINGS_PROFILE,
   },
+  {
+    id: "settings-notifications",
+    route: "/profile/settings",
+    target: NIMBUS_TOUR_TARGET.SETTINGS_NOTIFICATIONS,
+    copyKey: "intro.settingsNotifications",
+    prepare: NIMBUS_TOUR_PREPARE.SETTINGS_NOTIFICATIONS,
+  },
 ];
 
 const SETTINGS_SOLO_TOUR: NimbusTourStep[] = [
@@ -223,7 +231,6 @@ export const NIMBUS_TOUR_CATALOG: Record<NimbusTourId, NimbusTourStep[]> = {
     { id: "income", target: NIMBUS_TOUR_TARGET.BUDGET_INCOME },
     { id: "filters", target: NIMBUS_TOUR_TARGET.BUDGET_FILTERS },
     { id: "export", target: NIMBUS_TOUR_TARGET.BUDGET_EXPORT },
-    { id: "watch", target: NIMBUS_TOUR_TARGET.BUDGET_WATCH },
   ]),
   [NIMBUS_TOUR_ID.SHOPPING]: moduleSteps("/shopping", "shopping", [
     { id: "header", target: NIMBUS_TOUR_TARGET.SHOPPING_HEADER },
@@ -231,7 +238,6 @@ export const NIMBUS_TOUR_CATALOG: Record<NimbusTourId, NimbusTourStep[]> = {
     { id: "lists", target: NIMBUS_TOUR_TARGET.SHOPPING_LISTS },
     { id: "items", target: NIMBUS_TOUR_TARGET.SHOPPING_ITEMS },
     { id: "categories", target: NIMBUS_TOUR_TARGET.SHOPPING_CATEGORIES },
-    { id: "watch", target: NIMBUS_TOUR_TARGET.SHOPPING_WATCH },
     { id: "addItem", target: NIMBUS_TOUR_TARGET.SHOPPING_ADD_ITEM },
   ]),
   [NIMBUS_TOUR_ID.GIFTS]: moduleSteps("/gifts", "gifts", [

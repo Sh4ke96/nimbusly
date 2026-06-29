@@ -475,7 +475,12 @@
 
   @media (max-width: 767px) {
     html {
+      min-height: -webkit-fill-available;
       scroll-padding-bottom: var(--app-mobile-bottom-inset);
+    }
+
+    body {
+      min-height: -webkit-fill-available;
     }
 
     input,
@@ -492,7 +497,21 @@
   }
 
   .app-mobile-bottom-nav {
-    padding-bottom: var(--app-mobile-nav-safe-bottom);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    min-height: calc(var(--app-mobile-nav-height) + var(--app-mobile-nav-safe-bottom));
+    width: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+
+  .app-mobile-bottom-nav-safe-area {
+    flex-shrink: 0;
+    width: 100%;
+    background: inherit;
+    height: constant(safe-area-inset-bottom);
+    height: env(safe-area-inset-bottom, 0px);
   }
 
   .app-nimbus-mobile-anchor {
@@ -506,6 +525,10 @@
   @media (min-width: 768px) {
     .app-mobile-bottom-inset {
       padding-bottom: 0;
+    }
+
+    .app-mobile-bottom-nav {
+      display: none;
     }
   }
 }

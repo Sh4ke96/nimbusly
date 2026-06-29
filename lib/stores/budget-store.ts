@@ -2,7 +2,6 @@ import { create } from "zustand";
 import { createClient } from "@/lib/supabase/client";
 import { BUDGET_ENTRY_TYPE, BUDGET_RECURRENCE } from "@/lib/constants/budget";
 import type { Budget, BudgetExpense } from "@/lib/budget/types";
-import { watchedBudgetIdsFromRows } from "@/lib/budget/watches";
 import { dedupeAsync } from "@/lib/stores/dedupe-async";
 import { compareNamesByProfileLang } from "@/lib/stores/sort-lang";
 
@@ -21,24 +20,14 @@ export function selectBudgetMemberIds(
   return (state) => state.memberIdsByBudgetId[budgetId] ?? EMPTY_BUDGET_MEMBER_IDS;
 }
 
-export function selectIsBudgetWatched(
-  budgetId: string
-): (state: BudgetStore) => boolean {
-  return (state) => state.watchedBudgetIds.includes(budgetId);
-}
-
 interface BudgetStore {
   budgets: Budget[];
   expensesByBudgetId: Record<string, BudgetExpense[]>;
   memberIdsByBudgetId: Record<string, string[]>;
-  watchedBudgetIds: string[];
   loaded: boolean;
-  watchesLoaded: boolean;
-  watchesError: boolean;
   loading: boolean;
   error: boolean;
   fetchBudgets: (force?: boolean) => Promise<void>;
-  fetchWatches: (force?: boolean) => Promise<void>;
   reset: () => void;
 }
 
@@ -46,10 +35,7 @@ const initialState = {
   budgets: [] as Budget[],
   expensesByBudgetId: {} as Record<string, BudgetExpense[]>,
   memberIdsByBudgetId: {} as Record<string, string[]>,
-  watchedBudgetIds: [] as string[],
   loaded: false,
-  watchesLoaded: false,
-  watchesError: false,
   loading: false,
   error: false,
 };
@@ -174,34 +160,6 @@ export const useBudgetStore = create<BudgetStore>((set, get) => ({
       } catch {
         set({ loading: false, loaded: true, error: true });
       }
-    });
-  },
-
-  fetchWatches: async (force = false) => {
-    if (!force && get().watchesLoaded) return;
-
-    return dedupeAsync("budget:watches", async () => {
-      const supabase = createClient();
-      const { data, error } = await supabase
-        .from("budget_watches")
-        .select("budget_id");
-
-      if (error) {
-        set({
-          watchedBudgetIds: [],
-          watchesLoaded: true,
-          watchesError: true,
-        });
-        return;
-      }
-
-      set({
-        watchedBudgetIds: watchedBudgetIdsFromRows(
-          (data ?? []) as { budget_id: string }[]
-        ),
-        watchesLoaded: true,
-        watchesError: false,
-      });
     });
   },
 

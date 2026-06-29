@@ -11,6 +11,29 @@ export { CHANGELOG_ENTRY_TYPE, type ChangelogEntry };
  */
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "0.6.0",
+    date: "2026-06-28",
+    type: CHANGELOG_ENTRY_TYPE.MINOR,
+    title: {
+      pl: "Powiadomienia per moduł",
+      en: "Per-module notifications",
+    },
+    changes: {
+      pl: [
+        "Ustawienia → Powiadomienia: macierz 11 modułów × in-app, push i e-mail",
+        "Jednolity dispatch z filtrowaniem kanałów; usunięto obserwację pojedynczych list i budżetów",
+        "Codzienny digest e-mail: sekcje „Dziś ważne” i „Aktywność (24 h)” z wybranych modułów",
+        "Odświeżony dzwonek i widok /notifications z etykietami modułów",
+      ],
+      en: [
+        "Settings → Notifications: 11 modules × in-app, push, and email matrix",
+        "Unified dispatch with channel filters; removed per-list and per-budget watches",
+        "Daily email digest: “Important today” and “Activity (24h)” from selected modules",
+        "Refreshed bell and /notifications view with module labels",
+      ],
+    },
+  },
+  {
     version: "0.5.6",
     date: "2026-06-28",
     type: CHANGELOG_ENTRY_TYPE.FIX,

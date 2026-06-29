@@ -1,29 +1,29 @@
 import type { CreatedTestUser } from "../support/commands";
 import { t } from "../support/texts";
 
-describe("Zakupy — obserwacja listy i powiadomienie", () => {
+describe("Zakupy — powiadomienie modułu zakupów", () => {
   let owner: CreatedTestUser;
-  let watcher: CreatedTestUser;
-  const listName = "Lista E2E obserwacji";
+  let member: CreatedTestUser;
+  const listName = "Lista E2E powiadomień";
   const itemName = "mleko";
 
   before(() => {
     cy.setupOnboardedFamilyUser({
-      prefix: "shopping-watch-owner",
+      prefix: "shopping-module-owner",
       firstName: "Owner",
       lastName: "Zakupy",
-      familyName: "Rodzina Obserwacji",
+      familyName: "Rodzina Powiadomień",
     }).then((user) => {
       owner = user;
     });
   });
 
   after(() => {
-    if (watcher?.userId) cy.deleteTestUser(watcher.userId);
+    if (member?.userId) cy.deleteTestUser(member.userId);
     if (owner?.userId) cy.deleteTestUser(owner.userId);
   });
 
-  it("watcher dostaje wpis w /notifications gdy inny członek doda pozycję", () => {
+  it("członek rodziny dostaje wpis w /notifications gdy inny doda pozycję (moduł zakupów)", () => {
     cy.login(owner.email, owner.password);
     cy.visit("/shopping");
     cy.contains("button", "Nowa lista").click();
@@ -33,20 +33,15 @@ describe("Zakupy — obserwacja listy i powiadomienie", () => {
     cy.contains(listName).should("be.visible");
 
     cy.getFamilyInviteCode(owner.userId).then((inviteCode) => {
-      cy.createTestUser({ prefix: "shopping-watch-joiner" }).then((user) => {
-        watcher = user;
-        cy.login(watcher.email, watcher.password);
+      cy.createTestUser({ prefix: "shopping-module-joiner" }).then((user) => {
+        member = user;
+        cy.login(member.email, member.password);
         cy.visit("/onboarding");
         cy.completeOnboardingJoin({
-          firstName: "Watcher",
-          lastName: "Obserwator",
+          firstName: "Member",
+          lastName: "Rodzina",
           inviteCode,
         });
-
-        cy.visit("/shopping");
-        cy.contains(listName).click();
-        cy.contains("button", "Obserwuj").click();
-        cy.contains("button", "Przestań obserwować").should("be.visible");
 
         cy.login(owner.email, owner.password);
         cy.visit("/shopping");
@@ -55,7 +50,7 @@ describe("Zakupy — obserwacja listy i powiadomienie", () => {
         cy.contains("button", "Dodaj").click();
         cy.contains(itemName).should("be.visible");
 
-        cy.login(watcher.email, watcher.password);
+        cy.login(member.email, member.password);
         cy.visit("/notifications");
         cy.contains("h1", t.notifications.title).should("be.visible");
         cy.contains(listName).should("be.visible");

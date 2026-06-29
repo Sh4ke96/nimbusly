@@ -49,7 +49,7 @@ export const pl: Dict = {
     offlineTitle: "Brak połączenia",
     offlineDesc:
       "Nimbusly potrzebuje internetu do synchronizacji danych rodziny. Sprawdź sieć i spróbuj ponownie.",
-    offlineHome: "Przejdź do panelu",
+    offlineHome: "Przejdź do strony głównej",
     offlineRetry: "Odśwież",
     installTitle: "Zainstaluj Nimbusly",
     installDesc: "Dodaj aplikację na ekran główny — szybszy dostęp bez paska przeglądarki.",
@@ -62,7 +62,7 @@ export const pl: Dict = {
     pushPromptDismiss: "Później",
     pushSettingLabel: "Powiadomienia push (PWA)",
     pushSettingDesc:
-      "Alerty na ekranie blokady po zainstalowaniu aplikacji. Działają na Androidzie i na iOS 16.4+ z ekranu głównego.",
+      "Alerty na ekranie blokady dla modułów z włączonym push. Wymaga zainstalowanej aplikacji — Android lub iOS 16.4+ z ekranu głównego.",
     pushEnableBtn: "Włącz push",
     pushDisableBtn: "Wyłącz push",
     pushEnabled: "Powiadomienia push włączone.",
@@ -75,7 +75,6 @@ export const pl: Dict = {
     pushIosInstallRequired:
       "Na iPhonie dodaj Nimbusly do ekranu głównego (Safari → Udostępnij), potem włącz push w ustawieniach profilu.",
     pushNotConfigured: "Push nie jest skonfigurowany na serwerze (brak kluczy VAPID).",
-    pushDevOnly: "Powiadomienia push działają tylko w buildzie produkcyjnym (yarn build && yarn start).",
     pushSwNotReady: "Service worker jeszcze się ładuje — odśwież aplikację i spróbuj ponownie.",
     pushSubscribeFailed: "Nie udało się utworzyć subskrypcji push w przeglądarce.",
     pushGrantedTapEnable:
@@ -393,6 +392,18 @@ export const pl: Dict = {
     menuPermissions: "Uprawnienia",
     menuShoppingCategories: "Kategorie zakupów",
     menuPassword: "Zmień hasło",
+    menuNotifications: "Powiadomienia",
+    notificationSettingsDesc:
+      "Wybierz, z których modułów chcesz otrzymywać powiadomienia w aplikacji, push i codzienny e-mail z podsumowaniem.",
+    notificationGlobalHeading: "Kanały globalne",
+    notificationModulesHeading: "Moduły",
+    notificationModuleColumn: "Moduł",
+    notificationChannelInApp: "W aplikacji",
+    notificationChannelPush: "Push",
+    notificationChannelEmail: "E-mail",
+    notificationChannelInAppDesc: "Wpisy w dzwonku i na stronie Powiadomienia.",
+    notificationChannelPushDesc: "Alerty systemowe poza aplikacją (wymaga włączonego push globalnie).",
+    notificationChannelEmailDesc: "Pozycje w codziennym mailu z podsumowaniem (wymaga włączonego digestu globalnie).",
     profileTitle: "Twój profil",
     accountTypeTitle: "Typ konta",
     accountTypeDesc: "Wybierz, czy korzystasz solo, czy z rodziną.",
@@ -512,12 +523,12 @@ export const pl: Dict = {
     changePasswordSuccessTitle: "Sprawdź swoją skrzynkę!",
     changePasswordSuccessMessage: "Wysłaliśmy link do zmiany hasła. Kliknij go w mailu, aby ustawić nowe hasło.",
     changePasswordBack: "Wróć do panelu",
-    pushNotificationsPrefLabel: "Powiadomienia push z serwera",
+    pushNotificationsPrefLabel: "Powiadomienia push",
     pushNotificationsPrefDesc:
-      "Gdy wyłączone, Nimbusly nie wysyła powiadomień push o zmianach w rodzinie (subskrypcja urządzenia może pozostać aktywna).",
+      "Alerty poza aplikacją na telefonie lub komputerze. Włącz kanał globalnie, a potem wybierz moduły w tabeli poniżej.",
     emailDigestPrefLabel: "Codzienny digest e-mail",
     emailDigestPrefDesc:
-      "Przypomnienia o zadaniach, lekach, urodzinach i innych sprawach wysyłane raz dziennie na Twój adres logowania.",
+      "Raz dziennie podsumowanie ważnych spraw i aktywności z wybranych modułów — na adres Twojego konta.",
     settingsTitle: "Ustawienia konta",
     settingsSubtitle: "Zarządzaj profilem, rodziną i bezpieczeństwem konta.",
     appVersionHint: "Zainstalowana wersja aplikacji",
@@ -1534,7 +1545,16 @@ export const pl: Dict = {
     pageNumberLabel: "Strona {page}",
     openBirthdays: "Otwórz kalendarz urodzin",
     deliveryChannelsHint:
-      "Push działa w zainstalowanej PWA (ustawienia profilu). Codzienny digest e-mail wysyła cron, gdy skonfigurowany jest Resend — wyłączysz go w profilu.",
+      "Push i e-mail konfigurujesz w ustawieniach → Powiadomienia.",
+    digestEmailSubject: "Nimbusly — podsumowanie dnia ({count})",
+    digestEmailHeading: "Twoje podsumowanie dnia",
+    digestEmailIntro: "Najważniejsze informacje z modułów, które śledzisz:",
+    digestEmailFooter:
+      "Wyłącz digest lub wybierz moduły w ustawieniach → Powiadomienia.",
+    digestAttentionHeading: "Dziś ważne",
+    digestActivityHeading: "Aktywność (24 h)",
+    settingsLink: "Ustawienia powiadomień",
+    moduleFilterAll: "Wszystkie moduły",
     reminderEmailSubject: "Nimbusly — {count} rzeczy wymaga uwagi",
     reminderEmailHeading: "Wymaga uwagi",
     reminderEmailIntro: "Oto skrót terminów i zadań z Twojego domowego panelu:",

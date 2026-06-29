@@ -53,6 +53,10 @@ const introPl = {
     "Profil i Nimbus",
     "Tu zmieniasz imię, kolor avatara i decydujesz, czy Nimbus ma Ci towarzyszyć."
   ),
+  settingsNotifications: step(
+    "Powiadomienia per moduł",
+    "W zakładce Powiadomienia włączasz in-app, push i e-mail dla każdego modułu — bez obserwowania pojedynczych list."
+  ),
 };
 
 const introEn = {
@@ -96,6 +100,10 @@ const introEn = {
     "Profile and Nimbus",
     "Update your name, avatar color, and whether Nimbus stays visible."
   ),
+  settingsNotifications: step(
+    "Per-module notifications",
+    "In the Notifications tab, enable in-app, push, and email per module — no need to watch individual lists."
+  ),
 };
 
 const modulesPl = {
@@ -108,7 +116,6 @@ const modulesPl = {
     income: step("Przychody", "Dodawaj wpisy przychodów obok wydatków — saldo liczy się automatycznie."),
     filters: step("Filtry i wpisy", "Filtruj wydatki i dodawaj nowe pozycje do aktywnego budżetu."),
     export: step("Eksport i druk", "Pobierz CSV lub wydrukuj zestawienie miesiąca do archiwum."),
-    watch: step("Obserwowanie", "Przypnij budżet do dashboardu — szybki podgląd bez wchodzenia w moduł."),
   },
   shopping: {
     header: step("Listy zakupów", "Wspólne listy dla całej rodziny — na telefonie i przy komputerze."),
@@ -116,7 +123,6 @@ const modulesPl = {
     lists: step("Twoje listy", "Wybierz listę, aby zobaczyć i edytować produkty."),
     items: step("Produkty na liście", "Tu oznaczasz co kupione, dodajesz ilości i kategorie."),
     categories: step("Kategorie rodzinne", "Produkty grupują się w kategorie — założyciel rodziny je konfiguruje."),
-    watch: step("Obserwowanie listy", "Przypnij listę do dashboardu, żeby widzieć postęp zakupów."),
     addItem: step("Dodawanie produktu", "Szybko dopisz kolejną pozycję — zostanie na liście do odhaczenia."),
   },
   gifts: {
@@ -210,7 +216,6 @@ const modulesEn: Record<string, Record<string, StepCopy>> = {
     income: step("Income", "Add income entries alongside expenses — balance updates automatically."),
     filters: step("Filters and entries", "Filter expenses and add new entries to the active budget."),
     export: step("Export and print", "Download CSV or print the monthly summary for your records."),
-    watch: step("Watch budget", "Pin a budget to the dashboard for a quick snapshot."),
   },
   shopping: {
     header: step("Shopping lists", "Shared lists for the whole family — on phone or desktop."),
@@ -218,7 +223,6 @@ const modulesEn: Record<string, Record<string, StepCopy>> = {
     lists: step("Your lists", "Select a list to view and edit its items."),
     items: step("List items", "Check off purchases, add quantities and categories."),
     categories: step("Family categories", "Items group into categories — the family founder configures them."),
-    watch: step("Watch list", "Pin a list to the dashboard to track shopping progress."),
     addItem: step("Add item", "Quickly add another product to check off later."),
   },
   gifts: {
@@ -437,7 +441,7 @@ export const nimbusCompanionExtraPl = {
     watchlist: "Lista do obejrzenia działa solo lub w rodzinie — oznaczaj platformy i status.",
     restaurants: "Zapisuj miejsca do odwiedzenia — notatki po wizycie pomogą później.",
     pets: "Tu pilnujesz szczepień i wizyt u weterynarza — dodaj pupila i zadania opieki.",
-    notifications: "Powiadomienia zbierają aktywność rodziny — filtruj nieprzeczytane.",
+    notifications: "Powiadomienia zbierają aktywność rodziny — włącz kanały per moduł w ustawieniach.",
   },
   suggestions: {
     budgetNoMedicine: "Masz już budżet — może czas uzupełnić apteczkę o daty ważności leków?",
@@ -500,7 +504,7 @@ export const nimbusCompanionExtraPl = {
     },
     notifications: {
       q: "Skąd biorą się powiadomienia?",
-      a: "Gdy ktoś w rodzinie doda lub zmieni dane — budżet, listę, obowiązek — pojawi się tu wpis z linkiem.",
+      a: "Gdy ktoś w rodzinie doda lub zmieni dane — budżet, listę, obowiązek — pojawi się tu wpis. Kanały włączasz w Ustawienia → Powiadomienia.",
     },
     globalSearch: {
       q: "Jak szukać w całej aplikacji?",
@@ -519,8 +523,8 @@ export const nimbusCompanionExtraPl = {
       a: "W budżecie i listach zakupów użyj przycisku eksportu CSV przy aktywnym elemencie.",
     },
     watchDashboard: {
-      q: "Co to jest obserwowanie na dashboardzie?",
-      a: "Przypinasz budżet lub listę zakupów — karta pojawia się na dashboardzie bez wchodzenia w moduł.",
+      q: "Jak włączyć powiadomienia z modułu?",
+      a: "Ustawienia → Powiadomienia — macierz modułów z przełącznikami in-app, push i e-mail.",
     },
     shoppingCategories: {
       q: "Kto ustawia kategorie zakupów?",
@@ -641,7 +645,7 @@ export const nimbusCompanionExtraEn = {
     watchlist: "Watchlist works solo or with family — tag platforms and watched status.",
     restaurants: "Save places to visit — post-visit notes help later.",
     pets: "Track vaccines and vet visits here — add your pet and care tasks.",
-    notifications: "Notifications collect family activity — filter unread items.",
+    notifications: "Notifications collect family activity — enable channels per module in settings.",
   },
   suggestions: {
     budgetNoMedicine: "You have a budget — consider filling the medicine cabinet with expiry dates too.",
@@ -704,7 +708,7 @@ export const nimbusCompanionExtraEn = {
     },
     notifications: {
       q: "Where do notifications come from?",
-      a: "When someone in the family adds or changes data — budget, list, chore — an entry appears here with a link.",
+      a: "When someone in the family adds or changes data — budget, list, chore — an entry appears here. Enable channels in Settings → Notifications.",
     },
     globalSearch: {
       q: "How do I search the whole app?",
@@ -723,8 +727,8 @@ export const nimbusCompanionExtraEn = {
       a: "In Budget and Shopping lists, use the CSV export button on the active item.",
     },
     watchDashboard: {
-      q: "What is watching on the dashboard?",
-      a: "Pin a budget or shopping list — its card appears on the dashboard without opening the module.",
+      q: "How do I enable module notifications?",
+      a: "Settings → Notifications — per-module matrix with in-app, push, and email toggles.",
     },
     shoppingCategories: {
       q: "Who sets shopping categories?",

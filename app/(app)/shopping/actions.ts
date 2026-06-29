@@ -20,7 +20,6 @@ import {
   parseShoppingItemUpdateFromForm,
   parseShoppingListIdFromForm,
   parseShoppingListNameFromForm,
-  parseShoppingListWatchFromForm,
   parseShoppingReorderFromForm,
 } from "@/lib/shopping-lists/types";
 import {
@@ -33,12 +32,11 @@ import { getFamilyNotificationTitle } from "@/lib/notifications/family-notificat
 import { getDisplayName } from "@/lib/profile";
 import type { AccountActionState } from "@/app/(app)/account/actions";
 import { requireUser, getProfileFamilyContext } from "@/lib/server-actions/require-user";
-import { notifyEntityWatchers } from "@/lib/server-actions/notify-watchers";
 import { notifyFamilyMembers } from "@/lib/server-actions/notify-family";
 import type { ShoppingListItemUpdate } from "@/lib/supabase/app-rows";
 import { executeCreateShoppingList } from "@/lib/shopping-lists/server/create-shopping-list";
 
-async function notifyWatchersAboutListItemEvent(
+async function notifyFamilyAboutListItemEvent(
   supabase: Awaited<ReturnType<typeof createClient>>,
   params: {
     type: NotificationType;
@@ -46,22 +44,19 @@ async function notifyWatchersAboutListItemEvent(
     actorName: string;
     listId: string;
     listName: string;
-    familyId: string | null;
+    familyId: string;
     bodyDetail: string;
     itemContent: string;
   }
 ) {
   const t = await getServerT();
-  const title = getFamilyNotificationTitle(params.type, t.notifications, params.actorName);
   const body = `${params.listName}${t.notifications.notificationBodySeparator}${params.bodyDetail}`;
 
-  await notifyEntityWatchers(supabase, {
-    watchTable: "shopping_list_watches",
-    entityColumn: "list_id",
-    entityId: params.listId,
-    actorId: params.actorId,
+  await notifyFamilyMembers(supabase, {
     type: params.type,
-    title,
+    actorId: params.actorId,
+    actorName: params.actorName,
+    familyId: params.familyId,
     body,
     payload: {
       shopping_list_id: params.listId,
@@ -236,42 +231,6 @@ export async function deleteShoppingList(
   return { success: t.shoppingLists.deletedSuccess };
 }
 
-export async function toggleShoppingListWatch(
-  _prev: AccountActionState,
-  formData: FormData
-): Promise<AccountActionState> {
-  const t = await getServerT();
-  const { supabase, user } = await requireUser();
-
-  if (!user) return { error: t.account.errorUnauthorized };
-
-  const { listId, watch } = parseShoppingListWatchFromForm(formData);
-
-  if (!listId) return { error: t.shoppingLists.errorGeneric };
-
-  const list = await getAccessibleList(supabase, listId);
-  if (!list) return { error: t.shoppingLists.errorNotFound };
-
-  if (watch) {
-    const { error } = await supabase.from("shopping_list_watches").insert({
-      user_id: user.id,
-      list_id: listId,
-    });
-
-    if (error) return { error: t.shoppingLists.errorGeneric };
-    return { success: t.shoppingLists.watchEnabledSuccess };
-  }
-
-  const { error } = await supabase
-    .from("shopping_list_watches")
-    .delete()
-    .eq("user_id", user.id)
-    .eq("list_id", listId);
-
-  if (error) return { error: t.shoppingLists.errorGeneric };
-  return { success: t.shoppingLists.watchDisabledSuccess };
-}
-
 export async function addShoppingListItem(
   _prev: AccountActionState,
   formData: FormData
@@ -333,7 +292,11 @@ export async function addShoppingListItem(
     .eq("id", listId);
 
   const { profile } = await getProfileFamilyContext(supabase, user.id);
-  if (profile) {
+  if (
+    profile &&
+    list.family_id &&
+    profile.account_mode === ACCOUNT_MODE.FAMILY
+  ) {
     const actorName = getDisplayName(profile);
     const bodyDetail = formatShoppingListItemNotificationDetail(
       content,
@@ -341,7 +304,7 @@ export async function addShoppingListItem(
     );
 
     try {
-      await notifyWatchersAboutListItemEvent(supabase, {
+      await notifyFamilyAboutListItemEvent(supabase, {
         type: NOTIFICATION_TYPE.SHOPPING_LIST_ITEM_ADDED,
         actorId: user.id,
         actorName,
@@ -352,7 +315,7 @@ export async function addShoppingListItem(
         itemContent: content,
       });
     } catch {
-      // Saved; watcher notifications are best-effort
+      // Saved; notifications are best-effort
     }
   }
 
@@ -453,7 +416,12 @@ export async function deleteShoppingListItem(
 
   const itemContent = existingItem?.content ?? "";
   const { profile } = await getProfileFamilyContext(supabase, user.id);
-  if (profile && itemContent) {
+  if (
+    profile &&
+    itemContent &&
+    list.family_id &&
+    profile.account_mode === ACCOUNT_MODE.FAMILY
+  ) {
     const actorName = getDisplayName(profile);
     const bodyDetail = formatShoppingListItemNotificationDetail(
       itemContent,
@@ -461,7 +429,7 @@ export async function deleteShoppingListItem(
     );
 
     try {
-      await notifyWatchersAboutListItemEvent(supabase, {
+      await notifyFamilyAboutListItemEvent(supabase, {
         type: NOTIFICATION_TYPE.SHOPPING_LIST_ITEM_REMOVED,
         actorId: user.id,
         actorName,

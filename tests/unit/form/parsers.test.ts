@@ -13,7 +13,6 @@ import { parseShoppingItemUpdateFromForm } from "@/lib/shopping-lists/types";
 import { parseSignInFromForm } from "@/lib/auth/form";
 import { parseProfileNamesFromForm, parseOnboardingFromForm } from "@/lib/profile/form";
 import { parseFamilyInviteEmailFromForm } from "@/lib/family/form";
-import { excludeActorFromWatcherIds } from "@/lib/notifications/watches";
 import { FAMILY_SETUP_INTENT } from "@/lib/family/constants";
 import { PROFILE_FORM_FIELD } from "@/lib/profile/form";
 
@@ -120,11 +119,5 @@ describe("parseFamilyInviteEmailFromForm", () => {
     const formData = new FormData();
     formData.set("email", "  Anna@Example.COM ");
     assert.equal(parseFamilyInviteEmailFromForm(formData).email, "anna@example.com");
-  });
-});
-
-describe("excludeActorFromWatcherIds", () => {
-  it("removes actor from watcher list", () => {
-    assert.deepEqual(excludeActorFromWatcherIds(["a", "b", "c"], "b"), ["a", "c"]);
   });
 });

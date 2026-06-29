@@ -4,7 +4,6 @@ import { BUDGET_FORM_FIELD } from "@/lib/budget/types";
 import { useActionState, useMemo } from "react";
 import { Pencil, Trash2 } from "lucide-react";
 import { deleteBudget } from "@/app/(app)/budget/actions";
-import { BudgetWatchButton } from "@/components/budget/budget-watch-button";
 import { MemberAvatar } from "@/components/member-avatar";
 import { Card, CardContent, CardDescription, CardHeader, CardHeaderActionButton, CardHeaderActions, CardTitle, CARD_TITLE_ROW_CLASSNAME } from "@/components/ui/card";
 import { formatBudgetAmount, netBalance } from "@/lib/budget/aggregates";
@@ -15,7 +14,6 @@ import { getDisplayName, type FamilyMember } from "@/lib/profile";
 import {
   selectBudgetExpenses,
   selectBudgetMemberIds,
-  selectIsBudgetWatched,
   useBudgetStore,
 } from "@/lib/stores/budget-store";
 import { selectionCardClasses } from "@/lib/ui/selection-styles";
@@ -28,7 +26,6 @@ interface BudgetCardProps {
   onSelect: () => void;
   onEdit: () => void;
   onDeleted?: () => void;
-  onWatchChanged?: () => void;
 }
 
 export function BudgetCard({
@@ -38,16 +35,13 @@ export function BudgetCard({
   onSelect,
   onEdit,
   onDeleted,
-  onWatchChanged,
 }: BudgetCardProps) {
   const t = useT();
   const { lang } = useLang();
   const selectExpenses = useMemo(() => selectBudgetExpenses(budget.id), [budget.id]);
   const selectMemberIds = useMemo(() => selectBudgetMemberIds(budget.id), [budget.id]);
-  const selectWatched = useMemo(() => selectIsBudgetWatched(budget.id), [budget.id]);
   const entries = useBudgetStore(selectExpenses);
   const memberIds = useBudgetStore(selectMemberIds);
-  const watched = useBudgetStore(selectWatched);
   const balance = netBalance(entries);
 
   const budgetMembers = memberIds
@@ -84,12 +78,6 @@ export function BudgetCard({
           {formatBudgetAmount(balance, lang)}
         </CardDescription>
         <CardHeaderActions onClick={(e) => e.stopPropagation()}>
-          <BudgetWatchButton
-            budgetId={budget.id}
-            compact
-            onChanged={onWatchChanged}
-            className="border-r border-border [&_button]:size-8 [&_button]:rounded-none [&_button]:border-0 [&_button]:shadow-none"
-          />
           <CardHeaderActionButton onClick={onEdit} aria-label={t.budget.editBtn}>
             <Pencil className="size-4" />
           </CardHeaderActionButton>
@@ -106,29 +94,20 @@ export function BudgetCard({
           </form>
         </CardHeaderActions>
       </CardHeader>
-      <CardContent className="space-y-2 p-3 sm:p-4">
-        {watched && (
-          <p className="text-[11px] font-medium text-primary">{t.budget.watchingBadge}</p>
-        )}
-        {budgetMembers.length > 0 && (
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-[11px] text-muted-foreground">{t.budget.membersShort}:</span>
-            {budgetMembers.map((member) => (
-              <span
+      <CardContent className="pb-4">
+        {budgetMembers.length > 0 ? (
+          <div className="flex -space-x-2">
+            {budgetMembers.slice(0, 4).map((member) => (
+              <MemberAvatar
                 key={member.id}
-                className="inline-flex max-w-full items-center gap-1 text-[11px]"
-                title={getDisplayName(member)}
-              >
-                <MemberAvatar
-                  name={getDisplayName(member)}
-                  color={member.avatar_color}
-                  size="sm"
-                />
-                <span className="hidden truncate sm:inline">{getDisplayName(member)}</span>
-              </span>
+                name={getDisplayName(member)}
+                color={member.avatar_color}
+                size="sm"
+                className="ring-2 ring-background"
+              />
             ))}
           </div>
-        )}
+        ) : null}
       </CardContent>
     </Card>
   );

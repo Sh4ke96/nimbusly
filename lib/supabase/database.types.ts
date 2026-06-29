@@ -178,35 +178,6 @@ export type Database = {
           },
         ]
       }
-      budget_watches: {
-        Row: {
-          budget_id: string
-          created_at: string
-          id: string
-          user_id: string
-        }
-        Insert: {
-          budget_id: string
-          created_at?: string
-          id?: string
-          user_id: string
-        }
-        Update: {
-          budget_id?: string
-          created_at?: string
-          id?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "budget_watches_budget_id_fkey"
-            columns: ["budget_id"]
-            isOneToOne: false
-            referencedRelation: "budgets"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       budgets: {
         Row: {
           created_at: string
@@ -626,6 +597,41 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_module_preferences: {
+        Row: {
+          email_digest_enabled: boolean
+          in_app_enabled: boolean
+          module_id: string
+          push_enabled: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          email_digest_enabled?: boolean
+          in_app_enabled?: boolean
+          module_id: string
+          push_enabled?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          email_digest_enabled?: boolean
+          in_app_enabled?: boolean
+          module_id?: string
+          push_enabled?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_module_preferences_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pet_care_items: {
         Row: {
           care_type: string
@@ -1017,35 +1023,6 @@ export type Database = {
           },
         ]
       }
-      shopping_list_watches: {
-        Row: {
-          created_at: string
-          id: string
-          list_id: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          list_id: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          list_id?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "shopping_list_watches_list_id_fkey"
-            columns: ["list_id"]
-            isOneToOne: false
-            referencedRelation: "shopping_lists"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       shopping_lists: {
         Row: {
           created_at: string
@@ -1154,18 +1131,6 @@ export type Database = {
           p_recipient_ids: string[]
           p_title: string
           p_type: string
-        }
-        Returns: undefined
-      }
-      create_watcher_notifications: {
-        Args: {
-          p_body: string
-          p_entity_id: string
-          p_payload?: Json
-          p_recipient_ids: string[]
-          p_title: string
-          p_type: string
-          p_watch_kind: string
         }
         Returns: undefined
       }

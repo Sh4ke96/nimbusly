@@ -1,6 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/lib/supabase/database.types";
 import { NOTIFICATION_TYPE } from "@/lib/constants/notifications";
+import { APP_MODULE } from "@/lib/constants/app-modules";
 import { BUDGET_ENTRY_TYPE, type BudgetRecurrence } from "@/lib/constants/budget";
 import { dict } from "@/lib/i18n";
 import { LANG, type Lang } from "@/lib/constants/lang";
@@ -12,7 +13,10 @@ import {
   getBudgetReminderOffsetsToSend,
   resolveBudgetReminderDueDate,
 } from "@/lib/budget/reminders";
-import { pushNotificationsToRecipients } from "@/lib/notifications/push-recipients";
+import {
+  notifySystemModuleSubscribers,
+  resolveBudgetReminderRecipientIds,
+} from "@/lib/notifications/dispatch-system-module-notification";
 import type { Json } from "@/lib/supabase/database.types";
 
 const REMINDER_ACTOR = "Nimbusly";
@@ -126,17 +130,11 @@ export async function processBudgetPaymentReminders(
     );
     if (offsets.length === 0) continue;
 
-    const { data: watches } = await supabase
-      .from("budget_watches")
-      .select("user_id")
-      .eq("budget_id", expense.budget_id);
-
-    const recipientIds = [
-      ...new Set([
-        expense.created_by,
-        ...(watches ?? []).map((watch) => watch.user_id as string),
-      ]),
-    ];
+    const recipientIds = await resolveBudgetReminderRecipientIds(
+      supabase,
+      budget,
+      expense.created_by
+    );
 
     if (recipientIds.length === 0) continue;
 
@@ -175,12 +173,12 @@ export async function processBudgetPaymentReminders(
           offsetDays: offset,
         });
 
-        const { error: notifyError } = await supabase.rpc("create_system_notifications", {
-          p_recipient_ids: [recipientId],
-          p_type: NOTIFICATION_TYPE.BUDGET_EXPENSE_DUE_REMINDER,
-          p_title: title,
-          p_body: body,
-          p_payload: {
+        await notifySystemModuleSubscribers(supabase, {
+          moduleId: APP_MODULE.BUDGET,
+          type: NOTIFICATION_TYPE.BUDGET_EXPENSE_DUE_REMINDER,
+          title,
+          body,
+          payload: {
             budget_id: expense.budget_id,
             budget_name: budget.name,
             expense_id: expense.id,
@@ -188,20 +186,11 @@ export async function processBudgetPaymentReminders(
             offset_days: offset,
             family_id: budget.family_id,
             updated_at: new Date().toISOString(),
-          } as Json,
-        });
-
-        if (notifyError) {
-          errors.push(`${expense.id}:${recipientId}:${notifyError.message}`);
-          continue;
-        }
-        sent += 1;
-
-        await pushNotificationsToRecipients({
+          },
           recipientIds: [recipientId],
-          title,
-          body,
         });
+
+        sent += 1;
       }
 
       newKeys.push(key);

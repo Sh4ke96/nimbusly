@@ -8,7 +8,6 @@ import {
 } from "@/lib/shopping-lists/types";
 import { dedupeAsync } from "@/lib/stores/dedupe-async";
 import { compareNamesByProfileLang } from "@/lib/stores/sort-lang";
-import { watchedListIdsFromRows } from "@/lib/shopping-lists/watches";
 
 export const EMPTY_SHOPPING_LIST_ITEMS: ShoppingListItem[] = [];
 
@@ -18,12 +17,6 @@ export function selectShoppingListItems(
   return (state) => state.itemsByListId[listId] ?? EMPTY_SHOPPING_LIST_ITEMS;
 }
 
-export function selectIsListWatched(
-  listId: string
-): (state: ShoppingListsStore) => boolean {
-  return (state) => state.watchedListIds.includes(listId);
-}
-
 interface ShoppingListsStore {
   lists: ShoppingList[];
   itemsByListId: Record<string, ShoppingListItem[]>;
@@ -31,12 +24,8 @@ interface ShoppingListsStore {
   loading: boolean;
   itemsLoadingByListId: Record<string, boolean>;
   itemsErrorByListId: Record<string, boolean>;
-  watchedListIds: string[];
-  watchesLoaded: boolean;
-  watchesError: boolean;
   error: boolean;
   fetchLists: (force?: boolean) => Promise<void>;
-  fetchWatches: (force?: boolean) => Promise<void>;
   fetchItems: (listId: string, force?: boolean) => Promise<void>;
   applyListChange: (
     payload: RealtimePostgresChangesPayload<ShoppingList>
@@ -52,14 +41,11 @@ interface ShoppingListsStore {
 const initialState = {
   lists: [] as ShoppingList[],
   itemsByListId: {} as Record<string, ShoppingListItem[]>,
-  watchedListIds: [] as string[],
   loaded: false,
-  watchesLoaded: false,
   loading: false,
   itemsLoadingByListId: {} as Record<string, boolean>,
   itemsErrorByListId: {} as Record<string, boolean>,
   error: false,
-  watchesError: false,
 };
 
 function sortLists(lists: ShoppingList[]): ShoppingList[] {
@@ -96,34 +82,6 @@ export const useShoppingListsStore = create<ShoppingListsStore>((set, get) => ({
       } catch {
         set({ loading: false, loaded: true, error: true });
       }
-    });
-  },
-
-  fetchWatches: async (force = false) => {
-    if (!force && get().watchesLoaded) return;
-
-    return dedupeAsync("shopping-lists:watches", async () => {
-      const supabase = createClient();
-      const { data, error } = await supabase
-        .from("shopping_list_watches")
-        .select("list_id");
-
-      if (error) {
-        set({
-          watchedListIds: [],
-          watchesLoaded: true,
-          watchesError: true,
-        });
-        return;
-      }
-
-      set({
-        watchedListIds: watchedListIdsFromRows(
-          (data ?? []) as { list_id: string }[]
-        ),
-        watchesLoaded: true,
-        watchesError: false,
-      });
     });
   },
 

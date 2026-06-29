@@ -37,10 +37,15 @@ describe("nimbus tour catalog", () => {
     assert.ok(ids.includes("create-family"));
   });
 
-  it("deepens budget tour with income and watch steps", () => {
+  it("deepens budget tour with income and export steps", () => {
     const ids = getNimbusTourSteps(NIMBUS_TOUR_ID.BUDGET).map((step) => step.id);
     assert.ok(ids.includes("income"));
-    assert.ok(ids.includes("watch"));
+    assert.ok(!ids.includes("watch"));
     assert.ok(ids.includes("export"));
+  });
+
+  it("intro tour includes settings notifications step", () => {
+    const ids = getNimbusTourSteps(NIMBUS_TOUR_ID.INTRO).map((step) => step.id);
+    assert.ok(ids.includes("settings-notifications"));
   });
 });

@@ -6,6 +6,8 @@ import {
   type NotificationFilterTab,
 } from "@/lib/constants/notifications";
 import type { AppNotification } from "@/lib/notifications/types";
+import { getNotificationTypesForModule } from "@/lib/notifications/module-route";
+import type { NotificationModuleId } from "@/lib/constants/notification-modules";
 import { dedupeAsync } from "@/lib/stores/dedupe-async";
 import { useProfileStore } from "@/lib/stores/profile-store";
 
@@ -23,6 +25,7 @@ interface NotificationsStore {
   fetchNotificationsPage: (params: {
     filter: NotificationFilterTab;
     page: number;
+    moduleId?: NotificationModuleId | null;
   }) => Promise<void>;
   markReadLocally: (id: string) => void;
   markAllReadLocally: () => void;
@@ -116,14 +119,15 @@ export const useNotificationsStore = create<NotificationsStore>((set, get) => ({
     });
   },
 
-  fetchNotificationsPage: async ({ filter, page }) => {
+  fetchNotificationsPage: async ({ filter, page, moduleId = null }) => {
     const user = useProfileStore.getState().user;
     if (!user) {
       set({ pageItems: [], pageTotal: 0, pageLoading: false, pageError: false });
       return;
     }
 
-    const dedupeKey = `notifications:page:${filter}:${page}`;
+    const moduleKey = moduleId ?? "all";
+    const dedupeKey = `notifications:page:${filter}:${page}:${moduleKey}`;
     return dedupeAsync(dedupeKey, async () => {
       set({ pageLoading: true, pageError: false });
 
@@ -144,6 +148,13 @@ export const useNotificationsStore = create<NotificationsStore>((set, get) => ({
         query = query.is("read_at", null);
       } else if (filter === "read") {
         query = query.not("read_at", "is", null);
+      }
+
+      if (moduleId) {
+        const types = [...getNotificationTypesForModule(moduleId)];
+        if (types.length > 0) {
+          query = query.in("type", types);
+        }
       }
 
       const { data, count, error } = await query;

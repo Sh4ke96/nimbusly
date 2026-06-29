@@ -49,6 +49,9 @@ export function prepareTourStep(prepare: NimbusTourPrepare | undefined) {
     case NIMBUS_TOUR_PREPARE.SETTINGS_PASSWORD:
       dispatchSettingsTab(SETTINGS_TAB.PASSWORD);
       break;
+    case NIMBUS_TOUR_PREPARE.SETTINGS_NOTIFICATIONS:
+      dispatchSettingsTab(SETTINGS_TAB.NOTIFICATIONS);
+      break;
   }
 }
 

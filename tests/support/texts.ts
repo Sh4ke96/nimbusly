@@ -162,7 +162,7 @@ export const t = {
   },
   pwa: {
     offlineTitle: "Brak połączenia",
-    offlineHome: "Przejdź do panelu",
+    offlineHome: "Przejdź do strony głównej",
     installTitle: "Zainstaluj Nimbusly",
     installBtn: "Zainstaluj",
     installDismiss: "Nie teraz",

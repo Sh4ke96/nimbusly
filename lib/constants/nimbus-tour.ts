@@ -34,6 +34,7 @@ export const NIMBUS_TOUR_TARGET = {
   SETTINGS_ACCOUNT_TYPE: "settings-account-type",
   SETTINGS_SHOPPING_CATEGORIES: "settings-shopping-categories",
   SETTINGS_PASSWORD: "settings-password",
+  SETTINGS_NOTIFICATIONS: "settings-notifications",
   NOTIFICATIONS_HEADER: "notifications-header",
   NOTIFICATIONS_FILTERS: "notifications-filters",
   NOTIFICATIONS_LIST: "notifications-list",

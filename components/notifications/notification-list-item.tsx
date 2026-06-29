@@ -60,11 +60,18 @@ export function NotificationListItem({
         {createElement(getNotificationModuleIcon(item.type), { className: "size-5" })}
       </span>
       <div className="min-w-0 flex-1 space-y-1">
-        <div className="flex items-start justify-between gap-3">
-          <p className="font-medium text-sm">{item.title}</p>
-          <time className="shrink-0 text-xs text-muted-foreground">
+        <div className="flex flex-wrap items-center gap-2">
+          {moduleId ? (
+            <span className="inline-flex items-center rounded-none border border-primary/30 bg-primary/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
+              {t.dashboard.moduleLabels[moduleId]}
+            </span>
+          ) : null}
+          <time className="text-xs text-muted-foreground">
             {formatWhen(item.created_at, locale)}
           </time>
+        </div>
+        <div className="flex items-start justify-between gap-3">
+          <p className="font-medium text-sm">{item.title}</p>
         </div>
         <p className="text-sm text-muted-foreground">{item.body}</p>
         {moduleHref && moduleLinkLabel && (

@@ -19,7 +19,6 @@ import { BudgetExpenseFormDialog } from "@/components/budget/budget-expense-form
 import { BudgetExpensesList } from "@/components/budget/budget-expenses-list";
 import { BudgetFormDialog } from "@/components/budget/budget-form-dialog";
 import { BudgetMonthPicker } from "@/components/budget/budget-month-picker";
-import { BudgetWatchButton } from "@/components/budget/budget-watch-button";
 import { NimbusTourToolbarAnchor } from "@/components/nimbus/nimbus-tour-toolbar-anchor";
 import { FamilyRealtimeHint } from "@/components/ui/family-realtime-hint";
 import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus-tour";
@@ -78,7 +77,6 @@ export function BudgetView() {
   const loading = useBudgetStore((s) => s.loading);
   const error = useBudgetStore((s) => s.error);
   const fetchBudgets = useBudgetStore((s) => s.fetchBudgets);
-  const fetchWatches = useBudgetStore((s) => s.fetchWatches);
 
   const [showHiddenBudgets, setShowHiddenBudgets] = useState<boolean>(false);
 
@@ -187,10 +185,6 @@ export function BudgetView() {
     onChange: onBudgetDataChanged,
   });
 
-  useEffect(() => {
-    void fetchWatches();
-  }, [fetchWatches]);
-
   if (activeBudgetId !== filtersBudgetId) {
     setFiltersBudgetId(activeBudgetId);
     if (filtersBudgetId !== null) {
@@ -213,10 +207,6 @@ export function BudgetView() {
   }
 
   const onDataChanged = useModuleRefresh(fetchBudgets);
-
-  const onWatchChanged = () => {
-    void fetchWatches(true);
-  };
 
   function openEdit(budget: Budget) {
     setEditingBudget(budget);
@@ -373,7 +363,6 @@ export function BudgetView() {
                     onSelect={() => selectBudget(budget.id)}
                     onEdit={() => openEdit(budget)}
                     onDeleted={onDataChanged}
-                    onWatchChanged={onWatchChanged}
                   />
                 ))}
               </div>
@@ -475,13 +464,6 @@ export function BudgetView() {
                           onCategoryChange={setCategoryFilter}
                         />
                       </NimbusTourToolbarAnchor>
-                      <div data-nimbus-tour={NIMBUS_TOUR_TARGET.BUDGET_WATCH}>
-                        <BudgetWatchButton
-                          budgetId={activeBudgetId}
-                          compact
-                          onChanged={onWatchChanged}
-                        />
-                      </div>
                       <div data-nimbus-tour={NIMBUS_TOUR_TARGET.BUDGET_EXPORT}>
                         <Button
                           type="button"

@@ -21,7 +21,6 @@ import {
   parseBudgetMemberIdsFromForm,
   parseBudgetNameFromForm,
   parseBudgetRecurrenceFromForm,
-  parseBudgetWatchFromForm,
 } from "@/lib/budget/types";
 import { isValidBudgetRecurrence } from "@/lib/budget/recurrence";
 import { BUDGET_ENTRY_TYPE } from "@/lib/constants/budget";
@@ -31,11 +30,10 @@ import { getFamilyNotificationTitle } from "@/lib/notifications/family-notificat
 import { getDisplayName } from "@/lib/profile";
 import type { AccountActionState } from "@/app/(app)/account/actions";
 import { requireUser, getProfileFamilyContext } from "@/lib/server-actions/require-user";
-import { notifyEntityWatchers } from "@/lib/server-actions/notify-watchers";
 import { notifyFamilyMembers } from "@/lib/server-actions/notify-family";
 import { executeCreateBudget } from "@/lib/budget/server/create-budget";
 
-async function notifyWatchersAboutBudgetExpenseEvent(
+async function notifyFamilyAboutBudgetExpenseEvent(
   supabase: Awaited<ReturnType<typeof createClient>>,
   params: {
     type: NotificationType;
@@ -43,23 +41,20 @@ async function notifyWatchersAboutBudgetExpenseEvent(
     actorName: string;
     budgetId: string;
     budgetName: string;
-    familyId: string | null;
+    familyId: string;
     bodyDetail: string;
     amount: number;
     category: string;
   }
 ) {
   const t = await getServerT();
-  const title = getFamilyNotificationTitle(params.type, t.notifications, params.actorName);
   const body = `${params.budgetName}${t.notifications.notificationBodySeparator}${params.bodyDetail}`;
 
-  await notifyEntityWatchers(supabase, {
-    watchTable: "budget_watches",
-    entityColumn: "budget_id",
-    entityId: params.budgetId,
-    actorId: params.actorId,
+  await notifyFamilyMembers(supabase, {
     type: params.type,
-    title,
+    actorId: params.actorId,
+    actorName: params.actorName,
+    familyId: params.familyId,
     body,
     payload: {
       budget_id: params.budgetId,
@@ -299,38 +294,6 @@ export async function deleteBudget(
   return { success: t.budget.deletedSuccess };
 }
 
-export async function toggleBudgetWatch(
-  _prev: AccountActionState,
-  formData: FormData
-): Promise<AccountActionState> {
-  const t = await getServerT();
-  const { supabase, user } = await requireUser();
-  if (!user) return { error: t.account.errorUnauthorized };
-
-  const { budgetId, watch } = parseBudgetWatchFromForm(formData);
-  if (!budgetId) return { error: t.budget.errorGeneric };
-
-  const budget = await getAccessibleBudget(supabase, budgetId);
-  if (!budget) return { error: t.budget.errorNotFound };
-
-  if (watch) {
-    const { error } = await supabase.from("budget_watches").insert({
-      user_id: user.id,
-      budget_id: budgetId,
-    });
-    if (error) return { error: t.budget.errorGeneric };
-    return { success: t.budget.watchEnabledSuccess };
-  }
-
-  const { error } = await supabase
-    .from("budget_watches")
-    .delete()
-    .eq("user_id", user.id)
-    .eq("budget_id", budgetId);
-  if (error) return { error: t.budget.errorGeneric };
-  return { success: t.budget.watchDisabledSuccess };
-}
-
 export async function addBudgetExpense(
   _prev: AccountActionState,
   formData: FormData
@@ -382,7 +345,11 @@ export async function addBudgetExpense(
     .eq("id", budgetId);
 
   const { profile } = await getProfileFamilyContext(supabase, user.id);
-  if (profile) {
+  if (
+    profile &&
+    budget.family_id &&
+    profile.account_mode === ACCOUNT_MODE.FAMILY
+  ) {
     const categoryLabel = resolveBudgetCategoryLabel(
       category,
       BUDGET_ENTRY_TYPE.EXPENSE,
@@ -395,7 +362,7 @@ export async function addBudgetExpense(
       t.budget
     );
     try {
-      await notifyWatchersAboutBudgetExpenseEvent(supabase, {
+      await notifyFamilyAboutBudgetExpenseEvent(supabase, {
         type: NOTIFICATION_TYPE.BUDGET_EXPENSE_ADDED,
         actorId: user.id,
         actorName: getDisplayName(profile),
@@ -465,7 +432,11 @@ export async function addBudgetIncome(
     .eq("id", budgetId);
 
   const { profile } = await getProfileFamilyContext(supabase, user.id);
-  if (profile) {
+  if (
+    profile &&
+    budget.family_id &&
+    profile.account_mode === ACCOUNT_MODE.FAMILY
+  ) {
     const categoryLabel = resolveBudgetCategoryLabel(
       category,
       BUDGET_ENTRY_TYPE.INCOME,
@@ -478,7 +449,7 @@ export async function addBudgetIncome(
       t.budget
     );
     try {
-      await notifyWatchersAboutBudgetExpenseEvent(supabase, {
+      await notifyFamilyAboutBudgetExpenseEvent(supabase, {
         type: NOTIFICATION_TYPE.BUDGET_INCOME_ADDED,
         actorId: user.id,
         actorName: getDisplayName(profile),
@@ -533,7 +504,11 @@ export async function deleteBudgetExpense(
 
   if (existing) {
     const { profile } = await getProfileFamilyContext(supabase, user.id);
-    if (profile) {
+    if (
+      profile &&
+      budget.family_id &&
+      profile.account_mode === ACCOUNT_MODE.FAMILY
+    ) {
       const entryType = existing.entry_type ?? BUDGET_ENTRY_TYPE.EXPENSE;
       const categoryLabel = resolveBudgetCategoryLabel(
         existing.category as string,
@@ -551,7 +526,7 @@ export async function deleteBudgetExpense(
           ? NOTIFICATION_TYPE.BUDGET_INCOME_REMOVED
           : NOTIFICATION_TYPE.BUDGET_EXPENSE_REMOVED;
       try {
-        await notifyWatchersAboutBudgetExpenseEvent(supabase, {
+        await notifyFamilyAboutBudgetExpenseEvent(supabase, {
           type: notificationType,
           actorId: user.id,
           actorName: getDisplayName(profile),

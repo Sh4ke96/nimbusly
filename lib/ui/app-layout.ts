@@ -30,7 +30,7 @@ export const APP_MOBILE_BOTTOM_NAV_Z = "z-50";
 
 /** Mobile bottom nav — always viewport-fixed; do not add `relative` here. */
 export const APP_MOBILE_BOTTOM_NAV_CLASS = cn(
-  "fixed inset-x-0 bottom-0 md:hidden app-mobile-bottom-nav",
+  "fixed inset-x-0 bottom-0 left-0 right-0 md:hidden app-mobile-bottom-nav",
   APP_MOBILE_BOTTOM_NAV_Z,
   "isolate border-t border-border bg-background",
   "shadow-[0_-1px_0_0_var(--border),0_-8px_24px_-4px_rgba(0,0,0,0.08)]"

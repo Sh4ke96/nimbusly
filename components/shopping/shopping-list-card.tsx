@@ -4,7 +4,6 @@ import { SHOPPING_FORM_FIELD } from "@/lib/shopping-lists/types";
 import { useActionState, useMemo } from "react";
 import { Pencil, Trash2 } from "lucide-react";
 import { deleteShoppingList } from "@/app/(app)/shopping/actions";
-import { ShoppingListWatchButton } from "@/components/shopping/shopping-list-watch-button";
 import {
   Card,
   CardContent,
@@ -20,7 +19,6 @@ import { formatMessage } from "@/lib/i18n/format";
 import { useT } from "@/lib/lang-context";
 import type { ShoppingList } from "@/lib/shopping-lists/types";
 import {
-  selectIsListWatched,
   selectShoppingListItems,
   useShoppingListsStore,
 } from "@/lib/stores/shopping-lists-store";
@@ -33,7 +31,6 @@ interface ShoppingListCardProps {
   onSelect: () => void;
   onEdit: () => void;
   onDeleted?: () => void;
-  onWatchChanged?: () => void;
 }
 
 export function ShoppingListCard({
@@ -42,13 +39,10 @@ export function ShoppingListCard({
   onSelect,
   onEdit,
   onDeleted,
-  onWatchChanged,
 }: ShoppingListCardProps) {
   const t = useT();
   const selectItems = useMemo(() => selectShoppingListItems(list.id), [list.id]);
-  const selectWatched = useMemo(() => selectIsListWatched(list.id), [list.id]);
   const items = useShoppingListsStore(selectItems);
-  const watched = useShoppingListsStore(selectWatched);
   const uncheckedCount = items.filter((item) => !item.checked).length;
   const totalCount = items.length;
 
@@ -86,12 +80,6 @@ export function ShoppingListCard({
               })}
         </CardDescription>
         <CardHeaderActions onClick={(e) => e.stopPropagation()}>
-          <ShoppingListWatchButton
-            listId={list.id}
-            compact
-            onChanged={onWatchChanged}
-            className="border-r border-border [&_button]:size-8 [&_button]:rounded-none [&_button]:border-0 [&_button]:shadow-none"
-          />
           <CardHeaderActionButton onClick={onEdit} aria-label={t.shoppingLists.editBtn}>
             <Pencil className="size-4" />
           </CardHeaderActionButton>
@@ -109,11 +97,6 @@ export function ShoppingListCard({
         </CardHeaderActions>
       </CardHeader>
       <CardContent className="p-4 space-y-2">
-        {watched && (
-          <p className="text-[11px] font-medium text-primary">
-            {t.shoppingLists.watchingBadge}
-          </p>
-        )}
         <p className="text-xs text-muted-foreground">
           {t.shoppingLists.updatedAt}:{" "}
           {new Date(list.updated_at).toLocaleString(undefined, {

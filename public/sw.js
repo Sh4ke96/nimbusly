@@ -1,4 +1,4 @@
-const CACHE_NAME = "nimbusly-shell-v2";
+const CACHE_NAME = "nimbusly-shell-v3";
 const PRECACHE_URLS = [
   "/offline",
   "/apple-touch-icon.png",

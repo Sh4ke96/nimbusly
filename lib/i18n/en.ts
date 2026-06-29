@@ -49,7 +49,7 @@ export const en: Dict = {
     offlineTitle: "You're offline",
     offlineDesc:
       "Nimbusly needs an internet connection to sync your family data. Check your network and try again.",
-    offlineHome: "Go to dashboard",
+    offlineHome: "Go to home page",
     offlineRetry: "Refresh",
     installTitle: "Install Nimbusly",
     installDesc: "Add the app to your home screen for faster access without the browser bar.",
@@ -62,7 +62,7 @@ export const en: Dict = {
     pushPromptDismiss: "Later",
     pushSettingLabel: "Push notifications (PWA)",
     pushSettingDesc:
-      "Lock-screen alerts after installing the app. Works on Android and on iOS 16.4+ from the home screen.",
+      "Lock-screen alerts for modules with push enabled. Requires the installed app — Android or iOS 16.4+ from the home screen.",
     pushEnableBtn: "Enable push",
     pushDisableBtn: "Disable push",
     pushEnabled: "Push notifications enabled.",
@@ -75,7 +75,6 @@ export const en: Dict = {
     pushIosInstallRequired:
       "On iPhone, add Nimbusly to your home screen (Safari → Share), then enable push in profile settings.",
     pushNotConfigured: "Push is not configured on the server (missing VAPID keys).",
-    pushDevOnly: "Push notifications only work in a production build (yarn build && yarn start).",
     pushSwNotReady: "The service worker is still loading — refresh the app and try again.",
     pushSubscribeFailed: "Could not create a push subscription in the browser.",
     pushGrantedTapEnable:
@@ -393,6 +392,18 @@ export const en: Dict = {
     menuPermissions: "Permissions",
     menuShoppingCategories: "Shopping categories",
     menuPassword: "Change password",
+    menuNotifications: "Notifications",
+    notificationSettingsDesc:
+      "Choose which modules send in-app alerts, push notifications, and daily email digest items.",
+    notificationGlobalHeading: "Global channels",
+    notificationModulesHeading: "Modules",
+    notificationModuleColumn: "Module",
+    notificationChannelInApp: "In-app",
+    notificationChannelPush: "Push",
+    notificationChannelEmail: "Email",
+    notificationChannelInAppDesc: "Entries in the bell and on the Notifications page.",
+    notificationChannelPushDesc: "System alerts outside the app (requires global push enabled).",
+    notificationChannelEmailDesc: "Items in the daily summary email (requires global digest enabled).",
     profileTitle: "Your profile",
     accountTypeTitle: "Account type",
     accountTypeDesc: "Choose whether you use Nimbusly solo or with a family.",
@@ -512,12 +523,12 @@ export const en: Dict = {
     changePasswordSuccessTitle: "Check your inbox!",
     changePasswordSuccessMessage: "We sent a password reset link. Click it in the email to set your new password.",
     changePasswordBack: "Back to dashboard",
-    pushNotificationsPrefLabel: "Server push notifications",
+    pushNotificationsPrefLabel: "Push notifications",
     pushNotificationsPrefDesc:
-      "When off, Nimbusly will not send push alerts about family changes (your device subscription may still be active).",
+      "Alerts outside the app on your phone or computer. Enable the channel globally, then pick modules in the table below.",
     emailDigestPrefLabel: "Daily email digest",
     emailDigestPrefDesc:
-      "Once-a-day reminders about chores, medicine, birthdays, and other items sent to your login email.",
+      "Once a day, a summary of important items and activity from selected modules — sent to your account email.",
     settingsTitle: "Account settings",
     settingsSubtitle: "Manage your profile, family, and account security.",
     appVersionHint: "Installed app version",
@@ -1534,7 +1545,16 @@ export const en: Dict = {
     pageNumberLabel: "Page {page}",
     openBirthdays: "Open birthday calendar",
     deliveryChannelsHint:
-      "Push works in the installed PWA (profile settings). The daily email digest runs via cron when Resend is configured — turn it off in your profile.",
+      "Configure push and email under Settings → Notifications.",
+    digestEmailSubject: "Nimbusly — daily summary ({count})",
+    digestEmailHeading: "Your daily summary",
+    digestEmailIntro: "Highlights from the modules you follow:",
+    digestEmailFooter:
+      "Turn off the digest or pick modules in Settings → Notifications.",
+    digestAttentionHeading: "Important today",
+    digestActivityHeading: "Activity (24h)",
+    settingsLink: "Notification settings",
+    moduleFilterAll: "All modules",
     reminderEmailSubject: "Nimbusly — {count} items need attention",
     reminderEmailHeading: "Needs attention",
     reminderEmailIntro: "Here is a digest of upcoming deadlines and tasks from your home dashboard:",

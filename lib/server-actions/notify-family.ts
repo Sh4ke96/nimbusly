@@ -2,10 +2,9 @@
 
 import { getServerT } from "@/lib/i18n/server";
 import type { NotificationType } from "@/lib/constants/notifications";
-import { dispatchInAppAndPushNotifications } from "@/lib/notifications/dispatch-notifications";
+import { notifyModuleSubscribers } from "@/lib/notifications/dispatch-module-notification";
 import { getFamilyNotificationTitle } from "@/lib/notifications/family-notification";
 import { createClient } from "@/lib/supabase/server";
-import type { Json } from "@/lib/supabase/database.types";
 
 export async function notifyFamilyMembers(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -38,21 +37,12 @@ export async function notifyFamilyMembers(
 
   const title = getFamilyNotificationTitle(params.type, t.notifications, params.actorName);
 
-  const { error } = await supabase.rpc("create_family_notifications", {
-    p_recipient_ids: recipientIds,
-    p_type: params.type,
-    p_title: title,
-    p_body: params.body,
-    p_payload: params.payload as Json,
-  });
-
-  await dispatchInAppAndPushNotifications({
-    rpcError: error,
-    logContext: "family notify",
-    recipientIds,
+  await notifyModuleSubscribers(supabase, {
     type: params.type,
     title,
     body: params.body,
     payload: params.payload,
+    actorId: params.actorId,
+    recipientIds,
   });
 }

@@ -125,9 +125,7 @@ export function PwaPushSetting() {
 
   const unsupportedReason = getPushUnsupportedReason();
   let hint = t.pwa.pushSettingDesc;
-  if (process.env.NODE_ENV !== "production") {
-    hint = t.pwa.pushDevOnly;
-  } else if (unsupportedReason === PUSH_UNSUPPORTED_REASON.IOS_NOT_INSTALLED) {
+  if (unsupportedReason === PUSH_UNSUPPORTED_REASON.IOS_NOT_INSTALLED) {
     hint = t.pwa.pushIosInstallRequired;
   } else if (unsupportedReason === PUSH_UNSUPPORTED_REASON.NO_VAPID) {
     hint = t.pwa.pushNotConfigured;

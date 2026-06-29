@@ -2,8 +2,21 @@ import {
   NOTIFICATION_FILTER_TAB,
   type NotificationFilterTab,
 } from "@/lib/constants/notifications";
+import {
+  isNotificationModuleId,
+  type NotificationModuleId,
+} from "@/lib/constants/notification-modules";
 
 export { NOTIFICATION_FILTER_TAB, type NotificationFilterTab };
+
+export function parseNotificationModuleId(
+  value: string | null | undefined
+): NotificationModuleId | null {
+  if (value && isNotificationModuleId(value)) {
+    return value;
+  }
+  return null;
+}
 
 export function parseNotificationFilterTab(
   value: string | null | undefined
@@ -19,7 +32,8 @@ export function parseNotificationFilterTab(
 
 export function notificationFilterHref(
   filter: NotificationFilterTab,
-  page = 1
+  page = 1,
+  moduleId: NotificationModuleId | null = null
 ): string {
   const params = new URLSearchParams();
   if (filter !== NOTIFICATION_FILTER_TAB.ALL) {
@@ -27,6 +41,9 @@ export function notificationFilterHref(
   }
   if (page > 1) {
     params.set("page", String(page));
+  }
+  if (moduleId) {
+    params.set("module", moduleId);
   }
   const query = params.toString();
   return query ? `/notifications?${query}` : "/notifications";

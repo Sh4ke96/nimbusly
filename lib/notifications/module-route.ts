@@ -70,6 +70,12 @@ export function getNotificationModuleId(
   return NOTIFICATION_MODULE_BY_TYPE.get(type) ?? null;
 }
 
+export function getNotificationTypesForModule(
+  moduleId: NotificationModuleId
+): readonly NotificationType[] {
+  return NOTIFICATION_TYPES_BY_MODULE[moduleId];
+}
+
 export function getNotificationModuleHref(type: NotificationType): string | null {
   const moduleId = getNotificationModuleId(type);
   return moduleId ? APP_MODULE_ROUTES[moduleId] : null;

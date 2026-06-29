@@ -2,7 +2,7 @@
 
 import { Fragment, useEffect, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { KeyRound, ListChecks, Palette, User, Users, type LucideIcon } from "lucide-react";
+import { KeyRound, ListChecks, Palette, User, Users, Bell, type LucideIcon } from "lucide-react";
 import { AppHeader } from "@/components/app/app-header";
 import { AppPage } from "@/components/app/app-page";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
@@ -15,6 +15,7 @@ import { FamilySection } from "@/components/profile/settings/family-section";
 import { NimbusTourToolbarAnchor } from "@/components/nimbus/nimbus-tour-toolbar-anchor";
 import { ShoppingCategoriesSection } from "@/components/profile/settings/shopping-categories-section";
 import { PasswordSection } from "@/components/profile/settings/password-section";
+import { NotificationModulePreferences } from "@/components/profile/settings/notification-module-preferences";
 import { SettingsTabHeader } from "@/components/profile/settings/settings-tab-header";
 import { SettingsSkeleton } from "@/components/profile/settings/settings-skeleton";
 import { AppVersionFooter } from "@/components/profile/settings/app-version-footer";
@@ -69,6 +70,7 @@ export default function ProfileSettingsPage() {
 
   const navItems: { value: SettingsTab; icon: LucideIcon; label: string }[] = [
     { value: SETTINGS_TAB.PROFILE, icon: Palette, label: t.account.menuProfile },
+    { value: SETTINGS_TAB.NOTIFICATIONS, icon: Bell, label: t.account.menuNotifications },
     { value: SETTINGS_TAB.ACCOUNT, icon: User, label: t.account.menuAccountType },
     ...(showFamily
       ? [{ value: SETTINGS_TAB.FAMILY, icon: Users, label: t.account.menuFamily }]
@@ -186,6 +188,10 @@ export default function ProfileSettingsPage() {
 
                   <TabsContent value={SETTINGS_TAB.PROFILE} className="mt-0 outline-none">
                     <ProfileForm />
+                  </TabsContent>
+
+                  <TabsContent value={SETTINGS_TAB.NOTIFICATIONS} className="mt-0 outline-none">
+                    <NotificationModulePreferences />
                   </TabsContent>
 
                   <TabsContent value={SETTINGS_TAB.ACCOUNT} className="mt-0 outline-none">

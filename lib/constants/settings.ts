@@ -1,6 +1,7 @@
 export const SETTINGS_TAB = {
   PROFILE: "profile",
   ACCOUNT: "account",
+  NOTIFICATIONS: "notifications",
   FAMILY: "family",
   PERMISSIONS: "permissions",
   SHOPPING_CATEGORIES: "shopping-categories",

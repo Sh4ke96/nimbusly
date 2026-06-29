@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { useSyncExternalStore } from "react";
+import { createPortal } from "react-dom";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Bell, LayoutGrid, LayoutDashboard, Settings } from "lucide-react";
 import { NimbusIcon } from "@/components/nimbus/nimbus-icon";
@@ -20,6 +22,14 @@ import { NotificationUnreadBadge, formatUnreadNotificationCount } from "@/compon
 import { APP_MOBILE_BOTTOM_NAV_CLASS } from "@/lib/ui/app-layout";
 import { cn } from "@/lib/utils";
 
+function subscribeClientMounted() {
+  return () => {};
+}
+
+function getClientMounted() {
+  return true;
+}
+
 const NAV_ITEMS: { id: MobileNavItem; icon: typeof LayoutDashboard }[] = [
   { id: MOBILE_NAV_ITEM.HOME, icon: LayoutDashboard },
   { id: MOBILE_NAV_ITEM.MODULES, icon: LayoutGrid },
@@ -32,6 +42,7 @@ export function MobileBottomNav() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const search = searchParams.toString();
+  const mounted = useSyncExternalStore(subscribeClientMounted, getClientMounted, () => false);
   const loaded = useProfileStore((s) => s.loaded);
   const profile = useProfileStore((s) => s.profile);
   const menuOpen = useNimbusStore((s) => s.menuOpen);
@@ -116,9 +127,13 @@ export function MobileBottomNav() {
     );
   }
 
-  return (
+  if (!mounted) {
+    return null;
+  }
+
+  return createPortal(
     <nav className={APP_MOBILE_BOTTOM_NAV_CLASS} aria-label={t.mobileNav.ariaLabel}>
-      <ul className={cn("grid h-14", showNimbus ? "grid-cols-5" : "grid-cols-4")}>
+      <ul className={cn("grid h-14 shrink-0", showNimbus ? "grid-cols-5" : "grid-cols-4")}>
         {NAV_ITEMS.slice(0, 2).map(({ id, icon }) => renderNavItem(id, icon))}
 
         {showNimbus ? (
@@ -153,6 +168,8 @@ export function MobileBottomNav() {
 
         {NAV_ITEMS.slice(2).map(({ id, icon }) => renderNavItem(id, icon))}
       </ul>
-    </nav>
+      <div className="app-mobile-bottom-nav-safe-area" aria-hidden />
+    </nav>,
+    document.body
   );
 }

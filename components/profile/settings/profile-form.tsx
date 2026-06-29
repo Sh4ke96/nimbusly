@@ -14,8 +14,6 @@ import { useProfileStore } from "@/lib/stores/profile-store";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
 import { SettingsFormFooter } from "@/components/profile/settings/settings-form-footer";
 import { NimbusCompanionSetting } from "@/components/profile/settings/nimbus-companion-setting";
-import { NotificationPreferencesSetting } from "@/components/profile/settings/notification-preferences-setting";
-import { PwaPushSetting } from "@/components/pwa/pwa-push-setting";
 import { updateProfile } from "@/app/(app)/account/actions";
 import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus";
 
@@ -103,10 +101,6 @@ export function ProfileForm() {
       </div>
 
       <NimbusCompanionSetting />
-
-      <NotificationPreferencesSetting />
-
-      <PwaPushSetting />
 
       <SettingsFormFooter
         pending={pending}

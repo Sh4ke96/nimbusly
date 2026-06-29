@@ -11,7 +11,6 @@ import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { ShoppingListCard } from "@/components/shopping/shopping-list-card";
 import { ShoppingListEditDialog } from "@/components/shopping/shopping-list-edit-dialog";
 import { ShoppingListFormDialog } from "@/components/shopping/shopping-list-form-dialog";
-import { ShoppingListWatchButton } from "@/components/shopping/shopping-list-watch-button";
 import { ShoppingListItemsPanel } from "@/components/shopping/shopping-list-items-panel";
 import { Button } from "@/components/ui/button";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
@@ -44,7 +43,6 @@ export function ShoppingListsView() {
   const loading = useShoppingListsStore((s) => s.loading);
   const error = useShoppingListsStore((s) => s.error);
   const fetchLists = useShoppingListsStore((s) => s.fetchLists);
-  const fetchWatches = useShoppingListsStore((s) => s.fetchWatches);
   const fetchItems = useShoppingListsStore((s) => s.fetchItems);
 
   const listIdsKey = useMemo(() => lists.map((list) => list.id).join("|"), [lists]);
@@ -69,10 +67,6 @@ export function ShoppingListsView() {
   }, [listFromUrl, lists, setSelectedListId]);
 
   useEffect(() => {
-    void fetchWatches();
-  }, [fetchWatches]);
-
-  useEffect(() => {
     if (activeListId) void fetchItems(activeListId);
   }, [activeListId, fetchItems]);
 
@@ -94,10 +88,6 @@ export function ShoppingListsView() {
     [activeListId]
   );
   const activeListItems = useShoppingListsStore(selectItems);
-
-  const onWatchChanged = () => {
-    void fetchWatches(true);
-  };
 
   const refreshLists = useModuleRefresh(fetchLists);
   const onListsChanged = useCallback(() => {
@@ -172,7 +162,6 @@ export function ShoppingListsView() {
                     onSelect={() => setSelectedListId(list.id)}
                     onEdit={() => openEdit(list)}
                     onDeleted={onListsChanged}
-                    onWatchChanged={onWatchChanged}
                   />
                 ))}
               </div>
@@ -195,17 +184,6 @@ export function ShoppingListsView() {
                       <Download className="size-4" />
                       {t.module.exportCsv}
                     </Button>
-                    {activeListId ? (
-                      <NimbusTourToolbarAnchor
-                        tourTarget={NIMBUS_TOUR_TARGET.SHOPPING_WATCH}
-                        visible={!!activeListId}
-                      >
-                        <ShoppingListWatchButton
-                          listId={activeListId}
-                          onChanged={onWatchChanged}
-                        />
-                      </NimbusTourToolbarAnchor>
-                    ) : null}
                   </div>
                 ) : null}
               </div>
