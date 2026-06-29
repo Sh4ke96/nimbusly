@@ -10,6 +10,12 @@ export function ProfileBootstrap({ children }: { children: React.ReactNode }) {
   const fetchSession = useProfileStore((s) => s.fetchSession);
 
   useEffect(() => {
+    const state = useProfileStore.getState();
+    if (state.loaded && state.profile) {
+      void useNotificationsStore.getState().fetchNotifications();
+      return;
+    }
+
     const fetchNotifications = useNotificationsStore.getState().fetchNotifications;
     void fetchSession().then(() => fetchNotifications());
   }, [fetchSession]);

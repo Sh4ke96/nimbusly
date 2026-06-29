@@ -1,10 +1,10 @@
 import { Suspense } from "react";
 import { ProfileBootstrap } from "@/components/profile/profile-bootstrap";
 import { NotificationsRealtimeBridge } from "@/components/notifications/notifications-realtime-bridge";
-import { NimbusCompanionHost } from "@/components/nimbus/nimbus-companion-host";
+import { NimbusCompanionHostLazy } from "@/components/nimbus/nimbus-companion-host-lazy";
 import { MobileBottomNav } from "@/components/app/mobile-bottom-nav";
-import { PwaInstallPrompt } from "@/components/pwa/pwa-install-prompt";
-import { PwaPushPrompt } from "@/components/pwa/pwa-push-prompt";
+import { PwaInstallPromptLazy } from "@/components/pwa/pwa-install-prompt-lazy";
+import { PwaPushPromptLazy } from "@/components/pwa/pwa-push-prompt-lazy";
 import { AmbientBackground } from "@/components/ui/ambient-background";
 import { NavigationTransition } from "@/components/app/navigation-transition";
 
@@ -15,13 +15,13 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <div className="relative">
         <AmbientBackground variant="app" />
         <div className="relative z-10 app-mobile-bottom-inset">{children}</div>
-        <PwaInstallPrompt />
-        <PwaPushPrompt />
+        <PwaInstallPromptLazy />
+        <PwaPushPromptLazy />
         <Suspense fallback={null}>
           <NavigationTransition />
         </Suspense>
       </div>
-      <NimbusCompanionHost />
+      <NimbusCompanionHostLazy />
       <Suspense fallback={null}>
         <MobileBottomNav />
       </Suspense>

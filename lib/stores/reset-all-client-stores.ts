@@ -14,9 +14,11 @@ import { useShoppingListsStore } from "@/lib/stores/shopping-lists-store";
 import { useShoppingCategoriesStore } from "@/lib/stores/shopping-categories-store";
 import { useWatchlistStore } from "@/lib/stores/watchlist-store";
 import { clearDedupeAsync } from "@/lib/stores/dedupe-async";
+import { resetHydratedDashboardSnapshot } from "@/lib/dashboard/hydrate-dashboard-snapshot";
 
 export function resetAllClientStores() {
   clearDedupeAsync();
+  resetHydratedDashboardSnapshot();
   useProfileStore.getState().reset();
   useNotificationsStore.getState().reset();
   useGiftsStore.getState().reset();

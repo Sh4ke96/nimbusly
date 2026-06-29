@@ -2,6 +2,10 @@
 
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
+import {
+  ONBOARDING_COMPLETE_COOKIE,
+  ONBOARDING_COMPLETE_COOKIE_VALUE,
+} from "@/lib/constants/session-cookies";
 import { createClient } from "@/lib/supabase/server";
 import { getServerT } from "@/lib/i18n/server";
 import { isAvatarColor } from "@/lib/avatar-colors";
@@ -195,8 +199,15 @@ export async function completeOnboarding(
     return { error: t.onboarding.errorGeneric };
   }
 
+  const cookieStore = await cookies();
+  cookieStore.set(ONBOARDING_COMPLETE_COOKIE, ONBOARDING_COMPLETE_COOKIE_VALUE, {
+    path: "/",
+    maxAge: 60 * 60 * 24 * 365,
+    sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
+  });
+
   if (familyIntent === FAMILY_SETUP_INTENT.JOIN) {
-    const cookieStore = await cookies();
     cookieStore.delete(INVITE_TOKEN_COOKIE);
     cookieStore.delete(INVITE_CODE_COOKIE);
   }

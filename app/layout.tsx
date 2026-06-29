@@ -1,16 +1,15 @@
+import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import type { Metadata, Viewport } from "next";
 import { Quicksand, Nunito, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "next-themes";
-import { cookies } from "next/headers";
 import { LangProvider } from "@/lib/lang-context";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { VersionBadge } from "@/components/app/version-badge";
 import { AuthSessionSync } from "@/components/auth/auth-session-sync";
-import { PwaRegister } from "@/components/pwa/pwa-register";
-import { LANG, LANG_COOKIE, type Lang } from "@/lib/constants/lang";
+import { PwaRegisterLazy } from "@/components/pwa/pwa-register-lazy";
+import { LANG } from "@/lib/constants/lang";
 import { PWA_ICON_APPLE_TOUCH } from "@/lib/constants/pwa";
 import { dict } from "@/lib/i18n";
 import "./globals.css";
@@ -19,48 +18,48 @@ const quicksand = Quicksand({
   variable: "--font-quicksand",
   subsets: ["latin"],
   weight: ["500", "600", "700"],
+  display: "swap",
+  adjustFontFallback: true,
 });
 
 const nunito = Nunito({
   variable: "--font-nunito",
   subsets: ["latin"],
   weight: ["400", "500", "600"],
+  display: "swap",
+  adjustFontFallback: true,
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
+  adjustFontFallback: true,
 });
 
-export async function generateMetadata(): Promise<Metadata> {
-  const cookieStore = await cookies();
-  const value = cookieStore.get(LANG_COOKIE)?.value;
-  const lang: Lang = value === LANG.EN ? LANG.EN : LANG.PL;
-
-  return {
-    title: dict[lang].meta.title,
-    description: dict[lang].meta.description,
-    applicationName: "Nimbusly",
-    appleWebApp: {
-      capable: true,
-      statusBarStyle: "black-translucent",
-      title: "Nimbusly",
-    },
-    formatDetection: {
-      telephone: false,
-    },
-    icons: {
-      icon: [
-        { url: "/icon.svg", type: "image/svg+xml" },
-        { url: "/pwa-icon-192.png", sizes: "192x192", type: "image/png" },
-      ],
-      shortcut: "/pwa-icon-192.png",
-      apple: [
-        { url: PWA_ICON_APPLE_TOUCH, sizes: "180x180", type: "image/png" },
-      ],
-    },
-  };
-}
+export const metadata: Metadata = {
+  title: dict[LANG.PL].meta.title,
+  description: dict[LANG.PL].meta.description,
+  applicationName: "Nimbusly",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Nimbusly",
+  },
+  formatDetection: {
+    telephone: false,
+  },
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/pwa-icon-192.png", sizes: "192x192", type: "image/png" },
+    ],
+    shortcut: "/pwa-icon-192.png",
+    apple: [
+      { url: PWA_ICON_APPLE_TOUCH, sizes: "180x180", type: "image/png" },
+    ],
+  },
+};
 
 export const viewport: Viewport = {
   themeColor: [
@@ -73,18 +72,14 @@ export const viewport: Viewport = {
   interactiveWidget: "resizes-visual",
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const cookieStore = await cookies();
-  const value = cookieStore.get(LANG_COOKIE)?.value;
-  const lang: Lang = value === LANG.EN ? LANG.EN : LANG.PL;
-
   return (
     <html
-      lang={lang}
+      lang={LANG.PL}
       data-scroll-behavior="smooth"
       className={`${quicksand.variable} ${nunito.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
@@ -95,10 +90,10 @@ export default async function RootLayout({
           defaultTheme="dark"
           disableTransitionOnChange
         >
-          <LangProvider initialLang={lang}>
+          <LangProvider initialLang={LANG.PL}>
             <TooltipProvider>
               <AuthSessionSync />
-              <PwaRegister />
+              <PwaRegisterLazy />
               {children}
               <VersionBadge />
               <Toaster

@@ -1,7 +1,26 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import {
+  ONBOARDING_COMPLETE_COOKIE,
+  ONBOARDING_COMPLETE_COOKIE_VALUE,
+} from '@/lib/constants/session-cookies'
 
-async function isOnboardingComplete(
+const PUBLIC_STATIC_PATHS = new Set(['/', '/change-log', '/offline'])
+
+const AUTH_PAGE_PATHS = new Set(['/login', '/register', '/reset-password'])
+
+function hasSupabaseAuthCookie(request: NextRequest): boolean {
+  return request.cookies.getAll().some((cookie) => cookie.name.includes('-auth-token'))
+}
+
+function readOnboardingCompleteCookie(request: NextRequest): boolean | null {
+  const value = request.cookies.get(ONBOARDING_COMPLETE_COOKIE)?.value
+  if (value === ONBOARDING_COMPLETE_COOKIE_VALUE) return true
+  if (value === '0') return false
+  return null
+}
+
+async function fetchOnboardingCompleteFromDb(
   supabase: ReturnType<typeof createServerClient>,
   userId: string
 ): Promise<boolean> {
@@ -18,7 +37,35 @@ async function isOnboardingComplete(
   return data.onboarding_completed === true
 }
 
+async function resolveOnboardingComplete(
+  request: NextRequest,
+  supabase: ReturnType<typeof createServerClient>,
+  userId: string
+): Promise<boolean> {
+  const cached = readOnboardingCompleteCookie(request)
+  if (cached !== null) {
+    return cached
+  }
+
+  return fetchOnboardingCompleteFromDb(supabase, userId)
+}
+
+function setOnboardingCookie(response: NextResponse, complete: boolean) {
+  response.cookies.set(ONBOARDING_COMPLETE_COOKIE, complete ? ONBOARDING_COMPLETE_COOKIE_VALUE : '0', {
+    path: '/',
+    maxAge: 60 * 60 * 24 * 365,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+  })
+}
+
 export async function updateSession(request: NextRequest) {
+  const pathname = request.nextUrl.pathname
+
+  if (PUBLIC_STATIC_PATHS.has(pathname) && !hasSupabaseAuthCookie(request)) {
+    return NextResponse.next({ request })
+  }
+
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
@@ -46,19 +93,19 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  const pathname = request.nextUrl.pathname
-
-  const authOnlyPaths = ['/login', '/register']
-  const isAuthPage = authOnlyPaths.includes(pathname)
+  const isAuthPage = AUTH_PAGE_PATHS.has(pathname)
 
   const isPublic =
-    pathname === '/' ||
-    pathname === '/change-log' ||
+    PUBLIC_STATIC_PATHS.has(pathname) ||
     isAuthPage ||
     pathname.startsWith('/api/auth/')
 
   if (user) {
-    const onboardingComplete = await isOnboardingComplete(supabase, user.id)
+    const onboardingComplete = await resolveOnboardingComplete(request, supabase, user.id)
+
+    if (readOnboardingCompleteCookie(request) === null) {
+      setOnboardingCookie(supabaseResponse, onboardingComplete)
+    }
 
     if (onboardingComplete && pathname === '/onboarding') {
       const url = request.nextUrl.clone()

@@ -11,6 +11,29 @@ export { CHANGELOG_ENTRY_TYPE, type ChangelogEntry };
  */
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "0.6.1",
+    date: "2026-06-28",
+    type: CHANGELOG_ENTRY_TYPE.MINOR,
+    title: {
+      pl: "Szybsze ładowanie aplikacji",
+      en: "Faster app loading",
+    },
+    changes: {
+      pl: [
+        "Statyczny landing i marketing bez blokującego render cookies() w root layout",
+        "Middleware: mniej zapytań Supabase na publicznych ścieżkach i cache onboardingu",
+        "Fonty z display: swap; dashboard z jednym server fetch i skeletonem pod CLS",
+        "PWA i Nimbus ładowane dynamicznie — mniejszy initial JS na pierwszym malowaniu",
+      ],
+      en: [
+        "Static landing and marketing without blocking cookies() in the root layout",
+        "Middleware: fewer Supabase calls on public paths and cached onboarding status",
+        "Fonts with display: swap; dashboard with one server fetch and CLS-friendly skeleton",
+        "PWA and Nimbus loaded dynamically — smaller initial JS on first paint",
+      ],
+    },
+  },
+  {
     version: "0.6.0",
     date: "2026-06-28",
     type: CHANGELOG_ENTRY_TYPE.MINOR,

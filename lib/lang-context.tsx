@@ -1,9 +1,16 @@
 "use client";
 
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useLayoutEffect, useState, type ReactNode } from "react";
 import { updatePreferredLang } from "@/app/(app)/account/lang-actions";
-import { LANG, LANG_COOKIE, type Lang } from "@/lib/constants/lang";
+import { LANG, LANG_COOKIE, LANGS, type Lang } from "@/lib/constants/lang";
 import { dict } from "./i18n";
+
+function readLangCookie(): Lang | null {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(new RegExp(`${LANG_COOKIE}=([^;]+)`));
+  const value = match?.[1];
+  return value && LANGS.includes(value as Lang) ? (value as Lang) : null;
+}
 
 interface LangContextValue {
   lang: Lang;
@@ -22,10 +29,18 @@ export function LangProvider({
   initialLang: Lang;
   children: ReactNode;
 }) {
-  const [lang, setLangState] = useState<Lang>(initialLang);
+  const [lang, setLangState] = useState<Lang>(() => {
+    if (typeof document === "undefined") return initialLang;
+    return readLangCookie() ?? initialLang;
+  });
+
+  useLayoutEffect(() => {
+    document.documentElement.lang = lang;
+  }, [lang]);
 
   function setLang(newLang: Lang) {
     document.cookie = `${LANG_COOKIE}=${newLang};path=/;max-age=31536000;SameSite=Lax`;
+    document.documentElement.lang = newLang;
     setLangState(newLang);
     void updatePreferredLang(newLang);
   }
