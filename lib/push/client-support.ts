@@ -10,13 +10,7 @@ function isIosDevice(): boolean {
   return /iphone|ipad|ipod/i.test(navigator.userAgent);
 }
 
-function isStandaloneDisplay(): boolean {
-  if (typeof window === "undefined") return false;
-  const nav = navigator as Navigator & { standalone?: boolean };
-  return (
-    window.matchMedia("(display-mode: standalone)").matches || nav.standalone === true
-  );
-}
+import { isStandaloneDisplay } from "@/lib/pwa/is-standalone-display";
 
 export function getPushUnsupportedReason(): PushUnsupportedReason | null {
   if (typeof window === "undefined") return PUSH_UNSUPPORTED_REASON.NO_API;

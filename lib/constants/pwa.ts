@@ -1,3 +1,6 @@
+/** Splash / letterbox behind viewport — matches light `:root --background`. */
+export const PWA_BACKGROUND_COLOR = "#f6f8f2" as const;
+
 export const PWA_SW_PATH = "/sw.js" as const;
 
 export const PWA_CACHE_NAME = "nimbusly-shell-v3" as const;

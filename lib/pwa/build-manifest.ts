@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import type { Lang } from "@/lib/constants/lang";
 import {
+  PWA_BACKGROUND_COLOR,
   PWA_ICON_192,
   PWA_ICON_512,
   PWA_ICON_SVG,
@@ -24,7 +25,7 @@ export function buildPwaManifest(t: Dict, lang: Lang): MetadataRoute.Manifest {
     display: "standalone",
     display_override: ["standalone", "minimal-ui", "browser"],
     orientation: "portrait-primary",
-    background_color: "#1f2a2e",
+    background_color: PWA_BACKGROUND_COLOR,
     theme_color: "#2B5748",
     lang,
     dir: "ltr",
