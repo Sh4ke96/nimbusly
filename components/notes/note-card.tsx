@@ -1,9 +1,11 @@
 "use client";
 
 import { useActionState } from "react";
-import { Pencil, StickyNote, Trash2 } from "lucide-react";
+import { Pencil, Pin, StickyNote, Trash2 } from "lucide-react";
+import { NOTE_CONTENT_FORMAT } from "@/lib/constants/notes";
 import { NOTE_FORM_FIELD } from "@/lib/notes/types";
 import type { Note, NoteCategory } from "@/lib/notes/types";
+import { NoteMarkdownContent } from "@/components/notes/note-markdown-content";
 import { isNoteVisibleToAllMembers } from "@/lib/notes/visibility";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import {
@@ -117,7 +119,12 @@ export function NoteCard({
               <StickyNote className="size-4" aria-hidden />
             </span>
           )}
-          <span className="min-w-0 flex-1 wrap-break-word">{note.title}</span>
+          <span className="min-w-0 flex-1 wrap-break-word">
+            {note.is_pinned && (
+              <Pin className="inline size-4 mr-1 text-attention" aria-hidden />
+            )}
+            {note.title}
+          </span>
         </CardTitle>
         <CardDescription>{categoryName}</CardDescription>
         {isOwner && (
@@ -141,9 +148,11 @@ export function NoteCard({
       </CardHeader>
       <CardContent className="p-4">
         {note.content.trim() && (
-          <p className="text-sm leading-relaxed text-foreground whitespace-pre-wrap line-clamp-4">
-            {note.content}
-          </p>
+          <NoteMarkdownContent
+            content={note.content}
+            contentFormat={note.content_format ?? NOTE_CONTENT_FORMAT.PLAIN}
+            className="line-clamp-4"
+          />
         )}
         <div className="mt-3 space-y-0.5 text-[11px] text-muted-foreground">
           {isFamily && !isNoteVisibleToAllMembers(note.visible_to_member_ids) && (

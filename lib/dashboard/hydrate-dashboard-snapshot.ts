@@ -10,6 +10,8 @@ import { usePetsStore } from "@/lib/stores/pets-store";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useRestaurantsStore } from "@/lib/stores/restaurants-store";
 import { useScheduleStore } from "@/lib/stores/schedule-store";
+import { useNotificationsStore } from "@/lib/stores/notifications-store";
+import { useShoppingCategoriesStore } from "@/lib/stores/shopping-categories-store";
 import { useShoppingListsStore } from "@/lib/stores/shopping-lists-store";
 import { useWatchlistStore } from "@/lib/stores/watchlist-store";
 
@@ -47,6 +49,22 @@ export function hydrateDashboardSnapshot(snapshot: DashboardSnapshot): void {
 
   useShoppingListsStore.setState({
     lists: snapshot.shoppingLists,
+    itemsByListId: snapshot.itemsByListId,
+    loaded: true,
+    loading: false,
+    error: false,
+  });
+
+  useShoppingCategoriesStore.setState({
+    categories: snapshot.shoppingCategories,
+    loaded: true,
+    loading: false,
+    error: false,
+  });
+
+  useNotificationsStore.setState({
+    items: snapshot.notifications,
+    unreadCount: snapshot.notificationsUnreadCount,
     loaded: true,
     loading: false,
     error: false,

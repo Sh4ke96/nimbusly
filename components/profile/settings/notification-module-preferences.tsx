@@ -20,6 +20,7 @@ import type { NotificationModulePreference } from "@/lib/notifications/module-pr
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useT } from "@/lib/lang-context";
 import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus-tour";
+import { NotificationQuietHoursSettings } from "@/components/profile/settings/notification-quiet-hours-settings";
 import { cn } from "@/lib/utils";
 
 function preferenceKey(moduleId: NotificationModuleId, channel: NotificationChannel): string {
@@ -152,6 +153,8 @@ export function NotificationModulePreferences() {
           </div>
         </div>
       </section>
+
+      <NotificationQuietHoursSettings />
 
       <section className="space-y-3">
         <h2 className="font-heading text-sm font-semibold uppercase tracking-wide text-muted-foreground">

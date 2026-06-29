@@ -9,12 +9,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { NoteEntryForm } from "@/components/notes/note-entry-form";
+import { NoteAttachmentsPanel } from "@/components/notes/note-attachments-panel";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import {
   isValidNoteVisibilitySelection,
   noteToVisibilitySelection,
   type NoteVisibilitySelection,
 } from "@/components/notes/note-visibility-picker";
+import { NOTE_CONTENT_FORMAT } from "@/lib/constants/notes";
 import type { Note, NoteCategory } from "@/lib/notes/types";
 import type { FamilyMember, Profile } from "@/lib/profile";
 import { useT } from "@/lib/lang-context";
@@ -56,6 +58,10 @@ function NoteEditForm({
   const [visibility, setVisibility] = useState<NoteVisibilitySelection>(() =>
     noteToVisibilitySelection(note)
   );
+  const [isPinned, setIsPinned] = useState<boolean>(() => note.is_pinned === true);
+  const [useMarkdown, setUseMarkdown] = useState<boolean>(
+    () => note.content_format === NOTE_CONTENT_FORMAT.MARKDOWN
+  );
   const [state, action, pending] = useActionState(updateNote, null);
 
   useActionFeedback(state, () => {
@@ -88,9 +94,14 @@ function NoteEditForm({
         categories={categories}
         visibility={visibility}
         onVisibilityChange={setVisibility}
+        isPinned={isPinned}
+        onIsPinnedChange={setIsPinned}
+        useMarkdown={useMarkdown}
+        onUseMarkdownChange={setUseMarkdown}
         profile={profile}
         members={members}
       />
+      <NoteAttachmentsPanel key={note.id} noteId={note.id} />
       <Button type="submit" className="w-full" disabled={pending}>
         {pending ? t.notes.saving : t.notes.saveBtn}
       </Button>

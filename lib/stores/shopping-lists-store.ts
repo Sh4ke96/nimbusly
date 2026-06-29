@@ -7,6 +7,7 @@ import {
   type ShoppingListItem,
 } from "@/lib/shopping-lists/types";
 import { dedupeAsync } from "@/lib/stores/dedupe-async";
+import { listFetchInitial, runListFetch } from "@/lib/stores/list-fetch";
 import { compareNamesByProfileLang } from "@/lib/stores/sort-lang";
 
 export const EMPTY_SHOPPING_LIST_ITEMS: ShoppingListItem[] = [];
@@ -41,11 +42,9 @@ interface ShoppingListsStore {
 const initialState = {
   lists: [] as ShoppingList[],
   itemsByListId: {} as Record<string, ShoppingListItem[]>,
-  loaded: false,
-  loading: false,
   itemsLoadingByListId: {} as Record<string, boolean>,
   itemsErrorByListId: {} as Record<string, boolean>,
-  error: false,
+  ...listFetchInitial,
 };
 
 function sortLists(lists: ShoppingList[]): ShoppingList[] {
@@ -59,29 +58,19 @@ export const useShoppingListsStore = create<ShoppingListsStore>((set, get) => ({
     if (!force && get().loaded && !get().loading && !get().error) return;
 
     return dedupeAsync("shopping-lists:list", async () => {
-      set({ loading: true, error: false });
-      try {
-        const supabase = createClient();
-        const { data, error } = await supabase
-          .from("shopping_lists")
-          .select("*")
-          .order("updated_at", { ascending: false });
-
-        if (error) {
-          set({ loading: false, loaded: true, error: true });
-          return;
-        }
-
-        const lists = sortLists((data ?? []) as ShoppingList[]);
-        set({
-          lists,
-          loaded: true,
-          loading: false,
-          error: false,
-        });
-      } catch {
-        set({ loading: false, loaded: true, error: true });
-      }
+      await runListFetch({
+        set,
+        query: async () => {
+          const supabase = createClient();
+          return supabase
+            .from("shopping_lists")
+            .select("*")
+            .order("updated_at", { ascending: false });
+        },
+        apply: (data) => {
+          set({ lists: sortLists((data ?? []) as ShoppingList[]) });
+        },
+      });
     });
   },
 

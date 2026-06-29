@@ -9,6 +9,9 @@ import type { Pet, PetCareItem } from "@/lib/pets/types";
 import type { RestaurantPlace } from "@/lib/restaurants/types";
 import type { ScheduleEntry } from "@/lib/schedule/types";
 import type { ShoppingList } from "@/lib/shopping-lists/types";
+import type { ShoppingListCategory } from "@/lib/shopping-lists/categories";
+import type { ShoppingListItem } from "@/lib/shopping-lists/types";
+import type { AppNotification } from "@/lib/notifications/types";
 import type { WatchlistItem } from "@/lib/watchlist/types";
 import type { Family, FamilyInvitation, FamilyMember, Profile } from "@/lib/profile";
 
@@ -22,6 +25,10 @@ export interface DashboardSnapshot {
   expensesByBudgetId: Record<string, BudgetExpense[]>;
   memberIdsByBudgetId: Record<string, string[]>;
   shoppingLists: ShoppingList[];
+  shoppingCategories: ShoppingListCategory[];
+  itemsByListId: Record<string, ShoppingListItem[]>;
+  notifications: AppNotification[];
+  notificationsUnreadCount: number;
   gifts: GiftIdea[];
   medicineItems: MedicineItem[];
   watchlistItems: WatchlistItem[];

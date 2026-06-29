@@ -4,7 +4,7 @@
 
 Nimbusly is a family hub web app: shared budget, shopping, gifts, birthdays, schedule, medicine cabinet, watchlist, restaurants, pets, household chores, notes, and family account management. Each member has their own profile; family data stays in sync.
 
-Available in **Polish** and **English**. Current version: **0.5.4** — see `/change-log` or the in-app version badge.
+Available in **Polish** and **English**. Current version: **0.7.0** — see `/change-log` or the in-app version badge.
 
 ---
 
@@ -22,8 +22,9 @@ Available in **Polish** and **English**. Current version: **0.5.4** — see `/ch
 | Restaurants | `/restaurants` | Places to visit and ratings |
 | Pets | `/pets` | Pet profiles and care schedules |
 | Chores | `/chores` | Household tasks with assignees and recurrence |
-| Notes | `/notes` | Custom emoji categories and family visibility |
-| Family & settings | `/profile/settings` | Account type, family invites, permissions |
+| Notes | `/notes` | Custom emoji categories, Markdown, pinning, attachments, family visibility |
+| Family | `/family` | Members, invitations, account type (solo ↔ family) |
+| Settings | `/profile/settings` | Profile, notifications, account type, shopping categories |
 
 Additional:
 
@@ -34,7 +35,7 @@ Additional:
 - **Nimbus** — in-app companion (bottom-right): guided tours (driver.js) for the app and every module, contextual hints, FAQ, cross-module suggestions, celebrations, quiet mode, tour resume (Esc), keyboard shortcuts (A/D, arrows), and Needs attention awareness
 - **Dashboard** (`/dashboard`) — Summary / Modules tabs, customizable overview cards, brown “needs attention” banner
 - **Global search** — quick jump to modules, lists, budgets, notes, chores, and more (`Ctrl+K` / `Cmd+K` in the navbar)
-- **Notifications** (`/notifications`) — in-app family activity feed
+- **Notifications** (`/notifications`) — in-app family activity feed, quiet hours, optional weekly digest
 - **Change log** (`/change-log`) — public release history (no login required)
 - **Onboarding** — guided setup for new accounts
 - **Solo or family mode** — up to 6 members with roles (founder, admin, member)
@@ -161,6 +162,15 @@ Authorization: Bearer <CRON_SECRET>
 GET /api/cron/budget-payment-reminders
 Authorization: Bearer <CRON_SECRET>
 ```
+
+**Weekly digest** (Monday 08:00 UTC — summary of unread notifications when enabled in profile settings):
+
+```http
+GET /api/cron/weekly-digest
+Authorization: Bearer <CRON_SECRET>
+```
+
+On Vercel, `vercel.json` schedules `/api/cron/weekly-digest` automatically when deployed.
 
 ---
 

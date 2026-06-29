@@ -41,6 +41,10 @@ export type Profile = {
   nimbus_companion_quiet?: boolean;
   push_notifications_enabled?: boolean;
   email_digest_enabled?: boolean;
+  notification_quiet_hours_enabled?: boolean;
+  notification_quiet_start?: string;
+  notification_quiet_end?: string;
+  weekly_digest_enabled?: boolean;
 };
 
 export type FamilyMember = Pick<

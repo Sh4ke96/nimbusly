@@ -1,9 +1,9 @@
 import { ACCOUNT_MODE } from "@/lib/constants/account";
-import { INVITATION_STATUS } from "@/lib/constants/family-invitation";
 import { create } from "zustand";
 import { createClient } from "@/lib/supabase/client";
+import { loadFamilyBundle } from "@/lib/family/load-family-bundle";
 import type { Family, FamilyInvitation, FamilyMember, Profile } from "@/lib/profile";
-import { mapFamilyMemberRow, mapProfileRow } from "@/lib/supabase/row-mappers";
+import { mapProfileRow } from "@/lib/supabase/row-mappers";
 import type { User } from "@supabase/supabase-js";
 import { dedupeAsync } from "@/lib/stores/dedupe-async";
 
@@ -24,6 +24,12 @@ interface ProfileStore {
   patchNimbusCompanionQuiet: (quiet: boolean) => void;
   patchPushNotificationsEnabled: (enabled: boolean) => void;
   patchEmailDigestEnabled: (enabled: boolean) => void;
+  patchNotificationQuietHours: (params: {
+    enabled: boolean;
+    start: string;
+    end: string;
+  }) => void;
+  patchWeeklyDigestEnabled: (enabled: boolean) => void;
   reset: () => void;
 }
 
@@ -38,39 +44,9 @@ const initialState = {
   error: false,
 };
 
-async function loadFamilyData(familyId: string, userId: string, isOwner: boolean) {
+async function loadFamilyData(familyId: string, userId: string, isFamilyAccount: boolean) {
   const supabase = createClient();
-
-  const queries = [
-    supabase
-      .from("families")
-      .select("id, name, created_by, invite_code")
-      .eq("id", familyId)
-      .maybeSingle(),
-    supabase
-      .from("profiles")
-      .select("id, first_name, last_name, avatar_color, family_role")
-      .eq("family_id", familyId),
-  ] as const;
-
-  const [{ data: family }, { data: members }] = await Promise.all(queries);
-
-  let invitations: FamilyInvitation[] = [];
-  if (isOwner && family?.created_by === userId) {
-    const { data } = await supabase
-      .from("family_invitations")
-      .select("id, family_id, email, status, created_at, expires_at")
-      .eq("family_id", familyId)
-      .eq("status", INVITATION_STATUS.PENDING)
-      .order("created_at", { ascending: false });
-    invitations = (data ?? []) as FamilyInvitation[];
-  }
-
-  return {
-    family: family ?? null,
-    members: (members ?? []).map(mapFamilyMemberRow),
-    invitations,
-  };
+  return loadFamilyBundle(supabase, familyId, userId, isFamilyAccount);
 }
 
 export const useProfileStore = create<ProfileStore>((set, get) => ({
@@ -252,6 +228,30 @@ export const useProfileStore = create<ProfileStore>((set, get) => ({
       profile: {
         ...profile,
         email_digest_enabled: enabled,
+      },
+    });
+  },
+
+  patchNotificationQuietHours: ({ enabled, start, end }) => {
+    const profile = get().profile;
+    if (!profile) return;
+    set({
+      profile: {
+        ...profile,
+        notification_quiet_hours_enabled: enabled,
+        notification_quiet_start: start,
+        notification_quiet_end: end,
+      },
+    });
+  },
+
+  patchWeeklyDigestEnabled: (enabled: boolean) => {
+    const profile = get().profile;
+    if (!profile) return;
+    set({
+      profile: {
+        ...profile,
+        weekly_digest_enabled: enabled,
       },
     });
   },

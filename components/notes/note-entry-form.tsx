@@ -2,8 +2,9 @@
 
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus-tour";
-import { NOTE_ATTENTION_TITLE_PREFIX } from "@/lib/constants/notes";
+import { NOTE_ATTENTION_TITLE_PREFIX, NOTE_CONTENT_FORMAT } from "@/lib/constants/notes";
 import { NOTE_FORM_FIELD, type NoteCategory } from "@/lib/notes/types";
+import { Checkbox } from "@/components/ui/checkbox";
 import { NoteCategoryPicker } from "@/components/notes/note-category-picker";
 import { NimbusTourToolbarAnchor } from "@/components/nimbus/nimbus-tour-toolbar-anchor";
 import { Input } from "@/components/ui/input";
@@ -29,6 +30,10 @@ interface NoteEntryFormProps {
   categories: NoteCategory[];
   visibility: NoteVisibilitySelection;
   onVisibilityChange: (value: NoteVisibilitySelection) => void;
+  isPinned: boolean;
+  onIsPinnedChange: (value: boolean) => void;
+  useMarkdown: boolean;
+  onUseMarkdownChange: (value: boolean) => void;
   profile: Profile | null;
   members: FamilyMember[];
 }
@@ -44,6 +49,10 @@ export function NoteEntryForm({
   categories,
   visibility,
   onVisibilityChange,
+  isPinned,
+  onIsPinnedChange,
+  useMarkdown,
+  onUseMarkdownChange,
   profile,
   members,
 }: NoteEntryFormProps) {
@@ -74,6 +83,40 @@ export function NoteEntryForm({
             onChange={(e) => onTitleChange(e.target.value)}
             maxLength={200}
             placeholder={t.notes.titlePlaceholder}
+          />
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <div className="flex items-start gap-3">
+          <Checkbox
+            id={`${titleId}-pinned`}
+            checked={isPinned}
+            onCheckedChange={(checked) => onIsPinnedChange(checked === true)}
+            className="mt-0.5 cursor-pointer"
+          />
+          <Label htmlFor={`${titleId}-pinned`} className="cursor-pointer font-medium">
+            {t.notes.pinnedLabel}
+          </Label>
+          <input type="hidden" name={NOTE_FORM_FIELD.IS_PINNED} value={isPinned ? "1" : "0"} />
+        </div>
+        <div className="flex items-start gap-3">
+          <Checkbox
+            id={`${contentId}-markdown`}
+            checked={useMarkdown}
+            onCheckedChange={(checked) => onUseMarkdownChange(checked === true)}
+            className="mt-0.5 cursor-pointer"
+          />
+          <div className="space-y-1">
+            <Label htmlFor={`${contentId}-markdown`} className="cursor-pointer font-medium">
+              {t.notes.markdownLabel}
+            </Label>
+            <p className="text-xs text-muted-foreground">{t.notes.markdownHint}</p>
+          </div>
+          <input
+            type="hidden"
+            name={NOTE_FORM_FIELD.CONTENT_FORMAT}
+            value={useMarkdown ? NOTE_CONTENT_FORMAT.MARKDOWN : NOTE_CONTENT_FORMAT.PLAIN}
           />
         </div>
       </div>

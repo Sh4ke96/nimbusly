@@ -25,6 +25,10 @@ export function mapProfileRow(row: ProfileRow): Profile {
     nimbus_companion_quiet: row.nimbus_companion_quiet,
     push_notifications_enabled: row.push_notifications_enabled,
     email_digest_enabled: row.email_digest_enabled,
+    notification_quiet_hours_enabled: row.notification_quiet_hours_enabled,
+    notification_quiet_start: row.notification_quiet_start,
+    notification_quiet_end: row.notification_quiet_end,
+    weekly_digest_enabled: row.weekly_digest_enabled,
   };
 }
 

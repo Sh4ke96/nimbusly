@@ -159,7 +159,7 @@ export async function createNote(
   const { supabase, user } = await requireUser();
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const { title, content, categoryId } = parseNoteFromForm(formData);
+  const { title, content, categoryId, isPinned, contentFormat } = parseNoteFromForm(formData);
   if (!isValidNoteTitle(title)) return { error: t.notes.errorTitleRequired };
   if (!isValidNoteContent(content)) return { error: t.notes.errorContentTooLong };
 
@@ -185,6 +185,8 @@ export async function createNote(
       category_id: categoryId,
       title: title.trim(),
       content,
+      content_format: contentFormat,
+      is_pinned: isPinned,
       visible_to_member_ids: visibleToMemberIds,
       created_by: user.id,
     })
@@ -231,7 +233,7 @@ export async function updateNote(
   if (!user) return { error: t.account.errorUnauthorized };
 
   const id = parseNoteIdFromForm(formData);
-  const { title, content, categoryId } = parseNoteFromForm(formData);
+  const { title, content, categoryId, isPinned, contentFormat } = parseNoteFromForm(formData);
   if (!id) return { error: t.notes.errorGeneric };
   if (!isValidNoteTitle(title)) return { error: t.notes.errorTitleRequired };
   if (!isValidNoteContent(content)) return { error: t.notes.errorContentTooLong };
@@ -287,6 +289,8 @@ export async function updateNote(
       title: title.trim(),
       content,
       category_id: categoryId,
+      content_format: contentFormat,
+      is_pinned: isPinned,
       visible_to_member_ids: visibleToMemberIds,
       updated_at: new Date().toISOString(),
     })
@@ -398,4 +402,37 @@ export async function deleteNote(
   }
 
   return { success: t.notes.deletedSuccess };
+}
+
+export async function toggleNotePinned(
+  _prev: AccountActionState,
+  formData: FormData
+): Promise<AccountActionState> {
+  const t = await getServerT();
+  const { supabase, user } = await requireUser();
+  if (!user) return { error: t.account.errorUnauthorized };
+
+  const id = parseNoteIdFromForm(formData);
+  if (!id) return { error: t.notes.errorGeneric };
+
+  const { data: existing } = await supabase
+    .from("notes")
+    .select("id, is_pinned")
+    .eq("id", id)
+    .eq("created_by", user.id)
+    .maybeSingle();
+
+  if (!existing) return { error: t.notes.errorNotOwner };
+
+  const { error } = await supabase
+    .from("notes")
+    .update({
+      is_pinned: !existing.is_pinned,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", id)
+    .eq("created_by", user.id);
+
+  if (error) return { error: t.notes.errorGeneric };
+  return { success: t.notes.pinToggledSuccess };
 }

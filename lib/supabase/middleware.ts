@@ -1,9 +1,7 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
-import {
-  ONBOARDING_COMPLETE_COOKIE,
-  ONBOARDING_COMPLETE_COOKIE_VALUE,
-} from '@/lib/constants/session-cookies'
+import { ONBOARDING_COMPLETE_COOKIE, ONBOARDING_COMPLETE_COOKIE_VALUE } from '@/lib/constants/session-cookies'
+import { readOnboardingCompleteFromRequestCookies } from '@/lib/supabase/middleware-onboarding'
 
 const PUBLIC_STATIC_PATHS = new Set(['/', '/change-log', '/offline'])
 
@@ -14,10 +12,7 @@ function hasSupabaseAuthCookie(request: NextRequest): boolean {
 }
 
 function readOnboardingCompleteCookie(request: NextRequest): boolean | null {
-  const value = request.cookies.get(ONBOARDING_COMPLETE_COOKIE)?.value
-  if (value === ONBOARDING_COMPLETE_COOKIE_VALUE) return true
-  if (value === '0') return false
-  return null
+  return readOnboardingCompleteFromRequestCookies(request.cookies.getAll())
 }
 
 async function fetchOnboardingCompleteFromDb(

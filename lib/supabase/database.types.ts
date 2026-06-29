@@ -513,14 +513,57 @@ export type Database = {
           },
         ]
       }
+      note_attachments: {
+        Row: {
+          byte_size: number
+          created_at: string
+          created_by: string
+          file_name: string
+          id: string
+          mime_type: string
+          note_id: string
+          storage_path: string
+        }
+        Insert: {
+          byte_size: number
+          created_at?: string
+          created_by: string
+          file_name: string
+          id?: string
+          mime_type: string
+          note_id: string
+          storage_path: string
+        }
+        Update: {
+          byte_size?: number
+          created_at?: string
+          created_by?: string
+          file_name?: string
+          id?: string
+          mime_type?: string
+          note_id?: string
+          storage_path?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "note_attachments_note_id_fkey"
+            columns: ["note_id"]
+            isOneToOne: false
+            referencedRelation: "notes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notes: {
         Row: {
           category_id: string | null
           content: string
+          content_format: string
           created_at: string
           created_by: string
           family_id: string | null
           id: string
+          is_pinned: boolean
           title: string
           updated_at: string
           visible_to_member_ids: string[]
@@ -528,10 +571,12 @@ export type Database = {
         Insert: {
           category_id?: string | null
           content?: string
+          content_format?: string
           created_at?: string
           created_by: string
           family_id?: string | null
           id?: string
+          is_pinned?: boolean
           title: string
           updated_at?: string
           visible_to_member_ids?: string[]
@@ -539,10 +584,12 @@ export type Database = {
         Update: {
           category_id?: string | null
           content?: string
+          content_format?: string
           created_at?: string
           created_by?: string
           family_id?: string | null
           id?: string
+          is_pinned?: boolean
           title?: string
           updated_at?: string
           visible_to_member_ids?: string[]
@@ -786,6 +833,10 @@ export type Database = {
           preferred_lang: string
           push_notifications_enabled: boolean
           email_digest_enabled: boolean
+          notification_quiet_hours_enabled: boolean
+          notification_quiet_start: string
+          notification_quiet_end: string
+          weekly_digest_enabled: boolean
           updated_at: string
         }
         Insert: {
@@ -804,6 +855,10 @@ export type Database = {
           preferred_lang?: string
           push_notifications_enabled?: boolean
           email_digest_enabled?: boolean
+          notification_quiet_hours_enabled?: boolean
+          notification_quiet_start?: string
+          notification_quiet_end?: string
+          weekly_digest_enabled?: boolean
           updated_at?: string
         }
         Update: {
@@ -822,6 +877,10 @@ export type Database = {
           preferred_lang?: string
           push_notifications_enabled?: boolean
           email_digest_enabled?: boolean
+          notification_quiet_hours_enabled?: boolean
+          notification_quiet_start?: string
+          notification_quiet_end?: string
+          weekly_digest_enabled?: boolean
           updated_at?: string
         }
         Relationships: [
@@ -991,7 +1050,8 @@ export type Database = {
       shopping_list_categories: {
         Row: {
           created_at: string
-          family_id: string
+          created_by: string | null
+          family_id: string | null
           id: string
           name: string
           sort_order: number
@@ -999,7 +1059,8 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          family_id: string
+          created_by?: string | null
+          family_id?: string | null
           id?: string
           name: string
           sort_order?: number

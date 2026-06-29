@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/client";
 import { BUDGET_ENTRY_TYPE, BUDGET_RECURRENCE } from "@/lib/constants/budget";
 import type { Budget, BudgetExpense } from "@/lib/budget/types";
 import { dedupeAsync } from "@/lib/stores/dedupe-async";
+import { listFetchInitial, runListFetch } from "@/lib/stores/list-fetch";
 import { compareNamesByProfileLang } from "@/lib/stores/sort-lang";
 
 export const EMPTY_BUDGET_EXPENSES: BudgetExpense[] = [];
@@ -35,9 +36,7 @@ const initialState = {
   budgets: [] as Budget[],
   expensesByBudgetId: {} as Record<string, BudgetExpense[]>,
   memberIdsByBudgetId: {} as Record<string, string[]>,
-  loaded: false,
-  loading: false,
-  error: false,
+  ...listFetchInitial,
 };
 
 function sortBudgets(budgets: Budget[]): Budget[] {
@@ -79,87 +78,93 @@ export const useBudgetStore = create<BudgetStore>((set, get) => ({
     if (!force && get().loaded && !get().loading && !get().error) return;
 
     return dedupeAsync("budget:list", async () => {
-      set({ loading: true, error: false });
-      try {
-        const supabase = createClient();
+      await runListFetch({
+        set,
+        query: async () => {
+          const supabase = createClient();
 
-        const { data: budgets, error: budgetsError } = await supabase
-          .from("budgets")
-          .select("*")
-          .order("updated_at", { ascending: false });
+          const { data: budgets, error: budgetsError } = await supabase
+            .from("budgets")
+            .select("*")
+            .order("updated_at", { ascending: false });
 
-        if (budgetsError) {
-          set({ loading: false, loaded: true, error: true });
-          return;
-        }
+          if (budgetsError) return { data: null, error: budgetsError };
 
-        const list = sortBudgets(mapBudgets((budgets ?? []) as Budget[]));
-        const budgetIds = list.map((budget) => budget.id);
+          const list = sortBudgets(mapBudgets((budgets ?? []) as Budget[]));
+          const budgetIds = list.map((budget) => budget.id);
 
-        if (budgetIds.length === 0) {
-          set({
-            budgets: [],
-            expensesByBudgetId: {},
-            memberIdsByBudgetId: {},
-            loaded: true,
-            loading: false,
-            error: false,
-          });
-          return;
-        }
-
-        const [{ data: expenses, error: expensesError }, { data: members, error: membersError }] =
-          await Promise.all([
-            supabase
-              .from("budget_expenses")
-              .select("*")
-              .in("budget_id", budgetIds)
-              .order("expense_date", { ascending: false }),
-            supabase
-              .from("budget_members")
-              .select("budget_id, member_id")
-              .in("budget_id", budgetIds),
-          ]);
-
-        if (expensesError || membersError) {
-          set({ loading: false, loaded: true, error: true });
-          return;
-        }
-
-        const expensesGrouped: Record<string, BudgetExpense[]> = {};
-        for (const budgetId of budgetIds) {
-          expensesGrouped[budgetId] = [];
-        }
-        for (const expense of mapExpenseAmounts((expenses ?? []) as BudgetExpense[])) {
-          if (!expensesGrouped[expense.budget_id]) {
-            expensesGrouped[expense.budget_id] = [];
+          if (budgetIds.length === 0) {
+            return {
+              data: {
+                budgets: [] as Budget[],
+                expensesByBudgetId: {} as Record<string, BudgetExpense[]>,
+                memberIdsByBudgetId: {} as Record<string, string[]>,
+              },
+              error: null,
+            };
           }
-          expensesGrouped[expense.budget_id].push(expense);
-        }
 
-        const membersGrouped: Record<string, string[]> = {};
-        for (const budgetId of budgetIds) {
-          membersGrouped[budgetId] = [];
-        }
-        for (const row of members ?? []) {
-          const budgetId = row.budget_id as string;
-          if (!membersGrouped[budgetId]) membersGrouped[budgetId] = [];
-          membersGrouped[budgetId].push(row.member_id as string);
-        }
+          const [{ data: expenses, error: expensesError }, { data: members, error: membersError }] =
+            await Promise.all([
+              supabase
+                .from("budget_expenses")
+                .select("*")
+                .in("budget_id", budgetIds)
+                .order("expense_date", { ascending: false }),
+              supabase
+                .from("budget_members")
+                .select("budget_id, member_id")
+                .in("budget_id", budgetIds),
+            ]);
 
-        set({
-          budgets: list,
-          expensesByBudgetId: Object.fromEntries(
-            Object.entries(expensesGrouped).map(([id, rows]) => [id, sortExpenses(rows)])
-          ),
-          memberIdsByBudgetId: membersGrouped,
-          loaded: true,
-          loading: false,
-          error: false,
-        });
-      } catch {
-        set({ loading: false, loaded: true, error: true });
-      }
+          if (expensesError) return { data: null, error: expensesError };
+          if (membersError) return { data: null, error: membersError };
+
+          const expensesGrouped: Record<string, BudgetExpense[]> = {};
+          for (const budgetId of budgetIds) {
+            expensesGrouped[budgetId] = [];
+          }
+          for (const expense of mapExpenseAmounts((expenses ?? []) as BudgetExpense[])) {
+            if (!expensesGrouped[expense.budget_id]) {
+              expensesGrouped[expense.budget_id] = [];
+            }
+            expensesGrouped[expense.budget_id].push(expense);
+          }
+
+          const membersGrouped: Record<string, string[]> = {};
+          for (const budgetId of budgetIds) {
+            membersGrouped[budgetId] = [];
+          }
+          for (const row of members ?? []) {
+            const budgetId = row.budget_id as string;
+            if (!membersGrouped[budgetId]) membersGrouped[budgetId] = [];
+            membersGrouped[budgetId].push(row.member_id as string);
+          }
+
+          return {
+            data: {
+              budgets: list,
+              expensesByBudgetId: Object.fromEntries(
+                Object.entries(expensesGrouped).map(([id, rows]) => [id, sortExpenses(rows)])
+              ),
+              memberIdsByBudgetId: membersGrouped,
+            },
+            error: null,
+          };
+        },
+        apply: (data) => {
+          const payload = data as {
+            budgets: Budget[];
+            expensesByBudgetId: Record<string, BudgetExpense[]>;
+            memberIdsByBudgetId: Record<string, string[]>;
+          } | null;
+          set({
+            budgets: payload?.budgets ?? [],
+            expensesByBudgetId: payload?.expensesByBudgetId ?? {},
+            memberIdsByBudgetId: payload?.memberIdsByBudgetId ?? {},
+          });
+        },
+      });
     });
   },
 

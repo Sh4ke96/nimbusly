@@ -359,6 +359,13 @@ export type Dict = {
     pushNotificationsPrefDesc: string;
     emailDigestPrefLabel: string;
     emailDigestPrefDesc: string;
+    quietHoursTitle: string;
+    quietHoursDesc: string;
+    quietHoursEnabledLabel: string;
+    quietHoursStartLabel: string;
+    quietHoursEndLabel: string;
+    weeklyDigestLabel: string;
+    weeklyDigestDesc: string;
     settingsTitle: string;
     settingsSubtitle: string;
     appVersionHint: string;
@@ -1089,6 +1096,18 @@ export type Dict = {
     changeSummaryEmpty: string;
     changeSummarySeparator: string;
     notificationDetailSeparator: string;
+    pinnedLabel: string;
+    markdownLabel: string;
+    markdownHint: string;
+    attachmentsLabel: string;
+    attachmentsHint: string;
+    attachmentUploadBtn: string;
+    attachmentDeleteBtn: string;
+    attachmentTooLarge: string;
+    attachmentInvalidType: string;
+    attachmentUploadedSuccess: string;
+    attachmentDeletedSuccess: string;
+    pinToggledSuccess: string;
   };
   shoppingLists: {
     title: string;
@@ -1152,6 +1171,12 @@ export type Dict = {
     categoryAllPurchasedLabel: string;
     emptyCategory: string;
     categoryReorderedSuccess: string;
+  };
+  family: {
+    pageTitle: string;
+    pageDesc: string;
+    soloHint: string;
+    openAccountSettings: string;
   };
   shoppingCategories: {
     desc: string;

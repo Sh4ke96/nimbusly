@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { createClient } from "@/lib/supabase/client";
 import type { Note, NoteCategory } from "@/lib/notes/types";
-import { sortNoteCategories } from "@/lib/notes/types";
+import { sortNoteCategories, sortNotesByPinned } from "@/lib/notes/types";
 import { dedupeAsync } from "@/lib/stores/dedupe-async";
 import { listFetchInitial, runListFetch } from "@/lib/stores/list-fetch";
 
@@ -33,7 +33,7 @@ export const useNotesStore = create<NotesStore>((set, get) => ({
         query: async () => {
           const supabase = createClient();
           const [notesResult, categoriesResult] = await Promise.all([
-            supabase.from("notes").select("*").order("updated_at", { ascending: false }),
+            supabase.from("notes").select("*").order("is_pinned", { ascending: false }).order("updated_at", { ascending: false }),
             supabase.from("note_categories").select("*").order("sort_order"),
           ]);
 
@@ -51,7 +51,7 @@ export const useNotesStore = create<NotesStore>((set, get) => ({
         apply: (data) => {
           const payload = data as { notes: Note[]; categories: NoteCategory[] } | null;
           set({
-            notes: payload?.notes ?? [],
+            notes: sortNotesByPinned(payload?.notes ?? []),
             categories: payload?.categories ?? [],
           });
         },

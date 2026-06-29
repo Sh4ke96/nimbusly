@@ -51,7 +51,9 @@ export default function ProfileSettingsPage() {
   const profile = useProfileStore((s) => s.profile);
 
   const showFamily = profile?.account_mode === ACCOUNT_MODE.FAMILY && !!profile.family_id;
-  const showShoppingCategories = showFamily && isFamilyFounder(family, user?.id);
+  const showShoppingCategories =
+    (profile?.account_mode === ACCOUNT_MODE.SOLO && !profile.family_id) ||
+    (showFamily && isFamilyFounder(family, user?.id));
 
   const urlTab = parseSettingsTab(searchParams.get("tab"));
 

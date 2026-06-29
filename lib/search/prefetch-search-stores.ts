@@ -11,19 +11,13 @@ import { useScheduleStore } from "@/lib/stores/schedule-store";
 import { useShoppingListsStore } from "@/lib/stores/shopping-lists-store";
 import { useWatchlistStore } from "@/lib/stores/watchlist-store";
 
-async function prefetchShoppingListItems(): Promise<void> {
-  const store = useShoppingListsStore.getState();
-  await store.fetchLists();
-  const lists = useShoppingListsStore.getState().lists;
-  await Promise.all(lists.map((list) => store.fetchItems(list.id)));
-}
-
-/** Loads all module stores used by global search (idempotent). */
-export async function prefetchSearchStores(): Promise<void> {
+/** Loads module list stores used by global search (skips shopping item bodies). */
+export async function prefetchSearchListStores(): Promise<void> {
+  const profileLoaded = useProfileStore.getState().loaded;
   await Promise.all([
-    useProfileStore.getState().fetchSession(),
+    profileLoaded ? Promise.resolve() : useProfileStore.getState().fetchSession(),
     useBudgetStore.getState().fetchBudgets(),
-    prefetchShoppingListItems(),
+    useShoppingListsStore.getState().fetchLists(),
     useGiftsStore.getState().fetchIdeas(),
     useBirthdaysStore.getState().fetchEntries(),
     useScheduleStore.getState().fetchEntries(),
@@ -34,4 +28,27 @@ export async function prefetchSearchStores(): Promise<void> {
     useChoresStore.getState().fetchTasks(),
     useNotesStore.getState().fetchNotes(),
   ]);
+}
+
+/** Fetches shopping list items only for lists not already cached. */
+export async function prefetchSearchShoppingItems(): Promise<void> {
+  const store = useShoppingListsStore.getState();
+  if (!store.loaded) {
+    await store.fetchLists();
+  }
+
+  const lists = useShoppingListsStore.getState().lists;
+  const cached = useShoppingListsStore.getState().itemsByListId;
+
+  await Promise.all(
+    lists
+      .filter((list) => !(list.id in cached))
+      .map((list) => store.fetchItems(list.id))
+  );
+}
+
+/** @deprecated Use prefetchSearchListStores + prefetchSearchShoppingItems */
+export async function prefetchSearchStores(): Promise<void> {
+  await prefetchSearchListStores();
+  await prefetchSearchShoppingItems();
 }

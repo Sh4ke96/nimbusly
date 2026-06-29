@@ -1,8 +1,11 @@
 "use server";
 
 import { getServerT } from "@/lib/i18n/server";
-import { requireFamilyFounder } from "@/lib/family/server/require-family-founder";
 import { FAMILY_ACCESS_ERROR, type FamilyAccessError } from "@/lib/constants/server-error";
+import {
+  requireShoppingCategoryManager,
+  SHOPPING_CATEGORY_SCOPE,
+} from "@/lib/family/server/require-shopping-category-manager";
 import {
   isValidShoppingCategoryName,
   normalizeShoppingCategoryName,
@@ -13,7 +16,7 @@ import {
 } from "@/lib/shopping-lists/categories";
 import type { AccountActionState } from "@/app/(app)/account/actions";
 
-function mapFounderError(error: FamilyAccessError, t: Awaited<ReturnType<typeof getServerT>>) {
+function mapManagerError(error: FamilyAccessError, t: Awaited<ReturnType<typeof getServerT>>) {
   if (error === FAMILY_ACCESS_ERROR.UNAUTHORIZED) {
     return t.account.errorUnauthorized;
   }
@@ -23,17 +26,37 @@ function mapFounderError(error: FamilyAccessError, t: Awaited<ReturnType<typeof 
   return t.shoppingCategories.errorNotFounder;
 }
 
+async function listCategoryIds(
+  access: Awaited<ReturnType<typeof requireShoppingCategoryManager>>
+): Promise<Set<string>> {
+  if ("error" in access) return new Set();
+
+  if (access.scope === SHOPPING_CATEGORY_SCOPE.SOLO) {
+    const { data } = await access.supabase
+      .from("shopping_list_categories")
+      .select("id")
+      .is("family_id", null)
+      .eq("created_by", access.user.id);
+    return new Set((data ?? []).map((row) => row.id as string));
+  }
+
+  const { data } = await access.supabase
+    .from("shopping_list_categories")
+    .select("id")
+    .eq("family_id", access.family.id);
+  return new Set((data ?? []).map((row) => row.id as string));
+}
+
 export async function createShoppingListCategory(
   _prev: AccountActionState,
   formData: FormData
 ): Promise<AccountActionState> {
   const t = await getServerT();
-  const access = await requireFamilyFounder();
+  const access = await requireShoppingCategoryManager();
   if ("error" in access) {
-    return { error: mapFounderError(access.error, t) };
+    return { error: mapManagerError(access.error, t) };
   }
 
-  const { supabase, family } = access;
   const name = normalizeShoppingCategoryName(
     parseShoppingCategoryNameFromForm(formData).name
   );
@@ -42,10 +65,19 @@ export async function createShoppingListCategory(
     return { error: t.shoppingCategories.errorNameRequired };
   }
 
-  const { data: lastCategory } = await supabase
-    .from("shopping_list_categories")
-    .select("sort_order")
-    .eq("family_id", family.id)
+  const scopeFilter =
+    access.scope === SHOPPING_CATEGORY_SCOPE.SOLO
+      ? access.supabase
+          .from("shopping_list_categories")
+          .select("sort_order")
+          .is("family_id", null)
+          .eq("created_by", access.user.id)
+      : access.supabase
+          .from("shopping_list_categories")
+          .select("sort_order")
+          .eq("family_id", access.family.id);
+
+  const { data: lastCategory } = await scopeFilter
     .order("sort_order", { ascending: false })
     .limit(1)
     .maybeSingle();
@@ -53,8 +85,9 @@ export async function createShoppingListCategory(
   const sortOrder = (lastCategory?.sort_order ?? -1) + 1;
   const now = new Date().toISOString();
 
-  const { error } = await supabase.from("shopping_list_categories").insert({
-    family_id: family.id,
+  const { error } = await access.supabase.from("shopping_list_categories").insert({
+    family_id: access.scope === SHOPPING_CATEGORY_SCOPE.FAMILY ? access.family.id : null,
+    created_by: access.user.id,
     name,
     sort_order: sortOrder,
     created_at: now,
@@ -70,12 +103,11 @@ export async function updateShoppingListCategory(
   formData: FormData
 ): Promise<AccountActionState> {
   const t = await getServerT();
-  const access = await requireFamilyFounder();
+  const access = await requireShoppingCategoryManager();
   if ("error" in access) {
-    return { error: mapFounderError(access.error, t) };
+    return { error: mapManagerError(access.error, t) };
   }
 
-  const { supabase, family } = access;
   const id = parseShoppingCategoryIdFromForm(formData);
   const name = normalizeShoppingCategoryName(
     parseShoppingCategoryNameFromForm(formData).name
@@ -86,11 +118,15 @@ export async function updateShoppingListCategory(
     return { error: t.shoppingCategories.errorNameRequired };
   }
 
-  const { error } = await supabase
+  const query = access.supabase
     .from("shopping_list_categories")
     .update({ name, updated_at: new Date().toISOString() })
-    .eq("id", id)
-    .eq("family_id", family.id);
+    .eq("id", id);
+
+  const { error } =
+    access.scope === SHOPPING_CATEGORY_SCOPE.SOLO
+      ? await query.is("family_id", null).eq("created_by", access.user.id)
+      : await query.eq("family_id", access.family.id);
 
   if (error) return { error: t.shoppingCategories.errorGeneric };
   return { success: t.shoppingCategories.updatedSuccess };
@@ -101,20 +137,20 @@ export async function deleteShoppingListCategory(
   formData: FormData
 ): Promise<AccountActionState> {
   const t = await getServerT();
-  const access = await requireFamilyFounder();
+  const access = await requireShoppingCategoryManager();
   if ("error" in access) {
-    return { error: mapFounderError(access.error, t) };
+    return { error: mapManagerError(access.error, t) };
   }
 
-  const { supabase, family } = access;
   const id = parseShoppingCategoryIdFromForm(formData);
   if (!id) return { error: t.shoppingCategories.errorGeneric };
 
-  const { error } = await supabase
-    .from("shopping_list_categories")
-    .delete()
-    .eq("id", id)
-    .eq("family_id", family.id);
+  const query = access.supabase.from("shopping_list_categories").delete().eq("id", id);
+
+  const { error } =
+    access.scope === SHOPPING_CATEGORY_SCOPE.SOLO
+      ? await query.is("family_id", null).eq("created_by", access.user.id)
+      : await query.eq("family_id", access.family.id);
 
   if (error) return { error: t.shoppingCategories.errorGeneric };
   return { success: t.shoppingCategories.deletedSuccess };
@@ -125,12 +161,11 @@ export async function reorderShoppingListCategories(
   formData: FormData
 ): Promise<AccountActionState> {
   const t = await getServerT();
-  const access = await requireFamilyFounder();
+  const access = await requireShoppingCategoryManager();
   if ("error" in access) {
-    return { error: mapFounderError(access.error, t) };
+    return { error: mapManagerError(access.error, t) };
   }
 
-  const { supabase, family } = access;
   const { orderedIdsRaw } = parseShoppingCategoryReorderFromForm(formData);
   const orderedIds = parseOrderedCategoryIds(orderedIdsRaw);
 
@@ -138,24 +173,22 @@ export async function reorderShoppingListCategories(
     return { error: t.shoppingCategories.errorGeneric };
   }
 
-  const { data: existing } = await supabase
-    .from("shopping_list_categories")
-    .select("id")
-    .eq("family_id", family.id);
-
-  const existingIds = new Set((existing ?? []).map((row) => row.id as string));
+  const existingIds = await listCategoryIds(access);
   if (orderedIds.some((id) => !existingIds.has(id))) {
     return { error: t.shoppingCategories.errorGeneric };
   }
 
   const now = new Date().toISOString();
-  const updates = orderedIds.map((id, index) =>
-    supabase
+  const updates = orderedIds.map((id, index) => {
+    const query = access.supabase
       .from("shopping_list_categories")
       .update({ sort_order: index, updated_at: now })
-      .eq("id", id)
-      .eq("family_id", family.id)
-  );
+      .eq("id", id);
+
+    return access.scope === SHOPPING_CATEGORY_SCOPE.SOLO
+      ? query.is("family_id", null).eq("created_by", access.user.id)
+      : query.eq("family_id", access.family!.id);
+  });
 
   const results = await Promise.all(updates);
   if (results.some((result) => result.error)) {

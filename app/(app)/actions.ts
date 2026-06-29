@@ -1,6 +1,8 @@
 'use server'
 
 import { redirect } from 'next/navigation'
+import { cookies } from 'next/headers'
+import { ONBOARDING_COMPLETE_COOKIE } from '@/lib/constants/session-cookies'
 import { createClient } from '@/lib/supabase/server'
 
 export async function logout() {
@@ -12,5 +14,9 @@ export async function logout() {
   }
 
   await supabase.auth.signOut()
+
+  const cookieStore = await cookies()
+  cookieStore.delete(ONBOARDING_COMPLETE_COOKIE)
+
   redirect('/login')
 }

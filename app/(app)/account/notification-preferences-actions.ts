@@ -86,6 +86,38 @@ export async function updateEmailDigestEnabled(enabled: boolean): Promise<void> 
     .eq("id", user.id);
 }
 
+export async function updateNotificationQuietHours(params: {
+  enabled: boolean;
+  start: string;
+  end: string;
+}): Promise<void> {
+  const { supabase, user } = await requireUser();
+  if (!user) return;
+
+  await supabase
+    .from("profiles")
+    .update({
+      notification_quiet_hours_enabled: params.enabled,
+      notification_quiet_start: params.start,
+      notification_quiet_end: params.end,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", user.id);
+}
+
+export async function updateWeeklyDigestEnabled(enabled: boolean): Promise<void> {
+  const { supabase, user } = await requireUser();
+  if (!user) return;
+
+  await supabase
+    .from("profiles")
+    .update({
+      weekly_digest_enabled: enabled,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", user.id);
+}
+
 export async function listNotificationModuleIds(): Promise<NotificationModuleId[]> {
   return [...NOTIFICATION_MODULE_IDS];
 }

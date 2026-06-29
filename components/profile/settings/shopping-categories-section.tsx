@@ -28,6 +28,7 @@ import { Label } from "@/components/ui/label";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SHOPPING_CATEGORY_NAME_MAX_LENGTH } from "@/lib/constants/shopping-categories";
+import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
 import { isFamilyFounder } from "@/lib/profile/family-roles";
 import {
@@ -55,7 +56,10 @@ export function ShoppingCategoriesSection() {
     null
   );
 
+  const profile = useProfileStore((s) => s.profile);
   const isFounder = isFamilyFounder(family, user?.id);
+  const canManageCategories =
+    (profile?.account_mode === ACCOUNT_MODE.SOLO && !profile?.family_id) || isFounder;
   const categoryIds = useMemo(() => categories.map((category) => category.id), [categories]);
 
   const sensors = useSensors(
@@ -66,8 +70,8 @@ export function ShoppingCategoriesSection() {
   );
 
   useEffect(() => {
-    if (isFounder) void fetchCategories();
-  }, [isFounder, fetchCategories]);
+    if (canManageCategories) void fetchCategories();
+  }, [canManageCategories, fetchCategories]);
 
   useActionFeedback(createState, () => {
     formRef.current?.reset();
@@ -96,7 +100,7 @@ export function ShoppingCategoriesSection() {
     }
   }
 
-  if (!isFounder) {
+  if (!canManageCategories) {
     return (
       <p className="text-sm text-muted-foreground">{t.shoppingCategories.founderOnlyHint}</p>
     );

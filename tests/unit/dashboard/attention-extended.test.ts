@@ -56,7 +56,7 @@ describe("isScheduleEntryEndingSoon", () => {
 
 describe("isNoteMarkedUrgent", () => {
   it("detects urgent prefix and formats title", () => {
-    assert.equal(isNoteMarkedUrgent({ title: "! Hasło WiFi" }), true);
+    assert.equal(isNoteMarkedUrgent({ title: "! Hasło WiFi", is_pinned: false }), true);
     assert.equal(formatUrgentNoteTitle("! Hasło WiFi"), "Hasło WiFi");
   });
 });

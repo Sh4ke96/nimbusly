@@ -11,8 +11,6 @@ import {
   useShoppingListsStore,
 } from "@/lib/stores/shopping-lists-store";
 import { useShoppingCategoriesStore } from "@/lib/stores/shopping-categories-store";
-import { ACCOUNT_MODE } from "@/lib/constants/account";
-import { useProfileStore } from "@/lib/stores/profile-store";
 import { NimbusTourToolbarAnchor } from "@/components/nimbus/nimbus-tour-toolbar-anchor";
 import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus-tour";
 
@@ -58,7 +56,6 @@ export function ShoppingListItemsPanel({
   onChanged,
 }: ShoppingListItemsPanelProps) {
   const t = useT();
-  const profile = useProfileStore((s) => s.profile);
   const selectItems = useMemo(() => selectShoppingListItems(listId), [listId]);
   const items = useShoppingListsStore(selectItems);
   const categories = useShoppingCategoriesStore((s) => s.categories);
@@ -73,16 +70,11 @@ export function ShoppingListItemsPanel({
   const fetchItems = useShoppingListsStore((s) => s.fetchItems);
 
   const itemIds = useMemo(() => items.map((item) => item.id), [items]);
-  const useCategories =
-    profile?.account_mode === ACCOUNT_MODE.FAMILY &&
-    !!profile.family_id &&
-    categories.length > 0;
+  const useCategories = categories.length > 0;
 
   useEffect(() => {
-    if (profile?.account_mode === ACCOUNT_MODE.FAMILY && profile.family_id) {
-      void fetchCategories();
-    }
-  }, [profile?.account_mode, profile?.family_id, fetchCategories]);
+    void fetchCategories();
+  }, [fetchCategories]);
 
   if (itemsError) {
     return (

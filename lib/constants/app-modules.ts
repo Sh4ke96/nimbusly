@@ -15,8 +15,6 @@ import {
 } from "lucide-react";
 import type { Dict } from "@/lib/i18n/types";
 import type { OverviewAccent } from "@/lib/constants/overview-accent";
-import { ACCOUNT_MODE } from "@/lib/constants/account";
-import { SETTINGS_TAB } from "@/lib/constants/settings";
 import type { Profile } from "@/lib/profile";
 
 export const APP_MODULE = {
@@ -103,7 +101,7 @@ export const APP_MODULE_ROUTES: Record<AppModuleId, string> = {
   [APP_MODULE.NOTES]: "/notes",
   [APP_MODULE.BIRTHDAYS]: "/birthdays",
   [APP_MODULE.CALENDAR]: "/schedule",
-  [APP_MODULE.FAMILY]: "/profile/settings",
+  [APP_MODULE.FAMILY]: "/family",
 };
 
 interface AppModuleMeta {
@@ -149,11 +147,9 @@ export function getAppModuleOverviewMeta(moduleId: AppModuleId): AppModuleMeta {
 }
 
 export function getFamilyModuleRoute(
-  profile?: Pick<Profile, "account_mode" | "family_id"> | null
+  _profile?: Pick<Profile, "account_mode" | "family_id"> | null
 ): string {
-  return profile?.account_mode === ACCOUNT_MODE.FAMILY && profile.family_id
-    ? `/profile/settings?tab=${SETTINGS_TAB.FAMILY}`
-    : `/profile/settings?tab=${SETTINGS_TAB.ACCOUNT}`;
+  return "/family";
 }
 
 export function getAppModuleRoute(

@@ -23,7 +23,10 @@ import { useIsMac } from "@/lib/hooks/use-is-mac";
 import { useT } from "@/lib/lang-context";
 import { buildSearchIndexInput } from "@/lib/search/collect-search-index";
 import { buildSearchIndex, filterSearchResults } from "@/lib/search/global-search";
-import { prefetchSearchStores } from "@/lib/search/prefetch-search-stores";
+import {
+  prefetchSearchListStores,
+  prefetchSearchShoppingItems,
+} from "@/lib/search/prefetch-search-stores";
 import { HEADER_CONTROL_HEIGHT, HEADER_ICON_BUTTON_CLASS } from "@/lib/ui/header-controls";
 import { cn } from "@/lib/utils";
 
@@ -41,7 +44,7 @@ export function GlobalSearchDialog() {
     markSearchUsed();
     setOpen(true);
     setHydrating(true);
-    void prefetchSearchStores().finally(() => setHydrating(false));
+    void prefetchSearchListStores().finally(() => setHydrating(false));
     if (firstUse) {
       enqueueNimbusMessage({
         priority: NIMBUS_MESSAGE_PRIORITY.context,
@@ -50,6 +53,14 @@ export function GlobalSearchDialog() {
       });
     }
   }, [t]);
+
+  useEffect(() => {
+    if (!open || query.trim().length < 2) return;
+    const timer = window.setTimeout(() => {
+      void prefetchSearchShoppingItems();
+    }, 200);
+    return () => window.clearTimeout(timer);
+  }, [open, query]);
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {

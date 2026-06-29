@@ -11,6 +11,33 @@ export { CHANGELOG_ENTRY_TYPE, type ChangelogEntry };
  */
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "0.7.0",
+    date: "2026-06-28",
+    type: CHANGELOG_ENTRY_TYPE.MINOR,
+    title: {
+      pl: "Rodzina, notatki i szybszy panel",
+      en: "Family page, notes, and faster dashboard",
+    },
+    changes: {
+      pl: [
+        "Strona /family — zarządzanie rodziną poza ustawieniami profilu",
+        "Notatki: Markdown, przypinanie i załączniki (obrazy/PDF do 5 MB)",
+        "Kategorie zakupów także na kontach solo",
+        "Powiadomienia: godziny ciszy push i tygodniowy digest e-mail (poniedziałek)",
+        "Dashboard ładuje powiadomienia, kategorie i pozycje list zakupów; lazy search",
+        "Skeletony stron modułów; cookie onboardingu czyszczone przy wylogowaniu",
+      ],
+      en: [
+        "New /family page — manage family outside profile settings",
+        "Notes: Markdown, pinning, and attachments (images/PDF up to 5 MB)",
+        "Shopping categories on solo accounts too",
+        "Notifications: push quiet hours and weekly email digest (Mondays)",
+        "Dashboard prefetch includes notifications, categories, and list items; lazy search",
+        "Module page skeletons; onboarding cookie cleared on logout",
+      ],
+    },
+  },
+  {
     version: "0.6.1",
     date: "2026-06-28",
     type: CHANGELOG_ENTRY_TYPE.MINOR,

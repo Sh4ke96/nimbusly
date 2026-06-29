@@ -106,6 +106,8 @@ describe("buildAttentionItems", () => {
           category_id: null,
           title: "! Hasło WiFi",
           content: "",
+          content_format: "plain",
+          is_pinned: false,
           visible_to_member_ids: [],
           created_by: "u1",
           created_at: "2026-01-01",

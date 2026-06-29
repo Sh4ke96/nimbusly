@@ -12,7 +12,8 @@ import { sortShoppingListItems } from "@/lib/shopping-lists/types";
 
 export interface ShoppingListCategory {
   id: string;
-  family_id: string;
+  family_id: string | null;
+  created_by: string | null;
   name: string;
   sort_order: number;
   created_at: string;

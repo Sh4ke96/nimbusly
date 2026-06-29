@@ -49,6 +49,8 @@ export function NoteFormDialog({
     visibleToAll: true,
     memberIds: [],
   });
+  const [isPinned, setIsPinned] = useState<boolean>(false);
+  const [useMarkdown, setUseMarkdown] = useState<boolean>(false);
   const [state, action, pending] = useActionState(createNote, null);
 
   useActionFeedback(state, () => {
@@ -60,6 +62,8 @@ export function NoteFormDialog({
     setContent("");
     setCategoryId("");
     setVisibility({ visibleToAll: true, memberIds: [] });
+    setIsPinned(false);
+    setUseMarkdown(false);
     onSuccess();
   });
 
@@ -98,6 +102,10 @@ export function NoteFormDialog({
             categories={categories}
             visibility={visibility}
             onVisibilityChange={setVisibility}
+            isPinned={isPinned}
+            onIsPinnedChange={setIsPinned}
+            useMarkdown={useMarkdown}
+            onUseMarkdownChange={setUseMarkdown}
             profile={profile}
             members={members}
           />

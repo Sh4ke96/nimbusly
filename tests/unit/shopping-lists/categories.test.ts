@@ -30,6 +30,7 @@ describe("groupShoppingItemsByCategory", () => {
         {
           id: "cat-bread",
           family_id: "family-1",
+          created_by: "user-1",
           name: "Pieczywo",
           sort_order: 0,
           created_at: "2026-01-01T00:00:00.000Z",
@@ -38,6 +39,7 @@ describe("groupShoppingItemsByCategory", () => {
         {
           id: "cat-dairy",
           family_id: "family-1",
+          created_by: "user-1",
           name: "Nabiał",
           sort_order: 1,
           created_at: "2026-01-01T00:00:00.000Z",

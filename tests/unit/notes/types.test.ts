@@ -16,6 +16,8 @@ const note = (overrides: Partial<Note> = {}): Note => ({
   category_id: null,
   title: "Test",
   content: "",
+  content_format: "plain",
+  is_pinned: false,
   visible_to_member_ids: [],
   created_by: "u1",
   created_at: "",
