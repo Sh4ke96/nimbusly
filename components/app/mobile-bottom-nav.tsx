@@ -133,7 +133,12 @@ export function MobileBottomNav() {
 
   return createPortal(
     <nav className={APP_MOBILE_BOTTOM_NAV_CLASS} aria-label={t.mobileNav.ariaLabel}>
-      <ul className={cn("grid h-14 shrink-0", showNimbus ? "grid-cols-5" : "grid-cols-4")}>
+      <ul
+        className={cn(
+          "app-mobile-bottom-nav-items grid shrink-0",
+          showNimbus ? "grid-cols-5" : "grid-cols-4"
+        )}
+      >
         {NAV_ITEMS.slice(0, 2).map(({ id, icon }) => renderNavItem(id, icon))}
 
         {showNimbus ? (
