@@ -24,7 +24,7 @@ When you ship work:
 3. Write **both** PL and EN `title` + `changes` bullets in the entry.
 4. Use `CHANGELOG_ENTRY_TYPE` from `lib/constants/changelog.ts` (`major` | `minor` | `fix`).
 5. Update **`README.md`** — current version; also features, env vars, or testing notes when behaviour changed.
-6. Add or update **tests** for changed behaviour; run `yarn test`.
+6. Add or update **tests** for changed behaviour; run **`yarn validate`** before finishing.
 
 Multiple fixes in one session → one new version per logical release, or a single entry that lists all shipped changes. Never commit user-visible work without a changelog entry.
 

@@ -22,7 +22,7 @@ Instructions live in **`.cursor/rules/`**. Read and follow them before coding.
 - **Copy:** i18n via `useT()` / `getServerT()` — update `types.ts`, `pl.ts`, `en.ts` (PL + EN always)
 - **Constants:** domain values in `lib/constants/` (`as const` + types) — no magic strings for modes, roles, tabs, langs
 - **Data:** Server Actions + Supabase; migrations in `supabase/migrations/`
-- **Tests:** add/update `tests/unit/`, `tests/e2e/`, run `yarn test`
+- **Tests:** add/update `tests/unit/`, `tests/e2e/`; run **`yarn validate`** before finishing (lint + types + tests + build)
 - **Changelog (always):** every completed feature, fix, or user-visible change → new entry at top of `lib/changelog/entries.ts` (PL + EN), matching `package.json` version, `README.md` — same PR. Never ship without updating the changelog if behaviour changed.
 - **Safety:** validate on server, check existence/ownership, no SQL injection, no secrets in code
 - **React state:** explicit `useState<Type>(...)` on every `useState` call

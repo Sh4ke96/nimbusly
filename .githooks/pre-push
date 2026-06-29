@@ -1,6 +1,6 @@
 #!/bin/sh
 set -e
 
-echo "pre-push: running verify (lint, types, tests, build)..."
-yarn verify
+echo "pre-push: running validate (lint, types, tests, build)..."
+yarn validate
 echo "pre-push: all checks passed."

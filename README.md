@@ -171,7 +171,10 @@ Authorization: Bearer <CRON_SECRET>
 | `yarn dev` | Development server |
 | `yarn build` | Production build |
 | `yarn start` | Production server |
-| `yarn lint` | ESLint |
+| `yarn validate` | **Full validation** — lint, `test:types`, unit tests, production build |
+| `yarn run check` | Alias for `yarn validate` (use `run` — Yarn 1 reserves bare `yarn check`) |
+| `yarn verify` | Alias for `yarn validate` |
+| `yarn lint` | ESLint only |
 | `yarn test` | Unit tests (`tests/unit/**/*.test.ts`) |
 | `yarn test:types` | Typecheck test tsconfig |
 | `yarn e2e` | Cypress headless (starts dev server) |
@@ -201,7 +204,7 @@ When you ship a **user-visible** feature, fix, or module:
 1. Prepend an entry to `lib/changelog/entries.ts` (PL + EN `title` and `changes`).
 2. Bump `version` in `package.json` to match that entry.
 3. Update **`README.md`** — current version, feature list, env vars, or testing notes if they changed.
-4. Add or update **tests** (`tests/unit/`, `tests/e2e/`) for new behaviour; run `yarn test`.
+4. Add or update **tests** (`tests/unit/`, `tests/e2e/`) for new behaviour; run **`yarn validate`**.
 
 ### Nimbus companion (`lib/nimbus/`, `components/nimbus/`)
 
@@ -224,7 +227,15 @@ See [`.cursor/rules/new-module-or-change.instructions.md`](.cursor/rules/new-mod
 
 ## Testing
 
-**Unit tests**
+**Full validation (run before push)**
+
+```bash
+yarn validate
+```
+
+Runs ESLint, test TypeScript check, unit tests, and production build. (`yarn run check` is an alias; bare `yarn check` in Yarn 1 is a different lockfile command.)
+
+**Unit tests only**
 
 ```bash
 yarn test

@@ -51,7 +51,7 @@ When shipping:
 3. Fill `title` and `changes` in **both** `pl` and `en`.
 4. Pick `type`: `CHANGELOG_ENTRY_TYPE.MAJOR` (big launch), `MINOR` (feature), or `FIX` (bugfix).
 5. Update **`README.md`** in the same change — at minimum the current version; also features, env vars, scripts, or testing notes when behaviour changed.
-6. Add or update **tests** for new logic (`tests/unit/`, `tests/integration/`, `tests/e2e/` as appropriate) and run `yarn test`.
+6. Add or update **tests** for new logic (`tests/unit/`, `tests/integration/`, `tests/e2e/` as appropriate) and run **`yarn validate`**.
 
 `/change-log` is public (no login). The version badge (`vX.Y.Z`, bottom-right) links there.
 
@@ -241,7 +241,8 @@ When adding tables, columns, or policies:
 ### Commands
 
 ```bash
-yarn test              # unit tests
+yarn validate          # lint + types + unit tests + build
+yarn test              # unit tests only
 yarn e2e           # full E2E (dev server + Cypress)
 ```
 
@@ -265,7 +266,7 @@ Reference: `tests/unit/family/invite.test.ts`.
 
 - [ ] New tests added for new logic
 - [ ] Existing tests updated if behavior changed
-- [ ] `yarn test` passes
+- [ ] `yarn validate` passes
 - [ ] Relevant Cypress spec passes (or note env requirements)
 
 ---
@@ -304,9 +305,7 @@ Reference: `tests/unit/family/invite.test.ts`.
 
 ### Quality
 
-- [ ] `yarn lint`
-- [ ] `yarn build`
-- [ ] `yarn test`
+- [ ] `yarn validate`
 - [ ] Cypress updated/passing for affected flows
 - [ ] **Changelog:** new entry at top of `lib/changelog/entries.ts` (PL + EN) + `package.json` version bump (required for any shipped feature/fix)
 - [ ] `README.md` updated (version, features, env, or testing notes if changed)

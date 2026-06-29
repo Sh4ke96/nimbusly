@@ -85,10 +85,14 @@ yarn dev          # http://localhost:7777
 ### Building and validation
 
 ```bash
-yarn lint         # ESLint
-yarn build        # production build — run before submitting changes
+yarn validate     # lint + test:types + test + build — run before push / after every task
+yarn run check    # alias (Yarn 1 reserves bare `yarn check` for lockfile integrity)
+yarn lint         # ESLint only
+yarn build        # production build only
 yarn start        # production server
 ```
+
+**Agents:** after completing any non-trivial change, run **`yarn validate`** and fix failures before handing off. Do not rely on the user’s pre-push hook to catch regressions.
 
 ### Testing
 
@@ -321,9 +325,7 @@ components/birthdays/
 ## Validation Before Commit
 
 ```bash
-yarn lint
-yarn build
-yarn test
+yarn validate     # full gate: lint, types, unit tests, production build
 # optional:
 yarn e2e          # needs .env.local + Supabase admin for full suite
 ```
@@ -358,6 +360,6 @@ Only create git commits when explicitly requested.
 7. Client session/family state via **Zustand** + **ProfileBootstrap**
 8. Schema changes via **`supabase/migrations/`** + `yarn db:push`
 9. Visual style: **`rounded-none`**, theme tokens, Tailwind utilities
-10. Validate with **`yarn lint`**, **`yarn build`**, and **`yarn test`**
+10. Validate with **`yarn validate`** (lint, types, unit tests, build)
 11. **Changelog always** (when behaviour changes): `lib/changelog/entries.ts` (top entry, PL + EN), matching **`package.json` version**, **`README.md`**, tests — same change
 12. Keep diffs **minimal** and consistent with surrounding code

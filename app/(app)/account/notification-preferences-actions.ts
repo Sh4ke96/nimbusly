@@ -43,10 +43,17 @@ export async function updateModuleNotificationChannel(
   await ensureModulePreferencesForUser(supabase, user.id);
 
   const column = channelColumn(channel);
+  const channelPatch =
+    column === "in_app_enabled"
+      ? { in_app_enabled: enabled }
+      : column === "push_enabled"
+        ? { push_enabled: enabled }
+        : { email_digest_enabled: enabled };
+
   await supabase
     .from("notification_module_preferences")
     .update({
-      [column]: enabled,
+      ...channelPatch,
       updated_at: new Date().toISOString(),
     })
     .eq("user_id", user.id)
