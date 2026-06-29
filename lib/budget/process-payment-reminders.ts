@@ -17,7 +17,6 @@ import {
   notifySystemModuleSubscribers,
   resolveBudgetReminderRecipientIds,
 } from "@/lib/notifications/dispatch-system-module-notification";
-import type { Json } from "@/lib/supabase/database.types";
 
 const REMINDER_ACTOR = "Nimbusly";
 

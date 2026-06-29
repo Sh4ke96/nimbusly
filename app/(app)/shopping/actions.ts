@@ -28,7 +28,6 @@ import {
 } from "@/lib/shopping-lists/categories";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { NOTIFICATION_TYPE, type NotificationType } from "@/lib/constants/notifications";
-import { getFamilyNotificationTitle } from "@/lib/notifications/family-notification";
 import { getDisplayName } from "@/lib/profile";
 import type { AccountActionState } from "@/app/(app)/account/actions";
 import { requireUser, getProfileFamilyContext } from "@/lib/server-actions/require-user";

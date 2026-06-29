@@ -1,5 +1,4 @@
 import type { NotificationType } from "@/lib/constants/notifications";
-import { APP_MODULE } from "@/lib/constants/app-modules";
 import type { NotificationModuleId } from "@/lib/constants/notification-modules";
 import { dispatchInAppAndPushNotifications } from "@/lib/notifications/dispatch-notifications";
 import { loadModulePreferencesForUsers } from "@/lib/notifications/module-preferences/load-module-preferences";

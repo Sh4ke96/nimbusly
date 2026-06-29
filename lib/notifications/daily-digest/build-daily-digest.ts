@@ -1,6 +1,9 @@
 import type { AttentionItem } from "@/lib/dashboard/attention";
 import { getAttentionModuleId } from "@/lib/dashboard/attention";
-import type { NotificationModuleId } from "@/lib/constants/notification-modules";
+import {
+  isNotificationModuleId,
+  type NotificationModuleId,
+} from "@/lib/constants/notification-modules";
 import type { NotificationModulePreference } from "@/lib/notifications/module-preferences/types";
 import { getNotificationModuleId } from "@/lib/notifications/module-route";
 import type { AppNotification } from "@/lib/notifications/types";
@@ -18,7 +21,10 @@ export function filterAttentionItemsForDigest(
   const enabled = new Set(
     preferences.filter((pref) => pref.emailDigestEnabled).map((pref) => pref.moduleId)
   );
-  return items.filter((item) => enabled.has(getAttentionModuleId(item.kind)));
+  return items.filter((item) => {
+    const moduleId = getAttentionModuleId(item.kind);
+    return isNotificationModuleId(moduleId) && enabled.has(moduleId);
+  });
 }
 
 export function groupNotificationsForDigest(

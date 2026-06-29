@@ -20,7 +20,6 @@ import { downloadShoppingListCsv } from "@/lib/shopping-lists/export-csv";
 import { useT } from "@/lib/lang-context";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { NOTIFICATION_DEEP_LINK_QUERY } from "@/lib/constants/notification-deep-links";
-import { NimbusTourToolbarAnchor } from "@/components/nimbus/nimbus-tour-toolbar-anchor";
 import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus-tour";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import {
