@@ -54,12 +54,15 @@ function SheetContent({
   showCloseButton = true,
   closeLabel,
   overlayClassName,
+  mobileClearNav = false,
   ...props
 }: React.ComponentProps<typeof SheetPrimitive.Content> & {
   side?: "top" | "right" | "bottom" | "left";
   showCloseButton?: boolean;
   closeLabel?: string;
   overlayClassName?: string;
+  /** Full-height sheet above fixed bottom nav — skips side-sheet safe-area padding (header owns inset). */
+  mobileClearNav?: boolean;
 }) {
   const t = useT();
   const label = closeLabel ?? t.common.close;
@@ -74,12 +77,12 @@ function SheetContent({
           side === "right" &&
             cn(
               "inset-y-0 right-0 h-full w-full max-w-sm border-l data-open:slide-in-from-right data-closed:slide-out-to-right",
-              APP_MOBILE_SHEET_SIDE_CLASS
+              !mobileClearNav && APP_MOBILE_SHEET_SIDE_CLASS
             ),
           side === "left" &&
             cn(
               "inset-y-0 left-0 h-full w-full max-w-sm border-r data-open:slide-in-from-left data-closed:slide-out-to-left",
-              APP_MOBILE_SHEET_SIDE_CLASS
+              !mobileClearNav && APP_MOBILE_SHEET_SIDE_CLASS
             ),
           side === "top" &&
             "inset-x-0 top-0 border-b data-open:slide-in-from-top data-closed:slide-out-to-top",

@@ -657,11 +657,11 @@
   }
 
   .app-mobile-shopping-sheet-header {
+    box-sizing: border-box;
+    flex-shrink: 0;
+    min-height: calc(var(--app-mobile-nav-height) + env(safe-area-inset-top, 0px));
     padding-top: env(safe-area-inset-top, 0px);
-  }
-
-  .app-mobile-shopping-footer {
-    padding-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
   }
 
   @media (max-width: 767px) {
@@ -670,6 +670,17 @@
       height: calc(100dvh - env(safe-area-inset-top, 0px));
       max-height: calc(100dvh - env(safe-area-inset-top, 0px));
     }
+
+    /* Shopping list sheet: safe-area only in header — never stack with side-sheet padding. */
+    [data-slot="sheet-content"].app-mobile-sheet-clear-nav {
+      padding-top: 0 !important;
+      height: calc(100dvh - var(--app-mobile-nav-offset)) !important;
+      max-height: calc(100dvh - var(--app-mobile-nav-offset)) !important;
+    }
+  }
+
+  .app-mobile-shopping-footer {
+    padding-bottom: 0.75rem;
   }
 
   @supports (-webkit-touch-callout: none) {

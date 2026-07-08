@@ -39,6 +39,7 @@ export function ShoppingListMobileSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
+        mobileClearNav
         showCloseButton={false}
         overlayClassName="top-0 bottom-(--app-mobile-nav-offset)"
         className={cn(
@@ -49,7 +50,7 @@ export function ShoppingListMobileSheet({
         <SheetHeader
           className={cn(
             APP_MOBILE_SHOPPING_SHEET_HEADER_CLASS,
-            "flex flex-row items-center gap-2 border-b border-border px-3 pb-2 pr-4"
+            "flex flex-row items-center gap-2 border-b border-border px-3 pr-4"
           )}
         >
           <Button
