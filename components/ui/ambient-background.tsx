@@ -23,7 +23,7 @@ export function AmbientBackground({ variant = "app", className }: AmbientBackgro
     >
       <div
         className={cn(
-          "absolute inset-0",
+          "ambient-base absolute inset-0",
           isRich
             ? "bg-linear-to-br from-primary/8 via-background to-accent/6"
             : "bg-linear-to-br from-primary/5 via-background to-accent/4"

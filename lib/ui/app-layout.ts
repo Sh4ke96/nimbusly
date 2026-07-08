@@ -55,8 +55,8 @@ export const APP_SHOPPING_ADD_DIALOG_MOBILE_INSET_CLASS = cn(
   "max-sm:bottom-[calc(var(--app-mobile-nav-offset)+0.25rem)]"
 );
 
-/** Shopping list sheet — compact top offset (matches `app-mobile-sheet-compact-top` in globals). */
-export const APP_MOBILE_SHEET_COMPACT_TOP_CLASS = "app-mobile-sheet-compact-top";
+/** Shopping list sheet header — safe-area inset once (sheet body starts at top: 0). */
+export const APP_MOBILE_SHOPPING_SHEET_HEADER_CLASS = "app-mobile-shopping-sheet-header";
 
 /** Shopping list add footer — lifts controls above rounded screen corners. */
 export const APP_MOBILE_SHOPPING_FOOTER_CLASS = "app-mobile-shopping-footer";

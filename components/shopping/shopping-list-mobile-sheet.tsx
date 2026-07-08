@@ -14,7 +14,7 @@ import { useT } from "@/lib/lang-context";
 import type { ShoppingList } from "@/lib/shopping-lists/types";
 import {
   APP_MOBILE_SHEET_CLEAR_NAV_CLASS,
-  APP_MOBILE_SHEET_COMPACT_TOP_CLASS,
+  APP_MOBILE_SHOPPING_SHEET_HEADER_CLASS,
 } from "@/lib/ui/app-layout";
 import { cn } from "@/lib/utils";
 
@@ -40,14 +40,18 @@ export function ShoppingListMobileSheet({
       <SheetContent
         side="right"
         showCloseButton={false}
-        overlayClassName="top-[max(0px,calc(env(safe-area-inset-top,0px)-8px))] bottom-(--app-mobile-nav-offset)"
+        overlayClassName="top-0 bottom-(--app-mobile-nav-offset)"
         className={cn(
           APP_MOBILE_SHEET_CLEAR_NAV_CLASS,
-          APP_MOBILE_SHEET_COMPACT_TOP_CLASS,
           "flex w-full max-w-full flex-col gap-0 rounded-none border-l p-0"
         )}
       >
-        <SheetHeader className="flex flex-row items-center gap-2 border-b border-border px-3 py-2 pr-4">
+        <SheetHeader
+          className={cn(
+            APP_MOBILE_SHOPPING_SHEET_HEADER_CLASS,
+            "flex flex-row items-center gap-2 border-b border-border px-3 pb-2 pr-4"
+          )}
+        >
           <Button
             type="button"
             variant="ghost"

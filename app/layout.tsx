@@ -12,7 +12,11 @@ import { PageVisibilitySync } from "@/components/app/page-visibility-sync";
 import { PwaRegisterLazy } from "@/components/pwa/pwa-register-lazy";
 import { PwaStartupSplashLazy } from "@/components/pwa/pwa-startup-splash-lazy";
 import { LANG } from "@/lib/constants/lang";
-import { PWA_BACKGROUND_COLOR, PWA_ICON_APPLE_TOUCH } from "@/lib/constants/pwa";
+import {
+  PWA_BACKGROUND_COLOR_DARK,
+  PWA_BACKGROUND_COLOR_LIGHT,
+  PWA_ICON_APPLE_TOUCH,
+} from "@/lib/constants/pwa";
 import { dict } from "@/lib/i18n";
 import "./globals.css";
 
@@ -83,24 +87,21 @@ export default function RootLayout({
     <html
       lang={LANG.PL}
       data-scroll-behavior="smooth"
-      className={`dark ${quicksand.variable} ${nunito.variable} ${geistMono.variable} h-full antialiased`}
-      style={{ backgroundColor: PWA_BACKGROUND_COLOR }}
+      className={`${quicksand.variable} ${nunito.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <head>
         <style
           dangerouslySetInnerHTML={{
-            __html: `html,body{background-color:${PWA_BACKGROUND_COLOR}}`,
+            __html: `html{background-color:${PWA_BACKGROUND_COLOR_DARK}}html:not(.dark),html:not(.dark) body{background-color:${PWA_BACKGROUND_COLOR_LIGHT}}html.dark,html.dark body{background-color:${PWA_BACKGROUND_COLOR_DARK}}body{min-height:100%;background-color:inherit}`,
           }}
         />
       </head>
-      <body
-        className="min-h-full flex flex-col bg-background"
-        style={{ backgroundColor: PWA_BACKGROUND_COLOR }}
-      >
+      <body className="min-h-full flex flex-col bg-background">
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
+          storageKey="nimbusly-theme"
           disableTransitionOnChange
         >
           <LangProvider initialLang={LANG.PL}>

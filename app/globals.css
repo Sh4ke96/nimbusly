@@ -56,7 +56,7 @@
 }
 
 :root {
-  --background: #f6f8f2;
+  --background: #ffffff;
   --foreground: #273338;
   --card: #ffffff;
   --card-foreground: #273338;
@@ -418,7 +418,8 @@
     .ambient-lite .ambient-blob,
     .ambient-lite .ambient-shape,
     .ambient-lite .ambient-icon,
-    .ambient-lite .ambient-rays {
+    .ambient-lite .ambient-rays,
+    .ambient-lite .ambient-grid {
       display: none;
     }
   }
@@ -426,8 +427,25 @@
   html.pwa-standalone .ambient-lite .ambient-blob,
   html.pwa-standalone .ambient-lite .ambient-shape,
   html.pwa-standalone .ambient-lite .ambient-icon,
-  html.pwa-standalone .ambient-lite .ambient-rays {
+  html.pwa-standalone .ambient-lite .ambient-rays,
+  html.pwa-standalone .ambient-lite .ambient-grid {
     display: none;
+  }
+
+  /*
+   * App hub light mode — flat white background on all viewports.
+   * Desktop blobs/icons read as muddy gray-green patches on white UI.
+   */
+  html:not(.dark) .ambient-lite .ambient-blob,
+  html:not(.dark) .ambient-lite .ambient-shape,
+  html:not(.dark) .ambient-lite .ambient-icon,
+  html:not(.dark) .ambient-lite .ambient-rays,
+  html:not(.dark) .ambient-lite .ambient-grid {
+    display: none;
+  }
+
+  html:not(.dark) .ambient-lite .ambient-base {
+    background: var(--background) !important;
   }
 
   /* Backgrounded tab/PWA — pause decorative work (timers gated in JS separately). */
@@ -624,29 +642,22 @@
 
   /*
    * Mobile sheet (e.g. shopping list detail): fill viewport above the fixed nav.
-   * Starts below the status bar; overrides default inset-y-0 / h-full.
+   * Safe-area top lives in the sheet header — not here (avoids double inset with side sheets).
    */
   [data-slot="sheet-content"].app-mobile-sheet-clear-nav {
-    top: env(safe-area-inset-top, 0px);
+    top: 0;
     right: 0;
     bottom: var(--app-mobile-nav-offset);
     left: auto;
-    height: calc(100dvh - var(--app-mobile-nav-offset) - env(safe-area-inset-top, 0px));
-    max-height: calc(100dvh - var(--app-mobile-nav-offset) - env(safe-area-inset-top, 0px));
+    padding-top: 0;
+    height: calc(100dvh - var(--app-mobile-nav-offset));
+    max-height: calc(100dvh - var(--app-mobile-nav-offset));
     width: 100%;
     max-width: 100%;
   }
 
-  [data-slot="sheet-content"].app-mobile-sheet-clear-nav.app-mobile-sheet-compact-top {
-    top: max(0px, calc(env(safe-area-inset-top, 0px) - 8px));
-    height: calc(
-      100dvh - var(--app-mobile-nav-offset) -
-        max(0px, calc(env(safe-area-inset-top, 0px) - 8px))
-    );
-    max-height: calc(
-      100dvh - var(--app-mobile-nav-offset) -
-        max(0px, calc(env(safe-area-inset-top, 0px) - 8px))
-    );
+  .app-mobile-shopping-sheet-header {
+    padding-top: env(safe-area-inset-top, 0px);
   }
 
   .app-mobile-shopping-footer {
