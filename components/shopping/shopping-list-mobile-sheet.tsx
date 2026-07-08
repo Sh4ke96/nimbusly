@@ -37,7 +37,7 @@ export function ShoppingListMobileSheet({
       <SheetContent
         side="right"
         showCloseButton={false}
-        overlayClassName="bottom-(--app-mobile-nav-offset)"
+        overlayClassName="top-[env(safe-area-inset-top,0px)] bottom-(--app-mobile-nav-offset)"
         className={cn(
           APP_MOBILE_SHEET_CLEAR_NAV_CLASS,
           "flex w-full max-w-full flex-col gap-0 rounded-none border-l p-0"

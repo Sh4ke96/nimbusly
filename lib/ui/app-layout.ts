@@ -43,6 +43,12 @@ export const APP_MOBILE_BOTTOM_BAR_CLASS = "app-mobile-bottom-bar";
 /** Full-screen sheet that leaves the fixed bottom nav uncovered. */
 export const APP_MOBILE_SHEET_CLEAR_NAV_CLASS = "app-mobile-sheet-clear-nav";
 
+/** Padding below the iOS notch / status bar (portaled overlays). */
+export const APP_MOBILE_SAFE_TOP_CLASS = "app-mobile-safe-top";
+
+/** Side sheet on mobile — safe-area top padding when sheet uses inset-y-0. */
+export const APP_MOBILE_SHEET_SIDE_CLASS = "app-mobile-sheet-side";
+
 export const APP_PAGE_WIDTH = {
   compact: "max-w-3xl",
   narrow: "max-w-4xl",

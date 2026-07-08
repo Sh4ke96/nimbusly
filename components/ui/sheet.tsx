@@ -5,6 +5,7 @@ import { Dialog as SheetPrimitive } from "radix-ui";
 import { XIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { APP_MOBILE_SHEET_SIDE_CLASS } from "@/lib/ui/app-layout";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/lib/lang-context";
 
@@ -71,9 +72,15 @@ function SheetContent({
         className={cn(
           "fixed z-50 flex flex-col gap-4 bg-popover p-4 text-sm text-popover-foreground shadow-lg ring-1 ring-foreground/10 duration-200 outline-none data-open:animate-in data-closed:animate-out",
           side === "right" &&
-            "inset-y-0 right-0 h-full w-full max-w-sm border-l data-open:slide-in-from-right data-closed:slide-out-to-right",
+            cn(
+              "inset-y-0 right-0 h-full w-full max-w-sm border-l data-open:slide-in-from-right data-closed:slide-out-to-right",
+              APP_MOBILE_SHEET_SIDE_CLASS
+            ),
           side === "left" &&
-            "inset-y-0 left-0 h-full w-full max-w-sm border-r data-open:slide-in-from-left data-closed:slide-out-to-left",
+            cn(
+              "inset-y-0 left-0 h-full w-full max-w-sm border-r data-open:slide-in-from-left data-closed:slide-out-to-left",
+              APP_MOBILE_SHEET_SIDE_CLASS
+            ),
           side === "top" &&
             "inset-x-0 top-0 border-b data-open:slide-in-from-top data-closed:slide-out-to-top",
           side === "bottom" &&

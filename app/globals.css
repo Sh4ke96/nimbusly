@@ -618,30 +618,37 @@
     height: 1.25rem;
   }
 
+  .app-mobile-safe-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
   /*
    * Mobile sheet (e.g. shopping list detail): fill viewport above the fixed nav.
-   * Overrides default inset-y-0 / h-full so iOS does not leave a dead zone at the bottom.
+   * Starts below the status bar; overrides default inset-y-0 / h-full.
    */
-  .app-mobile-sheet-clear-nav {
-    top: 0;
+  [data-slot="sheet-content"].app-mobile-sheet-clear-nav {
+    top: env(safe-area-inset-top, 0px);
     right: 0;
     bottom: var(--app-mobile-nav-offset);
     left: auto;
-    height: calc(100dvh - var(--app-mobile-nav-offset));
-    max-height: calc(100dvh - var(--app-mobile-nav-offset));
+    height: calc(100dvh - var(--app-mobile-nav-offset) - env(safe-area-inset-top, 0px));
+    max-height: calc(100dvh - var(--app-mobile-nav-offset) - env(safe-area-inset-top, 0px));
     width: 100%;
     max-width: 100%;
+  }
+
+  @media (max-width: 767px) {
+    [data-slot="sheet-content"].app-mobile-sheet-side {
+      padding-top: env(safe-area-inset-top, 0px);
+      height: calc(100dvh - env(safe-area-inset-top, 0px));
+      max-height: calc(100dvh - env(safe-area-inset-top, 0px));
+    }
   }
 
   @supports (-webkit-touch-callout: none) {
     @media (max-width: 767px) {
       .app-mobile-bottom-nav {
         bottom: 0;
-      }
-
-      .app-mobile-sheet-clear-nav {
-        height: calc(100dvh - var(--app-mobile-nav-offset));
-        max-height: calc(100dvh - var(--app-mobile-nav-offset));
       }
     }
   }
