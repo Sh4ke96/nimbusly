@@ -16,7 +16,6 @@ import {
   getAppModuleRoute,
   getFamilyModuleRoute,
 } from "@/lib/constants/app-modules";
-import { useProfileStore } from "@/lib/stores/profile-store";
 import { useT } from "@/lib/lang-context";
 import { cn } from "@/lib/utils";
 
@@ -26,8 +25,7 @@ interface AppModuleNavProps {
 
 export function AppModuleNav({ className }: AppModuleNavProps) {
   const t = useT();
-  const profile = useProfileStore((s) => s.profile);
-  const familyHref = getFamilyModuleRoute(profile);
+  const familyHref = getFamilyModuleRoute();
 
   return (
     <div className={cn("hidden md:block", className)}>

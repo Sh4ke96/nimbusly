@@ -22,7 +22,6 @@ import { useProfileStore } from "@/lib/stores/profile-store";
 import { useT } from "@/lib/lang-context";
 import { canManageShoppingCategories } from "@/lib/profile/family-roles";
 import { cn } from "@/lib/utils";
-import { ACCOUNT_MODE } from "@/lib/constants/account";
 import {
   parseSettingsTab,
   settingsTabHref,
@@ -49,7 +48,6 @@ export default function ProfileSettingsPage() {
   const loaded = useProfileStore((s) => s.loaded);
   const profile = useProfileStore((s) => s.profile);
 
-  const showFamily = profile?.account_mode === ACCOUNT_MODE.FAMILY && !!profile.family_id;
   const showShoppingCategories =
     canManageShoppingCategories(profile, family, user?.id);
 

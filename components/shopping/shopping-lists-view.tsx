@@ -53,7 +53,7 @@ export function ShoppingListsView() {
   const [activeListId, setSelectedListId] = useResolvedItemSelection(listIdsKey);
   const [editingList, setEditingList] = useState<ShoppingList | null>(null);
   const [editOpen, setEditOpen] = useState<boolean>(false);
-  const [mobileDetailOpen, setMobileDetailOpen] = useState<boolean>(false);
+  const [mobileDetailListId, setMobileDetailListId] = useState<string | null>(null);
 
   const familyId =
     profile?.account_mode === ACCOUNT_MODE.FAMILY && profile.family_id
@@ -66,17 +66,17 @@ export function ShoppingListsView() {
     if (!listFromUrl || lists.length === 0) return;
     if (lists.some((list) => list.id === listFromUrl)) {
       setSelectedListId(listFromUrl);
-      if (!isLgViewport) {
-        setMobileDetailOpen(true);
-      }
     }
-  }, [listFromUrl, lists, setSelectedListId, isLgViewport]);
+  }, [listFromUrl, lists, setSelectedListId]);
 
-  useEffect(() => {
-    if (isLgViewport) {
-      setMobileDetailOpen(false);
-    }
-  }, [isLgViewport]);
+  if (
+    listFromUrl &&
+    !isLgViewport &&
+    lists.some((list) => list.id === listFromUrl) &&
+    mobileDetailListId !== listFromUrl
+  ) {
+    setMobileDetailListId(listFromUrl);
+  }
 
   useEffect(() => {
     if (activeListId) void fetchItems(activeListId);
@@ -115,7 +115,13 @@ export function ShoppingListsView() {
   function handleListSelect(listId: string) {
     setSelectedListId(listId);
     if (!isLgViewport) {
-      setMobileDetailOpen(true);
+      setMobileDetailListId(listId);
+    }
+  }
+
+  function handleMobileSheetOpenChange(open: boolean) {
+    if (!open) {
+      setMobileDetailListId(null);
     }
   }
 
@@ -222,8 +228,8 @@ export function ShoppingListsView() {
 
       <ShoppingListMobileSheet
         list={activeList}
-        open={mobileDetailOpen && !!activeList && !isLgViewport}
-        onOpenChange={setMobileDetailOpen}
+        open={!isLgViewport && !!activeList && mobileDetailListId === activeList.id}
+        onOpenChange={handleMobileSheetOpenChange}
         onChanged={onListsChanged}
       />
 

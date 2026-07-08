@@ -49,7 +49,7 @@ export default function DashboardPageClient({ snapshot }: DashboardPageClientPro
     key: moduleId,
     label: getAppModuleLabel(moduleId, t.dashboard.moduleLabels),
     desc: getAppModuleDesc(moduleId, t.dashboard.moduleDescs),
-    href: getAppModuleRoute(moduleId, profile),
+    href: getAppModuleRoute(moduleId),
     Icon: getAppModuleIcon(moduleId),
   }));
 

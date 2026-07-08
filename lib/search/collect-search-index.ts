@@ -25,7 +25,7 @@ export function buildSearchIndexInput(
   return {
     moduleLabels,
     moduleDescs,
-    familyHref: getFamilyModuleRoute(snapshot.profile),
+    familyHref: getFamilyModuleRoute(),
     budgets: snapshot.budgets.map((budget) => ({
       id: budget.id,
       name: budget.name,

@@ -784,7 +784,6 @@ export function DashboardOverview() {
           <DashboardOverviewCardGrid
           visibleCardIds={visibleCardIds}
           editMode={editMode}
-          profile={profile}
           cardLoadingById={cardLoadingById}
           cardErrorById={cardErrorById}
           cardRetryById={cardRetryById}

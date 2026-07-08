@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 import type { Dict } from "@/lib/i18n/types";
 import type { OverviewAccent } from "@/lib/constants/overview-accent";
-import type { Profile } from "@/lib/profile";
 
 export const APP_MODULE = {
   BUDGET: "budget",
@@ -146,18 +145,13 @@ export function getAppModuleOverviewMeta(moduleId: AppModuleId): AppModuleMeta {
   return MODULE_META[moduleId];
 }
 
-export function getFamilyModuleRoute(
-  _profile?: Pick<Profile, "account_mode" | "family_id"> | null
-): string {
+export function getFamilyModuleRoute(): string {
   return "/family";
 }
 
-export function getAppModuleRoute(
-  moduleId: AppModuleId,
-  profile?: Pick<Profile, "account_mode" | "family_id"> | null
-): string {
+export function getAppModuleRoute(moduleId: AppModuleId): string {
   if (moduleId === APP_MODULE.FAMILY) {
-    return getFamilyModuleRoute(profile);
+    return getFamilyModuleRoute();
   }
   return APP_MODULE_ROUTES[moduleId];
 }

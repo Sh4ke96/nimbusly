@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { CalendarCell } from "@/lib/birthdays/calendar";
 import {
@@ -122,6 +122,135 @@ function DayCellContent({
   );
 }
 
+type MobileWeekCalendarProps = {
+  weeks: CalendarCell[][];
+  focusDay: number | null;
+  monthNames: readonly string[];
+  weekdaysFull: readonly string[];
+  dayDataAttribute: string;
+  isFocusedDay?: (day: number) => boolean;
+  hasFocusedItem?: (day: number) => boolean;
+  renderDayOverlay?: (day: number) => ReactNode;
+  overlayCoversContent?: (day: number) => boolean;
+  renderDayContent: (ctx: { cell: CalendarCell; day: number }) => ReactNode;
+};
+
+function MobileWeekCalendar({
+  weeks,
+  focusDay,
+  monthNames,
+  weekdaysFull,
+  dayDataAttribute,
+  isFocusedDay,
+  hasFocusedItem,
+  renderDayOverlay,
+  overlayCoversContent,
+  renderDayContent,
+}: MobileWeekCalendarProps) {
+  const t = useT();
+  const [weekIndex, setWeekIndex] = useState<number>(() =>
+    findDefaultWeekIndex(weeks, { focusDay })
+  );
+
+  const activeWeek = weeks[weekIndex] ?? weeks[0] ?? [];
+  const weekRangeLabel = formatWeekDayRangeLabel(activeWeek, monthNames);
+
+  return (
+    <div className="space-y-3 md:hidden">
+      <div className="flex items-center justify-between gap-2">
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          className="shrink-0"
+          disabled={weekIndex <= 0}
+          onClick={() => setWeekIndex((index) => Math.max(0, index - 1))}
+          aria-label={t.common.calendarWeekPrevious}
+        >
+          <ChevronLeft className="size-4" />
+        </Button>
+        <p className="text-center text-sm font-semibold">{weekRangeLabel}</p>
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          className="shrink-0"
+          disabled={weekIndex >= weeks.length - 1}
+          onClick={() => setWeekIndex((index) => Math.min(weeks.length - 1, index + 1))}
+          aria-label={t.common.calendarWeekNext}
+        >
+          <ChevronRight className="size-4" />
+        </Button>
+      </div>
+
+      <div className="space-y-3">
+        {activeWeek.map((cell, dayIndex) => {
+          if (!cell.isCurrentMonth || cell.day === null) {
+            return (
+              <div
+                key={`mobile-pad-${weekIndex}-${dayIndex}`}
+                className="min-h-10 rounded-none border border-dashed border-border/40 bg-muted/15"
+                aria-hidden
+              />
+            );
+          }
+
+          const day = cell.day;
+          const focused = isFocusedDay?.(day) ?? false;
+          const hasFocus = hasFocusedItem?.(day) ?? false;
+          const dayLabel = formatCalendarDayLabel(day, cell.month, monthNames);
+          const overlay = renderDayOverlay?.(day);
+
+          return (
+            <div key={`mobile-${day}`} className="relative space-y-2">
+              {overlay ? (
+                <div className="absolute inset-0 z-20" aria-hidden={false}>
+                  {overlay}
+                </div>
+              ) : null}
+              <div
+                className={cn(
+                  overlay && "pointer-events-none [&_*]:pointer-events-none"
+                )}
+              >
+                <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+                  <p className="text-sm font-semibold text-foreground">
+                    {weekdaysFull[dayIndex]}
+                  </p>
+                  <p
+                    className={cn(
+                      "text-base font-bold tabular-nums",
+                      focused || hasFocus
+                        ? "text-primary"
+                        : cell.isToday
+                          ? "text-primary"
+                          : "text-foreground"
+                    )}
+                  >
+                    {dayLabel}
+                  </p>
+                </div>
+                <DayCellContent
+                  cell={cell}
+                  day={day}
+                  focused={focused}
+                  hasFocus={hasFocus}
+                  dayDataAttribute={dayDataAttribute}
+                  renderDayOverlay={renderDayOverlay}
+                  overlayCoversContent={overlayCoversContent}
+                  renderDayContent={renderDayContent}
+                  skipOverlay
+                  mobile
+                />
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 export function MonthCalendarGrid({
   cells,
   weekdays,
@@ -137,110 +266,26 @@ export function MonthCalendarGrid({
   const t = useT();
   const weekdaysFull = t.common.calendarWeekdaysFull;
   const weeks = useMemo(() => chunkCalendarWeeks(cells), [cells]);
-  const [weekIndex, setWeekIndex] = useState<number>(0);
-
-  useEffect(() => {
-    setWeekIndex(findDefaultWeekIndex(weeks, { focusDay }));
-  }, [weeks, focusDay]);
-
-  const activeWeek = weeks[weekIndex] ?? weeks[0] ?? [];
-  const weekRangeLabel = formatWeekDayRangeLabel(activeWeek, monthNames);
+  const mobileWeekKey = useMemo(() => {
+    const anchor = cells.find((cell) => cell.isCurrentMonth && cell.day !== null);
+    return `${anchor?.year ?? 0}-${anchor?.month ?? 0}-${focusDay ?? "none"}`;
+  }, [cells, focusDay]);
 
   return (
     <>
-      {/* Mobile: one week, large stacked day cards */}
-      <div className="space-y-3 md:hidden">
-        <div className="flex items-center justify-between gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            className="shrink-0"
-            disabled={weekIndex <= 0}
-            onClick={() => setWeekIndex((index) => Math.max(0, index - 1))}
-            aria-label={t.common.calendarWeekPrevious}
-          >
-            <ChevronLeft className="size-4" />
-          </Button>
-          <p className="text-center text-sm font-semibold">{weekRangeLabel}</p>
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            className="shrink-0"
-            disabled={weekIndex >= weeks.length - 1}
-            onClick={() => setWeekIndex((index) => Math.min(weeks.length - 1, index + 1))}
-            aria-label={t.common.calendarWeekNext}
-          >
-            <ChevronRight className="size-4" />
-          </Button>
-        </div>
-
-        <div className="space-y-3">
-          {activeWeek.map((cell, dayIndex) => {
-            if (!cell.isCurrentMonth || cell.day === null) {
-              return (
-                <div
-                  key={`mobile-pad-${weekIndex}-${dayIndex}`}
-                  className="min-h-10 rounded-none border border-dashed border-border/40 bg-muted/15"
-                  aria-hidden
-                />
-              );
-            }
-
-            const day = cell.day;
-            const focused = isFocusedDay?.(day) ?? false;
-            const hasFocus = hasFocusedItem?.(day) ?? false;
-            const dayLabel = formatCalendarDayLabel(day, cell.month, monthNames);
-            const overlay = renderDayOverlay?.(day);
-
-            return (
-              <div key={`mobile-${day}`} className="relative space-y-2">
-                {overlay ? (
-                  <div className="absolute inset-0 z-20" aria-hidden={false}>
-                    {overlay}
-                  </div>
-                ) : null}
-                <div
-                  className={cn(
-                    overlay && "pointer-events-none [&_*]:pointer-events-none"
-                  )}
-                >
-                  <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-                    <p className="text-sm font-semibold text-foreground">
-                      {weekdaysFull[dayIndex]}
-                    </p>
-                    <p
-                      className={cn(
-                        "text-base font-bold tabular-nums",
-                        focused || hasFocus
-                          ? "text-primary"
-                          : cell.isToday
-                            ? "text-primary"
-                            : "text-foreground"
-                      )}
-                    >
-                      {dayLabel}
-                    </p>
-                  </div>
-                  <DayCellContent
-                    cell={cell}
-                    day={day}
-                    focused={focused}
-                    hasFocus={hasFocus}
-                    dayDataAttribute={dayDataAttribute}
-                    renderDayOverlay={renderDayOverlay}
-                    overlayCoversContent={overlayCoversContent}
-                    renderDayContent={renderDayContent}
-                    skipOverlay
-                    mobile
-                  />
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+      <MobileWeekCalendar
+        key={mobileWeekKey}
+        weeks={weeks}
+        focusDay={focusDay}
+        monthNames={monthNames}
+        weekdaysFull={weekdaysFull}
+        dayDataAttribute={dayDataAttribute}
+        isFocusedDay={isFocusedDay}
+        hasFocusedItem={hasFocusedItem}
+        renderDayOverlay={renderDayOverlay}
+        overlayCoversContent={overlayCoversContent}
+        renderDayContent={renderDayContent}
+      />
 
       {/* Desktop: classic month grid */}
       <div className="hidden md:grid md:grid-cols-7 md:gap-px md:border md:border-border md:bg-border">

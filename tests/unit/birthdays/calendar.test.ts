@@ -53,7 +53,6 @@ describe("findDefaultWeekIndex", () => {
   it("falls back to the week containing today when possible", () => {
     const cells = buildMonthGrid(2026, 6);
     const weeks = chunkCalendarWeeks(cells);
-    const today = new Date().getDate();
     const todayMonth = new Date().getMonth() + 1;
     const todayYear = new Date().getFullYear();
     if (todayYear === 2026 && todayMonth === 6) {

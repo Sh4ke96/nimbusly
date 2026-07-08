@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/month-calendar-grid";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import {
-  choreDateKey,
   getChoreOccurrencesInMonth,
   groupChoreOccurrencesByDay,
   type ChoreCalendarOccurrence,

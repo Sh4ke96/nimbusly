@@ -21,7 +21,6 @@ import {
 } from "@/components/dashboard/dashboard-overview-card-bodies";
 import { SortableOverviewCard } from "@/components/dashboard/sortable-overview-card";
 import type { DashboardOverviewCardId } from "@/lib/constants/dashboard-overview";
-import type { Profile } from "@/lib/profile";
 import { useT } from "@/lib/lang-context";
 
 type CardBodiesData = Omit<
@@ -32,7 +31,6 @@ type CardBodiesData = Omit<
 export interface DashboardOverviewCardGridProps {
   visibleCardIds: DashboardOverviewCardId[];
   editMode: boolean;
-  profile: Profile | null;
   cardLoadingById: Partial<Record<DashboardOverviewCardId, boolean>>;
   cardErrorById: Partial<Record<DashboardOverviewCardId, boolean>>;
   cardRetryById: Partial<Record<DashboardOverviewCardId, () => void>>;
@@ -44,7 +42,6 @@ export interface DashboardOverviewCardGridProps {
 export function DashboardOverviewCardGrid({
   visibleCardIds,
   editMode,
-  profile,
   cardLoadingById,
   cardErrorById,
   cardRetryById,
@@ -70,7 +67,7 @@ export function DashboardOverviewCardGrid({
       <SortableContext items={visibleCardIds} strategy={rectSortingStrategy}>
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {visibleCardIds.map((cardId) => {
-            const meta = getOverviewCardMeta(cardId, t.dashboard, profile);
+            const meta = getOverviewCardMeta(cardId, t.dashboard);
             return (
               <SortableOverviewCard
                 key={cardId}
