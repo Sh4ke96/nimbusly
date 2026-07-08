@@ -1,8 +1,6 @@
-import { PWA_STARTUP_SPLASH_STATIC_ID } from "@/lib/constants/pwa";
-
+/** Hide the static PWA splash via CSS — do not `.remove()` the node (React owns it). */
 export function removeStaticPwaSplash(): void {
   if (typeof document === "undefined") return;
 
-  document.getElementById(PWA_STARTUP_SPLASH_STATIC_ID)?.remove();
   document.documentElement.setAttribute("data-app-ready", "");
 }

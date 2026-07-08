@@ -11,6 +11,23 @@ export { CHANGELOG_ENTRY_TYPE, type ChangelogEntry };
  */
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "0.7.7",
+    date: "2026-07-08",
+    type: CHANGELOG_ENTRY_TYPE.FIX,
+    title: {
+      pl: "Naprawa crashy PWA splash na /login",
+      en: "PWA splash crash fix on /login",
+    },
+    changes: {
+      pl: [
+        "Statyczny splash PWA jest tylko chowany (CSS), nie usuwany z DOM — koniec z błędem removeChild/insertBefore przy starcie",
+      ],
+      en: [
+        "Static PWA splash is hidden via CSS only, not removed from the DOM — fixes removeChild/insertBefore errors on startup",
+      ],
+    },
+  },
+  {
     version: "0.7.6",
     date: "2026-07-08",
     type: CHANGELOG_ENTRY_TYPE.FIX,
