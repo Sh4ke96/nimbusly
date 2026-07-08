@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import * as Sentry from "@sentry/nextjs";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
 import { AppViewShell } from "@/components/app/app-view-shell";
@@ -17,13 +16,9 @@ export default function AppError({
 }) {
   const t = useT();
   const router = useRouter();
-  const reportedRef = useRef(false);
 
   useEffect(() => {
-    if (reportedRef.current) return;
-    reportedRef.current = true;
     console.error(error);
-    Sentry.captureException(error);
   }, [error]);
 
   function handleRetry() {

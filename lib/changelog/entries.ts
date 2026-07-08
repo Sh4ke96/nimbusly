@@ -11,6 +11,25 @@ export { CHANGELOG_ENTRY_TYPE, type ChangelogEntry };
  */
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "0.7.4",
+    date: "2026-07-08",
+    type: CHANGELOG_ENTRY_TYPE.FIX,
+    title: {
+      pl: "Usunięcie Sentry",
+      en: "Sentry removed",
+    },
+    changes: {
+      pl: [
+        "Wyłączono integrację Sentry i tunel /monitoring — mniej requestów przy nawigacji",
+        "Strony błędów zostają z i18n PL/EN i twardym odświeżeniem aplikacji",
+      ],
+      en: [
+        "Removed Sentry integration and the /monitoring tunnel — fewer requests on navigation",
+        "Error pages keep PL/EN i18n and a hard app reload action",
+      ],
+    },
+  },
+  {
     version: "0.7.3",
     date: "2026-07-08",
     type: CHANGELOG_ENTRY_TYPE.FIX,

@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import * as Sentry from "@sentry/nextjs";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
 import { LANG, type Lang } from "@/lib/constants/lang";
@@ -19,13 +18,9 @@ export default function GlobalError({
   reset: () => void;
 }) {
   const [lang] = useState<Lang>(resolveGlobalErrorLang);
-  const reportedRef = useRef(false);
 
   useEffect(() => {
-    if (reportedRef.current) return;
-    reportedRef.current = true;
     console.error(error);
-    Sentry.captureException(error);
   }, [error]);
 
   const t = dict[lang].errors;
