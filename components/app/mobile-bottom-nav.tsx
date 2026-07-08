@@ -101,7 +101,7 @@ export function MobileBottomNav() {
     const active = isMobileNavActive(pathname, search, id);
 
     return (
-      <li key={id} className="min-w-0">
+      <li key={id} className="flex h-full min-w-0">
         <Link
           href={navHref(id)}
           className={cn(
@@ -142,7 +142,7 @@ export function MobileBottomNav() {
         {NAV_ITEMS.slice(0, 2).map(({ id, icon }) => renderNavItem(id, icon))}
 
         {showNimbus ? (
-          <li className="min-w-0">
+          <li className="flex h-full min-w-0">
             <button
               type="button"
               onClick={handleNimbusClick}
