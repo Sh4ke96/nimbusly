@@ -35,6 +35,7 @@ export const en: Dict = {
     globalTitle: "Something went wrong",
     globalDesc: "An unexpected error occurred. Try again — our team has been notified.",
     globalRetry: "Try again",
+    globalDigest: "Error code",
   },
   mobileNav: {
     ariaLabel: "App navigation",

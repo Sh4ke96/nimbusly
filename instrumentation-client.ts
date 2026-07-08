@@ -20,6 +20,10 @@ export async function onRouterTransitionStart(
 ) {
   if (!shouldActivateSentryRuntime()) return;
 
-  const Sentry = await import("@sentry/nextjs");
-  return Sentry.captureRouterTransitionStart(...args);
+  try {
+    const Sentry = await import("@sentry/nextjs");
+    return Sentry.captureRouterTransitionStart(...args);
+  } catch {
+    // Router transitions must never fail because monitoring threw.
+  }
 }

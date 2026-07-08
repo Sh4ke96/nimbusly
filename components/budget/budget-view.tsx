@@ -93,10 +93,32 @@ export function BudgetView() {
   const searchParams = useSearchParams();
   const budgetFromUrl = searchParams.get(NOTIFICATION_DEEP_LINK_QUERY.BUDGET);
   const [activeBudgetId, setSelectedBudgetId] = useResolvedItemSelection(budgetIdsKey);
-  const [selectedMonthKey, setSelectedMonthKey] = useState<string>(getCurrentMonthKey);
-  const [typeFilter, setTypeFilter] = useState<string>(BUDGET_FILTER_ALL);
-  const [categoryFilter, setCategoryFilter] = useState<string>(BUDGET_FILTER_ALL);
-  const [prevActiveBudgetId, setPrevActiveBudgetId] = useState<string | null>(activeBudgetId);
+  const [filterState, setFilterState] = useState<{
+    scopeId: string | null;
+    selectedMonthKey: string;
+    typeFilter: string;
+    categoryFilter: string;
+  }>(() => ({
+    scopeId: null,
+    selectedMonthKey: getCurrentMonthKey(),
+    typeFilter: BUDGET_FILTER_ALL,
+    categoryFilter: BUDGET_FILTER_ALL,
+  }));
+  const { selectedMonthKey, typeFilter, categoryFilter } = useMemo(() => {
+    if (filterState.scopeId === activeBudgetId) {
+      return {
+        selectedMonthKey: filterState.selectedMonthKey,
+        typeFilter: filterState.typeFilter,
+        categoryFilter: filterState.categoryFilter,
+      };
+    }
+
+    return {
+      selectedMonthKey: getCurrentMonthKey(),
+      typeFilter: BUDGET_FILTER_ALL,
+      categoryFilter: BUDGET_FILTER_ALL,
+    };
+  }, [filterState, activeBudgetId]);
   const [editingBudget, setEditingBudget] = useState<Budget | null>(null);
   const [editOpen, setEditOpen] = useState<boolean>(false);
 
@@ -185,26 +207,47 @@ export function BudgetView() {
     onChange: onBudgetDataChanged,
   });
 
-  if (activeBudgetId !== prevActiveBudgetId) {
-    const hadPreviousBudget = prevActiveBudgetId !== null;
-    setPrevActiveBudgetId(activeBudgetId);
-    if (hadPreviousBudget) {
-      setTypeFilter(BUDGET_FILTER_ALL);
-      setCategoryFilter(BUDGET_FILTER_ALL);
-      setSelectedMonthKey(getCurrentMonthKey());
-    }
+  function resetFiltersForBudget(budgetId: string) {
+    setFilterState({
+      scopeId: budgetId,
+      typeFilter: BUDGET_FILTER_ALL,
+      categoryFilter: BUDGET_FILTER_ALL,
+      selectedMonthKey: getCurrentMonthKey(),
+    });
   }
 
   function selectBudget(id: string) {
     setSelectedBudgetId(id);
-    setTypeFilter(BUDGET_FILTER_ALL);
-    setCategoryFilter(BUDGET_FILTER_ALL);
-    setSelectedMonthKey(getCurrentMonthKey());
+    resetFiltersForBudget(id);
   }
 
   function handleTypeFilterChange(value: string) {
-    setTypeFilter(value);
-    setCategoryFilter(BUDGET_FILTER_ALL);
+    setFilterState((prev) => ({
+      scopeId: activeBudgetId,
+      typeFilter: value,
+      categoryFilter: BUDGET_FILTER_ALL,
+      selectedMonthKey:
+        prev.scopeId === activeBudgetId ? prev.selectedMonthKey : getCurrentMonthKey(),
+    }));
+  }
+
+  function handleCategoryFilterChange(value: string) {
+    setFilterState((prev) => ({
+      scopeId: activeBudgetId,
+      typeFilter: prev.scopeId === activeBudgetId ? prev.typeFilter : BUDGET_FILTER_ALL,
+      categoryFilter: value,
+      selectedMonthKey:
+        prev.scopeId === activeBudgetId ? prev.selectedMonthKey : getCurrentMonthKey(),
+    }));
+  }
+
+  function handleSelectedMonthKeyChange(value: string) {
+    setFilterState((prev) => ({
+      scopeId: activeBudgetId,
+      typeFilter: prev.scopeId === activeBudgetId ? prev.typeFilter : BUDGET_FILTER_ALL,
+      categoryFilter: prev.scopeId === activeBudgetId ? prev.categoryFilter : BUDGET_FILTER_ALL,
+      selectedMonthKey: value,
+    }));
   }
 
   const onDataChanged = useModuleRefresh(fetchBudgets);
@@ -375,7 +418,10 @@ export function BudgetView() {
                   {activeBudget?.name ?? t.budget.detailsHeading}
                 </ModuleSectionHeading>
 
-                <BudgetMonthPicker value={selectedMonthKey} onChange={setSelectedMonthKey} />
+                <BudgetMonthPicker
+                  value={selectedMonthKey}
+                  onChange={handleSelectedMonthKeyChange}
+                />
 
                 <div className="grid grid-cols-3 gap-1.5 sm:gap-3">
                   <div className="border border-primary/25 bg-primary/10 px-2 py-2.5 shadow-sm sm:px-4 sm:py-3">
@@ -462,7 +508,7 @@ export function BudgetView() {
                           typeFilter={typeFilter}
                           categoryFilter={categoryFilter}
                           onTypeChange={handleTypeFilterChange}
-                          onCategoryChange={setCategoryFilter}
+                          onCategoryChange={handleCategoryFilterChange}
                         />
                       </NimbusTourToolbarAnchor>
                       <div data-nimbus-tour={NIMBUS_TOUR_TARGET.BUDGET_EXPORT}>

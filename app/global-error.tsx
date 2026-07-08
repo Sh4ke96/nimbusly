@@ -22,6 +22,7 @@ export default function GlobalError({
   const [lang] = useState<Lang>(resolveGlobalErrorLang);
 
   useEffect(() => {
+    console.error(error);
     Sentry.captureException(error);
   }, [error]);
 
@@ -33,6 +34,11 @@ export default function GlobalError({
         <Logo size="sm" href="/dashboard" className="mb-8" />
         <h1 className="font-heading font-bold text-2xl tracking-tight">{t.globalTitle}</h1>
         <p className="mt-2 max-w-sm text-sm text-muted-foreground">{t.globalDesc}</p>
+        {error.digest ? (
+          <p className="mt-4 font-mono text-xs text-muted-foreground">
+            {t.globalDigest}: {error.digest}
+          </p>
+        ) : null}
         <Button type="button" className="mt-6 rounded-none min-h-11" onClick={() => reset()}>
           {t.globalRetry}
         </Button>

@@ -21,23 +21,16 @@ export function ProfileForm() {
   const t = useT();
   const profile = useProfileStore((s) => s.profile);
   const refreshProfile = useProfileStore((s) => s.refreshProfile);
-  const [avatarColor, setAvatarColor] = useState<AvatarColor>(() =>
-    resolveAvatarColor(profile?.avatar_color)
-  );
-  const [prevProfileAvatarColor, setPrevProfileAvatarColor] = useState<string | undefined>(
-    profile?.avatar_color
-  );
-
-  if (profile?.avatar_color && profile.avatar_color !== prevProfileAvatarColor) {
-    setPrevProfileAvatarColor(profile.avatar_color);
-    setAvatarColor(resolveAvatarColor(profile.avatar_color));
-  }
+  const [avatarColor, setAvatarColor] = useState<AvatarColor | null>(null);
 
   const [state, action, pending] = useActionState(updateProfile, null);
 
-  useActionFeedback(state, () => void refreshProfile());
+  useActionFeedback(state, () => {
+    setAvatarColor(null);
+    void refreshProfile();
+  });
 
-  const displayColor = resolveAvatarColor(avatarColor || profile?.avatar_color);
+  const displayColor = resolveAvatarColor(avatarColor ?? profile?.avatar_color);
 
   if (!profile) {
     return (

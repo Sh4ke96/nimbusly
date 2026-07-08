@@ -293,17 +293,18 @@ export function DashboardOverview() {
     [profileLayoutKey]
   );
 
-  const [layoutDraft, setLayoutDraft] = useState<DashboardOverviewLayout | null>(null);
-  const [prevProfileLayoutKey, setPrevProfileLayoutKey] = useState<string | null>(
-    profileLayoutKey
-  );
+  const [layoutDraft, setLayoutDraft] = useState<{
+    sourceKey: string;
+    layout: DashboardOverviewLayout;
+  } | null>(null);
 
-  if (profileLayoutKey !== prevProfileLayoutKey) {
-    setPrevProfileLayoutKey(profileLayoutKey);
-    setLayoutDraft(null);
-  }
-
-  const layout = layoutDraft ?? profileLayout;
+  const layout = useMemo(() => {
+    const sourceKey = profileLayoutKey ?? "";
+    if (layoutDraft?.sourceKey === sourceKey) {
+      return layoutDraft.layout;
+    }
+    return profileLayout;
+  }, [layoutDraft, profileLayoutKey, profileLayout]);
 
   useEffect(() => {
     layoutRef.current = layout;
@@ -317,7 +318,8 @@ export function DashboardOverview() {
 
   const persistLayout = useCallback(
     async (nextLayout: DashboardOverviewLayout, previousLayout: DashboardOverviewLayout) => {
-      setLayoutDraft(nextLayout);
+      const layoutSourceKey = profileLayoutKey ?? "";
+      setLayoutDraft({ sourceKey: layoutSourceKey, layout: nextLayout });
       setSavingLayout(true);
       patchDashboardOverviewLayout(nextLayout);
 
@@ -328,13 +330,13 @@ export function DashboardOverview() {
       setSavingLayout(false);
 
       if (result && "error" in result) {
-        setLayoutDraft(previousLayout);
+        setLayoutDraft({ sourceKey: layoutSourceKey, layout: previousLayout });
         patchDashboardOverviewLayout(previousLayout);
         toast.error(result.error);
         return;
       }
     },
-    [patchDashboardOverviewLayout]
+    [patchDashboardOverviewLayout, profileLayoutKey]
   );
 
   useEffect(() => {

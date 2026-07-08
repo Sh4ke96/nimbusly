@@ -23,6 +23,7 @@ export type Dict = {
     globalTitle: string;
     globalDesc: string;
     globalRetry: string;
+    globalDigest: string;
   };
   mobileNav: {
     ariaLabel: string;
