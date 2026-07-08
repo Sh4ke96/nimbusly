@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import { ACCOUNT_MODE } from "@/lib/constants/account";
+import { ACCOUNT_MODE, type FamilyRole } from "@/lib/constants/account";
 import { FAMILY_ACCESS_ERROR, type FamilyAccessError } from "@/lib/constants/server-error";
 import { isFamilyAdmin } from "@/lib/profile/family-roles";
 
@@ -59,7 +59,14 @@ export async function requireShoppingCategoryManager(): Promise<ShoppingCategory
     .eq("id", profile.family_id)
     .maybeSingle();
 
-  if (!family || !isFamilyAdmin(profile, family, user.id)) {
+  if (
+    !family ||
+    !isFamilyAdmin(
+      { family_role: profile.family_role as FamilyRole | null },
+      family,
+      user.id
+    )
+  ) {
     return { error: FAMILY_ACCESS_ERROR.NOT_FOUNDER };
   }
 

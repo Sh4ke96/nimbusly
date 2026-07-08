@@ -44,7 +44,7 @@ export function ShoppingListMobileSheet({
             size="icon"
             className="shrink-0 cursor-pointer"
             onClick={() => onOpenChange(false)}
-            aria-label={t.account.back}
+            aria-label={t.onboarding.back}
           >
             <ArrowLeft className="size-5" />
           </Button>

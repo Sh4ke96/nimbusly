@@ -83,7 +83,7 @@ export function ShoppingListsView() {
   }, [activeListId, fetchItems]);
 
   useShoppingListsRealtime({
-    userId: user?.id,
+    userId: user?.id ?? "",
     familyId,
   });
 

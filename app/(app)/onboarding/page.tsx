@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { readOnboardingInvitePrefill } from "@/lib/family/onboarding-invite-prefill";
+import { readOnboardingInvitePrefill } from "@/lib/family/server/read-onboarding-invite-prefill";
 import { getAuthProfile } from "@/lib/profile/server";
 import { OnboardingView } from "./onboarding-view";
 
