@@ -24,12 +24,12 @@ export function ProfileForm() {
   const [avatarColor, setAvatarColor] = useState<AvatarColor>(() =>
     resolveAvatarColor(profile?.avatar_color)
   );
-  const [syncedAvatarColor, setSyncedAvatarColor] = useState<string | undefined>(
+  const [prevProfileAvatarColor, setPrevProfileAvatarColor] = useState<string | undefined>(
     profile?.avatar_color
   );
 
-  if (profile?.avatar_color && profile.avatar_color !== syncedAvatarColor) {
-    setSyncedAvatarColor(profile.avatar_color);
+  if (profile?.avatar_color && profile.avatar_color !== prevProfileAvatarColor) {
+    setPrevProfileAvatarColor(profile.avatar_color);
     setAvatarColor(resolveAvatarColor(profile.avatar_color));
   }
 

@@ -96,7 +96,7 @@ export function BudgetView() {
   const [selectedMonthKey, setSelectedMonthKey] = useState<string>(getCurrentMonthKey);
   const [typeFilter, setTypeFilter] = useState<string>(BUDGET_FILTER_ALL);
   const [categoryFilter, setCategoryFilter] = useState<string>(BUDGET_FILTER_ALL);
-  const [filtersBudgetId, setFiltersBudgetId] = useState<string | null>(null);
+  const [prevActiveBudgetId, setPrevActiveBudgetId] = useState<string | null>(activeBudgetId);
   const [editingBudget, setEditingBudget] = useState<Budget | null>(null);
   const [editOpen, setEditOpen] = useState<boolean>(false);
 
@@ -185,9 +185,10 @@ export function BudgetView() {
     onChange: onBudgetDataChanged,
   });
 
-  if (activeBudgetId !== filtersBudgetId) {
-    setFiltersBudgetId(activeBudgetId);
-    if (filtersBudgetId !== null) {
+  if (activeBudgetId !== prevActiveBudgetId) {
+    const hadPreviousBudget = prevActiveBudgetId !== null;
+    setPrevActiveBudgetId(activeBudgetId);
+    if (hadPreviousBudget) {
       setTypeFilter(BUDGET_FILTER_ALL);
       setCategoryFilter(BUDGET_FILTER_ALL);
       setSelectedMonthKey(getCurrentMonthKey());

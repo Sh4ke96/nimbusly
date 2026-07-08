@@ -70,14 +70,14 @@ export function ShoppingListsView() {
     }
   }, [listFromUrl, lists, setSelectedListId]);
 
-  if (
-    listFromUrl &&
-    !isLgViewport &&
-    lists.some((list) => list.id === listFromUrl) &&
-    mobileDetailListId !== listFromUrl
-  ) {
-    setMobileDetailListId(listFromUrl);
-  }
+  const effectiveMobileDetailListId = useMemo(() => {
+    if (isLgViewport) return null;
+    if (mobileDetailListId) return mobileDetailListId;
+    if (listFromUrl && lists.some((list) => list.id === listFromUrl)) {
+      return listFromUrl;
+    }
+    return null;
+  }, [isLgViewport, mobileDetailListId, listFromUrl, lists]);
 
   useEffect(() => {
     if (activeListId) void fetchItems(activeListId);
@@ -229,7 +229,11 @@ export function ShoppingListsView() {
 
       <ShoppingListMobileSheet
         list={activeList}
-        open={!isLgViewport && !!activeList && mobileDetailListId === activeList.id}
+        open={
+          !isLgViewport &&
+          !!activeList &&
+          effectiveMobileDetailListId === activeList.id
+        }
         onOpenChange={handleMobileSheetOpenChange}
         onChanged={onListsChanged}
       />

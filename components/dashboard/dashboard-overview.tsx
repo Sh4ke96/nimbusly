@@ -294,10 +294,12 @@ export function DashboardOverview() {
   );
 
   const [layoutDraft, setLayoutDraft] = useState<DashboardOverviewLayout | null>(null);
-  const [layoutDraftSourceKey, setLayoutDraftSourceKey] = useState<string | null>(null);
+  const [prevProfileLayoutKey, setPrevProfileLayoutKey] = useState<string | null>(
+    profileLayoutKey
+  );
 
-  if (profileLayoutKey !== layoutDraftSourceKey) {
-    setLayoutDraftSourceKey(profileLayoutKey);
+  if (profileLayoutKey !== prevProfileLayoutKey) {
+    setPrevProfileLayoutKey(profileLayoutKey);
     setLayoutDraft(null);
   }
 
