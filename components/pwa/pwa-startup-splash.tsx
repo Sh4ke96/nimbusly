@@ -12,13 +12,12 @@ type SplashPhase = "visible" | "exiting" | "hidden";
 
 export function PwaStartupSplash() {
   const t = useT();
-  const [phase, setPhase] = useState<SplashPhase>("visible");
+  const [phase, setPhase] = useState<SplashPhase>(() =>
+    isStandaloneDisplay() ? "visible" : "hidden"
+  );
 
   useEffect(() => {
-    if (!isStandaloneDisplay()) {
-      setPhase("hidden");
-      return;
-    }
+    if (!isStandaloneDisplay()) return;
 
     const started = Date.now();
 
