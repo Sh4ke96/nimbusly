@@ -1,9 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Logo } from "@/components/logo";
 import { NAV_TRANSITION } from "@/lib/constants/navigation";
+import { useClientSearchString } from "@/lib/hooks/use-client-search-string";
 import { useT } from "@/lib/lang-context";
 import { shouldStartNavigationTransition } from "@/lib/navigation/should-start-transition";
 import { cn } from "@/lib/utils";
@@ -13,8 +14,7 @@ type TransitionPhase = "idle" | "entering" | "visible" | "exiting";
 export function NavigationTransition() {
   const t = useT();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const search = searchParams.toString();
+  const search = useClientSearchString();
   const routeKey = `${pathname}?${search}`;
 
   const [phase, setPhase] = useState<TransitionPhase>("idle");

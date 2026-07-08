@@ -6,7 +6,6 @@ import { Logo } from "@/components/logo";
 import { LANG, type Lang } from "@/lib/constants/lang";
 import { dict } from "@/lib/i18n";
 import { useErrorPageHardNavigation } from "@/lib/ui/error-page-hard-navigation";
-import { useErrorRouteRecovery } from "@/lib/ui/use-error-route-recovery";
 
 function resolveGlobalErrorLang(): Lang {
   if (typeof document === "undefined") return LANG.PL;
@@ -22,7 +21,6 @@ export default function GlobalError({
   const [lang] = useState<Lang>(resolveGlobalErrorLang);
 
   useErrorPageHardNavigation();
-  useErrorRouteRecovery();
 
   useEffect(() => {
     console.error(error);

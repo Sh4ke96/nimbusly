@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Bell, LayoutGrid, LayoutDashboard, Settings } from "lucide-react";
 import { NimbusIcon } from "@/components/nimbus/nimbus-icon";
 import {
@@ -21,6 +21,7 @@ import {
   formatUnreadNotificationCount,
 } from "@/components/notifications/notification-unread-badge";
 import { APP_MOBILE_BOTTOM_NAV_CLASS } from "@/lib/ui/app-layout";
+import { useClientSearchString } from "@/lib/hooks/use-client-search-string";
 import { cn } from "@/lib/utils";
 
 const NAV_ICONS = {
@@ -41,8 +42,7 @@ const NAV_CELL_CLASS = "app-mobile-bottom-nav-control transition-colors";
 export function MobileBottomNav() {
   const t = useT();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const search = searchParams.toString();
+  const search = useClientSearchString();
   const loaded = useProfileStore((s) => s.loaded);
   const profile = useProfileStore((s) => s.profile);
   const menuOpen = useNimbusStore((s) => s.menuOpen);

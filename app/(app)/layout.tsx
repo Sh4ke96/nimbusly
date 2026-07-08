@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import { ProfileBootstrap } from "@/components/profile/profile-bootstrap";
 import { NotificationsRealtimeBridge } from "@/components/notifications/notifications-realtime-bridge";
 import { NimbusCompanionHostLazy } from "@/components/nimbus/nimbus-companion-host-lazy";
@@ -17,14 +16,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <div className="relative z-10 app-mobile-bottom-inset">{children}</div>
         <PwaInstallPromptLazy />
         <PwaPushPromptLazy />
-        <Suspense fallback={null}>
-          <NavigationTransition />
-        </Suspense>
+        <NavigationTransition />
       </div>
       <NimbusCompanionHostLazy />
-      <Suspense fallback={null}>
-        <MobileBottomNav />
-      </Suspense>
+      <MobileBottomNav />
     </ProfileBootstrap>
   );
 }

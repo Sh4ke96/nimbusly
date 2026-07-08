@@ -11,6 +11,25 @@ export { CHANGELOG_ENTRY_TYPE, type ChangelogEntry };
  */
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "0.7.6",
+    date: "2026-07-08",
+    type: CHANGELOG_ENTRY_TYPE.FIX,
+    title: {
+      pl: "Naprawa removeChild przy nawigacji",
+      en: "removeChild navigation fix",
+    },
+    changes: {
+      pl: [
+        "Dolna nawigacja i overlay przejścia bez useSearchParams — shell nie jest odmontowywany przy zmianie trasy",
+        "Usunięto auto-reset error boundary podczas nawigacji (konflikt DOM)",
+      ],
+      en: [
+        "Bottom nav and transition overlay no longer use useSearchParams — shell stays mounted on route changes",
+        "Removed auto-reset error boundary during navigation (DOM conflict)",
+      ],
+    },
+  },
+  {
     version: "0.7.5",
     date: "2026-07-08",
     type: CHANGELOG_ENTRY_TYPE.FIX,

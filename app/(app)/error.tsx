@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
 import { AppViewShell } from "@/components/app/app-view-shell";
@@ -17,20 +17,12 @@ export default function AppError({
 }) {
   const t = useT();
   const router = useRouter();
-  const pathname = usePathname();
-  const pathnameRef = useRef(pathname);
 
   useErrorPageHardNavigation();
 
   useEffect(() => {
     console.error(error);
   }, [error]);
-
-  useEffect(() => {
-    if (pathnameRef.current === pathname) return;
-    pathnameRef.current = pathname;
-    reset();
-  }, [pathname, reset]);
 
   function handleRetry() {
     reset();
