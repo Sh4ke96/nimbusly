@@ -18,7 +18,10 @@ import { formatMessage } from "@/lib/i18n/format";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useNimbusStore } from "@/lib/stores/nimbus-store";
 import { useNotificationsStore } from "@/lib/stores/notifications-store";
-import { NotificationUnreadBadge, formatUnreadNotificationCount } from "@/components/notifications/notification-unread-badge";
+import {
+  NotificationUnreadBadge,
+  formatUnreadNotificationCount,
+} from "@/components/notifications/notification-unread-badge";
 import { APP_MOBILE_BOTTOM_NAV_CLASS } from "@/lib/ui/app-layout";
 import { cn } from "@/lib/utils";
 
@@ -30,12 +33,20 @@ function getClientMounted() {
   return true;
 }
 
-const NAV_ITEMS: { id: MobileNavItem; icon: typeof LayoutDashboard }[] = [
-  { id: MOBILE_NAV_ITEM.HOME, icon: LayoutDashboard },
-  { id: MOBILE_NAV_ITEM.MODULES, icon: LayoutGrid },
-  { id: MOBILE_NAV_ITEM.NOTIFICATIONS, icon: Bell },
-  { id: MOBILE_NAV_ITEM.SETTINGS, icon: Settings },
-];
+const NAV_ICONS = {
+  [MOBILE_NAV_ITEM.HOME]: LayoutDashboard,
+  [MOBILE_NAV_ITEM.MODULES]: LayoutGrid,
+  [MOBILE_NAV_ITEM.NOTIFICATIONS]: Bell,
+  [MOBILE_NAV_ITEM.SETTINGS]: Settings,
+} as const;
+
+const MOBILE_NAV_SLOT = {
+  NIMBUS: "nimbus",
+} as const;
+
+type MobileNavSlot = MobileNavItem | typeof MOBILE_NAV_SLOT.NIMBUS;
+
+const NAV_CELL_CLASS = "app-mobile-bottom-nav-control transition-colors";
 
 export function MobileBottomNav() {
   const t = useT();
@@ -69,6 +80,21 @@ export function MobileBottomNav() {
     [MOBILE_NAV_ITEM.SETTINGS]: t.mobileNav.settings,
   };
 
+  const slots: MobileNavSlot[] = showNimbus
+    ? [
+        MOBILE_NAV_ITEM.HOME,
+        MOBILE_NAV_ITEM.MODULES,
+        MOBILE_NAV_SLOT.NIMBUS,
+        MOBILE_NAV_ITEM.NOTIFICATIONS,
+        MOBILE_NAV_ITEM.SETTINGS,
+      ]
+    : [
+        MOBILE_NAV_ITEM.HOME,
+        MOBILE_NAV_ITEM.MODULES,
+        MOBILE_NAV_ITEM.NOTIFICATIONS,
+        MOBILE_NAV_ITEM.SETTINGS,
+      ];
+
   function handleNimbusClick(event: React.MouseEvent<HTMLButtonElement>) {
     event.preventDefault();
     event.stopPropagation();
@@ -96,23 +122,22 @@ export function MobileBottomNav() {
     return labels[id];
   }
 
-  function renderNavItem(id: MobileNavItem, icon: typeof LayoutDashboard) {
-    const Icon = icon;
+  function renderNavLink(id: MobileNavItem) {
+    const Icon = NAV_ICONS[id];
     const active = isMobileNavActive(pathname, search, id);
 
     return (
-      <li key={id} className="flex h-full min-w-0">
+      <li key={id} className="app-mobile-bottom-nav-item">
         <Link
           href={navHref(id)}
           className={cn(
-            "flex h-full min-h-11 flex-col items-center justify-center gap-0.5 px-1",
-            "text-[10px] font-medium leading-tight transition-colors",
+            NAV_CELL_CLASS,
             active ? "text-primary" : "text-muted-foreground active:text-foreground"
           )}
           aria-current={active ? "page" : undefined}
           aria-label={navAriaLabel(id)}
         >
-          <span className="relative inline-flex shrink-0">
+          <span className="app-mobile-bottom-nav-icon relative">
             <Icon className="size-5" aria-hidden />
             {id === MOBILE_NAV_ITEM.NOTIFICATIONS ? (
               <NotificationUnreadBadge
@@ -121,8 +146,39 @@ export function MobileBottomNav() {
               />
             ) : null}
           </span>
-          <span className="w-full truncate text-center">{labels[id]}</span>
+          <span className="w-full truncate">{labels[id]}</span>
         </Link>
+      </li>
+    );
+  }
+
+  function renderNimbusSlot() {
+    return (
+      <li key={MOBILE_NAV_SLOT.NIMBUS} className="app-mobile-bottom-nav-item">
+        <button
+          type="button"
+          onClick={handleNimbusClick}
+          className={cn(
+            NAV_CELL_CLASS,
+            menuOpen ? "text-primary" : "text-muted-foreground active:text-foreground"
+          )}
+          aria-label={t.companion.openMenuAria}
+          aria-expanded={menuOpen}
+          data-nimbus-mobile-nav-trigger
+        >
+          <span className="app-mobile-bottom-nav-icon relative">
+            <NimbusIcon size={20} animated={nimbusAttention} />
+            {nimbusAttention && !menuOpen ? (
+              <span
+                className="absolute -top-1.5 -right-2.5 flex size-4 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-primary-foreground"
+                aria-hidden
+              >
+                !
+              </span>
+            ) : null}
+          </span>
+          <span className="w-full truncate">{t.mobileNav.nimbus}</span>
+        </button>
       </li>
     );
   }
@@ -135,43 +191,13 @@ export function MobileBottomNav() {
     <nav className={APP_MOBILE_BOTTOM_NAV_CLASS} aria-label={t.mobileNav.ariaLabel}>
       <ul
         className={cn(
-          "app-mobile-bottom-nav-items grid shrink-0",
-          showNimbus ? "grid-cols-5" : "grid-cols-4"
+          "app-mobile-bottom-nav-items",
+          showNimbus ? "app-mobile-bottom-nav-items--5" : "app-mobile-bottom-nav-items--4"
         )}
       >
-        {NAV_ITEMS.slice(0, 2).map(({ id, icon }) => renderNavItem(id, icon))}
-
-        {showNimbus ? (
-          <li className="flex h-full min-w-0">
-            <button
-              type="button"
-              onClick={handleNimbusClick}
-              className={cn(
-                "relative flex h-full min-h-11 w-full flex-col items-center justify-center gap-0.5 px-1",
-                "text-[10px] font-medium leading-tight transition-colors",
-                menuOpen
-                  ? "text-primary"
-                  : "text-muted-foreground active:text-foreground"
-              )}
-              aria-label={t.companion.openMenuAria}
-              aria-expanded={menuOpen}
-              data-nimbus-mobile-nav-trigger
-            >
-              <NimbusIcon size={22} animated={nimbusAttention} />
-              {nimbusAttention && !menuOpen ? (
-                <span
-                  className="absolute top-1.5 right-[calc(50%-1rem)] flex size-4 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-primary-foreground"
-                  aria-hidden
-                >
-                  !
-                </span>
-              ) : null}
-              <span className="w-full truncate text-center">{t.mobileNav.nimbus}</span>
-            </button>
-          </li>
-        ) : null}
-
-        {NAV_ITEMS.slice(2).map(({ id, icon }) => renderNavItem(id, icon))}
+        {slots.map((slot) =>
+          slot === MOBILE_NAV_SLOT.NIMBUS ? renderNimbusSlot() : renderNavLink(slot)
+        )}
       </ul>
     </nav>,
     document.body

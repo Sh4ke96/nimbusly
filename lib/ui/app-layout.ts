@@ -28,10 +28,9 @@ export const MOBILE_BOTTOM_NAV_ROW_HEIGHT = "3.5rem";
 export const APP_MOBILE_NIMBUS_HINT_Z = "z-40";
 export const APP_MOBILE_BOTTOM_NAV_Z = "z-50";
 
-/** Mobile bottom nav — always viewport-fixed; do not add `relative` here. */
+/** Mobile bottom nav — layout in `.app-mobile-bottom-nav` (globals.css); decorative shell only. */
 export const APP_MOBILE_BOTTOM_NAV_CLASS = cn(
-  "fixed inset-x-0 bottom-0 left-0 right-0 md:hidden app-mobile-bottom-nav",
-  APP_MOBILE_BOTTOM_NAV_Z,
+  "app-mobile-bottom-nav md:hidden",
   "isolate border-t border-border bg-background",
   "shadow-[0_-1px_0_0_var(--border),0_-8px_24px_-4px_rgba(0,0,0,0.08)]"
 );
@@ -41,9 +40,8 @@ export const APP_NIMBUS_POPOVER_Z = "z-60";
 /** Sticky footer above mobile bottom nav — no safe-area padding; use `app-mobile-bottom-bar` for PWA paint. */
 export const APP_MOBILE_BOTTOM_BAR_CLASS = "app-mobile-bottom-bar";
 
-/** Full-screen overlay that ends where the fixed bottom nav begins. */
-export const APP_MOBILE_SHEET_ABOVE_NAV_CLASS =
-  "top-0 bottom-(--app-mobile-nav-offset) h-auto max-h-[calc(100dvh-var(--app-mobile-nav-offset))]";
+/** Reserve space for the fixed bottom nav (margin on footers inside full-screen overlays). */
+export const APP_MOBILE_NAV_CLEARANCE_CLASS = "mb-(--app-mobile-nav-offset)";
 
 export const APP_PAGE_WIDTH = {
   compact: "max-w-3xl",

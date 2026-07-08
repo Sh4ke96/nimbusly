@@ -12,8 +12,6 @@ import {
 } from "@/components/ui/sheet";
 import { useT } from "@/lib/lang-context";
 import type { ShoppingList } from "@/lib/shopping-lists/types";
-import { APP_MOBILE_SHEET_ABOVE_NAV_CLASS } from "@/lib/ui/app-layout";
-import { cn } from "@/lib/utils";
 
 type ShoppingListMobileSheetProps = {
   list: ShoppingList | null;
@@ -37,11 +35,7 @@ export function ShoppingListMobileSheet({
       <SheetContent
         side="right"
         showCloseButton={false}
-        overlayClassName="bottom-(--app-mobile-nav-offset)"
-        className={cn(
-          APP_MOBILE_SHEET_ABOVE_NAV_CLASS,
-          "app-mobile-sheet-above-nav w-full max-w-full gap-0 rounded-none p-0"
-        )}
+        className="h-full w-full max-w-full gap-0 rounded-none p-0"
       >
         <SheetHeader className="flex flex-row items-center gap-2 border-b border-border px-3 py-3 pr-4">
           <Button
