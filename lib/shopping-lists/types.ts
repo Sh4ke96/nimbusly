@@ -213,6 +213,17 @@ export function parseShoppingCheckedFromForm(formData: FormData): {
   };
 }
 
+export function parseShoppingListBulkCheckedFromForm(formData: FormData): {
+  listId: string;
+  checked: boolean;
+} {
+  const checkedRaw = formData.get(SHOPPING_FORM_FIELD.CHECKED);
+  return {
+    listId: getFormTrimmedString(formData, SHOPPING_FORM_FIELD.LIST_ID),
+    checked: checkedRaw === "true",
+  };
+}
+
 export function parseOrderedItemIds(raw: string): string[] | null {
   try {
     const parsed = JSON.parse(raw) as unknown;

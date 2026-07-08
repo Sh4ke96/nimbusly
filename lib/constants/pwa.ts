@@ -16,6 +16,10 @@ export const PWA_ICON_192 = "/pwa-icon-192.png" as const;
 export const PWA_ICON_512 = "/pwa-icon-512.png" as const;
 export const PWA_ICON_SVG = "/pwa-icon.svg" as const;
 
+export const PWA_STARTUP_SPLASH_STATIC_ID = "pwa-startup-splash-static" as const;
+
+export const PWA_THEME_STORAGE_KEY = "nimbusly-theme" as const;
+
 export const PWA_PRECACHE_URLS = [
   "/offline",
   PWA_ICON_APPLE_TOUCH,

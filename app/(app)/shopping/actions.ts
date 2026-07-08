@@ -18,6 +18,7 @@ import {
   parseShoppingItemFromForm,
   parseShoppingItemIdsFromForm,
   parseShoppingItemUpdateFromForm,
+  parseShoppingListBulkCheckedFromForm,
   parseShoppingListIdFromForm,
   parseShoppingListNameFromForm,
   parseShoppingReorderFromForm,
@@ -530,6 +531,38 @@ export async function toggleShoppingListItemChecked(
     .eq("id", listId);
 
   return { success: t.shoppingLists.itemUpdatedSuccess };
+}
+
+export async function setAllShoppingListItemsChecked(
+  _prev: AccountActionState,
+  formData: FormData
+): Promise<AccountActionState> {
+  const t = await getServerT();
+  const { supabase, user } = await requireUser();
+
+  if (!user) return { error: t.account.errorUnauthorized };
+
+  const { listId, checked } = parseShoppingListBulkCheckedFromForm(formData);
+
+  if (!listId) return { error: t.shoppingLists.errorGeneric };
+
+  const list = await getAccessibleList(supabase, listId);
+  if (!list) return { error: t.shoppingLists.errorNotFound };
+
+  const now = new Date().toISOString();
+  const { error } = await supabase
+    .from("shopping_list_items")
+    .update({
+      checked,
+      updated_at: now,
+    })
+    .eq("list_id", listId);
+
+  if (error) return { error: t.shoppingLists.errorGeneric };
+
+  await supabase.from("shopping_lists").update({ updated_at: now }).eq("id", listId);
+
+  return { success: t.shoppingLists.itemsBulkCheckedSuccess };
 }
 
 export async function reorderShoppingListCategories(

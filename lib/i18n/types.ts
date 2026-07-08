@@ -1147,6 +1147,8 @@ export type Dict = {
     mobileListDetailDesc: string;
     deleteItemBtn: string;
     toggleItemLabel: string;
+    checkAllBtn: string;
+    uncheckAllBtn: string;
     dragHandleLabel: string;
     noItemsYet: string;
     itemsProgress: string;
@@ -1157,6 +1159,7 @@ export type Dict = {
     itemAddedSuccess: string;
     itemUpdatedSuccess: string;
     itemDeletedSuccess: string;
+    itemsBulkCheckedSuccess: string;
     itemReorderedSuccess: string;
     errorNameRequired: string;
     errorItemRequired: string;

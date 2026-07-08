@@ -10,12 +10,15 @@ import { VersionBadge } from "@/components/app/version-badge";
 import { AuthSessionSync } from "@/components/auth/auth-session-sync";
 import { PageVisibilitySync } from "@/components/app/page-visibility-sync";
 import { PwaRegisterLazy } from "@/components/pwa/pwa-register-lazy";
-import { PwaStartupSplashLazy } from "@/components/pwa/pwa-startup-splash-lazy";
+import { PwaStartupSplash } from "@/components/pwa/pwa-startup-splash";
 import { LANG } from "@/lib/constants/lang";
 import {
   PWA_BACKGROUND_COLOR_DARK,
   PWA_BACKGROUND_COLOR_LIGHT,
+  PWA_ICON_192,
   PWA_ICON_APPLE_TOUCH,
+  PWA_STARTUP_SPLASH_STATIC_ID,
+  PWA_THEME_STORAGE_KEY,
 } from "@/lib/constants/pwa";
 import { dict } from "@/lib/i18n";
 import "./globals.css";
@@ -91,17 +94,26 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var k=${JSON.stringify(PWA_THEME_STORAGE_KEY)};var t=localStorage.getItem(k);var r=document.documentElement;if(t==="light")r.classList.remove("dark");else r.classList.add("dark");if(window.navigator.standalone===true)r.classList.add("ios-standalone")}catch(e){document.documentElement.classList.add("dark")}})();`,
+          }}
+        />
         <style
           dangerouslySetInnerHTML={{
-            __html: `html{background-color:${PWA_BACKGROUND_COLOR_DARK}}html:not(.dark),html:not(.dark) body{background-color:${PWA_BACKGROUND_COLOR_LIGHT}}html.dark,html.dark body{background-color:${PWA_BACKGROUND_COLOR_DARK}}body{min-height:100%;background-color:inherit}`,
+            __html: `html{background-color:${PWA_BACKGROUND_COLOR_DARK}}html:not(.dark),html:not(.dark) body{background-color:${PWA_BACKGROUND_COLOR_LIGHT}}html.dark,html.dark body{background-color:${PWA_BACKGROUND_COLOR_DARK}}body{min-height:100%;background-color:inherit}#${PWA_STARTUP_SPLASH_STATIC_ID}{display:none;position:fixed;inset:0;z-index:10001;align-items:center;justify-content:center;background:${PWA_BACKGROUND_COLOR_DARK}}#${PWA_STARTUP_SPLASH_STATIC_ID} img{width:4.5rem;height:4.5rem;animation:pwa-splash-pulse 1.2s ease-in-out infinite}@keyframes pwa-splash-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.72;transform:scale(.94)}}@media (display-mode:standalone),(display-mode:fullscreen),(display-mode:minimal-ui){#${PWA_STARTUP_SPLASH_STATIC_ID}{display:flex}}html.ios-standalone #${PWA_STARTUP_SPLASH_STATIC_ID}{display:flex}html[data-app-ready] #${PWA_STARTUP_SPLASH_STATIC_ID}{display:none!important}`,
           }}
         />
       </head>
       <body className="min-h-full flex flex-col bg-background">
+        <div id={PWA_STARTUP_SPLASH_STATIC_ID} aria-hidden="true">
+          {/* eslint-disable-next-line @next/next/no-img-element -- instant PWA splash before JS */}
+          <img src={PWA_ICON_192} alt="" width={72} height={72} />
+        </div>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
-          storageKey="nimbusly-theme"
+          storageKey={PWA_THEME_STORAGE_KEY}
           disableTransitionOnChange
         >
           <LangProvider initialLang={LANG.PL}>
@@ -109,7 +121,7 @@ export default function RootLayout({
               <AuthSessionSync />
               <PageVisibilitySync />
               <PwaRegisterLazy />
-              <PwaStartupSplashLazy />
+              <PwaStartupSplash />
               {children}
               <VersionBadge />
               <Toaster

@@ -432,20 +432,17 @@
     display: none;
   }
 
-  /*
-   * App hub light mode — flat white background on all viewports.
-   * Desktop blobs/icons read as muddy gray-green patches on white UI.
-   */
-  html:not(.dark) .ambient-lite .ambient-blob,
-  html:not(.dark) .ambient-lite .ambient-shape,
-  html:not(.dark) .ambient-lite .ambient-icon,
-  html:not(.dark) .ambient-lite .ambient-rays,
-  html:not(.dark) .ambient-lite .ambient-grid {
-    display: none;
-  }
-
+  /* Light mode app hub — white canvas; decorations match dark (desktop only; mobile rules above). */
   html:not(.dark) .ambient-lite .ambient-base {
     background: var(--background) !important;
+  }
+
+  html:not(.dark) .ambient-lite .ambient-blob {
+    opacity: 0.42;
+  }
+
+  html:not(.dark) .ambient-lite .ambient-rays {
+    opacity: 0.35;
   }
 
   /* Backgrounded tab/PWA — pause decorative work (timers gated in JS separately). */

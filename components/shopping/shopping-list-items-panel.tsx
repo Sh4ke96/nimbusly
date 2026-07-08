@@ -4,6 +4,7 @@ import { useEffect, useMemo } from "react";
 import dynamic from "next/dynamic";
 import { ShoppingListAddItem } from "@/components/shopping/shopping-list-add-item";
 import { ShoppingListAddItemDialog } from "@/components/shopping/shopping-list-add-item-dialog";
+import { ShoppingListToggleAll } from "@/components/shopping/shopping-list-toggle-all";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useT } from "@/lib/lang-context";
@@ -124,6 +125,14 @@ export function ShoppingListItemsPanel({
           </p>
         ) : (
           <>
+            <div className="flex justify-end">
+              <ShoppingListToggleAll
+                listId={listId}
+                items={items}
+                onChanged={onChanged}
+              />
+            </div>
+
             <NimbusTourToolbarAnchor
               tourTarget={NIMBUS_TOUR_TARGET.SHOPPING_CATEGORIES}
               visible={useCategories && categoriesLoaded}

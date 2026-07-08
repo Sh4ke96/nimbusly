@@ -34,6 +34,10 @@ import {
   type ShoppingListCategory,
 } from "@/lib/shopping-lists/categories";
 import { SHOPPING_UNCATEGORIZED_KEY } from "@/lib/constants/shopping-categories";
+import {
+  readCollapsedCategoryKeys,
+  writeCollapsedCategoryKeys,
+} from "@/lib/shopping-lists/collapsed-categories-storage";
 import { SHOPPING_FORM_FIELD, applyItemOrder, type ShoppingListItem } from "@/lib/shopping-lists/types";
 import { useT } from "@/lib/lang-context";
 import { useShoppingCategoriesStore } from "@/lib/stores/shopping-categories-store";
@@ -190,7 +194,19 @@ export function ShoppingListCategorizedItems({
     [items, categories, t.shoppingLists.uncategorizedLabel]
   );
 
-  const [collapsedKeys, setCollapsedKeys] = useState<Set<string>>(() => new Set());
+  const [collapsedKeys, setCollapsedKeys] = useState<Set<string>>(() =>
+    readCollapsedCategoryKeys(listId)
+  );
+
+  function toggleCategoryCollapsed(key: string) {
+    setCollapsedKeys((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      writeCollapsedCategoryKeys(listId, next);
+      return next;
+    });
+  }
 
   const categorySortableIds = useMemo(
     () =>
@@ -289,14 +305,7 @@ export function ShoppingListCategorizedItems({
               group={group}
               listId={listId}
               expanded={!collapsedKeys.has(group.key)}
-              onToggle={() =>
-                setCollapsedKeys((prev) => {
-                  const next = new Set(prev);
-                  if (next.has(group.key)) next.delete(group.key);
-                  else next.add(group.key);
-                  return next;
-                })
-              }
+              onToggle={() => toggleCategoryCollapsed(group.key)}
               onItemDragEnd={handleItemDragEnd}
               onChanged={onChanged}
             />
