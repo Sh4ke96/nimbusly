@@ -35,8 +35,10 @@ export const APP_MOBILE_BOTTOM_NAV_CLASS = cn(
   "isolate border-t border-border bg-background",
   "shadow-[0_-1px_0_0_var(--border),0_-8px_24px_-4px_rgba(0,0,0,0.08)]"
 );
-export const APP_NIMBUS_COMPANION_Z = "z-55";
+export const APP_MOBILE_FULLSCREEN_OVERLAY_Z = "z-55";
+export const APP_NIMBUS_COMPANION_Z = APP_MOBILE_FULLSCREEN_OVERLAY_Z;
 export const APP_NIMBUS_POPOVER_Z = "z-60";
+export const APP_MOBILE_DIALOG_Z = APP_NIMBUS_POPOVER_Z;
 
 export const APP_PAGE_WIDTH = {
   compact: "max-w-3xl",

@@ -67,12 +67,24 @@ const MOBILE_DIALOG_HEADER_SHELL_CLASS = cn(
 
 const MOBILE_DIALOG_BODY_SHELL_CLASS = cn(
   "max-sm:block max-sm:min-h-0 max-sm:flex-1 max-sm:overflow-y-auto max-sm:overscroll-contain",
-  "max-sm:px-4 max-sm:py-4 max-sm:pb-[calc(1rem+env(safe-area-inset-bottom,0px))]",
+  "max-sm:px-4 max-sm:py-4",
   "sm:contents"
 )
 
-const MOBILE_DIALOG_POSITION_CLASS = cn(
+const MOBILE_DIALOG_BODY_ABOVE_NAV_CLASS = "max-sm:pb-4"
+
+const MOBILE_DIALOG_BODY_FULL_BLEED_CLASS =
+  "max-sm:pb-[max(1rem,env(safe-area-inset-bottom,0px))]"
+
+const MOBILE_DIALOG_POSITION_ABOVE_NAV_CLASS = cn(
   "max-sm:top-[max(0.75rem,env(safe-area-inset-top,0px))]",
+  "max-sm:bottom-[var(--app-mobile-nav-offset)]",
+  "max-sm:max-h-[calc(100dvh-max(0.75rem,env(safe-area-inset-top,0px))-var(--app-mobile-nav-offset))]"
+)
+
+const MOBILE_DIALOG_POSITION_FULL_BLEED_CLASS = cn(
+  "max-sm:top-[max(0.75rem,env(safe-area-inset-top,0px))]",
+  "max-sm:bottom-0",
   "max-sm:max-h-[calc(100dvh-max(0.75rem,env(safe-area-inset-top,0px)))]"
 )
 
@@ -122,15 +134,26 @@ function DialogContent({
   showCloseButton = true,
   closeLabel,
   style,
+  mobileLayout = "aboveNav",
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   showCloseButton?: boolean
   closeLabel?: string
+  /** Mobile: sit above bottom nav (default) or full-bleed when nav is covered (e.g. fullscreen sheet). */
+  mobileLayout?: "aboveNav" | "fullBleed"
 }) {
   const t = useT()
   const label = closeLabel ?? t.common.close
   const { headers, body } = partitionDialogChildren(children)
   const hasPinnedHeader = headers.length > 0
+  const mobilePositionClass =
+    mobileLayout === "fullBleed"
+      ? MOBILE_DIALOG_POSITION_FULL_BLEED_CLASS
+      : MOBILE_DIALOG_POSITION_ABOVE_NAV_CLASS
+  const mobileBodyClass =
+    mobileLayout === "fullBleed"
+      ? MOBILE_DIALOG_BODY_FULL_BLEED_CLASS
+      : MOBILE_DIALOG_BODY_ABOVE_NAV_CLASS
 
   function renderCloseButton(extraClassName?: string) {
     if (!showCloseButton) return null
@@ -146,13 +169,14 @@ function DialogContent({
 
   return (
     <DialogPortal>
-      <DialogOverlay />
+      <DialogOverlay className="max-sm:z-60" />
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
           "fixed z-50 rounded-none bg-popover text-sm text-popover-foreground ring-1 ring-foreground/10 duration-100 outline-none",
-          "max-sm:inset-x-0 max-sm:bottom-0 max-sm:flex max-sm:w-full max-sm:max-w-none max-sm:flex-col max-sm:gap-0 max-sm:translate-x-0 max-sm:translate-y-0 max-sm:p-0",
-          MOBILE_DIALOG_POSITION_CLASS,
+          "max-sm:z-60",
+          "max-sm:inset-x-0 max-sm:flex max-sm:w-full max-sm:max-w-none max-sm:flex-col max-sm:gap-0 max-sm:translate-x-0 max-sm:translate-y-0 max-sm:p-0",
+          mobilePositionClass,
           "sm:top-1/2 sm:left-1/2 sm:grid sm:w-full sm:-translate-x-1/2 sm:-translate-y-1/2 sm:gap-4 sm:p-4 sm:max-w-sm",
           "data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
           "max-sm:data-open:slide-in-from-bottom-4 max-sm:data-closed:slide-out-to-bottom-4",
@@ -170,7 +194,7 @@ function DialogContent({
                 <div className="max-sm:shrink-0 sm:hidden">{renderCloseButton()}</div>
               ) : null}
             </div>
-            <div className={MOBILE_DIALOG_BODY_SHELL_CLASS}>{body}</div>
+            <div className={cn(MOBILE_DIALOG_BODY_SHELL_CLASS, mobileBodyClass)}>{body}</div>
           </>
         ) : (
           <>
@@ -179,7 +203,7 @@ function DialogContent({
                 {renderCloseButton()}
               </div>
             ) : null}
-            <div className={MOBILE_DIALOG_BODY_SHELL_CLASS}>{children}</div>
+            <div className={cn(MOBILE_DIALOG_BODY_SHELL_CLASS, mobileBodyClass)}>{children}</div>
           </>
         )}
         {showCloseButton ? (

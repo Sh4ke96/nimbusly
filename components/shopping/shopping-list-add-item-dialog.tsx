@@ -88,7 +88,7 @@ export function ShoppingListAddItemDialog({
       </Button>
 
       <Dialog open={open} onOpenChange={handleOpenChange}>
-        <DialogContent className="rounded-none sm:max-w-md">
+        <DialogContent mobileLayout="fullBleed" className="rounded-none sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="font-heading">{t.shoppingLists.addItemDialogTitle}</DialogTitle>
           </DialogHeader>
