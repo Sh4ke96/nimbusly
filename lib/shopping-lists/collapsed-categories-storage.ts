@@ -5,8 +5,6 @@ function storageKey(listId: string): string {
 }
 
 export function readCollapsedCategoryKeys(listId: string): Set<string> {
-  if (typeof window === "undefined") return new Set();
-
   try {
     const raw = sessionStorage.getItem(storageKey(listId));
     if (!raw) return new Set();
@@ -21,11 +19,9 @@ export function readCollapsedCategoryKeys(listId: string): Set<string> {
 }
 
 export function writeCollapsedCategoryKeys(listId: string, keys: ReadonlySet<string>): void {
-  if (typeof window === "undefined") return;
-
   try {
     sessionStorage.setItem(storageKey(listId), JSON.stringify([...keys]));
   } catch {
-    // Private mode / quota — ignore; UI still works for this session.
+    // SSR, private mode, or quota — ignore; UI still works for this session.
   }
 }
