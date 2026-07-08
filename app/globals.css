@@ -557,16 +557,23 @@
     padding-bottom: 0;
   }
 
+  .app-mobile-bottom-bar {
+    box-sizing: border-box;
+    position: relative;
+    padding-bottom: 0;
+  }
+
   .app-mobile-bottom-nav-items {
     height: var(--app-mobile-nav-height);
   }
 
   /*
-   * Installed PWA: do not pad the fixed nav — iOS often leaves an unpainted strip.
+   * Installed PWA: do not pad fixed bottom chrome — iOS often leaves an unpainted strip.
    * Extend background into the home-indicator zone with a pseudo-element instead.
    */
   @media (display-mode: standalone), (display-mode: fullscreen), (display-mode: minimal-ui) {
-    .app-mobile-bottom-nav::after {
+    .app-mobile-bottom-nav::after,
+    .app-mobile-bottom-bar::after {
       content: "";
       position: absolute;
       left: 0;
@@ -579,7 +586,8 @@
     }
   }
 
-  html.pwa-standalone .app-mobile-bottom-nav::after {
+  html.pwa-standalone .app-mobile-bottom-nav::after,
+  html.pwa-standalone .app-mobile-bottom-bar::after {
     content: "";
     position: absolute;
     left: 0;
