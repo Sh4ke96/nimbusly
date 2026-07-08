@@ -1,5 +1,5 @@
-/** Splash / letterbox behind viewport — matches light `:root --background`. */
-export const PWA_BACKGROUND_COLOR = "#f6f8f2" as const;
+/** Splash / letterbox behind viewport — matches `.dark --background`. */
+export const PWA_BACKGROUND_COLOR = "#1f2a2e" as const;
 
 export const PWA_SW_PATH = "/sw.js" as const;
 

@@ -62,6 +62,7 @@ export const pl: Dict = {
       "Nimbusly potrzebuje internetu do synchronizacji danych rodziny. Sprawdź sieć i spróbuj ponownie.",
     offlineHome: "Przejdź do strony głównej",
     offlineRetry: "Odśwież",
+    startupLoading: "Uruchamianie Nimbusly",
     installTitle: "Zainstaluj Nimbusly",
     installDesc: "Dodaj aplikację na ekran główny — szybszy dostęp bez paska przeglądarki.",
     installBtn: "Zainstaluj",

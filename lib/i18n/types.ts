@@ -48,6 +48,7 @@ export type Dict = {
     offlineDesc: string;
     offlineHome: string;
     offlineRetry: string;
+    startupLoading: string;
     installTitle: string;
     installDesc: string;
     installBtn: string;

@@ -637,6 +637,22 @@
     max-width: 100%;
   }
 
+  [data-slot="sheet-content"].app-mobile-sheet-clear-nav.app-mobile-sheet-compact-top {
+    top: max(0px, calc(env(safe-area-inset-top, 0px) - 8px));
+    height: calc(
+      100dvh - var(--app-mobile-nav-offset) -
+        max(0px, calc(env(safe-area-inset-top, 0px) - 8px))
+    );
+    max-height: calc(
+      100dvh - var(--app-mobile-nav-offset) -
+        max(0px, calc(env(safe-area-inset-top, 0px) - 8px))
+    );
+  }
+
+  .app-mobile-shopping-footer {
+    padding-bottom: 0.75rem;
+  }
+
   @media (max-width: 767px) {
     [data-slot="sheet-content"].app-mobile-sheet-side {
       padding-top: env(safe-area-inset-top, 0px);

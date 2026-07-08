@@ -11,6 +11,25 @@ export { CHANGELOG_ENTRY_TYPE, type ChangelogEntry };
  */
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "0.7.3",
+    date: "2026-07-08",
+    type: CHANGELOG_ENTRY_TYPE.FIX,
+    title: {
+      pl: "iOS PWA: layout zakupów i ekran startowy",
+      en: "iOS PWA: shopping layout and startup screen",
+    },
+    changes: {
+      pl: [
+        "Lista zakupów na mobile: wyższy tytuł sheeta i stopka „Dodaj nowy produkt” nad zaokrąglonymi rogami iPhone",
+        "PWA: ciemne tło zamiast białego ekranu przy starcie; loader z logo do momentu załadowania aplikacji",
+      ],
+      en: [
+        "Mobile shopping list: higher sheet title and “Add new product” footer clearance above iPhone rounded corners",
+        "PWA: dark startup background instead of a white flash; logo loader until the app finishes loading",
+      ],
+    },
+  },
+  {
     version: "0.7.2",
     date: "2026-07-08",
     type: CHANGELOG_ENTRY_TYPE.MINOR,

@@ -10,8 +10,9 @@ import { VersionBadge } from "@/components/app/version-badge";
 import { AuthSessionSync } from "@/components/auth/auth-session-sync";
 import { PageVisibilitySync } from "@/components/app/page-visibility-sync";
 import { PwaRegisterLazy } from "@/components/pwa/pwa-register-lazy";
+import { PwaStartupSplashLazy } from "@/components/pwa/pwa-startup-splash-lazy";
 import { LANG } from "@/lib/constants/lang";
-import { PWA_ICON_APPLE_TOUCH } from "@/lib/constants/pwa";
+import { PWA_BACKGROUND_COLOR, PWA_ICON_APPLE_TOUCH } from "@/lib/constants/pwa";
 import { dict } from "@/lib/i18n";
 import "./globals.css";
 
@@ -82,10 +83,21 @@ export default function RootLayout({
     <html
       lang={LANG.PL}
       data-scroll-behavior="smooth"
-      className={`${quicksand.variable} ${nunito.variable} ${geistMono.variable} h-full antialiased`}
+      className={`dark ${quicksand.variable} ${nunito.variable} ${geistMono.variable} h-full antialiased`}
+      style={{ backgroundColor: PWA_BACKGROUND_COLOR }}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">
+      <head>
+        <style
+          dangerouslySetInnerHTML={{
+            __html: `html,body{background-color:${PWA_BACKGROUND_COLOR}}`,
+          }}
+        />
+      </head>
+      <body
+        className="min-h-full flex flex-col bg-background"
+        style={{ backgroundColor: PWA_BACKGROUND_COLOR }}
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
@@ -96,6 +108,7 @@ export default function RootLayout({
               <AuthSessionSync />
               <PageVisibilitySync />
               <PwaRegisterLazy />
+              <PwaStartupSplashLazy />
               {children}
               <VersionBadge />
               <Toaster
