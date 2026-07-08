@@ -1,8 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useSyncExternalStore } from "react";
-import { createPortal } from "react-dom";
 import { usePathname, useSearchParams } from "next/navigation";
 import { Bell, LayoutGrid, LayoutDashboard, Settings } from "lucide-react";
 import { NimbusIcon } from "@/components/nimbus/nimbus-icon";
@@ -25,14 +23,6 @@ import {
 import { APP_MOBILE_BOTTOM_NAV_CLASS } from "@/lib/ui/app-layout";
 import { cn } from "@/lib/utils";
 
-function subscribeClientMounted() {
-  return () => {};
-}
-
-function getClientMounted() {
-  return true;
-}
-
 const NAV_ICONS = {
   [MOBILE_NAV_ITEM.HOME]: LayoutDashboard,
   [MOBILE_NAV_ITEM.MODULES]: LayoutGrid,
@@ -53,7 +43,6 @@ export function MobileBottomNav() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const search = searchParams.toString();
-  const mounted = useSyncExternalStore(subscribeClientMounted, getClientMounted, () => false);
   const loaded = useProfileStore((s) => s.loaded);
   const profile = useProfileStore((s) => s.profile);
   const menuOpen = useNimbusStore((s) => s.menuOpen);
@@ -183,11 +172,7 @@ export function MobileBottomNav() {
     );
   }
 
-  if (!mounted) {
-    return null;
-  }
-
-  return createPortal(
+  return (
     <nav className={APP_MOBILE_BOTTOM_NAV_CLASS} aria-label={t.mobileNav.ariaLabel}>
       <ul
         className={cn(
@@ -199,7 +184,6 @@ export function MobileBottomNav() {
           slot === MOBILE_NAV_SLOT.NIMBUS ? renderNimbusSlot() : renderNavLink(slot)
         )}
       </ul>
-    </nav>,
-    document.body
+    </nav>
   );
 }

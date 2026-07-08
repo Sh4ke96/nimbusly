@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useRef } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
 import { AppViewShell } from "@/components/app/app-view-shell";
 import { useT } from "@/lib/lang-context";
+import { useErrorPageHardNavigation } from "@/lib/ui/error-page-hard-navigation";
 
 export default function AppError({
   error,
@@ -16,10 +17,20 @@ export default function AppError({
 }) {
   const t = useT();
   const router = useRouter();
+  const pathname = usePathname();
+  const pathnameRef = useRef(pathname);
+
+  useErrorPageHardNavigation();
 
   useEffect(() => {
     console.error(error);
   }, [error]);
+
+  useEffect(() => {
+    if (pathnameRef.current === pathname) return;
+    pathnameRef.current = pathname;
+    reset();
+  }, [pathname, reset]);
 
   function handleRetry() {
     reset();
@@ -36,8 +47,13 @@ export default function AppError({
         <Logo size="sm" href="/dashboard" className="mb-8" />
         <h1 className="font-heading font-bold text-2xl tracking-tight">{t.errors.globalTitle}</h1>
         <p className="mt-2 max-w-sm text-sm text-muted-foreground">{t.errors.globalDesc}</p>
+        {error.message ? (
+          <p className="mt-4 max-w-md break-words font-mono text-xs text-muted-foreground">
+            {error.message}
+          </p>
+        ) : null}
         {error.digest ? (
-          <p className="mt-4 font-mono text-xs text-muted-foreground">
+          <p className="mt-2 font-mono text-xs text-muted-foreground">
             {t.errors.globalDigest}: {error.digest}
           </p>
         ) : null}

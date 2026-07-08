@@ -33,7 +33,8 @@ export const en: Dict = {
   },
   errors: {
     globalTitle: "Something went wrong",
-    globalDesc: "An unexpected error occurred. Reload the app to continue.",
+    globalDesc:
+      "An unexpected error occurred. Use “Reload app” — regular navigation may not recover.",
     globalRetry: "Try again",
     globalReload: "Reload app",
     globalDigest: "Error code",

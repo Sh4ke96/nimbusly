@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect } from "react";
+import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { AppHeader } from "@/components/app/app-header";
 import { AppPage } from "@/components/app/app-page";
@@ -27,7 +27,7 @@ type DashboardPageClientProps = {
 };
 
 export default function DashboardPageClient({ snapshot }: DashboardPageClientProps) {
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (snapshot) {
       hydrateDashboardSnapshot(snapshot);
     }

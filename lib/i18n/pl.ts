@@ -33,7 +33,8 @@ export const pl: Dict = {
   },
   errors: {
     globalTitle: "Coś poszło nie tak",
-    globalDesc: "Wystąpił nieoczekiwany błąd. Odśwież aplikację, aby kontynuować.",
+    globalDesc:
+      "Wystąpił nieoczekiwany błąd. Użyj „Odśwież aplikację” — zwykła nawigacja może nie zadziałać.",
     globalRetry: "Spróbuj ponownie",
     globalReload: "Odśwież aplikację",
     globalDigest: "Kod błędu",

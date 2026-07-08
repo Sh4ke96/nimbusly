@@ -11,6 +11,25 @@ export { CHANGELOG_ENTRY_TYPE, type ChangelogEntry };
  */
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "0.7.5",
+    date: "2026-07-08",
+    type: CHANGELOG_ENTRY_TYPE.FIX,
+    title: {
+      pl: "Naprawa crashy przy nawigacji",
+      en: "Navigation crash fix",
+    },
+    changes: {
+      pl: [
+        "Dolna nawigacja mobile: usunięty portal do body — koniec z błędem hydracji przy przejściach między ekranami",
+        "Strony błędów: twarde przeładowanie przy zmianie trasy i komunikat błędu w UI",
+      ],
+      en: [
+        "Mobile bottom nav: removed body portal — fixes hydration crash when switching screens",
+        "Error pages: hard reload on route change and error message shown in the UI",
+      ],
+    },
+  },
+  {
     version: "0.7.4",
     date: "2026-07-08",
     type: CHANGELOG_ENTRY_TYPE.FIX,
