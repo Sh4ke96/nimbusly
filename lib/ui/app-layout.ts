@@ -18,8 +18,8 @@ const APP_PAGE_BASE = cn(
   "px-4 py-5 sm:px-6 sm:py-10"
 );
 
-/** View wrapper — full viewport height on desktop only; mobile uses natural flow + bottom inset. */
-export const APP_VIEW_SHELL_CLASS = "flex flex-col md:min-h-screen";
+/** View wrapper — at least full viewport height on mobile (iOS fixed nav); desktop uses min-h-screen. */
+export const APP_VIEW_SHELL_CLASS = "flex flex-col min-h-dvh md:min-h-screen";
 
 /** Height of the mobile bottom nav row (matches `h-14` / `--app-mobile-nav-height`). */
 export const MOBILE_BOTTOM_NAV_ROW_HEIGHT = "3.5rem";
@@ -40,8 +40,8 @@ export const APP_NIMBUS_POPOVER_Z = "z-60";
 /** Sticky footer above mobile bottom nav — no safe-area padding; use `app-mobile-bottom-bar` for PWA paint. */
 export const APP_MOBILE_BOTTOM_BAR_CLASS = "app-mobile-bottom-bar";
 
-/** Reserve space for the fixed bottom nav (margin on footers inside full-screen overlays). */
-export const APP_MOBILE_NAV_CLEARANCE_CLASS = "mb-(--app-mobile-nav-offset)";
+/** Full-screen sheet that leaves the fixed bottom nav uncovered. */
+export const APP_MOBILE_SHEET_CLEAR_NAV_CLASS = "app-mobile-sheet-clear-nav";
 
 export const APP_PAGE_WIDTH = {
   compact: "max-w-3xl",

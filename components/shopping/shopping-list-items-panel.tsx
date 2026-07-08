@@ -148,9 +148,7 @@ export function ShoppingListItemsPanel({
 
       {addItemMode === "dialog" ? (
         <div
-          className={cn(
-            "shrink-0 border-t border-border bg-background/95 p-2 backdrop-blur-sm",
-          )}
+          className="mt-auto shrink-0 border-t border-border bg-background p-2"
           data-nimbus-tour={NIMBUS_TOUR_TARGET.SHOPPING_ADD_ITEM}
         >
           <ShoppingListAddItemDialog

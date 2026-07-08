@@ -8,6 +8,7 @@ import { useResolvedItemSelection } from "@/lib/hooks/use-resolved-item-selectio
 import { useLgViewport } from "@/lib/hooks/use-lg-viewport";
 import { AppHeader } from "@/components/app/app-header";
 import { AppPage } from "@/components/app/app-page";
+import { AppViewShell } from "@/components/app/app-view-shell";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { ShoppingListCard } from "@/components/shopping/shopping-list-card";
 import { ShoppingListEditDialog } from "@/components/shopping/shopping-list-edit-dialog";
@@ -141,7 +142,7 @@ export function ShoppingListsView() {
   }
 
   return (
-    <div className="flex flex-col md:min-h-screen">
+    <AppViewShell>
       <AppHeader />
 
       <AppPage width="wide">
@@ -239,6 +240,6 @@ export function ShoppingListsView() {
         onOpenChange={setEditOpen}
         onSuccess={onListsChanged}
       />
-    </div>
+    </AppViewShell>
   );
 }
