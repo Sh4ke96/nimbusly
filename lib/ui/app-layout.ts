@@ -49,6 +49,12 @@ export const APP_MOBILE_SAFE_TOP_CLASS = "app-mobile-safe-top";
 /** Side sheet on mobile — safe-area top padding when sheet uses inset-y-0. */
 export const APP_MOBILE_SHEET_SIDE_CLASS = "app-mobile-sheet-side";
 
+/** Shopping add-item fullscreen dialog — tighter top, slight lift above bottom nav. */
+export const APP_SHOPPING_ADD_DIALOG_MOBILE_INSET_CLASS = cn(
+  "max-sm:top-[max(0px,calc(env(safe-area-inset-top,0px)-6px))]",
+  "max-sm:bottom-[calc(var(--app-mobile-nav-offset)+0.25rem)]"
+);
+
 export const APP_PAGE_WIDTH = {
   compact: "max-w-3xl",
   narrow: "max-w-4xl",

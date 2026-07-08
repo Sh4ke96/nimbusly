@@ -18,6 +18,7 @@ import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
 import { useT } from "@/lib/lang-context";
 import { SHOPPING_LIST_ITEM_MAX_LENGTH } from "@/lib/constants/shopping-lists";
 import type { ShoppingListCategory } from "@/lib/shopping-lists/categories";
+import { APP_SHOPPING_ADD_DIALOG_MOBILE_INSET_CLASS } from "@/lib/ui/app-layout";
 import { cn } from "@/lib/utils";
 
 interface ShoppingListAddItemDialogProps {
@@ -90,8 +91,13 @@ export function ShoppingListAddItemDialog({
       <Dialog open={open} onOpenChange={handleOpenChange}>
         <DialogContent
           mobileLayout="fullscreen"
-          mobileHeaderClassName="max-sm:mb-2"
-          className="rounded-none sm:max-w-md"
+          mobileHeaderClassName="max-sm:mb-1"
+          mobileBodyClassName="max-sm:pt-2 max-sm:pb-5"
+          overlayClassName={cn(
+            APP_SHOPPING_ADD_DIALOG_MOBILE_INSET_CLASS,
+            "max-sm:bg-background max-sm:backdrop-blur-none"
+          )}
+          className={cn("rounded-none sm:max-w-md", APP_SHOPPING_ADD_DIALOG_MOBILE_INSET_CLASS)}
         >
           <DialogHeader>
             <DialogTitle className="font-heading">{t.shoppingLists.addItemDialogTitle}</DialogTitle>

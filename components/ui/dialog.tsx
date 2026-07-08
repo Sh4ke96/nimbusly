@@ -139,6 +139,7 @@ function DialogContent({
   mobileLayout = "default",
   overlayClassName,
   mobileHeaderClassName,
+  mobileBodyClassName,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   showCloseButton?: boolean
@@ -148,6 +149,8 @@ function DialogContent({
   overlayClassName?: string
   /** Extra classes for the mobile pinned header strip (below title, above body). */
   mobileHeaderClassName?: string
+  /** Extra classes for the mobile scrollable body shell. */
+  mobileBodyClassName?: string
 }) {
   const t = useT()
   const label = closeLabel ?? t.common.close
@@ -208,7 +211,7 @@ function DialogContent({
                 <div className="max-sm:shrink-0 sm:hidden">{renderCloseButton()}</div>
               ) : null}
             </div>
-            <div className={MOBILE_DIALOG_BODY_SHELL_CLASS}>{body}</div>
+            <div className={cn(MOBILE_DIALOG_BODY_SHELL_CLASS, mobileBodyClassName)}>{body}</div>
           </>
         ) : (
           <>
