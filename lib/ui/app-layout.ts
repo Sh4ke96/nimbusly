@@ -41,11 +41,9 @@ export const APP_NIMBUS_POPOVER_Z = "z-60";
 /** Sticky footer above mobile bottom nav — no safe-area padding; use `app-mobile-bottom-bar` for PWA paint. */
 export const APP_MOBILE_BOTTOM_BAR_CLASS = "app-mobile-bottom-bar";
 
-/** Sticky/fixed strip directly above the bottom nav row (nav stays at `bottom: 0`). */
-export const APP_MOBILE_FIXED_ABOVE_NAV_CLASS = "app-mobile-fixed-above-nav";
-
-/** Scroll padding when a fixed footer sits above the bottom nav. */
-export const APP_MOBILE_SCROLL_ABOVE_NAV_FOOTER_CLASS = "app-mobile-scroll-above-nav-footer";
+/** Full-screen overlay that ends where the fixed bottom nav begins. */
+export const APP_MOBILE_SHEET_ABOVE_NAV_CLASS =
+  "top-0 bottom-(--app-mobile-nav-offset) h-auto max-h-[calc(100dvh-var(--app-mobile-nav-offset))]";
 
 export const APP_PAGE_WIDTH = {
   compact: "max-w-3xl",

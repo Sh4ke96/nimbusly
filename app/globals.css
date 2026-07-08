@@ -581,6 +581,13 @@
     padding-bottom: calc(var(--app-mobile-nav-offset) + 5rem);
   }
 
+  .app-mobile-sheet-above-nav {
+    top: 0;
+    bottom: var(--app-mobile-nav-offset);
+    height: auto;
+    max-height: calc(100dvh - var(--app-mobile-nav-offset));
+  }
+
   /*
    * Installed PWA: do not pad fixed bottom chrome — iOS often leaves an unpainted strip.
    * Extend background into the home-indicator zone with a pseudo-element instead.

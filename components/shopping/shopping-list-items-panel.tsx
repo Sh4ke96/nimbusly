@@ -14,10 +14,6 @@ import {
 import { useShoppingCategoriesStore } from "@/lib/stores/shopping-categories-store";
 import { NimbusTourToolbarAnchor } from "@/components/nimbus/nimbus-tour-toolbar-anchor";
 import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus-tour";
-import {
-  APP_MOBILE_FIXED_ABOVE_NAV_CLASS,
-  APP_MOBILE_SCROLL_ABOVE_NAV_FOOTER_CLASS,
-} from "@/lib/ui/app-layout";
 import { cn } from "@/lib/utils";
 
 const ShoppingListCategorizedItems = dynamic(
@@ -105,7 +101,7 @@ export function ShoppingListItemsPanel({
       <div
         className={cn(
           "min-h-0 flex-1 space-y-4 overflow-y-auto",
-          addItemMode === "dialog" && cn("p-4", APP_MOBILE_SCROLL_ABOVE_NAV_FOOTER_CLASS)
+          addItemMode === "dialog" && "p-4"
         )}
       >
         {addItemMode === "inline" ? (
@@ -152,10 +148,7 @@ export function ShoppingListItemsPanel({
 
       {addItemMode === "dialog" ? (
         <div
-          className={cn(
-            APP_MOBILE_FIXED_ABOVE_NAV_CLASS,
-            "border-t border-border bg-background/95 p-4 backdrop-blur-sm"
-          )}
+          className="shrink-0 border-t border-border bg-background/95 p-4 backdrop-blur-sm"
           data-nimbus-tour={NIMBUS_TOUR_TARGET.SHOPPING_ADD_ITEM}
         >
           <ShoppingListAddItemDialog
