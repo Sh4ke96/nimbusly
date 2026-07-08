@@ -5,6 +5,10 @@ import {
   shouldApplyShoppingListRealtimeEvent,
 } from "@/lib/shopping-lists/realtime-scope";
 import type { ShoppingList } from "@/lib/shopping-lists/types";
+import {
+  testRealtimeDeletePayload,
+  testRealtimeUpdatePayload,
+} from "../../support/realtime-payload";
 
 const familyList: ShoppingList = {
   id: "list-1",
@@ -55,7 +59,7 @@ describe("shopping list realtime scope", () => {
     const known = new Set(["list-1"]);
     assert.equal(
       shouldApplyShoppingListRealtimeEvent(
-        { eventType: "DELETE", old: { id: "list-1" }, schema: "public", table: "shopping_lists" },
+        testRealtimeDeletePayload("shopping_lists", { id: "list-1" }),
         { userId: "user-b", familyId: "family-1" },
         known
       ),
@@ -63,7 +67,7 @@ describe("shopping list realtime scope", () => {
     );
     assert.equal(
       shouldApplyShoppingListRealtimeEvent(
-        { eventType: "DELETE", old: { id: "other" }, schema: "public", table: "shopping_lists" },
+        testRealtimeDeletePayload("shopping_lists", { id: "other" }),
         { userId: "user-b", familyId: "family-1" },
         known
       ),
@@ -74,12 +78,7 @@ describe("shopping list realtime scope", () => {
   it("applies UPDATE when the renamed list belongs to the scope", () => {
     assert.equal(
       shouldApplyShoppingListRealtimeEvent(
-        {
-          eventType: "UPDATE",
-          new: { ...familyList, name: "Renamed" },
-          schema: "public",
-          table: "shopping_lists",
-        },
+        testRealtimeUpdatePayload("shopping_lists", { ...familyList, name: "Renamed" }),
         { userId: "user-b", familyId: "family-1" },
         new Set()
       ),
