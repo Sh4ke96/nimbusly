@@ -13,17 +13,7 @@ if (shouldActivateSentryRuntime()) {
   });
 }
 
-export async function onRouterTransitionStart(
-  ...args: Parameters<
-    typeof import("@sentry/nextjs").captureRouterTransitionStart
-  >
-) {
-  if (!shouldActivateSentryRuntime()) return;
-
-  try {
-    const Sentry = await import("@sentry/nextjs");
-    return Sentry.captureRouterTransitionStart(...args);
-  } catch {
-    // Router transitions must never fail because monitoring threw.
-  }
+/** Intentionally disabled — router transition tracing sent many /monitoring requests per click. */
+export function onRouterTransitionStart() {
+  return;
 }

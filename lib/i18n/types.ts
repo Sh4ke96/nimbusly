@@ -23,6 +23,7 @@ export type Dict = {
     globalTitle: string;
     globalDesc: string;
     globalRetry: string;
+    globalReload: string;
     globalDigest: string;
   };
   mobileNav: {

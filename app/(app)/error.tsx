@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import * as Sentry from "@sentry/nextjs";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
@@ -15,11 +16,24 @@ export default function AppError({
   reset: () => void;
 }) {
   const t = useT();
+  const router = useRouter();
+  const reportedRef = useRef(false);
 
   useEffect(() => {
+    if (reportedRef.current) return;
+    reportedRef.current = true;
     console.error(error);
     Sentry.captureException(error);
   }, [error]);
+
+  function handleRetry() {
+    reset();
+    router.refresh();
+  }
+
+  function handleReload() {
+    window.location.assign("/dashboard");
+  }
 
   return (
     <AppViewShell>
@@ -32,9 +46,19 @@ export default function AppError({
             {t.errors.globalDigest}: {error.digest}
           </p>
         ) : null}
-        <Button type="button" className="mt-6 min-h-11 rounded-none" onClick={() => reset()}>
-          {t.errors.globalRetry}
-        </Button>
+        <div className="mt-6 flex flex-col gap-2 sm:flex-row">
+          <Button type="button" className="min-h-11 rounded-none" onClick={handleRetry}>
+            {t.errors.globalRetry}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            className="min-h-11 rounded-none"
+            onClick={handleReload}
+          >
+            {t.errors.globalReload}
+          </Button>
+        </div>
       </div>
     </AppViewShell>
   );

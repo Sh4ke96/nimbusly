@@ -33,8 +33,10 @@ export const pl: Dict = {
   },
   errors: {
     globalTitle: "Coś poszło nie tak",
-    globalDesc: "Wystąpił nieoczekiwany błąd. Spróbuj ponownie — zespół został powiadomiony.",
+    globalDesc:
+      "Wystąpił nieoczekiwany błąd. Zespół został powiadomiony — odśwież aplikację, aby kontynuować.",
     globalRetry: "Spróbuj ponownie",
+    globalReload: "Odśwież aplikację",
     globalDigest: "Kod błędu",
   },
   mobileNav: {
