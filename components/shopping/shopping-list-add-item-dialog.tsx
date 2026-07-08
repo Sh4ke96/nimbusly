@@ -82,13 +82,17 @@ export function ShoppingListAddItemDialog({
         <span className="text-left text-sm font-medium text-foreground">
           {t.shoppingLists.addItemFabLabel}
         </span>
-        <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md">
+        <span className="inline-flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md">
           <Plus className="size-5" aria-hidden />
         </span>
       </Button>
 
       <Dialog open={open} onOpenChange={handleOpenChange}>
-        <DialogContent className="rounded-none sm:max-w-md">
+        <DialogContent
+          mobileLayout="fullscreen"
+          mobileHeaderClassName="max-sm:mb-2"
+          className="rounded-none sm:max-w-md"
+        >
           <DialogHeader>
             <DialogTitle className="font-heading">{t.shoppingLists.addItemDialogTitle}</DialogTitle>
           </DialogHeader>

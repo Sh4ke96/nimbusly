@@ -4,6 +4,7 @@ import * as React from "react"
 import { Dialog as DialogPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
+import { APP_NIMBUS_POPOVER_Z } from "@/lib/ui/app-layout"
 import { Button } from "@/components/ui/button"
 import { useT } from "@/lib/lang-context"
 import { XIcon } from "lucide-react"
@@ -77,6 +78,18 @@ const MOBILE_DIALOG_POSITION_CLASS = cn(
   "max-sm:max-h-[calc(100dvh-max(0.75rem,env(safe-area-inset-top,0px))-var(--app-mobile-nav-offset))]"
 )
 
+const MOBILE_DIALOG_POSITION_FULLSCREEN_CLASS = cn(
+  "max-sm:top-[env(safe-area-inset-top,0px)]",
+  "max-sm:bottom-[var(--app-mobile-nav-offset)]",
+  "max-sm:max-h-none"
+)
+
+const MOBILE_DIALOG_OVERLAY_FULLSCREEN_CLASS = cn(
+  "max-sm:top-[env(safe-area-inset-top,0px)]",
+  "max-sm:bottom-[var(--app-mobile-nav-offset)]",
+  "max-sm:bg-background max-sm:backdrop-blur-none"
+)
+
 function Dialog({
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Root>) {
@@ -123,15 +136,27 @@ function DialogContent({
   showCloseButton = true,
   closeLabel,
   style,
+  mobileLayout = "default",
+  overlayClassName,
+  mobileHeaderClassName,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   showCloseButton?: boolean
   closeLabel?: string
+  /** Mobile: `default` sheet-style dialog; `fullscreen` fills the area above bottom nav. */
+  mobileLayout?: "default" | "fullscreen"
+  overlayClassName?: string
+  /** Extra classes for the mobile pinned header strip (below title, above body). */
+  mobileHeaderClassName?: string
 }) {
   const t = useT()
   const label = closeLabel ?? t.common.close
   const { headers, body } = partitionDialogChildren(children)
   const hasPinnedHeader = headers.length > 0
+  const isMobileFullscreen = mobileLayout === "fullscreen"
+  const mobilePositionClass = isMobileFullscreen
+    ? MOBILE_DIALOG_POSITION_FULLSCREEN_CLASS
+    : MOBILE_DIALOG_POSITION_CLASS
 
   function renderCloseButton(extraClassName?: string) {
     if (!showCloseButton) return null
@@ -147,16 +172,28 @@ function DialogContent({
 
   return (
     <DialogPortal>
-      <DialogOverlay />
+      <DialogOverlay
+        className={cn(
+          isMobileFullscreen && MOBILE_DIALOG_OVERLAY_FULLSCREEN_CLASS,
+          isMobileFullscreen && APP_NIMBUS_POPOVER_Z,
+          overlayClassName
+        )}
+      />
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
           "fixed z-50 rounded-none bg-popover text-sm text-popover-foreground ring-1 ring-foreground/10 duration-100 outline-none",
           "max-sm:inset-x-0 max-sm:flex max-sm:w-full max-sm:max-w-none max-sm:flex-col max-sm:gap-0 max-sm:translate-x-0 max-sm:translate-y-0 max-sm:p-0",
-          MOBILE_DIALOG_POSITION_CLASS,
+          mobilePositionClass,
+          isMobileFullscreen && APP_NIMBUS_POPOVER_Z,
           "sm:top-1/2 sm:left-1/2 sm:grid sm:w-full sm:-translate-x-1/2 sm:-translate-y-1/2 sm:gap-4 sm:p-4 sm:max-w-sm",
-          "data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
-          "max-sm:data-open:slide-in-from-bottom-4 max-sm:data-closed:slide-out-to-bottom-4",
+          "data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0",
+          isMobileFullscreen
+            ? "max-sm:data-open:slide-in-from-bottom max-sm:data-closed:slide-out-to-bottom"
+            : cn(
+                "data-open:zoom-in-95 data-closed:zoom-out-95",
+                "max-sm:data-open:slide-in-from-bottom-4 max-sm:data-closed:slide-out-to-bottom-4"
+              ),
           className,
           hasPinnedHeader && "max-sm:overflow-hidden"
         )}
@@ -165,7 +202,7 @@ function DialogContent({
       >
         {hasPinnedHeader ? (
           <>
-            <div className={MOBILE_DIALOG_HEADER_SHELL_CLASS}>
+            <div className={cn(MOBILE_DIALOG_HEADER_SHELL_CLASS, mobileHeaderClassName)}>
               {headers}
               {showCloseButton ? (
                 <div className="max-sm:shrink-0 sm:hidden">{renderCloseButton()}</div>
