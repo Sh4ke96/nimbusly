@@ -397,9 +397,59 @@
     .ambient-blob,
     .ambient-shape,
     .ambient-icon,
-    .hero-module-pill {
-      animation: none;
+    .hero-module-pill,
+    .icon-float,
+    .nimbus-companion-float,
+    .nimbus-npc-idle,
+    .nimbus-npc-hover,
+    .nimbus-npc-calling,
+    .nimbus-npc-ping,
+    .nimbus-npc-speech,
+    .nimbus-npc-ground-calling,
+    .nimbus-npc-idle .nimbus-npc-eyes,
+    .nimbus-npc-hover .nimbus-npc-arm-right,
+    .nimbus-npc-calling .nimbus-npc-arm-right {
+      animation: none !important;
     }
+  }
+
+  /* Mobile / installed PWA — static background only (blur + drift heat the GPU on iOS). */
+  @media (max-width: 767px) {
+    .ambient-lite .ambient-blob,
+    .ambient-lite .ambient-shape,
+    .ambient-lite .ambient-icon,
+    .ambient-lite .ambient-rays {
+      display: none;
+    }
+  }
+
+  html.pwa-standalone .ambient-lite .ambient-blob,
+  html.pwa-standalone .ambient-lite .ambient-shape,
+  html.pwa-standalone .ambient-lite .ambient-icon,
+  html.pwa-standalone .ambient-lite .ambient-rays {
+    display: none;
+  }
+
+  /* Backgrounded tab/PWA — pause decorative work (timers gated in JS separately). */
+  html[data-page-hidden] .ambient-background-root {
+    visibility: hidden;
+  }
+
+  html[data-page-hidden] .icon-float,
+  html[data-page-hidden] .nimbus-companion-float,
+  html[data-page-hidden] .nimbus-npc-idle,
+  html[data-page-hidden] .nimbus-npc-hover,
+  html[data-page-hidden] .nimbus-npc-calling,
+  html[data-page-hidden] .nimbus-npc-ping,
+  html[data-page-hidden] .nimbus-npc-speech,
+  html[data-page-hidden] .nimbus-npc-ground-calling,
+  html[data-page-hidden] .nimbus-npc-idle .nimbus-npc-eyes,
+  html[data-page-hidden] .nimbus-npc-hover .nimbus-npc-arm-right,
+  html[data-page-hidden] .nimbus-npc-calling .nimbus-npc-arm-right,
+  html[data-page-hidden] .ambient-blob,
+  html[data-page-hidden] .ambient-shape,
+  html[data-page-hidden] .ambient-icon {
+    animation-play-state: paused !important;
   }
 
   [data-sonner-toaster] {

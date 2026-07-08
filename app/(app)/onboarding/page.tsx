@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { readOnboardingInvitePrefill } from "@/lib/family/onboarding-invite-prefill";
 import { getAuthProfile } from "@/lib/profile/server";
 import { OnboardingView } from "./onboarding-view";
 
@@ -13,5 +14,7 @@ export default async function OnboardingPage() {
     redirect("/dashboard");
   }
 
-  return <OnboardingView />;
+  const invitePrefill = await readOnboardingInvitePrefill();
+
+  return <OnboardingView invitePrefill={invitePrefill} />;
 }

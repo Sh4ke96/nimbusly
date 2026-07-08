@@ -1,19 +1,16 @@
 "use client";
 
 import { useEffect, useMemo, useRef } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  MONTH_CALENDAR_ENTRY_BUTTON_CLASS,
+  MonthCalendarGrid,
+  MonthCalendarNav,
+} from "@/components/ui/month-calendar-grid";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { useT } from "@/lib/lang-context";
 import { formatMessage } from "@/lib/i18n/format";
 import { buildMonthGrid, getMonthName, getWeekdayLabels, shiftMonth } from "@/lib/birthdays/calendar";
-import { birthdayDateKey, formatBirthdayLabel, type BirthdayEntry } from "@/lib/birthdays/types";
+import { birthdayDateKey, type BirthdayEntry } from "@/lib/birthdays/types";
 import { getDisplayName } from "@/lib/profile";
 import type { FamilyMember, Profile } from "@/lib/profile";
 import { selectionPillClasses } from "@/lib/ui/selection-styles";
@@ -29,7 +26,7 @@ interface BirthdayCalendarProps {
   focusedDay?: number | null;
   focusedEntryId?: string | null;
   onMonthChange: (year: number, month: number) => void;
-  onEntrySelect?: (entry: BirthdayEntry) => void;
+  onEntryEdit?: (entry: BirthdayEntry) => void;
   onDayClick?: (day: number) => void;
 }
 
@@ -55,7 +52,7 @@ export function BirthdayCalendar({
   focusedDay,
   focusedEntryId,
   onMonthChange,
-  onEntrySelect,
+  onEntryEdit,
   onDayClick,
 }: BirthdayCalendarProps) {
   const t = useT();
@@ -82,135 +79,100 @@ export function BirthdayCalendar({
   const cells = buildMonthGrid(year, month);
   const weekdays = getWeekdayLabels(t.birthdays.calendarWeekdays);
 
+  function getDayEntries(day: number): BirthdayEntry[] {
+    return entriesByDay.get(birthdayDateKey(month, day)) ?? [];
+  }
+
+  function resolveEditEntry(day: number): BirthdayEntry | null {
+    const dayEntries = getDayEntries(day);
+    if (dayEntries.length === 0) return null;
+    return dayEntries.find((entry) => entry.id === focusedEntryId) ?? dayEntries[0]!;
+  }
+
   return (
-    <TooltipProvider>
-      <div ref={calendarRef} className="space-y-4">
-        <div className="flex items-center justify-between gap-3">
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            onClick={() => {
-              const next = shiftMonth(year, month, -1);
-              onMonthChange(next.year, next.month);
-            }}
-          >
-            <ChevronLeft className="size-4" />
-          </Button>
-          <h2 className="font-heading font-semibold text-lg">
-            {getMonthName(month, t.birthdays.calendarMonths)} {year}
-          </h2>
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            onClick={() => {
-              const next = shiftMonth(year, month, 1);
-              onMonthChange(next.year, next.month);
-            }}
-          >
-            <ChevronRight className="size-4" />
-          </Button>
-        </div>
+    <div ref={calendarRef} className="space-y-4">
+      <MonthCalendarNav
+        title={`${getMonthName(month, t.birthdays.calendarMonths)} ${year}`}
+        onPrev={() => {
+          const next = shiftMonth(year, month, -1);
+          onMonthChange(next.year, next.month);
+        }}
+        onNext={() => {
+          const next = shiftMonth(year, month, 1);
+          onMonthChange(next.year, next.month);
+        }}
+      />
 
-        <div className="grid grid-cols-7 gap-px border border-border bg-border">
-          {weekdays.map((label) => (
-            <div
-              key={label}
-              className="bg-muted/50 px-2 py-2 text-center text-xs font-medium text-muted-foreground"
-            >
-              {label}
-            </div>
-          ))}
+      <MonthCalendarGrid
+        cells={cells}
+        weekdays={weekdays}
+        monthNames={t.birthdays.calendarMonths}
+        dayDataAttribute="birthday-day"
+        focusDay={focusedDay}
+        isFocusedDay={(day) => focusedDay === day}
+        hasFocusedItem={(day) =>
+          getDayEntries(day).some((entry) => entry.id === focusedEntryId)
+        }
+        overlayCoversContent={(day) => getDayEntries(day).length > 0}
+        renderDayOverlay={(day) => {
+          const dayEntries = getDayEntries(day);
 
-          {cells.map((cell, index) => {
-            if (!cell.isCurrentMonth || cell.day === null) {
-              return <div key={`empty-${index}`} className="min-h-24 bg-background" />;
-            }
+          if (dayEntries.length > 0) {
+            const entry = resolveEditEntry(day);
+            if (!entry || !onEntryEdit) return null;
 
-            const day = cell.day;
-            const dayEntries = entriesByDay.get(birthdayDateKey(month, day)) ?? [];
-            const isFocusedDay = focusedDay === day;
-            const hasFocusedEntry = dayEntries.some((e) => e.id === focusedEntryId);
+            return (
+              <button
+                type="button"
+                className="absolute inset-0 size-full cursor-pointer rounded-none hover:bg-muted/30 active:bg-muted/40"
+                aria-label={formatMessage(t.birthdays.calendarEditOnDay, {
+                  day: String(day),
+                  name: entry.person_name,
+                })}
+                onClick={() => onEntryEdit(entry)}
+              />
+            );
+          }
+
+          if (!onDayClick) return null;
+
+          return (
+            <button
+              type="button"
+              className="absolute inset-0 size-full cursor-pointer rounded-none hover:bg-muted/30 active:bg-muted/40"
+              aria-label={formatMessage(t.birthdays.calendarAddOnDay, {
+                day: String(day),
+              })}
+              onClick={() => onDayClick(day)}
+            />
+          );
+        }}
+        renderDayContent={({ day }) => {
+          const dayEntries = getDayEntries(day);
+
+          return dayEntries.map((entry) => {
+            const isSelected = entry.id === focusedEntryId;
+            const creator = resolveCreatorName(entry.created_by, userId, profile, members);
 
             return (
               <div
-                key={`${month}-${day}`}
-                data-birthday-day={day}
+                key={entry.id}
                 className={cn(
-                  "relative min-h-24 bg-background p-2 transition-all duration-200",
-                  cell.isToday && !isFocusedDay && "shadow-[inset_0_0_0_1px] shadow-primary/30",
-                  isFocusedDay &&
-                  "bg-primary/4 shadow-[inset_0_0_0_2px] shadow-primary/50"
+                  MONTH_CALENDAR_ENTRY_BUTTON_CLASS,
+                  selectionPillClasses(isSelected)
                 )}
               >
-                {onDayClick && (
-                  <button
-                    type="button"
-                    className="absolute inset-0 z-0 cursor-pointer hover:bg-muted/25"
-                    aria-label={formatMessage(t.birthdays.calendarAddOnDay, {
-                      day: String(day),
-                    })}
-                    onClick={() => onDayClick(day)}
-                  />
-                )}
-                <div className="relative z-10 pointer-events-none">
-                <span
-                  className={cn(
-                    "inline-flex size-6 items-center justify-center text-xs font-medium transition-colors",
-                    isFocusedDay || hasFocusedEntry
-                      ? "rounded-full bg-primary text-primary-foreground font-semibold"
-                      : cell.isToday
-                        ? "text-primary"
-                        : "text-muted-foreground"
-                  )}
-                >
-                  {day}
-                </span>
-                <div className="mt-1 space-y-1 pointer-events-auto">
-                  {dayEntries.map((entry) => {
-                    const isSelected = entry.id === focusedEntryId;
-                    const creator = resolveCreatorName(entry.created_by, userId, profile, members);
-                    const tooltip = (
-                      <div className="space-y-1 text-left">
-                        <p className="font-semibold">{entry.person_name}</p>
-                        <p>{formatBirthdayLabel(entry)}</p>
-                        {entry.description && <p className="opacity-90">{entry.description}</p>}
-                        {isFamily && creator && (
-                          <p className="opacity-75">
-                            {t.birthdays.addedBy}: {creator}
-                          </p>
-                        )}
-                      </div>
-                    );
-
-                    return (
-                      <Tooltip key={entry.id}>
-                        <TooltipTrigger asChild>
-                          <button
-                            type="button"
-                            onClick={() => onEntrySelect?.(entry)}
-                            className={cn(
-                              "block w-full cursor-pointer truncate rounded-sm px-1.5 py-0.5 text-left text-[11px] font-medium transition-all duration-150",
-                              selectionPillClasses(isSelected)
-                            )}
-                          >
-                            {entry.person_name}
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipContent side="top" className="max-w-xs">
-                          {tooltip}
-                        </TooltipContent>
-                      </Tooltip>
-                    );
-                  })}
-                </div>
-                </div>
+                <p className="truncate">{entry.person_name}</p>
+                {isFamily && creator ? (
+                  <p className="mt-0.5 truncate text-xs font-normal text-muted-foreground">
+                    {t.birthdays.addedBy}: {creator}
+                  </p>
+                ) : null}
               </div>
             );
-          })}
-        </div>
-      </div>
-    </TooltipProvider>
+          });
+        }}
+      />
+    </div>
   );
 }

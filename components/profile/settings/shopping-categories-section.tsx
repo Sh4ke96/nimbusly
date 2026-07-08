@@ -28,9 +28,8 @@ import { Label } from "@/components/ui/label";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SHOPPING_CATEGORY_NAME_MAX_LENGTH } from "@/lib/constants/shopping-categories";
-import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
-import { isFamilyFounder } from "@/lib/profile/family-roles";
+import { canManageShoppingCategories } from "@/lib/profile/family-roles";
 import {
   applyCategoryOrder,
   SHOPPING_CATEGORY_FORM_FIELD,
@@ -57,9 +56,7 @@ export function ShoppingCategoriesSection() {
   );
 
   const profile = useProfileStore((s) => s.profile);
-  const isFounder = isFamilyFounder(family, user?.id);
-  const canManageCategories =
-    (profile?.account_mode === ACCOUNT_MODE.SOLO && !profile?.family_id) || isFounder;
+  const canManageCategories = canManageShoppingCategories(profile, family, user?.id);
   const categoryIds = useMemo(() => categories.map((category) => category.id), [categories]);
 
   const sensors = useSensors(

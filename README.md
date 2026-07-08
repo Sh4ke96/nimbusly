@@ -4,7 +4,7 @@
 
 Nimbusly is a family hub web app: shared budget, shopping, gifts, birthdays, schedule, medicine cabinet, watchlist, restaurants, pets, household chores, notes, and family account management. Each member has their own profile; family data stays in sync.
 
-Available in **Polish** and **English**. Current version: **0.7.0** — see `/change-log` or the in-app version badge.
+Available in **Polish** and **English**. Current version: **0.7.2** — see `/change-log` or the in-app version badge.
 
 ---
 
@@ -13,9 +13,9 @@ Available in **Polish** and **English**. Current version: **0.7.0** — see `/ch
 | Module | Route | Description |
 |--------|-------|-------------|
 | Budget | `/budget` | Shared budgets, income & expenses, recurring entries, hidden budgets, payment reminders |
-| Shopping lists | `/shopping` | Shared lists with live updates and optional watches |
+| Shopping lists | `/shopping` | Shared lists with live updates; on mobile, tap a list for a full-screen detail view and add products via the + dialog with category picker |
 | Gifts | `/gifts` | Gift ideas per recipient without spoiling surprises |
-| Birthdays | `/birthdays` | Calendar, upcoming birthdays, reminders |
+| Birthdays | `/birthdays` | Calendar (weekly mobile view), collapsible list on mobile, upcoming birthdays, reminders |
 | Schedule | `/schedule` | Shared work / family schedule with multi-day date ranges |
 | Medicine cabinet | `/medicine-cabinet` | Home pharmacy with expiry tracking |
 | Watchlist | `/watchlist` | Movies & series to watch together |
@@ -24,11 +24,11 @@ Available in **Polish** and **English**. Current version: **0.7.0** — see `/ch
 | Chores | `/chores` | Household tasks with assignees and recurrence |
 | Notes | `/notes` | Custom emoji categories, Markdown, pinning, attachments, family visibility |
 | Family | `/family` | Members, invitations, account type (solo ↔ family) |
-| Settings | `/profile/settings` | Profile, notifications, account type, shopping categories |
+| Settings | `/profile/settings` | Profile, notifications, account type, shopping categories (solo owner, family founder, or admin) |
 
 Additional:
 
-- **Mobile-first layout** — bottom navigation, larger touch targets, safe-area insets, module grid via `?view=modules`
+- **Mobile-first layout** — bottom navigation, larger touch targets, safe-area insets, module grid via `?view=modules`; shopping lists and birthdays have dedicated mobile flows (list detail sheet, accordion + weekly calendar)
 - **PWA** — web manifest, service worker, offline fallback, install prompt, **Web Push** (iOS 16.4+ / Android)
 - **Vercel Analytics & Speed Insights** — traffic and Core Web Vitals in the Vercel project dashboard (production)
 - **Sentry** — error monitoring for client, server, API routes, and crons (optional; see env vars)
@@ -38,7 +38,7 @@ Additional:
 - **Notifications** (`/notifications`) — in-app family activity feed, quiet hours, optional weekly digest
 - **Change log** (`/change-log`) — public release history (no login required)
 - **Onboarding** — guided setup for new accounts
-- **Solo or family mode** — up to 6 members with roles (founder, admin, member)
+- **Solo or family mode** — up to 6 members with roles (founder, admin, member); family admins can manage shopping categories alongside the founder
 
 ---
 
@@ -251,7 +251,7 @@ Runs ESLint, test TypeScript check, unit tests, and production build. (`yarn run
 yarn test
 ```
 
-Covers domain logic (budget, chores, notes, search, changelog, nimbus driver steps, etc.).
+Covers domain logic (budget, chores, notes, birthdays calendar labels, family roles, search, changelog, nimbus driver steps, etc.).
 
 **E2E (requires Supabase service role in `.env.local` for full flows)**
 

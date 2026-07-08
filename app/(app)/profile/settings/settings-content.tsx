@@ -20,7 +20,7 @@ import { SettingsSkeleton } from "@/components/profile/settings/settings-skeleto
 import { AppVersionFooter } from "@/components/profile/settings/app-version-footer";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useT } from "@/lib/lang-context";
-import { isFamilyFounder } from "@/lib/profile/family-roles";
+import { canManageShoppingCategories } from "@/lib/profile/family-roles";
 import { cn } from "@/lib/utils";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import {
@@ -51,8 +51,7 @@ export default function ProfileSettingsPage() {
 
   const showFamily = profile?.account_mode === ACCOUNT_MODE.FAMILY && !!profile.family_id;
   const showShoppingCategories =
-    (profile?.account_mode === ACCOUNT_MODE.SOLO && !profile.family_id) ||
-    (showFamily && isFamilyFounder(family, user?.id));
+    canManageShoppingCategories(profile, family, user?.id);
 
   const urlTab = parseSettingsTab(searchParams.get("tab"));
 

@@ -110,23 +110,23 @@ export function NotificationsView() {
     label: string;
     badge?: number;
   }[] = [
-    {
-      value: NOTIFICATION_FILTER_TAB.ALL,
-      icon: Inbox,
-      label: t.notifications.tabAll,
-    },
-    {
-      value: NOTIFICATION_FILTER_TAB.UNREAD,
-      icon: Bell,
-      label: t.notifications.tabUnread,
-      badge: unreadCount > 0 ? unreadCount : undefined,
-    },
-    {
-      value: NOTIFICATION_FILTER_TAB.READ,
-      icon: CheckCheck,
-      label: t.notifications.tabRead,
-    },
-  ];
+      {
+        value: NOTIFICATION_FILTER_TAB.ALL,
+        icon: Inbox,
+        label: t.notifications.tabAll,
+      },
+      {
+        value: NOTIFICATION_FILTER_TAB.UNREAD,
+        icon: Bell,
+        label: t.notifications.tabUnread,
+        badge: unreadCount > 0 ? unreadCount : undefined,
+      },
+      {
+        value: NOTIFICATION_FILTER_TAB.READ,
+        icon: CheckCheck,
+        label: t.notifications.tabRead,
+      },
+    ];
 
   const activeFilter = filterTabs.find((tab) => tab.value === filter) ?? filterTabs[0];
 
@@ -216,7 +216,7 @@ export function NotificationsView() {
           className="hidden md:flex"
         />
 
-        <div className="mb-4 flex flex-wrap gap-2 max-md:px-4 md:px-0">
+        <div className="my-4 flex flex-wrap gap-2 max-md:px-4 md:px-0">
           <Button
             type="button"
             size="sm"
@@ -318,37 +318,37 @@ export function NotificationsView() {
                 <ModuleFetchError onRetry={() => void fetchNotifications(true)} />
               </div>
             ) : (
-            <Tabs
-              orientation={desktopTabsLayout ? "vertical" : "horizontal"}
-              value={filter}
-              onValueChange={handleFilterChange}
-              className={cn("w-full", desktopTabsLayout ? undefined : "flex-col gap-0")}
-            >
-              {desktopTabsLayout ? (
-                <div className="grid w-full grid-cols-[15rem_minmax(0,1fr)]">
-                  <aside
-                    className="border-r border-border bg-muted/30"
-                    data-nimbus-tour={NIMBUS_TOUR_TARGET.NOTIFICATIONS_FILTERS}
-                  >
-                    <TabsList variant="line" className={DESKTOP_FILTER_TABS_LIST_CLASS}>
-                      {renderFilterTabTriggers(false)}
+              <Tabs
+                orientation={desktopTabsLayout ? "vertical" : "horizontal"}
+                value={filter}
+                onValueChange={handleFilterChange}
+                className={cn("w-full", desktopTabsLayout ? undefined : "flex-col gap-0")}
+              >
+                {desktopTabsLayout ? (
+                  <div className="grid w-full grid-cols-[15rem_minmax(0,1fr)]">
+                    <aside
+                      className="border-r border-border bg-muted/30"
+                      data-nimbus-tour={NIMBUS_TOUR_TARGET.NOTIFICATIONS_FILTERS}
+                    >
+                      <TabsList variant="line" className={DESKTOP_FILTER_TABS_LIST_CLASS}>
+                        {renderFilterTabTriggers(false)}
+                      </TabsList>
+                    </aside>
+                    {renderNotificationsPanel()}
+                  </div>
+                ) : (
+                  <>
+                    <TabsList
+                      variant="line"
+                      className={MOBILE_FILTER_TABS_LIST_CLASS}
+                      data-nimbus-tour={NIMBUS_TOUR_TARGET.NOTIFICATIONS_FILTERS}
+                    >
+                      {renderFilterTabTriggers(true)}
                     </TabsList>
-                  </aside>
-                  {renderNotificationsPanel()}
-                </div>
-              ) : (
-                <>
-                  <TabsList
-                    variant="line"
-                    className={MOBILE_FILTER_TABS_LIST_CLASS}
-                    data-nimbus-tour={NIMBUS_TOUR_TARGET.NOTIFICATIONS_FILTERS}
-                  >
-                    {renderFilterTabTriggers(true)}
-                  </TabsList>
-                  {renderNotificationsPanel()}
-                </>
-              )}
-            </Tabs>
+                    {renderNotificationsPanel()}
+                  </>
+                )}
+              </Tabs>
             )}
           </CardContent>
         </Card>

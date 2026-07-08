@@ -10,7 +10,8 @@ import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { BirthdayCalendar } from "@/components/birthdays/birthday-calendar";
 import { BirthdayEditDialog } from "@/components/birthdays/birthday-edit-dialog";
 import { BirthdayFormDialog } from "@/components/birthdays/birthday-form-dialog";
-import { Button } from "@/components/ui/button";
+import { BirthdaysList } from "@/components/birthdays/birthdays-list";
+import { BirthdaysMobileAccordion } from "@/components/birthdays/birthdays-mobile-accordion";
 import { Card, CardContent, CardHeader, CardTitle, CARD_TITLE_ROW_CLASSNAME } from "@/components/ui/card";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
 import { FamilyRealtimeHint } from "@/components/ui/family-realtime-hint";
@@ -20,12 +21,9 @@ import { useProfileStore } from "@/lib/stores/profile-store";
 import { useBirthdaysStore } from "@/lib/stores/birthdays-store";
 import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
-import { formatBirthdayLabel, type BirthdayEntry, BIRTHDAY_FORM_FIELD } from "@/lib/birthdays/types";
-import { selectionListRowClasses } from "@/lib/ui/selection-styles";
-import { cn } from "@/lib/utils";
+import type { BirthdayEntry } from "@/lib/birthdays/types";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
 import { deleteBirthday } from "@/app/(app)/birthdays/actions";
-import { Pencil, Trash2 } from "lucide-react";
 
 export function BirthdaysView() {
   const t = useT();
@@ -89,6 +87,11 @@ export function BirthdaysView() {
     setEditOpen(true);
   }
 
+  function editBirthdayFromCalendar(entry: BirthdayEntry) {
+    focusBirthday(entry);
+    openEdit(entry);
+  }
+
   function openFormForDay(day: number) {
     setFormInitialDate(new Date(year, month - 1, day));
     setFormOpen(true);
@@ -98,6 +101,18 @@ export function BirthdaysView() {
     setFormOpen(next);
     if (!next) setFormInitialDate(undefined);
   }
+
+  const listProps = {
+    entries: upcoming,
+    loading,
+    loaded,
+    focusedEntryId,
+    userId: user?.id,
+    deleteAction,
+    deletePending,
+    onFocus: focusBirthday,
+    onEdit: openEdit,
+  };
 
   return (
     <div className="flex flex-col md:min-h-screen">
@@ -128,6 +143,11 @@ export function BirthdaysView() {
           <ModuleFetchError onRetry={() => void fetchEntries(true)} />
         ) : (
         <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem]">
+          <BirthdaysMobileAccordion
+            {...listProps}
+            tourTarget={NIMBUS_TOUR_TARGET.BIRTHDAYS_LIST}
+          />
+
           <Card
             id="birthday-calendar"
             className="rounded-none py-0 shadow-sm scroll-mt-24"
@@ -152,7 +172,7 @@ export function BirthdaysView() {
                     setFocusedDay(null);
                     setFocusedEntryId(null);
                   }}
-                  onEntrySelect={focusBirthday}
+                  onEntryEdit={editBirthdayFromCalendar}
                   onDayClick={openFormForDay}
                 />
               )}
@@ -160,79 +180,14 @@ export function BirthdaysView() {
           </Card>
 
           <Card
-            className="rounded-none py-0 shadow-sm h-fit gap-0"
+            className="hidden rounded-none py-0 shadow-sm h-fit gap-0 lg:block"
             data-nimbus-tour={NIMBUS_TOUR_TARGET.BIRTHDAYS_LIST}
           >
             <CardHeader>
               <CardTitle className={CARD_TITLE_ROW_CLASSNAME}>{t.birthdays.listTitle}</CardTitle>
             </CardHeader>
             <CardContent className="p-0">
-              {loading && !loaded ? (
-                <div className="space-y-2 p-4">
-                  <Skeleton className="h-10 w-full rounded-none" />
-                  <Skeleton className="h-10 w-full rounded-none" />
-                </div>
-              ) : upcoming.length === 0 ? (
-                <p className="p-4 text-sm text-muted-foreground">{t.birthdays.empty}</p>
-              ) : (
-                <ul className="divide-y divide-border">
-                  {upcoming.map((entry) => {
-                    const isSelected = focusedEntryId === entry.id;
-                    const isOwner = entry.created_by === user?.id;
-
-                    return (
-                      <li
-                        key={entry.id}
-                        className="flex items-start gap-2 p-3 transition-colors"
-                      >
-                        <button
-                          type="button"
-                          onClick={() => focusBirthday(entry)}
-                          className={cn(
-                            "min-w-0 flex-1 cursor-pointer rounded-sm border-l-2 text-left transition-all duration-150",
-                            "hover:bg-muted/60 -my-1 py-2 pl-3 pr-2",
-                            selectionListRowClasses(isSelected)
-                          )}
-                        >
-                          <p className="font-medium text-sm truncate">{entry.person_name}</p>
-                          <p className="text-xs text-muted-foreground">{formatBirthdayLabel(entry)}</p>
-                          {entry.description && (
-                            <p className="mt-1 text-xs text-muted-foreground line-clamp-2">
-                              {entry.description}
-                            </p>
-                          )}
-                        </button>
-                        {isOwner && (
-                          <div className="flex shrink-0 gap-0.5">
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="icon"
-                              className="cursor-pointer text-muted-foreground hover:text-foreground"
-                              onClick={() => openEdit(entry)}
-                              aria-label={t.birthdays.editBtn}
-                            >
-                              <Pencil className="size-4" />
-                            </Button>
-                            <form action={deleteAction} onClick={(e) => e.stopPropagation()}>
-                              <input type="hidden" name={BIRTHDAY_FORM_FIELD.ID} value={entry.id} />
-                              <Button
-                                type="submit"
-                                variant="ghost"
-                                size="icon"
-                                disabled={deletePending}
-                                className="cursor-pointer text-destructive hover:text-destructive"
-                              >
-                                <Trash2 className="size-4" />
-                              </Button>
-                            </form>
-                          </div>
-                        )}
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
+              <BirthdaysList {...listProps} />
             </CardContent>
           </Card>
         </div>

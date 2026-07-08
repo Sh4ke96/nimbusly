@@ -7,9 +7,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MemberAvatar } from "@/components/member-avatar";
 import { AVATAR_COLORS, DEFAULT_AVATAR_COLOR, type AvatarColor } from "@/lib/avatar-colors";
-import { INVITE_TOKEN_COOKIE } from "@/lib/family/constants";
-import { formatInviteCode, readInviteCodeFromCookie } from "@/lib/family/invite";
+import { formatInviteCode } from "@/lib/family/invite";
+import {
+  hasInviteCodeFromRegistration,
+  resolveOnboardingFamilyIntent,
+  type OnboardingInvitePrefill,
+} from "@/lib/family/onboarding-invite-prefill";
 import { useT } from "@/lib/lang-context";
+import { formatMessage } from "@/lib/i18n/format";
 import { cn } from "@/lib/utils";
 import { FAMILY_SETUP_INTENT } from "@/lib/constants/account";
 import type { FamilySetupIntent } from "@/lib/profile";
@@ -20,28 +25,23 @@ import { Check, ChevronLeft, ChevronRight, Heart, Ticket, User } from "lucide-re
 const STEPS = ["color", "name", "account"] as const;
 type Step = (typeof STEPS)[number];
 
-function readInviteTokenCookie(): string {
-  if (typeof document === "undefined") return "";
-  const match = document.cookie
-    .split("; ")
-    .find((row) => row.startsWith(`${INVITE_TOKEN_COOKIE}=`));
-  return match ? decodeURIComponent(match.split("=")[1] ?? "") : "";
-}
+type OnboardingWizardProps = {
+  invitePrefill: OnboardingInvitePrefill;
+};
 
-export function OnboardingWizard() {
+export function OnboardingWizard({ invitePrefill }: OnboardingWizardProps) {
   const t = useT();
   const [step, setStep] = useState<Step>("color");
   const [avatarColor, setAvatarColor] = useState<AvatarColor>(DEFAULT_AVATAR_COLOR);
   const [firstName, setFirstName] = useState<string>("");
   const [lastName, setLastName] = useState<string>("");
-  const [familyIntent, setFamilyIntent] = useState<FamilySetupIntent>(() => {
-    if (readInviteTokenCookie() || readInviteCodeFromCookie()) return FAMILY_SETUP_INTENT.JOIN;
-    return FAMILY_SETUP_INTENT.CREATE;
-  });
+  const [familyIntent, setFamilyIntent] = useState<FamilySetupIntent>(() =>
+    resolveOnboardingFamilyIntent(invitePrefill.inviteCode, invitePrefill.inviteToken)
+  );
   const [familyName, setFamilyName] = useState<string>("");
-  const [inviteCode, setInviteCode] = useState<string>(() => readInviteCodeFromCookie());
-  const [inviteToken] = useState<string>(() => readInviteTokenCookie());
-  const inviteCodeFromRegistration = inviteCode.length > 0 && !inviteToken;
+  const [inviteCode, setInviteCode] = useState<string>(invitePrefill.inviteCode);
+  const [inviteToken] = useState<string>(invitePrefill.inviteToken);
+  const inviteCodeFromRegistration = hasInviteCodeFromRegistration(inviteCode, inviteToken);
   const [state, action, pending] = useActionState<OnboardingState, FormData>(
     completeOnboarding,
     null
@@ -262,12 +262,22 @@ export function OnboardingWizard() {
           )}
 
           {familyIntent === FAMILY_SETUP_INTENT.JOIN && inviteCodeFromRegistration && (
-            <p className="text-sm text-muted-foreground rounded-none border border-primary/30 bg-primary/10 px-3 py-2">
-              {t.onboarding.inviteCodeFromRegistration}
-            </p>
+            <div
+              className="space-y-2 rounded-none border border-primary/30 bg-primary/10 px-3 py-3 text-sm text-muted-foreground"
+              role="status"
+            >
+              <p>
+                {formatMessage(t.onboarding.inviteCodeFromRegistration, { code: inviteCode })}
+              </p>
+              <code className="inline-block font-mono text-base font-semibold tracking-widest text-foreground">
+                {inviteCode}
+              </code>
+            </div>
           )}
 
-          {familyIntent === FAMILY_SETUP_INTENT.JOIN && !inviteToken && (
+          {familyIntent === FAMILY_SETUP_INTENT.JOIN &&
+            !inviteToken &&
+            !inviteCodeFromRegistration && (
             <div className="space-y-1.5 animate-rise">
               <Label htmlFor="inviteCode">{t.onboarding.inviteCodeLabel}</Label>
               <Input

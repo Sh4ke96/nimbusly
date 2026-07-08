@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { FAMILY_ACCESS_ERROR, type FamilyAccessError } from "@/lib/constants/server-error";
-import { isFamilyFounder } from "@/lib/profile/family-roles";
+import { isFamilyAdmin } from "@/lib/profile/family-roles";
 
 export const SHOPPING_CATEGORY_SCOPE = {
   SOLO: "solo",
@@ -39,7 +39,7 @@ export async function requireShoppingCategoryManager(): Promise<ShoppingCategory
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("family_id, account_mode")
+    .select("family_id, account_mode, family_role")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -59,7 +59,7 @@ export async function requireShoppingCategoryManager(): Promise<ShoppingCategory
     .eq("id", profile.family_id)
     .maybeSingle();
 
-  if (!family || !isFamilyFounder(family, user.id)) {
+  if (!family || !isFamilyAdmin(profile, family, user.id)) {
     return { error: FAMILY_ACCESS_ERROR.NOT_FOUNDER };
   }
 

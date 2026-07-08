@@ -1,14 +1,17 @@
 "use client";
 
 import { useEffect, useMemo, useRef } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  MONTH_CALENDAR_ENTRY_BUTTON_CLASS,
+  MonthCalendarGrid,
+  MonthCalendarNav,
+} from "@/components/ui/month-calendar-grid";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { SCHEDULE_ENTRY_EMOJI } from "@/lib/constants/schedule";
 import { useT } from "@/lib/lang-context";
@@ -104,152 +107,102 @@ export function ScheduleCalendar({
   return (
     <TooltipProvider>
       <div ref={calendarRef} className="space-y-4">
-        <div className="flex items-center justify-between gap-3">
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            onClick={() => {
-              const next = shiftMonth(year, month, -1);
-              onMonthChange(next.year, next.month);
-            }}
-          >
-            <ChevronLeft className="size-4" />
-          </Button>
-          <h2 className="font-heading font-semibold text-lg">
-            {getMonthName(month, t.schedule.calendarMonths)} {year}
-          </h2>
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            onClick={() => {
-              const next = shiftMonth(year, month, 1);
-              onMonthChange(next.year, next.month);
-            }}
-          >
-            <ChevronRight className="size-4" />
-          </Button>
-        </div>
+        <MonthCalendarNav
+          title={`${getMonthName(month, t.schedule.calendarMonths)} ${year}`}
+          onPrev={() => {
+            const next = shiftMonth(year, month, -1);
+            onMonthChange(next.year, next.month);
+          }}
+          onNext={() => {
+            const next = shiftMonth(year, month, 1);
+            onMonthChange(next.year, next.month);
+          }}
+        />
 
-        <div className="grid grid-cols-7 gap-px border border-border bg-border">
-          {weekdays.map((label) => (
-            <div
-              key={label}
-              className="bg-muted/50 px-2 py-2 text-center text-xs font-medium text-muted-foreground"
-            >
-              {label}
-            </div>
-          ))}
-
-          {cells.map((cell, index) => {
-            if (!cell.isCurrentMonth || cell.day === null) {
-              return <div key={`empty-${index}`} className="min-h-28 bg-background" />;
-            }
-
-            const day = cell.day;
-            const dayEntries = entriesByDay.get(day) ?? [];
-            const isFocusedDay = focusedDay === day;
-            const hasFocusedEntry = dayEntries.some((e) => e.id === focusedEntryId);
-
-            return (
-              <div
-                key={scheduleDateKey(year, month, day)}
-                data-schedule-day={day}
-                className={cn(
-                  "relative min-h-28 bg-background p-2 transition-all duration-200",
-                  cell.isToday && !isFocusedDay && "shadow-[inset_0_0_0_1px] shadow-primary/30",
-                  isFocusedDay &&
-                    "bg-primary/4 shadow-[inset_0_0_0_2px] shadow-primary/50"
-                )}
-              >
-                {onDayClick && (
+        <MonthCalendarGrid
+          cells={cells}
+          weekdays={weekdays}
+          monthNames={t.schedule.calendarMonths}
+          dayDataAttribute="schedule-day"
+          focusDay={focusedDay}
+          isFocusedDay={(day) => focusedDay === day}
+          hasFocusedItem={(day) =>
+            (entriesByDay.get(day) ?? []).some((entry) => entry.id === focusedEntryId)
+          }
+          renderDayOverlay={
+            onDayClick
+              ? (day) => (
                   <button
                     type="button"
-                    className="absolute inset-0 z-0 cursor-pointer hover:bg-muted/25"
+                    className="absolute inset-0 z-0 cursor-pointer rounded-none hover:bg-muted/30"
                     aria-label={formatMessage(t.schedule.calendarAddOnDay, {
                       day: String(day),
                     })}
                     onClick={() => onDayClick(day)}
                   />
-                )}
-                <div className="relative z-10 pointer-events-none">
-                <span
-                  className={cn(
-                    "inline-flex size-6 items-center justify-center text-xs font-medium transition-colors",
-                    isFocusedDay || hasFocusedEntry
-                      ? "rounded-full bg-primary text-primary-foreground font-semibold"
-                      : cell.isToday
-                        ? "text-primary"
-                        : "text-muted-foreground"
+                )
+              : undefined
+          }
+          renderDayContent={({ day }) => {
+            const dayEntries = entriesByDay.get(day) ?? [];
+
+            return dayEntries.map((entry) => {
+              const isSelected = entry.id === focusedEntryId;
+              const creator = resolveCreatorName(entry.created_by, userId, profile, members);
+              const typeLabel = getScheduleTypeLabel(entry.entry_type, t.schedule.typeLabels);
+
+              const tooltip = (
+                <div className="space-y-1 text-left">
+                  <p className="font-semibold">
+                    {SCHEDULE_ENTRY_EMOJI[entry.entry_type]} {typeLabel}
+                  </p>
+                  <p>
+                    {formatScheduleDateRangeLabel(
+                      entry.entry_date,
+                      entry.entry_end_date,
+                      t.schedule.dateRangeSeparator
+                    )}
+                  </p>
+                  {entry.description && (
+                    <p>
+                      <span className="font-medium">{t.schedule.reasonLabel}:</span>{" "}
+                      {entry.description}
+                    </p>
                   )}
-                >
-                  {day}
-                </span>
-                <div className="mt-1 space-y-1 pointer-events-auto">
-                  {dayEntries.map((entry) => {
-                    const isSelected = entry.id === focusedEntryId;
-                    const creator = resolveCreatorName(entry.created_by, userId, profile, members);
-                    const typeLabel = getScheduleTypeLabel(entry.entry_type, t.schedule.typeLabels);
-
-                    const tooltip = (
-                      <div className="space-y-1 text-left">
-                        <p className="font-semibold">
-                          {SCHEDULE_ENTRY_EMOJI[entry.entry_type]} {typeLabel}
-                        </p>
-                        <p>
-                          {formatScheduleDateRangeLabel(
-                            entry.entry_date,
-                            entry.entry_end_date,
-                            t.schedule.dateRangeSeparator
-                          )}
-                        </p>
-                        {entry.description && (
-                          <p>
-                            <span className="font-medium">{t.schedule.reasonLabel}:</span>{" "}
-                            {entry.description}
-                          </p>
-                        )}
-                        {isFamily && creator && (
-                          <p className="opacity-75">
-                            {t.schedule.addedBy}: {creator}
-                          </p>
-                        )}
-                      </div>
-                    );
-
-                    return (
-                      <Tooltip key={entry.id}>
-                        <TooltipTrigger asChild>
-                          <button
-                            type="button"
-                            onClick={() => onEntrySelect?.(entry)}
-                            className={cn(
-                              "flex w-full min-w-0 cursor-pointer items-center gap-1 rounded-sm px-1.5 py-1 text-left text-[11px] font-medium leading-none transition-all duration-150",
-                              selectionPillClasses(isSelected)
-                            )}
-                          >
-                            <span
-                              className="shrink-0 text-xs leading-none"
-                              aria-hidden
-                            >
-                              {SCHEDULE_ENTRY_EMOJI[entry.entry_type]}
-                            </span>
-                            <span className="min-w-0 truncate">{typeLabel}</span>
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipContent side="top" className="max-w-xs">
-                          {tooltip}
-                        </TooltipContent>
-                      </Tooltip>
-                    );
-                  })}
+                  {isFamily && creator && (
+                    <p className="opacity-75">
+                      {t.schedule.addedBy}: {creator}
+                    </p>
+                  )}
                 </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+
+              return (
+                <Tooltip key={entry.id}>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      onClick={() => onEntrySelect?.(entry)}
+                      className={cn(
+                        MONTH_CALENDAR_ENTRY_BUTTON_CLASS,
+                        "flex items-center gap-1",
+                        selectionPillClasses(isSelected)
+                      )}
+                    >
+                      <span className="shrink-0 text-sm leading-none" aria-hidden>
+                        {SCHEDULE_ENTRY_EMOJI[entry.entry_type]}
+                      </span>
+                      <span className="min-w-0 truncate">{typeLabel}</span>
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-xs">
+                    {tooltip}
+                  </TooltipContent>
+                </Tooltip>
+              );
+            });
+          }}
+        />
       </div>
     </TooltipProvider>
   );

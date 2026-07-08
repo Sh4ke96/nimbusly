@@ -1,5 +1,5 @@
 import type { FamilyRole } from "@/lib/constants/account";
-import { FAMILY_ROLE } from "@/lib/constants/account";
+import { ACCOUNT_MODE, FAMILY_ROLE } from "@/lib/constants/account";
 import type { Dict } from "@/lib/i18n/types";
 import type { Family, Profile } from "@/lib/profile";
 
@@ -20,6 +20,17 @@ export function isFamilyAdmin(
   if (!profile || !userId) return false;
   if (isFamilyFounder(family, userId)) return true;
   return profile.family_role === FAMILY_ROLE.ADMIN;
+}
+
+export function canManageShoppingCategories(
+  profile: Pick<Profile, "account_mode" | "family_id" | "family_role"> | null | undefined,
+  family: Pick<Family, "created_by"> | null | undefined,
+  userId: string | undefined
+): boolean {
+  if (!profile || !userId) return false;
+  if (profile.account_mode === ACCOUNT_MODE.SOLO && !profile.family_id) return true;
+  if (!profile.family_id || profile.account_mode !== ACCOUNT_MODE.FAMILY) return false;
+  return isFamilyAdmin(profile, family, userId);
 }
 
 export function familyRoleLabel(

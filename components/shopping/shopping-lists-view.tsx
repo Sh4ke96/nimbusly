@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { useResolvedItemSelection } from "@/lib/hooks/use-resolved-item-selection";
+import { useLgViewport } from "@/lib/hooks/use-lg-viewport";
 import { AppHeader } from "@/components/app/app-header";
 import { AppPage } from "@/components/app/app-page";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
@@ -12,6 +13,7 @@ import { ShoppingListCard } from "@/components/shopping/shopping-list-card";
 import { ShoppingListEditDialog } from "@/components/shopping/shopping-list-edit-dialog";
 import { ShoppingListFormDialog } from "@/components/shopping/shopping-list-form-dialog";
 import { ShoppingListItemsPanel } from "@/components/shopping/shopping-list-items-panel";
+import { ShoppingListMobileSheet } from "@/components/shopping/shopping-list-mobile-sheet";
 import { Button } from "@/components/ui/button";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -36,6 +38,7 @@ export function ShoppingListsView() {
   const t = useT();
   const user = useProfileStore((s) => s.user);
   const profile = useProfileStore((s) => s.profile);
+  const isLgViewport = useLgViewport();
 
   const lists = useShoppingListsStore((s) => s.lists);
   const loaded = useShoppingListsStore((s) => s.loaded);
@@ -50,6 +53,7 @@ export function ShoppingListsView() {
   const [activeListId, setSelectedListId] = useResolvedItemSelection(listIdsKey);
   const [editingList, setEditingList] = useState<ShoppingList | null>(null);
   const [editOpen, setEditOpen] = useState<boolean>(false);
+  const [mobileDetailOpen, setMobileDetailOpen] = useState<boolean>(false);
 
   const familyId =
     profile?.account_mode === ACCOUNT_MODE.FAMILY && profile.family_id
@@ -62,8 +66,17 @@ export function ShoppingListsView() {
     if (!listFromUrl || lists.length === 0) return;
     if (lists.some((list) => list.id === listFromUrl)) {
       setSelectedListId(listFromUrl);
+      if (!isLgViewport) {
+        setMobileDetailOpen(true);
+      }
     }
-  }, [listFromUrl, lists, setSelectedListId]);
+  }, [listFromUrl, lists, setSelectedListId, isLgViewport]);
+
+  useEffect(() => {
+    if (isLgViewport) {
+      setMobileDetailOpen(false);
+    }
+  }, [isLgViewport]);
 
   useEffect(() => {
     if (activeListId) void fetchItems(activeListId);
@@ -97,6 +110,13 @@ export function ShoppingListsView() {
   function openEdit(list: ShoppingList) {
     setEditingList(list);
     setEditOpen(true);
+  }
+
+  function handleListSelect(listId: string) {
+    setSelectedListId(listId);
+    if (!isLgViewport) {
+      setMobileDetailOpen(true);
+    }
   }
 
   function handleExportCsv() {
@@ -158,7 +178,7 @@ export function ShoppingListsView() {
                     key={list.id}
                     list={list}
                     selected={list.id === activeListId}
-                    onSelect={() => setSelectedListId(list.id)}
+                    onSelect={() => handleListSelect(list.id)}
                     onEdit={() => openEdit(list)}
                     onDeleted={onListsChanged}
                   />
@@ -166,7 +186,10 @@ export function ShoppingListsView() {
               </div>
             </section>
 
-            <section className="min-w-0 w-full space-y-3" data-nimbus-tour={NIMBUS_TOUR_TARGET.SHOPPING_ITEMS}>
+            <section
+              className="hidden min-w-0 w-full space-y-3 lg:block"
+              data-nimbus-tour={NIMBUS_TOUR_TARGET.SHOPPING_ITEMS}
+            >
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <ModuleSectionHeading icon={ShoppingBag}>
                   {activeList?.name ?? t.shoppingLists.itemsHeading}
@@ -189,16 +212,20 @@ export function ShoppingListsView() {
               {activeListId ? (
                 <ShoppingListItemsPanel
                   listId={activeListId}
-                  onChanged={() => {
-                    void fetchLists(true);
-                    if (activeListId) void fetchItems(activeListId, true);
-                  }}
+                  onChanged={onListsChanged}
                 />
               ) : null}
             </section>
           </div>
         )}
       </AppPage>
+
+      <ShoppingListMobileSheet
+        list={activeList}
+        open={mobileDetailOpen && !!activeList && !isLgViewport}
+        onOpenChange={setMobileDetailOpen}
+        onChanged={onListsChanged}
+      />
 
       <ShoppingListEditDialog
         list={editingList}

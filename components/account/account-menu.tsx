@@ -26,7 +26,7 @@ import { cn } from "@/lib/utils";
 import { HEADER_CONTROL_HEIGHT } from "@/lib/ui/header-controls";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { navigateSettingsTab, settingsTabHref, SETTINGS_TAB } from "@/lib/profile/settings-tabs";
-import { isFamilyFounder } from "@/lib/profile/family-roles";
+import { canManageShoppingCategories } from "@/lib/profile/family-roles";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import {
   Bell,
@@ -157,7 +157,7 @@ export function AccountMenu() {
           )}
           {profile?.account_mode === ACCOUNT_MODE.FAMILY &&
             profile.family_id &&
-            isFamilyFounder(family, user?.id) ? (
+            canManageShoppingCategories(profile, family, user?.id) ? (
               <DropdownMenuItem asChild>
                 <Link
                   href={settingsTabHref(SETTINGS_TAB.SHOPPING_CATEGORIES)}

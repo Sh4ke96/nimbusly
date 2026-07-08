@@ -8,6 +8,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import { VersionBadge } from "@/components/app/version-badge";
 import { AuthSessionSync } from "@/components/auth/auth-session-sync";
+import { PageVisibilitySync } from "@/components/app/page-visibility-sync";
 import { PwaRegisterLazy } from "@/components/pwa/pwa-register-lazy";
 import { LANG } from "@/lib/constants/lang";
 import { PWA_ICON_APPLE_TOUCH } from "@/lib/constants/pwa";
@@ -93,6 +94,7 @@ export default function RootLayout({
           <LangProvider initialLang={LANG.PL}>
             <TooltipProvider>
               <AuthSessionSync />
+              <PageVisibilitySync />
               <PwaRegisterLazy />
               {children}
               <VersionBadge />

@@ -2,15 +2,18 @@
 
 import { useEffect, useMemo, useRef } from "react";
 import { format } from "date-fns";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ChoreOccurrenceCompleteButton } from "@/components/chores/chore-occurrence-complete-button";
-import { Button } from "@/components/ui/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  MONTH_CALENDAR_ENTRY_BUTTON_CLASS,
+  MonthCalendarGrid,
+  MonthCalendarNav,
+} from "@/components/ui/month-calendar-grid";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import {
   choreDateKey,
@@ -102,164 +105,116 @@ export function ChoresCalendar({
   return (
     <TooltipProvider>
       <div ref={calendarRef} className="space-y-4">
-        <div className="flex items-center justify-between gap-3">
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            onClick={() => {
-              const next = shiftMonth(year, month, -1);
-              onMonthChange(next.year, next.month);
-            }}
-          >
-            <ChevronLeft className="size-4" />
-          </Button>
-          <h2 className="font-heading font-semibold text-lg">
-            {getMonthName(month, t.chores.calendarMonths)} {year}
-          </h2>
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            onClick={() => {
-              const next = shiftMonth(year, month, 1);
-              onMonthChange(next.year, next.month);
-            }}
-          >
-            <ChevronRight className="size-4" />
-          </Button>
-        </div>
+        <MonthCalendarNav
+          title={`${getMonthName(month, t.chores.calendarMonths)} ${year}`}
+          onPrev={() => {
+            const next = shiftMonth(year, month, -1);
+            onMonthChange(next.year, next.month);
+          }}
+          onNext={() => {
+            const next = shiftMonth(year, month, 1);
+            onMonthChange(next.year, next.month);
+          }}
+        />
 
-        <div className="grid grid-cols-7 gap-px border border-border bg-border">
-          {weekdays.map((label) => (
-            <div
-              key={label}
-              className="bg-muted/50 px-2 py-2 text-center text-xs font-medium text-muted-foreground"
-            >
-              {label}
-            </div>
-          ))}
-
-          {cells.map((cell, index) => {
-            if (!cell.isCurrentMonth || cell.day === null) {
-              return <div key={`empty-${index}`} className="min-h-24 bg-background" />;
-            }
-
-            const day = cell.day;
-            const dayOccurrences = occurrencesByDay.get(day) ?? [];
-            const isFocusedDay = focusedDay === day;
-            const hasFocusedTask = dayOccurrences.some((o) => o.taskId === focusedTaskId);
-
-            return (
-              <div
-                key={choreDateKey(year, month, day)}
-                data-chore-day={day}
-                className={cn(
-                  "relative min-h-24 bg-background p-1.5 transition-all duration-200",
-                  cell.isToday && !isFocusedDay && "shadow-[inset_0_0_0_1px] shadow-primary/30",
-                  isFocusedDay && "bg-primary/4 shadow-[inset_0_0_0_2px] shadow-primary/50"
-                )}
-              >
-                {onDayClick && (
+        <MonthCalendarGrid
+          cells={cells}
+          weekdays={weekdays}
+          monthNames={t.chores.calendarMonths}
+          dayDataAttribute="chore-day"
+          focusDay={focusedDay}
+          isFocusedDay={(day) => focusedDay === day}
+          hasFocusedItem={(day) =>
+            (occurrencesByDay.get(day) ?? []).some((occurrence) => occurrence.taskId === focusedTaskId)
+          }
+          renderDayOverlay={
+            onDayClick
+              ? (day) => (
                   <button
                     type="button"
-                    className="absolute inset-0 z-0 cursor-pointer hover:bg-muted/25"
+                    className="absolute inset-0 z-0 cursor-pointer rounded-none hover:bg-muted/30"
                     aria-label={formatMessage(t.chores.calendarAddOnDay, {
                       day: String(day),
                     })}
                     onClick={() => onDayClick(day)}
                   />
-                )}
-                <div className="relative z-10 pointer-events-none">
-                <span
-                  className={cn(
-                    "inline-flex size-6 items-center justify-center text-xs font-medium transition-colors",
-                    isFocusedDay || hasFocusedTask
-                      ? "rounded-full bg-primary text-primary-foreground font-semibold"
-                      : cell.isToday
-                        ? "text-primary"
-                        : "text-muted-foreground"
-                  )}
-                >
-                  {day}
-                </span>
-                <div className="mt-0.5 space-y-0.5 pointer-events-auto">
-                  {dayOccurrences.map((occurrence) => {
-                    const task = tasks.find((item) => item.id === occurrence.taskId);
-                    const isSelected = occurrence.taskId === focusedTaskId;
-                    const schedule =
-                      task &&
-                      formatChoreScheduleLabel(task, t.chores, (iso) =>
-                        formatIsoDate(iso, locale)
-                      );
-                    const canComplete =
-                      !!task && canCompleteChoreTask(task, userId, profile);
+                )
+              : undefined
+          }
+          renderDayContent={({ day }) => {
+            const dayOccurrences = occurrencesByDay.get(day) ?? [];
 
-                    return (
-                      <Tooltip key={`${occurrence.taskId}-${occurrence.date}`}>
-                        <TooltipTrigger asChild>
-                          <button
-                            type="button"
-                            onClick={() => onOccurrenceSelect?.(occurrence)}
-                            className={cn(
-                              "flex w-full min-w-0 cursor-pointer items-center gap-1 rounded-sm px-1 py-0.5 text-left text-[10px] font-medium leading-tight transition-all duration-150",
-                              occurrence.isCompleted
-                                ? "bg-primary/15 text-primary line-through decoration-primary/50"
-                                : occurrence.isNextDue
-                                  ? "bg-sky-500/15 text-sky-900 dark:text-sky-200"
-                                  : "bg-muted/40 text-foreground/80",
-                              selectionPillClasses(isSelected)
-                            )}
-                          >
-                            <span className="min-w-0 truncate">
-                              {occurrence.iconEmoji ? (
-                                <span className="mr-0.5" aria-hidden>
-                                  {occurrence.iconEmoji}
-                                </span>
-                              ) : null}
-                              {occurrence.title}
-                            </span>
-                          </button>
-                        </TooltipTrigger>
-                        <TooltipContent side="top" className="max-w-xs">
-                          <div className="space-y-2 text-left">
-                            <p className="font-semibold">
-                              {occurrence.iconEmoji ? `${occurrence.iconEmoji} ` : ""}
-                              {occurrence.title}
-                            </p>
-                            {schedule && <p className="text-xs opacity-90">{schedule}</p>}
-                            <p className="text-xs opacity-80">
-                              {formatIsoDate(occurrence.date, locale)}
-                            </p>
-                            {occurrence.isCompleted && (
-                              <p className="text-xs font-semibold">
-                                {t.chores.occurrenceCompletedLabel}
-                              </p>
-                            )}
-                            {occurrence.isNextDue && !occurrence.isCompleted && (
-                              <p className="text-xs opacity-90">{t.chores.calendarNextDue}</p>
-                            )}
-                            {canComplete && !occurrence.isCompleted && (
-                              <div onClick={(e) => e.stopPropagation()}>
-                                <ChoreOccurrenceCompleteButton
-                                  taskId={occurrence.taskId}
-                                  occurrenceDate={occurrence.date}
-                                  appearance="inline"
-                                  onSuccess={onChanged}
-                                />
-                              </div>
-                            )}
-                          </div>
-                        </TooltipContent>
-                      </Tooltip>
-                    );
-                  })}
-                </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+            return dayOccurrences.map((occurrence) => {
+              const task = tasks.find((item) => item.id === occurrence.taskId);
+              const isSelected = occurrence.taskId === focusedTaskId;
+              const schedule =
+                task &&
+                formatChoreScheduleLabel(task, t.chores, (iso) =>
+                  formatIsoDate(iso, locale)
+                );
+              const canComplete =
+                !!task && canCompleteChoreTask(task, userId, profile);
+
+              return (
+                <Tooltip key={`${occurrence.taskId}-${occurrence.date}`}>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      onClick={() => onOccurrenceSelect?.(occurrence)}
+                      className={cn(
+                        MONTH_CALENDAR_ENTRY_BUTTON_CLASS,
+                        "flex items-center gap-1",
+                        occurrence.isCompleted
+                          ? "bg-primary/15 text-primary line-through decoration-primary/50"
+                          : occurrence.isNextDue
+                            ? "bg-sky-500/15 text-sky-900 dark:text-sky-200"
+                            : "bg-muted/50 text-foreground",
+                        selectionPillClasses(isSelected)
+                      )}
+                    >
+                      {occurrence.iconEmoji ? (
+                        <span className="shrink-0" aria-hidden>
+                          {occurrence.iconEmoji}
+                        </span>
+                      ) : null}
+                      <span className="min-w-0 truncate">{occurrence.title}</span>
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-xs">
+                    <div className="space-y-2 text-left">
+                      <p className="font-semibold">
+                        {occurrence.iconEmoji ? `${occurrence.iconEmoji} ` : ""}
+                        {occurrence.title}
+                      </p>
+                      {schedule && <p className="text-xs opacity-90">{schedule}</p>}
+                      <p className="text-xs opacity-80">
+                        {formatIsoDate(occurrence.date, locale)}
+                      </p>
+                      {occurrence.isCompleted && (
+                        <p className="text-xs font-semibold">
+                          {t.chores.occurrenceCompletedLabel}
+                        </p>
+                      )}
+                      {occurrence.isNextDue && !occurrence.isCompleted && (
+                        <p className="text-xs opacity-90">{t.chores.calendarNextDue}</p>
+                      )}
+                      {canComplete && !occurrence.isCompleted && (
+                        <div onClick={(e) => e.stopPropagation()}>
+                          <ChoreOccurrenceCompleteButton
+                            taskId={occurrence.taskId}
+                            occurrenceDate={occurrence.date}
+                            appearance="inline"
+                            onSuccess={onChanged}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
+              );
+            });
+          }}
+        />
       </div>
     </TooltipProvider>
   );

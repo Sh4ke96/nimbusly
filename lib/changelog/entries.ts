@@ -11,6 +11,54 @@ export { CHANGELOG_ENTRY_TYPE, type ChangelogEntry };
  */
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "0.7.2",
+    date: "2026-07-08",
+    type: CHANGELOG_ENTRY_TYPE.MINOR,
+    title: {
+      pl: "Mobile: zakupy, urodziny i kategorie dla admina",
+      en: "Mobile shopping, birthdays, and admin categories",
+    },
+    changes: {
+      pl: [
+        "Zakupy na mobile: pełnoekranowy widok listy z nazwą; plus otwiera dialog dodawania produktu z wyborem kategorii",
+        "Urodziny na mobile: lista w accordionie nad kalendarzem; pełne etykiety dni i tygodni; klik w zajęty kafelek otwiera edycję",
+        "Kategorie zakupów: zarządzanie także dla administratora rodziny (nie tylko założyciel)",
+        "Kalendarz modułów: zakres tygodnia z odstępami przy myślniku (np. 6 – 12 Lipiec)",
+      ],
+      en: [
+        "Mobile shopping: full-screen list detail with name; plus opens add-product dialog with category picker",
+        "Mobile birthdays: collapsible list above calendar; full day/week labels; tap occupied day tile to edit",
+        "Shopping categories: family admins can manage categories, not only the founder",
+        "Module calendars: spaced week range labels (e.g. 6 – 12 July)",
+      ],
+    },
+  },
+  {
+    version: "0.7.1",
+    date: "2026-07-08",
+    type: CHANGELOG_ENTRY_TYPE.FIX,
+    title: {
+      pl: "Mniejsze zużycie baterii w PWA na iOS",
+      en: "Lower PWA battery use on iOS",
+    },
+    changes: {
+      pl: [
+        "Mobile/PWA: statyczne tło zamiast animowanych blobów i blur",
+        "Wstrzymanie animacji Nimbus, timerów i realtime powiadomień w tle",
+        "Wyszukiwarka globalna nie subskrybuje wszystkich modułów, gdy jest zamknięta",
+        "Zakupy: zmiana nazwy i usunięcie listy synchronizują się na żywo w rodzinie",
+        "Kalendarz modułów: na mobile widok tygodniowy z dużymi kafelkami dni",
+      ],
+      en: [
+        "Mobile/PWA: static background instead of animated blobs and blur",
+        "Pause Nimbus animations, timers, and notification realtime while backgrounded",
+        "Global search no longer subscribes to all module stores when closed",
+        "Shopping: list rename and delete sync live for family members",
+        "Module calendars: weekly mobile view with large day tiles",
+      ],
+    },
+  },
+  {
     version: "0.7.0",
     date: "2026-06-28",
     type: CHANGELOG_ENTRY_TYPE.MINOR,

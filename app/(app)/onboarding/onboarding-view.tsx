@@ -10,9 +10,14 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useT } from "@/lib/lang-context";
 import { LogOut } from "lucide-react";
+import type { OnboardingInvitePrefill } from "@/lib/family/onboarding-invite-prefill";
 import { OnboardingWizard } from "./onboarding-wizard";
 
-export function OnboardingView() {
+type OnboardingViewProps = {
+  invitePrefill: OnboardingInvitePrefill;
+};
+
+export function OnboardingView({ invitePrefill }: OnboardingViewProps) {
   const t = useT();
   const [logoutOpen, setLogoutOpen] = useState<boolean>(false);
 
@@ -49,7 +54,7 @@ export function OnboardingView() {
 
           <Card className="rounded-none shadow-sm">
             <CardContent className="pt-8">
-              <OnboardingWizard />
+              <OnboardingWizard invitePrefill={invitePrefill} />
             </CardContent>
           </Card>
 

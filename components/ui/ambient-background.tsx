@@ -15,7 +15,11 @@ export function AmbientBackground({ variant = "app", className }: AmbientBackgro
   return (
     <div
       aria-hidden
-      className={cn("pointer-events-none fixed inset-0 z-0 overflow-hidden", className)}
+      className={cn(
+        "ambient-background-root pointer-events-none fixed inset-0 z-0 overflow-hidden",
+        variant === "app" && "ambient-lite",
+        className
+      )}
     >
       <div
         className={cn(

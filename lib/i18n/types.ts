@@ -15,6 +15,9 @@ export type Dict = {
     filtersDescription: string;
     paginationAriaLabel: string;
     paginationMorePages: string;
+    calendarWeekdaysFull: string[];
+    calendarWeekPrevious: string;
+    calendarWeekNext: string;
   };
   errors: {
     globalTitle: string;
@@ -534,6 +537,7 @@ export type Dict = {
     changeSummaryEmpty: string;
     changeSummarySeparator: string;
     calendarAddOnDay: string;
+    calendarEditOnDay: string;
     calendarMonths: string[];
     calendarWeekdays: string[];
   };
@@ -1135,7 +1139,11 @@ export type Dict = {
     listsHeading: string;
     itemsHeading: string;
     addItemBtn: string;
+    addItemDialogTitle: string;
+    addItemFabLabel: string;
+    itemLabel: string;
     itemPlaceholder: string;
+    mobileListDetailDesc: string;
     deleteItemBtn: string;
     toggleItemLabel: string;
     dragHandleLabel: string;

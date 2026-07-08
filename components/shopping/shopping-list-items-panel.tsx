@@ -3,6 +3,7 @@
 import { useEffect, useMemo } from "react";
 import dynamic from "next/dynamic";
 import { ShoppingListAddItem } from "@/components/shopping/shopping-list-add-item";
+import { ShoppingListAddItemDialog } from "@/components/shopping/shopping-list-add-item-dialog";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useT } from "@/lib/lang-context";
@@ -13,6 +14,7 @@ import {
 import { useShoppingCategoriesStore } from "@/lib/stores/shopping-categories-store";
 import { NimbusTourToolbarAnchor } from "@/components/nimbus/nimbus-tour-toolbar-anchor";
 import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus-tour";
+import { cn } from "@/lib/utils";
 
 const ShoppingListCategorizedItems = dynamic(
   () =>
@@ -49,11 +51,13 @@ const ShoppingListItemsSortable = dynamic(
 interface ShoppingListItemsPanelProps {
   listId: string;
   onChanged?: () => void;
+  addItemMode?: "inline" | "dialog";
 }
 
 export function ShoppingListItemsPanel({
   listId,
   onChanged,
+  addItemMode = "inline",
 }: ShoppingListItemsPanelProps) {
   const t = useT();
   const selectItems = useMemo(() => selectShoppingListItems(listId), [listId]);
@@ -93,45 +97,67 @@ export function ShoppingListItemsPanel({
   }
 
   return (
-    <div className="w-full min-w-0 space-y-4">
-      <div data-nimbus-tour={NIMBUS_TOUR_TARGET.SHOPPING_ADD_ITEM}>
-        <ShoppingListAddItem
-          listId={listId}
-          categories={useCategories ? categories : []}
-          onSuccess={onChanged}
-        />
-      </div>
+    <div className="flex min-h-0 w-full min-w-0 flex-1 flex-col">
+      <div
+        className={cn(
+          "min-h-0 flex-1 space-y-4 overflow-y-auto",
+          addItemMode === "dialog" && "p-4"
+        )}
+      >
+        {addItemMode === "inline" ? (
+          <div data-nimbus-tour={NIMBUS_TOUR_TARGET.SHOPPING_ADD_ITEM}>
+            <ShoppingListAddItem
+              listId={listId}
+              categories={useCategories ? categories : []}
+              onSuccess={onChanged}
+            />
+          </div>
+        ) : null}
 
-      {items.length === 0 ? (
-        <p className="text-sm text-muted-foreground text-center py-10 border border-dashed border-border bg-card shadow-sm">
-          {t.shoppingLists.emptyItems}
-        </p>
-      ) : (
-        <>
-          <NimbusTourToolbarAnchor
-            tourTarget={NIMBUS_TOUR_TARGET.SHOPPING_CATEGORIES}
-            visible={useCategories && categoriesLoaded}
-            className="flex w-full min-w-0 flex-col"
-          >
-            {useCategories && categoriesLoaded ? (
-              <ShoppingListCategorizedItems
+        {items.length === 0 ? (
+          <p className="text-sm text-muted-foreground text-center py-10 border border-dashed border-border bg-card shadow-sm">
+            {t.shoppingLists.emptyItems}
+          </p>
+        ) : (
+          <>
+            <NimbusTourToolbarAnchor
+              tourTarget={NIMBUS_TOUR_TARGET.SHOPPING_CATEGORIES}
+              visible={useCategories && categoriesLoaded}
+              className="flex w-full min-w-0 flex-col"
+            >
+              {useCategories && categoriesLoaded ? (
+                <ShoppingListCategorizedItems
+                  listId={listId}
+                  items={items}
+                  categories={categories}
+                  onChanged={onChanged}
+                />
+              ) : null}
+            </NimbusTourToolbarAnchor>
+            {!(useCategories && categoriesLoaded) ? (
+              <ShoppingListItemsSortable
                 listId={listId}
                 items={items}
-                categories={categories}
+                itemIds={itemIds}
                 onChanged={onChanged}
               />
             ) : null}
-          </NimbusTourToolbarAnchor>
-          {!(useCategories && categoriesLoaded) ? (
-            <ShoppingListItemsSortable
-              listId={listId}
-              items={items}
-              itemIds={itemIds}
-              onChanged={onChanged}
-            />
-          ) : null}
-        </>
-      )}
+          </>
+        )}
+      </div>
+
+      {addItemMode === "dialog" ? (
+        <div
+          className="flex shrink-0 border-t border-border bg-background/95 p-4 backdrop-blur-sm"
+          data-nimbus-tour={NIMBUS_TOUR_TARGET.SHOPPING_ADD_ITEM}
+        >
+          <ShoppingListAddItemDialog
+            listId={listId}
+            categories={useCategories ? categories : []}
+            onSuccess={onChanged}
+          />
+        </div>
+      ) : null}
     </div>
   );
 }

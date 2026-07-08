@@ -34,7 +34,7 @@ export function NimbusIcon({ size = 36, className, animated = false }: NimbusIco
         <polygon points="256,76 448,242 64,242" fill="#F6F8F2" />
         <rect x="216" y="312" width="80" height="110" rx="40" ry="40" fill="#2B5748" />
         <path
-          className="icon-float"
+          className={cn(animated && "icon-float")}
           d="M256 202 C256 202 230 180 217 191 C204 202 204 222 217 234 L256 268 L295 234 C308 222 308 202 295 191 C282 180 256 202 256 202 Z"
           fill="#618764"
         />
