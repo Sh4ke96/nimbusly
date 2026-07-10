@@ -88,7 +88,7 @@ export const pl: Dict = {
     pushError: "Nie udało się zapisać subskrypcji push.",
     pushUnsupported: "Ta przeglądarka nie obsługuje powiadomień push.",
     pushIosInstallRequired:
-      "Na iPhonie dodaj Nimbusly do ekranu głównego (Safari → Udostępnij), potem włącz push w ustawieniach profilu.",
+      "Na iPhonie dodaj Nimbusly do ekranu głównego (Safari → Udostępnij), potem włącz push w Ustawienia → Powiadomienia.",
     pushNotConfigured: "Push nie jest skonfigurowany na serwerze (brak kluczy VAPID).",
     pushSwNotReady: "Service worker jeszcze się ładuje — odśwież aplikację i spróbuj ponownie.",
     pushSubscribeFailed: "Nie udało się utworzyć subskrypcji push w przeglądarce.",
@@ -409,7 +409,7 @@ export const pl: Dict = {
     menuPassword: "Zmień hasło",
     menuNotifications: "Powiadomienia",
     notificationSettingsDesc:
-      "Wybierz, z których modułów chcesz otrzymywać powiadomienia w aplikacji, push i codzienny e-mail z podsumowaniem.",
+      "Najpierw włącz push na telefonie (przycisk poniżej), potem dostosuj kanały globalnie i per moduł w tabeli.",
     notificationGlobalHeading: "Kanały globalne",
     notificationModulesHeading: "Moduły",
     notificationModuleColumn: "Moduł",
@@ -540,7 +540,7 @@ export const pl: Dict = {
     changePasswordBack: "Wróć do panelu",
     pushNotificationsPrefLabel: "Powiadomienia push",
     pushNotificationsPrefDesc:
-      "Alerty poza aplikacją na telefonie lub komputerze. Włącz kanał globalnie, a potem wybierz moduły w tabeli poniżej.",
+      "Globalny przełącznik kanału push — wymaga wcześniejszego włączenia subskrypcji na urządzeniu (przycisk powyżej). Moduły włączysz w tabeli poniżej.",
     emailDigestPrefLabel: "Codzienny digest e-mail",
     emailDigestPrefDesc:
       "Raz dziennie podsumowanie ważnych spraw i aktywności z wybranych modułów — na adres Twojego konta.",

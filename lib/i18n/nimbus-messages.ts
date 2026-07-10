@@ -524,7 +524,7 @@ export const nimbusCompanionExtraPl = {
     },
     watchDashboard: {
       q: "Jak włączyć powiadomienia z modułu?",
-      a: "Ustawienia → Powiadomienia — macierz modułów z przełącznikami in-app, push i e-mail.",
+      a: "Ustawienia → Powiadomienia — najpierw „Włącz push” na telefonie (PWA z ekranu głównego), potem przełączniki per moduł.",
     },
     shoppingCategories: {
       q: "Kto ustawia kategorie zakupów?",
@@ -728,7 +728,7 @@ export const nimbusCompanionExtraEn = {
     },
     watchDashboard: {
       q: "How do I enable module notifications?",
-      a: "Settings → Notifications — per-module matrix with in-app, push, and email toggles.",
+      a: "Settings → Notifications — first tap Enable push on your device (home-screen PWA), then per-module toggles.",
     },
     shoppingCategories: {
       q: "Who sets shopping categories?",

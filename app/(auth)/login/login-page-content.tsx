@@ -23,7 +23,7 @@ export function LoginPageContent() {
 
       {passwordChanged && (
         <Card className="border-primary/30 bg-primary/10 shadow-none">
-          <CardContent className="pt-6 text-center space-y-1">
+          <CardContent className="py-6 text-center space-y-1">
             <CheckCircle2 className="size-6 text-primary mx-auto" />
             <p className="text-sm font-medium text-foreground">
               {t.login.passwordChangedTitle}

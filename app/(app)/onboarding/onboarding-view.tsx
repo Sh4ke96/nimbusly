@@ -53,7 +53,7 @@ export function OnboardingView({ invitePrefill }: OnboardingViewProps) {
           </div>
 
           <Card className="rounded-none shadow-sm">
-            <CardContent className="pt-8">
+            <CardContent className="py-8">
               <OnboardingWizard invitePrefill={invitePrefill} />
             </CardContent>
           </Card>

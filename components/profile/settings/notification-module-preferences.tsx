@@ -21,6 +21,7 @@ import { useProfileStore } from "@/lib/stores/profile-store";
 import { useT } from "@/lib/lang-context";
 import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus-tour";
 import { NotificationQuietHoursSettings } from "@/components/profile/settings/notification-quiet-hours-settings";
+import { PwaPushSetting } from "@/components/pwa/pwa-push-setting";
 import { cn } from "@/lib/utils";
 
 function preferenceKey(moduleId: NotificationModuleId, channel: NotificationChannel): string {
@@ -97,6 +98,12 @@ export function NotificationModulePreferences() {
     await updateModuleNotificationChannel(moduleId, channel, next);
   }
 
+  async function onPushSubscribed() {
+    patchPushNotificationsEnabled(true);
+    const rows = await getModuleNotificationPreferences();
+    setPreferences(rows);
+  }
+
   if (loading) {
     return (
       <div className="space-y-4 max-w-3xl">
@@ -114,6 +121,8 @@ export function NotificationModulePreferences() {
       data-nimbus-tour={NIMBUS_TOUR_TARGET.SETTINGS_NOTIFICATIONS}
     >
       <p className="text-sm text-muted-foreground">{t.account.notificationSettingsDesc}</p>
+
+      <PwaPushSetting onSubscribed={() => void onPushSubscribed()} />
 
       <section className="space-y-4">
         <h2 className="font-heading text-sm font-semibold uppercase tracking-wide text-muted-foreground">

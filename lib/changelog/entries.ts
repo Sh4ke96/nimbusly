@@ -11,6 +11,25 @@ export { CHANGELOG_ENTRY_TYPE, type ChangelogEntry };
  */
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "0.7.8",
+    date: "2026-07-10",
+    type: CHANGELOG_ENTRY_TYPE.FIX,
+    title: {
+      pl: "Naprawa powiadomień push PWA",
+      en: "PWA push notification fix",
+    },
+    changes: {
+      pl: [
+        "Ustawienia → Powiadomienia: przycisk subskrypcji push na telefonie (wcześniej niedostępny po odrzuceniu banera)",
+        "Po włączeniu push automatycznie aktywuje się kanał globalny i push we wszystkich modułach",
+      ],
+      en: [
+        "Settings → Notifications: on-device push subscribe button (previously missing after dismissing the banner)",
+        "Enabling push now auto-activates the global channel and push for all modules",
+      ],
+    },
+  },
+  {
     version: "0.7.7",
     date: "2026-07-08",
     type: CHANGELOG_ENTRY_TYPE.FIX,

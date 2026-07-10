@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useT } from "@/lib/lang-context";
 import { cn } from "@/lib/utils";
 import { PUSH_DISMISS_KEY } from "@/lib/constants/push";
-import { savePushSubscription } from "@/app/(app)/push/actions";
+import { completePushSubscription } from "@/lib/push/complete-push-subscription";
 import {
   shouldOfferPushPrompt,
   isPushSupported,
@@ -50,11 +50,11 @@ export function PwaPushPrompt() {
         toast.error(getSubscribePushErrorMessage(result.reason, t.pwa));
         return;
       }
-      const saveResult = await savePushSubscription(
+      const completeResult = await completePushSubscription(
         result.subscription,
         typeof navigator !== "undefined" ? navigator.userAgent : null
       );
-      if (saveResult?.error) {
+      if (!completeResult.ok) {
         toast.error(t.pwa.pushError);
         return;
       }

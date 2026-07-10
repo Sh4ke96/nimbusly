@@ -6,11 +6,12 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useT } from "@/lib/lang-context";
-import { removePushSubscription, savePushSubscription } from "@/app/(app)/push/actions";
+import { removePushSubscription } from "@/app/(app)/push/actions";
 import {
   getPushUnsupportedReason,
   isPushSupported,
 } from "@/lib/push/client-support";
+import { completePushSubscription } from "@/lib/push/complete-push-subscription";
 import { getSubscribePushErrorMessage } from "@/lib/push/subscribe-errors";
 import {
   hasActivePushSubscription,
@@ -27,11 +28,15 @@ type PushSettingState = {
   loaded: boolean;
 };
 
+type PwaPushSettingProps = {
+  onSubscribed?: () => void;
+};
+
 async function persistPushSubscription(userAgent: string | null): Promise<boolean> {
   const subscription = await readBrowserPushSubscription();
   if (!subscription) return false;
-  const result = await savePushSubscription(subscription, userAgent);
-  return !result?.error;
+  const result = await completePushSubscription(subscription, userAgent);
+  return result.ok;
 }
 
 function getInitialPushSettingState(): PushSettingState {
@@ -55,7 +60,7 @@ function getInitialPushSettingState(): PushSettingState {
   };
 }
 
-export function PwaPushSetting() {
+export function PwaPushSetting({ onSubscribed }: PwaPushSettingProps) {
   const t = useT();
   const [pushState, setPushState] = useState<PushSettingState>(getInitialPushSettingState);
   const [busy, setBusy] = useState<boolean>(false);
@@ -94,15 +99,16 @@ export function PwaPushSetting() {
         toast.error(getSubscribePushErrorMessage(result.reason, t.pwa));
         return;
       }
-      const saveResult = await savePushSubscription(
+      const completeResult = await completePushSubscription(
         result.subscription,
         typeof navigator !== "undefined" ? navigator.userAgent : null
       );
-      if (saveResult?.error) {
+      if (!completeResult.ok) {
         toast.error(t.pwa.pushError);
         return;
       }
       setPushState((prev) => ({ ...prev, subscribed: true }));
+      onSubscribed?.();
       toast.success(t.pwa.pushEnabled);
     } finally {
       setBusy(false);
@@ -143,7 +149,7 @@ export function PwaPushSetting() {
     process.env.NODE_ENV === "production" && isPushSupported() && permission !== "denied";
 
   return (
-    <div className="space-y-3 border-t border-border pt-6">
+    <div className="space-y-3 rounded-none border border-border p-4">
       <div className="flex items-start gap-3">
         <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center bg-primary/10 text-primary">
           <BellRing className="size-4" aria-hidden />

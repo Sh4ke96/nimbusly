@@ -88,7 +88,7 @@ export const en: Dict = {
     pushError: "Could not save the push subscription.",
     pushUnsupported: "This browser does not support push notifications.",
     pushIosInstallRequired:
-      "On iPhone, add Nimbusly to your home screen (Safari → Share), then enable push in profile settings.",
+      "On iPhone, add Nimbusly to your home screen (Safari → Share), then enable push in Settings → Notifications.",
     pushNotConfigured: "Push is not configured on the server (missing VAPID keys).",
     pushSwNotReady: "The service worker is still loading — refresh the app and try again.",
     pushSubscribeFailed: "Could not create a push subscription in the browser.",
@@ -410,7 +410,7 @@ export const en: Dict = {
     menuPassword: "Change password",
     menuNotifications: "Notifications",
     notificationSettingsDesc:
-      "Choose which modules send in-app alerts, push notifications, and daily email digest items.",
+      "First enable push on your device (button below), then adjust global and per-module channels in the table.",
     notificationGlobalHeading: "Global channels",
     notificationModulesHeading: "Modules",
     notificationModuleColumn: "Module",
@@ -541,7 +541,7 @@ export const en: Dict = {
     changePasswordBack: "Back to dashboard",
     pushNotificationsPrefLabel: "Push notifications",
     pushNotificationsPrefDesc:
-      "Alerts outside the app on your phone or computer. Enable the channel globally, then pick modules in the table below.",
+      "Global push channel switch — requires an active device subscription first (button above). Enable modules in the table below.",
     emailDigestPrefLabel: "Daily email digest",
     emailDigestPrefDesc:
       "Once a day, a summary of important items and activity from selected modules — sent to your account email.",

@@ -20,9 +20,9 @@ describe("PWA push prompt", () => {
     }
   });
 
-  it("pokazuje ustawienie push w profilu (dev: tylko opis)", () => {
+  it("pokazuje ustawienie push w powiadomieniach (dev: tylko opis)", () => {
     cy.login(testUser.email, testUser.password);
-    cy.visit("/profile/settings?tab=profile");
+    cy.visit("/profile/settings?tab=notifications");
     cy.contains(t.pwa.pushSettingLabel).should("be.visible");
   });
 });
