@@ -11,6 +11,65 @@ export { CHANGELOG_ENTRY_TYPE, type ChangelogEntry };
  */
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "0.8.2",
+    date: "2026-07-10",
+    type: CHANGELOG_ENTRY_TYPE.FIX,
+    title: {
+      pl: "Landing i rejestracja: push zamiast informacji o karcie",
+      en: "Landing and register: push instead of credit-card copy",
+    },
+    changes: {
+      pl: [
+        "Strona główna: usunięto wzmianki o karcie kredytowej i kartach dashboardu — w zamian copy o push i powiadomieniach per moduł",
+        "Rejestracja: podtytuł o powiadomieniach i push zamiast „bez karty kredytowej”",
+      ],
+      en: [
+        "Homepage: removed credit-card and dashboard-card mentions — replaced with push and per-module notification copy",
+        "Register: subtitle about alerts and push instead of “no credit card required”",
+      ],
+    },
+  },
+  {
+    version: "0.8.1",
+    date: "2026-07-10",
+    type: CHANGELOG_ENTRY_TYPE.FIX,
+    title: {
+      pl: "Push do przypisanego i Nimbus na mobile",
+      en: "Assignee push and mobile Nimbus menu",
+    },
+    changes: {
+      pl: [
+        "Push do innego członka rodziny: serwer czyta jego preferencje modułu (RLS blokowało push_enabled)",
+        "Menu Nimbusa na telefonie: naprawione pozycjonowanie arkusza nad dolną nawigacją",
+      ],
+      en: [
+        "Push to another family member: server reads their module prefs (RLS blocked push_enabled)",
+        "Nimbus menu on mobile: fixed sheet positioning above the bottom nav",
+      ],
+    },
+  },
+  {
+    version: "0.8.0",
+    date: "2026-07-10",
+    type: CHANGELOG_ENTRY_TYPE.MINOR,
+    title: {
+      pl: "Widoczność przypisań w rodzinie",
+      en: "Family assignee visibility",
+    },
+    changes: {
+      pl: [
+        "Obowiązki i apteczka: przypisane wpisy widzi tylko osoba przypisana i autor (nieprzypisane — cała rodzina)",
+        "Budżet: ograniczenie do wybranych członków działa w RLS; prezenty dla członka rodziny domyślnie tylko dla niego",
+        "Powiadomienia i digest e-mail respektują te same zasady widoczności",
+      ],
+      en: [
+        "Chores and medicine: assigned items visible only to assignee and creator (unassigned — whole family)",
+        "Budget: selected-member restriction enforced in RLS; family-member gifts default to recipient-only visibility",
+        "Notifications and email digest follow the same visibility rules",
+      ],
+    },
+  },
+  {
     version: "0.7.8",
     date: "2026-07-10",
     type: CHANGELOG_ENTRY_TYPE.FIX,

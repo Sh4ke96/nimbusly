@@ -8,6 +8,7 @@ export const t = {
   },
   register: {
     title: "Załóż rodzinne konto",
+    subtitle: "Bezpłatnie — powiadomienia w aplikacji i push na ekranie blokady",
     submit: "Zarejestruj się bezpłatnie",
     successTitle: "Sprawdź swoją skrzynkę!",
     errorPasswordMatch: "Hasła nie są identyczne.",

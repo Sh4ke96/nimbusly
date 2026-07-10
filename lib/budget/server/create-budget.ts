@@ -14,6 +14,7 @@ import type { AccountActionState } from "@/app/(app)/account/actions";
 import type { Dict } from "@/lib/i18n/types";
 import type { createClient } from "@/lib/supabase/server";
 import type { User } from "@supabase/supabase-js";
+import { resolveBudgetNotificationRecipients } from "@/lib/family/assignee-visibility";
 
 type AppSupabase = Awaited<ReturnType<typeof createClient>>;
 
@@ -26,6 +27,7 @@ type NotifyFamilyMembers = (
     familyId: string;
     body: string;
     payload: Record<string, unknown>;
+    onlyRecipientIds?: string[];
   }
 ) => Promise<void>;
 
@@ -95,27 +97,28 @@ export async function executeCreateBudget(
     if (!synced && memberIds.length > 0) {
       return { error: t.budget.errorInvalidMembers };
     }
-  }
 
-  if (familyId && profile && notifyFamilyMembers) {
-    try {
-      await notifyFamilyMembers(supabase, {
-        type: NOTIFICATION_TYPE.BUDGET_ADDED,
-        actorId: user.id,
-        actorName: getDisplayName(profile),
-        familyId,
-        body: `${name}${t.notifications.notificationBodySeparator}${formatBudgetNotificationDetail(name, 0, t.budget)}`,
-        payload: {
-          budget_id: budget.id,
-          budget_name: name,
-          actor_id: user.id,
-          family_id: familyId,
-          change_summary: null,
-          updated_at: new Date().toISOString(),
-        },
-      });
-    } catch {
-      // best-effort
+    if (profile && notifyFamilyMembers) {
+      try {
+        await notifyFamilyMembers(supabase, {
+          type: NOTIFICATION_TYPE.BUDGET_ADDED,
+          actorId: user.id,
+          actorName: getDisplayName(profile),
+          familyId,
+          body: `${name}${t.notifications.notificationBodySeparator}${formatBudgetNotificationDetail(name, 0, t.budget)}`,
+          payload: {
+            budget_id: budget.id,
+            budget_name: name,
+            actor_id: user.id,
+            family_id: familyId,
+            change_summary: null,
+            updated_at: new Date().toISOString(),
+          },
+          onlyRecipientIds: resolveBudgetNotificationRecipients(memberIds),
+        });
+      } catch {
+        // best-effort
+      }
     }
   }
 

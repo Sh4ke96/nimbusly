@@ -30,7 +30,20 @@ import { getDisplayName } from "@/lib/profile";
 import type { AccountActionState } from "@/app/(app)/account/actions";
 import { requireUser, getProfileFamilyContext } from "@/lib/server-actions/require-user";
 import { notifyFamilyMembers } from "@/lib/server-actions/notify-family";
+import { resolveBudgetNotificationRecipients } from "@/lib/family/assignee-visibility";
 import { executeCreateBudget } from "@/lib/budget/server/create-budget";
+
+async function loadBudgetMemberIds(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  budgetId: string
+): Promise<string[]> {
+  const { data } = await supabase
+    .from("budget_members")
+    .select("member_id")
+    .eq("budget_id", budgetId);
+
+  return (data ?? []).map((row) => row.member_id as string);
+}
 
 async function notifyFamilyAboutBudgetExpenseEvent(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -48,6 +61,7 @@ async function notifyFamilyAboutBudgetExpenseEvent(
 ) {
   const t = await getServerT();
   const body = `${params.budgetName}${t.notifications.notificationBodySeparator}${params.bodyDetail}`;
+  const memberIds = await loadBudgetMemberIds(supabase, params.budgetId);
 
   await notifyFamilyMembers(supabase, {
     type: params.type,
@@ -64,6 +78,7 @@ async function notifyFamilyAboutBudgetExpenseEvent(
       category: params.category,
       updated_at: new Date().toISOString(),
     },
+    onlyRecipientIds: resolveBudgetNotificationRecipients(memberIds),
   });
 }
 
@@ -202,21 +217,26 @@ export async function updateBudget(
 
   if (error) return { error: t.budget.errorGeneric };
 
+  let budgetMemberIds: string[] = [];
   if (existing.family_id) {
-    const memberIds = parseBudgetMemberIdsFromForm(formData);
+    budgetMemberIds = parseBudgetMemberIdsFromForm(formData);
     const synced = await syncBudgetMembers(
       supabase,
       id,
-      memberIds,
+      budgetMemberIds,
       existing.family_id
     );
-    if (!synced && memberIds.length > 0) {
+    if (!synced && budgetMemberIds.length > 0) {
       return { error: t.budget.errorInvalidMembers };
     }
   }
 
   const changeSummary = buildBudgetChangeSummary(existing, { name }, t.budget);
   if (existing.family_id && profile?.account_mode === ACCOUNT_MODE.FAMILY) {
+    const memberIdsForNotify =
+      budgetMemberIds.length > 0
+        ? budgetMemberIds
+        : await loadBudgetMemberIds(supabase, id);
     try {
       await notifyFamilyMembers(supabase, {
         type: NOTIFICATION_TYPE.BUDGET_UPDATED,
@@ -232,6 +252,7 @@ export async function updateBudget(
           change_summary: changeSummary,
           updated_at: new Date().toISOString(),
         },
+        onlyRecipientIds: resolveBudgetNotificationRecipients(memberIdsForNotify),
       });
     } catch {
       // best-effort
@@ -256,6 +277,7 @@ export async function deleteBudget(
   if (!existing) return { error: t.budget.errorNotFound };
 
   const { profile } = await getProfileFamilyContext(supabase, user.id);
+  const memberIdsForNotify = await loadBudgetMemberIds(supabase, id);
   const { count } = await supabase
     .from("budget_expenses")
     .select("id", { count: "exact", head: true })
@@ -284,6 +306,7 @@ export async function deleteBudget(
           change_summary: null,
           updated_at: new Date().toISOString(),
         },
+        onlyRecipientIds: resolveBudgetNotificationRecipients(memberIdsForNotify),
       });
     } catch {
       // best-effort

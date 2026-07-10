@@ -34,6 +34,7 @@ import { getDisplayName, type Profile } from "@/lib/profile";
 import type { AccountActionState } from "@/app/(app)/account/actions";
 import { getProfileFamilyContext, requireUser } from "@/lib/server-actions/require-user";
 import { notifyFamilyMembers } from "@/lib/server-actions/notify-family";
+import { resolveAssigneeNotificationRecipients } from "@/lib/family/assignee-visibility";
 import { choreTaskFromRow } from "@/lib/supabase/app-rows";
 
 async function validateAssignee(
@@ -180,6 +181,7 @@ export async function createChoreTask(
         familyId,
         body: bodyDetail,
         payload: { chore_task_id: task.id, actor_id: user.id, family_id: familyId },
+        onlyRecipientIds: resolveAssigneeNotificationRecipients(parsed.assignedTo),
       });
     } catch {
       // Best-effort
@@ -274,6 +276,9 @@ export async function updateChoreTask(
           family_id: familyId,
           change_summary: changeSummary,
         },
+        onlyRecipientIds: resolveAssigneeNotificationRecipients(
+          payload.assigned_to ?? existing.assigned_to
+        ),
       });
     } catch {
       // Best-effort
@@ -362,6 +367,7 @@ export async function completeChoreOccurrence(
           family_id: familyId,
           change_summary: changeSummary,
         },
+        onlyRecipientIds: resolveAssigneeNotificationRecipients(chore.assigned_to),
       });
     } catch {
       // Best-effort
@@ -465,6 +471,7 @@ export async function setChoreTaskStatus(
           family_id: familyId,
           change_summary: changeSummary,
         },
+        onlyRecipientIds: resolveAssigneeNotificationRecipients(existing.assigned_to),
       });
     } catch {
       // Best-effort
@@ -491,7 +498,7 @@ export async function deleteChoreTask(
 
   const { data: existing } = await supabase
     .from("chore_tasks")
-    .select("id, title, status, family_id, created_by")
+    .select("id, title, status, family_id, created_by, assigned_to")
     .eq("id", id)
     .eq("created_by", user.id)
     .maybeSingle();
@@ -521,6 +528,7 @@ export async function deleteChoreTask(
         familyId,
         body: bodyDetail,
         payload: { chore_task_id: id, actor_id: user.id, family_id: familyId },
+        onlyRecipientIds: resolveAssigneeNotificationRecipients(existing.assigned_to),
       });
     } catch {
       // Best-effort

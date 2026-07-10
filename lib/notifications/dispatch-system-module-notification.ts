@@ -1,7 +1,7 @@
 import type { NotificationType } from "@/lib/constants/notifications";
 import type { NotificationModuleId } from "@/lib/constants/notification-modules";
 import { dispatchInAppAndPushNotifications } from "@/lib/notifications/dispatch-notifications";
-import { loadModulePreferencesForUsers } from "@/lib/notifications/module-preferences/load-module-preferences";
+import { loadRecipientModulePreferences } from "@/lib/notifications/module-preferences/load-module-preferences";
 import { partitionRecipientsByChannel } from "@/lib/notifications/module-preferences/filter-recipients-by-channel";
 import { getNotificationModuleId } from "@/lib/notifications/module-route";
 import type { SupabaseClient } from "@supabase/supabase-js";
@@ -31,11 +31,7 @@ export async function notifySystemModuleSubscribers(
   const recipientIds = [...new Set(params.recipientIds)].filter(Boolean);
   if (recipientIds.length === 0) return;
 
-  const preferences = await loadModulePreferencesForUsers(
-    supabase as Awaited<ReturnType<typeof import("@/lib/supabase/server").createClient>>,
-    recipientIds,
-    moduleId
-  );
+  const preferences = await loadRecipientModulePreferences(recipientIds, moduleId);
   const { inAppIds, pushIds } = partitionRecipientsByChannel(recipientIds, preferences);
 
   if (inAppIds.length > 0) {
@@ -68,15 +64,26 @@ export async function notifySystemModuleSubscribers(
 
 export async function resolveBudgetReminderRecipientIds(
   supabase: SupabaseClient<Database>,
-  budget: { family_id: string | null },
+  budget: { id: string; family_id: string | null; created_by: string },
   expenseCreatedBy: string
 ): Promise<string[]> {
-  if (budget.family_id) {
+  if (!budget.family_id) return [expenseCreatedBy];
+
+  const { data: budgetMembers } = await supabase
+    .from("budget_members")
+    .select("member_id")
+    .eq("budget_id", budget.id);
+
+  const memberIds = (budgetMembers ?? []).map((row) => row.member_id as string);
+  if (memberIds.length === 0) {
     const { data: members } = await supabase
       .from("profiles")
       .select("id")
       .eq("family_id", budget.family_id);
-    return (members ?? []).map((m) => m.id as string);
+    return (members ?? []).map((member) => member.id as string);
   }
-  return [expenseCreatedBy];
+
+  const recipients = new Set(memberIds);
+  recipients.add(budget.created_by);
+  return [...recipients];
 }

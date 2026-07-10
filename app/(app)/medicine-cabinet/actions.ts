@@ -24,6 +24,7 @@ import { getDisplayName, type Profile } from "@/lib/profile";
 import type { AccountActionState } from "@/app/(app)/account/actions";
 import { requireUser, getProfileFamilyContext } from "@/lib/server-actions/require-user";
 import { notifyFamilyMembers } from "@/lib/server-actions/notify-family";
+import { resolveAssigneeNotificationRecipients } from "@/lib/family/assignee-visibility";
 import { medicineItemFromRow } from "@/lib/supabase/app-rows";
 
 async function validateTakenBy(
@@ -93,6 +94,7 @@ async function maybeNotifyExpiring(
     itemName: string;
     formLabel: string;
     expiryDate: string | null;
+    takenBy: string | null;
   }
 ) {
   if (!params.expiryDate || !isMedicineExpiringSoon(params.expiryDate)) return;
@@ -120,6 +122,7 @@ async function maybeNotifyExpiring(
         expiry_date: params.expiryDate ?? null,
         updated_at: new Date().toISOString(),
       },
+      onlyRecipientIds: resolveAssigneeNotificationRecipients(params.takenBy),
     });
   } catch {
     // Best-effort
@@ -198,6 +201,7 @@ export async function createMedicineItem(
           expiry_date: parsed.expiryDate ?? null,
           updated_at: new Date().toISOString(),
         },
+        onlyRecipientIds: resolveAssigneeNotificationRecipients(takenBy),
       });
     } catch {
       // Saved; notifications are best-effort
@@ -314,6 +318,7 @@ export async function updateMedicineItem(
           expiry_date: parsed.expiryDate ?? null,
           updated_at: new Date().toISOString(),
         },
+        onlyRecipientIds: resolveAssigneeNotificationRecipients(takenBy),
       });
     } catch {
       // Updated; notifications are best-effort
@@ -329,6 +334,7 @@ export async function updateMedicineItem(
         itemName: name,
         formLabel,
         expiryDate: parsed.expiryDate,
+        takenBy,
       });
     }
   }
@@ -350,7 +356,7 @@ export async function deleteMedicineItem(
 
   const { data: existing } = await supabase
     .from("medicine_items")
-    .select("id, name, form_type, family_id, created_by")
+    .select("id, name, form_type, family_id, created_by, taken_by")
     .eq("id", id)
     .eq("created_by", user.id)
     .maybeSingle();
@@ -395,6 +401,7 @@ export async function deleteMedicineItem(
           expiry_date: null,
           updated_at: new Date().toISOString(),
         },
+        onlyRecipientIds: resolveAssigneeNotificationRecipients(existing.taken_by),
       });
     } catch {
       // Deleted; notifications are best-effort

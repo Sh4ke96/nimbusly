@@ -9,7 +9,7 @@ describe("Strona główna", () => {
 
   it("pokazuje uczciwe informacje zamiast fałszywego social proof", () => {
     cy.visit("/");
-    cy.contains("Bezpłatnie — bez karty kredytowej").should("be.visible");
+    cy.contains("Powiadomienia push na ekranie blokady").should("be.visible");
     cy.contains("12 modułów w jednym hubie").should("be.visible");
     cy.contains("12 000").should("not.exist");
     cy.contains("4.9/5").should("not.exist");

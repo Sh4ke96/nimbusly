@@ -115,7 +115,9 @@ export function ChoreTaskCard({
   const locale = getDateFnsLocale(lang);
   const isFamily = profile?.account_mode === ACCOUNT_MODE.FAMILY && !!profile.family_id;
   const isOwner = task.created_by === userId;
-  const canChangeStatus = isOwner || isFamily;
+  const isAssignee = !!task.assigned_to && task.assigned_to === userId;
+  const isUnassigned = !task.assigned_to;
+  const canChangeStatus = isOwner || (isFamily && (isUnassigned || isAssignee));
   const isCompleted = task.status === CHORE_STATUS.COMPLETED;
   const creator = resolveCreatorName(task.created_by, userId, profile, members);
   const overdue = isChoreOverdue(task) && !isCompleted;

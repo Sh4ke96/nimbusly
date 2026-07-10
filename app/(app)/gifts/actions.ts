@@ -21,6 +21,7 @@ import { getDisplayName } from "@/lib/profile";
 import type { AccountActionState } from "@/app/(app)/account/actions";
 import { requireUser, getProfileFamilyContext } from "@/lib/server-actions/require-user";
 import { notifyFamilyMembers } from "@/lib/server-actions/notify-family";
+import { resolveGiftNotificationRecipients } from "@/lib/family/assignee-visibility";
 
 async function resolveRecipientForInsert(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -168,8 +169,10 @@ export async function createGiftIdea(
           change_summary: null,
           updated_at: new Date().toISOString(),
         },
-        onlyRecipientIds:
-          visibleToMemberIds.length > 0 ? visibleToMemberIds : undefined,
+        onlyRecipientIds: resolveGiftNotificationRecipients({
+          recipientMemberId: recipient.recipientMemberId,
+          visibleToMemberIds: visibleToMemberIds,
+        }),
       });
     } catch {
       // Saved; notifications are best-effort
@@ -273,8 +276,10 @@ export async function updateGiftIdea(
           change_summary: changeSummary,
           updated_at: new Date().toISOString(),
         },
-        onlyRecipientIds:
-          visibleToMemberIds.length > 0 ? visibleToMemberIds : undefined,
+        onlyRecipientIds: resolveGiftNotificationRecipients({
+          recipientMemberId: recipient.recipientMemberId,
+          visibleToMemberIds: visibleToMemberIds,
+        }),
       });
     } catch {
       // Updated; notifications are best-effort
@@ -298,7 +303,7 @@ export async function deleteGiftIdea(
 
   const { data: existing } = await supabase
     .from("gift_ideas")
-    .select("id, recipient_name, content, family_id, created_by, visible_to_member_ids")
+    .select("id, recipient_name, recipient_member_id, content, family_id, created_by, visible_to_member_ids")
     .eq("id", id)
     .eq("created_by", user.id)
     .maybeSingle();
@@ -340,8 +345,10 @@ export async function deleteGiftIdea(
           change_summary: null,
           updated_at: new Date().toISOString(),
         },
-        onlyRecipientIds:
-          visibleToMemberIds.length > 0 ? visibleToMemberIds : undefined,
+        onlyRecipientIds: resolveGiftNotificationRecipients({
+          recipientMemberId: existing.recipient_member_id,
+          visibleToMemberIds: visibleToMemberIds,
+        }),
       });
     } catch {
       // Deleted; notifications are best-effort

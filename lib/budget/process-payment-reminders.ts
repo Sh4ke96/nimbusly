@@ -35,7 +35,7 @@ type BudgetExpenseRow = {
   created_by: string;
 };
 
-type BudgetRow = { id: string; name: string; family_id: string | null };
+type BudgetRow = { id: string; name: string; family_id: string | null; created_by: string };
 
 function resolveLang(preferred: string | null | undefined): Lang {
   return preferred === LANG.EN ? LANG.EN : LANG.PL;
@@ -99,7 +99,7 @@ export async function processBudgetPaymentReminders(
   if (budgetIds.length > 0) {
     const { data: budgets } = await supabase
       .from("budgets")
-      .select("id, name, family_id")
+      .select("id, name, family_id, created_by")
       .in("id", budgetIds);
 
     for (const budget of budgets ?? []) {

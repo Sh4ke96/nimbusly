@@ -3,7 +3,7 @@
 import type { NotificationType } from "@/lib/constants/notifications";
 import type { NotificationModuleId } from "@/lib/constants/notification-modules";
 import { dispatchInAppAndPushNotifications } from "@/lib/notifications/dispatch-notifications";
-import { loadModulePreferencesForUsers } from "@/lib/notifications/module-preferences/load-module-preferences";
+import { loadRecipientModulePreferences } from "@/lib/notifications/module-preferences/load-module-preferences";
 import { partitionRecipientsByChannel } from "@/lib/notifications/module-preferences/filter-recipients-by-channel";
 import { getNotificationModuleId } from "@/lib/notifications/module-route";
 import { createClient } from "@/lib/supabase/server";
@@ -32,11 +32,7 @@ export async function notifyModuleSubscribers(
   const recipientIds = params.recipientIds.filter((id) => id !== params.actorId);
   if (recipientIds.length === 0) return;
 
-  const preferences = await loadModulePreferencesForUsers(
-    supabase,
-    recipientIds,
-    moduleId
-  );
+  const preferences = await loadRecipientModulePreferences(recipientIds, moduleId);
   const { inAppIds, pushIds } = partitionRecipientsByChannel(recipientIds, preferences);
 
   if (inAppIds.length > 0) {

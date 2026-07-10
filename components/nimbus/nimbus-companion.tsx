@@ -14,7 +14,7 @@ import { NimbusHintBubble } from "@/components/nimbus/nimbus-hint-bubble";
 import { NIMBUS_HINT_SURFACE } from "@/lib/constants/nimbus";
 import { useNimbusStore } from "@/lib/stores/nimbus-store";
 import { useT } from "@/lib/lang-context";
-import { APP_MOBILE_BOTTOM_BAR_CLASS, APP_MOBILE_NIMBUS_HINT_Z, APP_NIMBUS_COMPANION_Z, APP_NIMBUS_POPOVER_Z } from "@/lib/ui/app-layout";
+import { APP_MOBILE_NIMBUS_HINT_Z, APP_NIMBUS_COMPANION_Z, APP_NIMBUS_POPOVER_Z } from "@/lib/ui/app-layout";
 import { cn } from "@/lib/utils";
 
 export function NimbusCompanion() {
@@ -174,7 +174,7 @@ export function NimbusCompanion() {
             side="bottom"
             showCloseButton={false}
             overlayClassName={cn(
-              APP_NIMBUS_POPOVER_Z,
+              "app-nimbus-mobile-menu-overlay",
               "bottom-[var(--app-mobile-nav-offset)]"
             )}
             onInteractOutside={(event) => {
@@ -192,9 +192,8 @@ export function NimbusCompanion() {
             }}
             className={cn(
               APP_NIMBUS_POPOVER_Z,
-              APP_MOBILE_BOTTOM_BAR_CLASS,
-              "gap-0 rounded-none border-t border-border p-0 shadow-2xl md:hidden",
-              "inset-x-0 bottom-[var(--app-mobile-nav-offset)] w-full max-w-none",
+              "app-nimbus-mobile-menu-sheet gap-0 rounded-none border-t border-border p-0 shadow-2xl md:hidden",
+              "fixed inset-x-0 bottom-[var(--app-mobile-nav-offset)] w-full max-w-none",
               "max-h-[min(88dvh,calc(100dvh-var(--app-mobile-nav-offset)))]",
               "data-open:slide-in-from-bottom data-closed:slide-out-to-bottom"
             )}

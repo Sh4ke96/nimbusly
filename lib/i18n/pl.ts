@@ -116,11 +116,11 @@ export const pl: Dict = {
     badge: "12 modułów · solo lub rodzina",
     headline: "Wszystko, co dzieje się w domu — w jednym miejscu",
     headlineAccent: "w jednym miejscu",
-    desc: "Budżet, listy zakupów, urodziny, grafik, apteczka, notatki, obowiązki, zwierzęta i więcej. Wspólny dashboard pokazuje, co wymaga uwagi, a powiadomienia informują rodzinę o zmianach — na żywo, po polsku lub angielsku.",
+    desc: "Budżet, listy zakupów, urodziny, grafik, apteczka, notatki, obowiązki, zwierzęta i więcej. Wspólny dashboard pokazuje, co wymaga uwagi, a alerty w aplikacji i push na ekranie blokady informują rodzinę o zmianach — na żywo, po polsku lub angielsku.",
     ctaPrimary: "Załóż rodzinne konto",
     ctaSecondary: "Zobacz moduły",
     trustItems: [
-      "Bezpłatnie — bez karty kredytowej",
+      "Powiadomienia push na ekranie blokady (PWA)",
       "12 modułów w jednym hubie",
       "Polski i angielski interfejs",
     ],
@@ -134,7 +134,7 @@ export const pl: Dict = {
       },
       {
         title: "Powiadomienia rodzinne",
-        desc: "W aplikacji i e-mailu — wiecie, kto co dodał lub zmienił.",
+        desc: "W aplikacji, push na telefonie (PWA) i e-mail — wiecie, kto co dodał lub zmienił. Kanały włączasz per moduł.",
       },
       {
         title: "Synchronizacja na żywo",
@@ -152,7 +152,7 @@ export const pl: Dict = {
     items: [
       {
         title: "Budżet rodzinny",
-        desc: "Wydatki i dochody z kategoriami, cyklicznością i podglądem miesiąca. Eksport CSV i karta na dashboardzie.",
+        desc: "Wydatki i dochody z kategoriami, cyklicznością i podglądem miesiąca. Eksport CSV i przypomnienia o płatnościach.",
       },
       {
         title: "Listy zakupów",
@@ -240,7 +240,7 @@ export const pl: Dict = {
       },
       {
         title: "Tour aplikacji",
-        desc: "Dashboard, układ kart, wyszukiwarka Ctrl+K, ustawienia profilu i Nimbusa — pełny start w kilka minut.",
+        desc: "Dashboard, powiadomienia per moduł, wyszukiwarka Ctrl+K, ustawienia profilu i Nimbusa — pełny start w kilka minut.",
       },
       {
         title: "FAQ w menu",
@@ -273,7 +273,7 @@ export const pl: Dict = {
   steps: {
     heading: "Trzy kroki do rodzinnego porządku",
     items: [
-      { step: "01", title: "Załóż konto", desc: "Rejestracja w minutę. Solo od razu albo rodzina — bez karty kredytowej." },
+      { step: "01", title: "Załóż konto", desc: "Rejestracja w minutę. Solo od razu albo rodzina — potem włącz push w Ustawieniach → Powiadomienia." },
       { step: "02", title: "Zaproś rodzinę", desc: "Wyślij link zaproszenia. Każdy dostaje profil, rolę i własny język interfejsu." },
       {
         step: "03",
@@ -286,7 +286,7 @@ export const pl: Dict = {
     heading: "Gotowi, żeby zacząć?",
     desc: "Budżet, zakupy, zdrowie domowników i codzienna organizacja — w jednym miejscu, bezpłatnie.",
     btn: "Załóż rodzinne konto",
-    perks: ["Wspólny dashboard", "Powiadomienia rodzinne", "Bezpłatnie, bez karty"],
+    perks: ["Wspólny dashboard", "Push i alerty per moduł", "Bezpłatnie"],
   },
   footer: {
     rights: "Wszelkie prawa zastrzeżone.",
@@ -330,7 +330,7 @@ export const pl: Dict = {
   },
   register: {
     title: "Załóż rodzinne konto",
-    subtitle: "Bezpłatnie, bez karty kredytowej",
+    subtitle: "Bezpłatnie — powiadomienia w aplikacji i push na ekranie blokady",
     emailLabel: "Email",
     emailPlaceholder: "ty@przyklad.pl",
     passwordLabel: "Hasło",
@@ -898,7 +898,8 @@ export const pl: Dict = {
     notesLabel: "Notatka",
     notesPlaceholder: "np. tylko dla dorosłych, po jedzeniu",
     takenByLabel: "Kto zażywa lek",
-    takenByHint: "Osoba przyjmująca lek — nie musi być autorem wpisu.",
+    takenByHint:
+      "Osoba przyjmująca lek — widzą ją tylko ona i autor wpisu (puste = cała rodzina).",
     takenByUnassigned: "Nie przypisano",
     takenByDisplay: "Zażywa",
     filterAll: "Wszystkie",
@@ -1208,7 +1209,7 @@ export const pl: Dict = {
     notesLabel: "Notatka",
     notesPlaceholder: "np. tylko salon, użyć środka X",
     assigneeLabel: "Przypisane do",
-    assigneeHint: "Kto ma wykonać zadanie.",
+    assigneeHint: "Kto ma wykonać zadanie. Przypisane obowiązki widzą tylko ta osoba i autor wpisu.",
     assigneeUnassigned: "Nieprzypisane",
     dueDateLabel: "Termin",
     dueDateHint: "Opcjonalnie — kiedy zadanie powinno być zrobione.",

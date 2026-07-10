@@ -116,11 +116,11 @@ export const en: Dict = {
     badge: "12 modules · solo or family",
     headline: "Everything that happens at home — in one place",
     headlineAccent: "in one place",
-    desc: "Budget, shopping lists, birthdays, schedule, medicine cabinet, notes, chores, pets, and more. A shared dashboard shows what needs attention; notifications keep everyone in the loop — live, in Polish or English.",
+    desc: "Budget, shopping lists, birthdays, schedule, medicine cabinet, notes, chores, pets, and more. A shared dashboard shows what needs attention; in-app alerts and lock-screen push keep everyone in the loop — live, in Polish or English.",
     ctaPrimary: "Create family account",
     ctaSecondary: "See modules",
     trustItems: [
-      "Free — no credit card required",
+      "Lock-screen push notifications (PWA)",
       "12 modules in one hub",
       "Polish and English interface",
     ],
@@ -134,7 +134,7 @@ export const en: Dict = {
       },
       {
         title: "Family notifications",
-        desc: "In-app and by email — know who added or changed what.",
+        desc: "In-app, lock-screen push (PWA), and email — know who added or changed what. Toggle channels per module.",
       },
       {
         title: "Live sync",
@@ -152,7 +152,7 @@ export const en: Dict = {
     items: [
       {
         title: "Family budget",
-        desc: "Income and spending with categories, recurrence, and monthly overview. CSV export and a dashboard card.",
+        desc: "Income and spending with categories, recurrence, and monthly overview. CSV export and payment reminders.",
       },
       {
         title: "Shopping lists",
@@ -240,7 +240,7 @@ export const en: Dict = {
       },
       {
         title: "App tour",
-        desc: "Dashboard, card layout, Ctrl+K search, profile settings, and Nimbus preferences — a full start in minutes.",
+        desc: "Dashboard, per-module notifications, Ctrl+K search, profile settings, and Nimbus preferences — a full start in minutes.",
       },
       {
         title: "FAQ in the menu",
@@ -273,7 +273,7 @@ export const en: Dict = {
   steps: {
     heading: "Three steps to family order",
     items: [
-      { step: "01", title: "Create account", desc: "Sign up in a minute. Solo right away or family — no credit card." },
+      { step: "01", title: "Create account", desc: "Sign up in a minute. Solo right away or family — then enable push in Settings → Notifications." },
       { step: "02", title: "Invite family", desc: "Send an invite link. Everyone gets a profile, role, and preferred language." },
       {
         step: "03",
@@ -286,7 +286,7 @@ export const en: Dict = {
     heading: "Ready to get started?",
     desc: "Budget, shopping, household health, and daily organization — in one place, for free.",
     btn: "Create family account",
-    perks: ["Shared dashboard", "Family notifications", "Free, no card needed"],
+    perks: ["Shared dashboard", "Push and per-module alerts", "Free"],
   },
   footer: {
     rights: "All rights reserved.",
@@ -330,7 +330,7 @@ export const en: Dict = {
   },
   register: {
     title: "Create family account",
-    subtitle: "Free, no credit card required",
+    subtitle: "Free — in-app alerts and lock-screen push",
     emailLabel: "Email",
     emailPlaceholder: "you@example.com",
     passwordLabel: "Password",
@@ -899,7 +899,8 @@ export const en: Dict = {
     notesLabel: "Notes",
     notesPlaceholder: "e.g. adults only, take after meals",
     takenByLabel: "Who takes this medicine",
-    takenByHint: "The person taking it — not necessarily who added the entry.",
+    takenByHint:
+      "Who takes the medicine — only they and the author can see it (empty = whole family).",
     takenByUnassigned: "Unassigned",
     takenByDisplay: "Taken by",
     filterAll: "All",
@@ -1209,7 +1210,8 @@ export const en: Dict = {
     notesLabel: "Notes",
     notesPlaceholder: "e.g. living room only, use cleaner X",
     assigneeLabel: "Assigned to",
-    assigneeHint: "Who should complete the task.",
+    assigneeHint:
+      "Who should complete the task. Assigned chores are visible only to them and the author.",
     assigneeUnassigned: "Unassigned",
     dueDateLabel: "Due date",
     dueDateHint: "Optional — when the task should be done.",

@@ -585,6 +585,15 @@
     padding-bottom: 0;
   }
 
+  [data-slot="sheet-content"].app-nimbus-mobile-menu-sheet {
+    position: fixed;
+    z-index: 10002;
+  }
+
+  [data-slot="sheet-overlay"].app-nimbus-mobile-menu-overlay {
+    z-index: 10001;
+  }
+
   .app-mobile-bottom-nav-items {
     display: grid;
     width: 100%;

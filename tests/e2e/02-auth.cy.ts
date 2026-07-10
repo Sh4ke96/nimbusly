@@ -5,6 +5,7 @@ describe("Rejestracja", () => {
   it("pokazuje formularz rejestracji", () => {
     cy.visit("/register");
     cy.contains("h1", t.register.title).should("be.visible");
+    cy.contains("p", t.register.subtitle).should("be.visible");
     cy.get("#email").should("be.visible");
     cy.get("#password").should("be.visible");
     cy.get("#confirmPassword").should("be.visible");

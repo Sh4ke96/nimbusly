@@ -16,6 +16,11 @@ import { formatAttentionItemsAsLines } from "@/lib/notifications/reminder-digest
 import { sendReminderEmail } from "@/lib/notifications/send-email";
 import { DEV_SITE_URL } from "@/lib/constants/dev";
 import { createServiceRoleClient } from "@/lib/supabase/admin";
+import {
+  canViewBudgetForMember,
+  canViewMemberVisibilityRow,
+  filterAssigneeScopedRows,
+} from "@/lib/family/assignee-visibility";
 import { loadAllModulePreferencesForUser } from "@/lib/notifications/module-preferences/load-module-preferences";
 import type { AppNotification } from "@/lib/notifications/types";
 import type { NotificationModuleId } from "@/lib/constants/notification-modules";
@@ -97,16 +102,66 @@ export async function GET(request: Request) {
         .limit(30),
     ]);
 
+    let digestChoreTasks = choreTasks ?? [];
+    let digestMedicineItems = medicineItems ?? [];
+    let digestNotes = notes ?? [];
+    let digestBudgetExpenses = budgetExpenses ?? [];
+
+    if (profile.family_id) {
+      digestChoreTasks = filterAssigneeScopedRows(digestChoreTasks, profile.id, "assigned_to");
+      digestMedicineItems = filterAssigneeScopedRows(digestMedicineItems, profile.id, "taken_by");
+      digestNotes = digestNotes.filter((note) =>
+        canViewMemberVisibilityRow(note, profile.id)
+      );
+
+      const { data: familyBudgets } = await supabase
+        .from("budgets")
+        .select("id, created_by")
+        .eq("family_id", profile.family_id);
+      const budgetIds = (familyBudgets ?? []).map((budget) => budget.id as string);
+      const membersByBudgetId = new Map<string, string[]>();
+
+      if (budgetIds.length > 0) {
+        const { data: budgetMembers } = await supabase
+          .from("budget_members")
+          .select("budget_id, member_id")
+          .in("budget_id", budgetIds);
+
+        for (const row of budgetMembers ?? []) {
+          const budgetId = row.budget_id as string;
+          const list = membersByBudgetId.get(budgetId) ?? [];
+          list.push(row.member_id as string);
+          membersByBudgetId.set(budgetId, list);
+        }
+      }
+
+      const accessibleBudgetIds = new Set(
+        (familyBudgets ?? [])
+          .filter((budget) =>
+            canViewBudgetForMember({
+              createdBy: budget.created_by as string,
+              viewerId: profile.id,
+              memberIds: membersByBudgetId.get(budget.id as string) ?? [],
+            })
+          )
+          .map((budget) => budget.id as string)
+      );
+
+      digestBudgetExpenses = digestBudgetExpenses.filter((expense) =>
+        accessibleBudgetIds.has(expense.budget_id as string)
+      );
+    }
+
     const attentionItems = filterAttentionItemsForDigest(
       buildAttentionItems({
-        choreTasks: choreTasks ?? [],
-        medicineItems: medicineItems ?? [],
+        choreTasks: digestChoreTasks,
+        medicineItems: digestMedicineItems,
         careItems: careItems ?? [],
         pets: pets ?? [],
         birthdays: birthdays ?? [],
-        budgetExpenses: budgetExpenses ?? [],
+        budgetExpenses: digestBudgetExpenses,
         scheduleEntries: scheduleEntries ?? [],
-        notes: notes ?? [],
+        notes: digestNotes,
         labels: {
           choreOverdue: (title) => formatMessage(t.attentionChoreOverdue, { title }),
           medicineExpiring: (name) => formatMessage(t.attentionMedicineExpiring, { name }),

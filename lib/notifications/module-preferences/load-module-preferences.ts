@@ -9,6 +9,7 @@ import type {
   NotificationModulePreferencesMap,
 } from "@/lib/notifications/module-preferences/types";
 import type { createClient } from "@/lib/supabase/server";
+import { createServiceRoleClient } from "@/lib/supabase/admin";
 
 type SupabaseClient = Awaited<ReturnType<typeof createClient>>;
 
@@ -57,6 +58,15 @@ export async function loadModulePreferencesForUsers(
   }
 
   return map;
+}
+
+/** Notification dispatch — read other users' prefs (RLS blocks the actor's session client). */
+export async function loadRecipientModulePreferences(
+  userIds: string[],
+  moduleId: NotificationModuleId
+): Promise<NotificationModulePreferencesMap> {
+  const supabase = createServiceRoleClient();
+  return loadModulePreferencesForUsers(supabase, userIds, moduleId);
 }
 
 export async function loadAllModulePreferencesForUser(
