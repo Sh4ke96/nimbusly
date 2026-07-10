@@ -5,9 +5,9 @@ export const BRAND_COLOR = {
   PRIMARY_FG: "#f6f8f2",
   PRIMARY_MUTED: "#e8eede",
   FOREGROUND: "#273338",
-  MUTED_FG: "#5c6b5c",
-  SURFACE: "#f6f8f2",
-  ENTRY_BG: "#eef2e7",
+  MUTED_FG: "#455248",
+  SURFACE: "#faf9f6",
+  ENTRY_BG: "#f0efe8",
   /** Terracotta — wydatki, sekcja „Wymaga uwagi” */
   ATTENTION: "#c45c26",
   ATTENTION_FG: "#fff8f4",

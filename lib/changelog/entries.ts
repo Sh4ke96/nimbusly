@@ -11,6 +11,29 @@ export { CHANGELOG_ENTRY_TYPE, type ChangelogEntry };
  */
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "0.8.3",
+    date: "2026-07-10",
+    type: CHANGELOG_ENTRY_TYPE.MINOR,
+    title: {
+      pl: "Czytelniejszy wygląd i unikalne kolory modułów",
+      en: "Improved readability and distinct module colors",
+    },
+    changes: {
+      pl: [
+        "Wyższy kontrast tekstu pomocniczego, cieplejsze tło w jasnym motywie i wyraźniejsze karty w ciemnym",
+        "Każdy moduł na dashboardzie ma własny kolor akcentu (m.in. obowiązki, notatki, zwierzęta)",
+        "Domyślny motyw: system (jasny/ciemny według urządzenia)",
+        "Wyraźniejsze obramowania kart, dolna nawigacja na mobile i opisy w kartach",
+      ],
+      en: [
+        "Higher contrast for secondary text, warmer light background, clearer card separation in dark mode",
+        "Each dashboard module has a unique accent color (incl. chores, notes, pets)",
+        "Default theme: system (follows device light/dark preference)",
+        "Clearer card borders, mobile bottom nav, and card descriptions",
+      ],
+    },
+  },
+  {
     version: "0.8.2",
     date: "2026-07-10",
     type: CHANGELOG_ENTRY_TYPE.FIX,

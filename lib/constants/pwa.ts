@@ -1,8 +1,8 @@
 /** Light `:root --background` — PWA manifest letterbox / iOS splash default. */
-export const PWA_BACKGROUND_COLOR_LIGHT = "#ffffff" as const;
+export const PWA_BACKGROUND_COLOR_LIGHT = "#faf9f6" as const;
 
 /** Dark `.dark --background` — startup paint when dark theme is active. */
-export const PWA_BACKGROUND_COLOR_DARK = "#1f2a2e" as const;
+export const PWA_BACKGROUND_COLOR_DARK = "#1a2326" as const;
 
 /** PWA manifest letterbox — matches light `:root --background`. */
 export const PWA_BACKGROUND_COLOR = PWA_BACKGROUND_COLOR_LIGHT;

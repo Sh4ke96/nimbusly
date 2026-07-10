@@ -8,6 +8,9 @@ export const OVERVIEW_ACCENT = {
   SKY: "sky",
   SLATE: "slate",
   EMERALD: "emerald",
+  TEAL: "teal",
+  LIME: "lime",
+  FUCHSIA: "fuchsia",
 } as const;
 
 export type OverviewAccent = (typeof OVERVIEW_ACCENT)[keyof typeof OVERVIEW_ACCENT];

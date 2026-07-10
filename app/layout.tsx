@@ -96,12 +96,12 @@ export default function RootLayout({
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var k=${JSON.stringify(PWA_THEME_STORAGE_KEY)};var t=localStorage.getItem(k);var r=document.documentElement;if(t==="light")r.classList.remove("dark");else r.classList.add("dark");if(window.navigator.standalone===true)r.classList.add("ios-standalone")}catch(e){document.documentElement.classList.add("dark")}})();`,
+            __html: `(function(){try{var k=${JSON.stringify(PWA_THEME_STORAGE_KEY)};var t=localStorage.getItem(k);var r=document.documentElement;if(t==="light")r.classList.remove("dark");else if(t==="dark")r.classList.add("dark");else if(window.matchMedia("(prefers-color-scheme: dark)").matches)r.classList.add("dark");else r.classList.remove("dark");if(window.navigator.standalone===true)r.classList.add("ios-standalone")}catch(e){try{if(window.matchMedia("(prefers-color-scheme: dark)").matches)document.documentElement.classList.add("dark")}catch(x){}}})();`,
           }}
         />
         <style
           dangerouslySetInnerHTML={{
-            __html: `html{background-color:${PWA_BACKGROUND_COLOR_DARK}}html:not(.dark),html:not(.dark) body{background-color:${PWA_BACKGROUND_COLOR_LIGHT}}html.dark,html.dark body{background-color:${PWA_BACKGROUND_COLOR_DARK}}body{min-height:100%;background-color:inherit}#${PWA_STARTUP_SPLASH_STATIC_ID}{display:none;position:fixed;inset:0;z-index:10001;align-items:center;justify-content:center;background:${PWA_BACKGROUND_COLOR_DARK}}#${PWA_STARTUP_SPLASH_STATIC_ID} img{width:4.5rem;height:4.5rem;animation:pwa-splash-pulse 1.2s ease-in-out infinite}@keyframes pwa-splash-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.72;transform:scale(.94)}}@media (display-mode:standalone),(display-mode:fullscreen),(display-mode:minimal-ui){#${PWA_STARTUP_SPLASH_STATIC_ID}{display:flex}}html.ios-standalone #${PWA_STARTUP_SPLASH_STATIC_ID}{display:flex}html[data-app-ready] #${PWA_STARTUP_SPLASH_STATIC_ID}{display:none!important}`,
+            __html: `html{background-color:${PWA_BACKGROUND_COLOR_LIGHT}}html.dark,html.dark body{background-color:${PWA_BACKGROUND_COLOR_DARK}}html:not(.dark),html:not(.dark) body{background-color:${PWA_BACKGROUND_COLOR_LIGHT}}body{min-height:100%;background-color:inherit}#${PWA_STARTUP_SPLASH_STATIC_ID}{display:none;position:fixed;inset:0;z-index:10001;align-items:center;justify-content:center;background:${PWA_BACKGROUND_COLOR_DARK}}#${PWA_STARTUP_SPLASH_STATIC_ID} img{width:4.5rem;height:4.5rem;animation:pwa-splash-pulse 1.2s ease-in-out infinite}@keyframes pwa-splash-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.72;transform:scale(.94)}}@media (display-mode:standalone),(display-mode:fullscreen),(display-mode:minimal-ui){#${PWA_STARTUP_SPLASH_STATIC_ID}{display:flex}}html.ios-standalone #${PWA_STARTUP_SPLASH_STATIC_ID}{display:flex}html[data-app-ready] #${PWA_STARTUP_SPLASH_STATIC_ID}{display:none!important}`,
           }}
         />
       </head>
@@ -112,7 +112,8 @@ export default function RootLayout({
         </div>
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
+          defaultTheme="system"
+          enableSystem
           storageKey={PWA_THEME_STORAGE_KEY}
           disableTransitionOnChange
         >
