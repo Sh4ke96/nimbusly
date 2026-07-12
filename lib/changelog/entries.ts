@@ -11,6 +11,27 @@ export { CHANGELOG_ENTRY_TYPE, type ChangelogEntry };
  */
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "0.10.0",
+    date: "2026-07-12",
+    type: CHANGELOG_ENTRY_TYPE.MINOR,
+    title: {
+      pl: "Interaktywne demo na stronie głównej",
+      en: "Interactive demo on the landing page",
+    },
+    changes: {
+      pl: [
+        "Sekcja demo na / z podglądem panelu i wszystkich modułów bez logowania",
+        "Pełne demo pod /demo - zakupy, obowiązki i notatki reagują lokalnie, bez zapisu w bazie",
+        "Przycisk „Wypróbuj demo” w hero i link Demo w nawigacji",
+      ],
+      en: [
+        "Demo section on / previews the dashboard and all modules without login",
+        "Full demo at /demo - shopping, chores, and notes react locally with no database writes",
+        "“Try the demo” hero button and Demo link in the navbar",
+      ],
+    },
+  },
+  {
     version: "0.9.7",
     date: "2026-07-12",
     type: CHANGELOG_ENTRY_TYPE.FIX,

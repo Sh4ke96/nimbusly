@@ -86,6 +86,8 @@ export type Dict = {
     forFamilySlug: string;
     nimbus: string;
     nimbusSlug: string;
+    demo: string;
+    demoSlug: string;
     login: string;
     getStarted: string;
     dashboard: string;
@@ -97,6 +99,7 @@ export type Dict = {
     desc: string;
     ctaPrimary: string;
     ctaSecondary: string;
+    ctaDemo: string;
     trustItems: string[];
     imageAlt: string;
   };
@@ -128,6 +131,79 @@ export type Dict = {
     desc: string;
     btn: string;
     perks: string[];
+  };
+  demo: {
+    metaTitle: string;
+    metaDescription: string;
+    badge: string;
+    banner: string;
+    shellSubtitle: string;
+    resetBtn: string;
+    openFull: string;
+    navAria: string;
+    sectionHeading: string;
+    sectionSubheading: string;
+    ctaHeading: string;
+    ctaDesc: string;
+    ctaBtn: string;
+    pinNote: string;
+    unpinNote: string;
+    fallback: string;
+    dashboardHint: string;
+    shoppingHint: string;
+    choresHint: string;
+    notesHint: string;
+    familyHint: string;
+    budgetHint: string;
+    giftsHint: string;
+    birthdaysHint: string;
+    calendarHint: string;
+    medicineHint: string;
+    watchlistHint: string;
+    restaurantsHint: string;
+    petsHint: string;
+    views: {
+      dashboard: string;
+    };
+    todayItems: { label: string; detail: string }[];
+    metrics: {
+      budgetValue: string;
+      budgetDetail: string;
+      shoppingValue: string;
+      shoppingDetail: string;
+      choresValue: string;
+      choresDetail: string;
+      birthdaysValue: string;
+      birthdaysDetail: string;
+      medicineValue: string;
+      medicineDetail: string;
+      petsValue: string;
+      petsDetail: string;
+    };
+    samples: {
+      shoppingListName: string;
+      shoppingItems: Record<string, { name: string; category: string }>;
+      chores: Record<string, { title: string; assignee: string }>;
+      notes: Record<string, { title: string; body: string }>;
+      familyName: string;
+      familyMembers: Record<string, { name: string; role: string }>;
+      budget: {
+        incomeLabel: string;
+        expenseLabel: string;
+        balanceLabel: string;
+        income: string;
+        expenses: string;
+        balance: string;
+        items: { title: string; amount: string }[];
+      };
+      gifts: { title: string; detail: string; badge?: string }[];
+      birthdays: { title: string; detail: string; badge?: string }[];
+      calendar: { title: string; detail: string; badge?: string }[];
+      medicine: { title: string; detail: string; badge?: string }[];
+      watchlist: { title: string; detail: string; badge?: string }[];
+      restaurants: { title: string; detail: string; badge?: string }[];
+      pets: { title: string; detail: string; badge?: string }[];
+    };
   };
   footer: {
     rights: string;

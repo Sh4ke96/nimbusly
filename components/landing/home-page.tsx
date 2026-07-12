@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { SiteNavbar } from "@/components/landing/navbar";
 import { HeroSection } from "@/components/landing/hero";
 import { HighlightsSection } from "@/components/landing/highlights";
+import { DemoSection } from "@/components/landing/demo-section";
 import { FeaturesSection } from "@/components/landing/features";
 import { NimbusLandingSection } from "@/components/landing/nimbus";
 import { StepsSection } from "@/components/landing/steps";
@@ -28,6 +29,7 @@ export function HomePage() {
         <main className="flex-1">
           <HeroSection />
           <HighlightsSection />
+          <DemoSection />
           <FeaturesSection />
           <NimbusLandingSection />
           <StepsSection />

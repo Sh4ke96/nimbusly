@@ -9,8 +9,9 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageToggle } from "@/components/language-toggle";
 import { useT } from "@/lib/lang-context";
 import { scrollToLandingSection } from "@/lib/landing/scroll-to-section";
+import { DEMO_SECTION_ID } from "@/lib/constants/demo-mode";
 import { createClient } from "@/lib/supabase/client";
-import { Sparkles, Zap, Heart, LayoutDashboard, Cloud } from "lucide-react";
+import { Sparkles, Zap, Heart, LayoutDashboard, Cloud, Play } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 
 export function SiteNavbar() {
@@ -43,6 +44,14 @@ export function SiteNavbar() {
         <Logo size="sm" />
 
         <nav className="hidden md:flex items-center gap-1 text-sm font-medium">
+          <Link
+            href={pathname === "/" ? `#${DEMO_SECTION_ID}` : `/#${DEMO_SECTION_ID}`}
+            onClick={(event) => handleSectionNavClick(event, DEMO_SECTION_ID)}
+            className="flex items-center gap-1.5 rounded-none px-3.5 py-2 text-muted-foreground hover:text-foreground hover:bg-muted/70 transition-all"
+          >
+            <Play className="size-3.5 text-primary" />
+            {t.nav.demo}
+          </Link>
           <Link
             href={`#${t.nav.featuresSlug}`}
             onClick={(event) => handleSectionNavClick(event, t.nav.featuresSlug)}

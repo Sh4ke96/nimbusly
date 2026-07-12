@@ -4,9 +4,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { HeroModulePills } from "@/components/landing/hero-module-pills";
+import { DEMO_SECTION_ID } from "@/lib/constants/demo-mode";
 import { scrollToLandingSection } from "@/lib/landing/scroll-to-section";
 import { useT } from "@/lib/lang-context";
-import { ArrowRight, CheckCircle2, Sparkles } from "lucide-react";
+import { ArrowRight, CheckCircle2, Play, Sparkles } from "lucide-react";
 
 export function HeroSection() {
   const t = useT();
@@ -41,7 +42,7 @@ export function HeroSection() {
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+            <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center gap-3">
               <Button size="lg" asChild>
                 <Link href="/register">
                   {t.hero.ctaPrimary}
@@ -50,14 +51,15 @@ export function HeroSection() {
               </Button>
               <Button variant="outline" size="lg" asChild>
                 <Link
-                  href={`#${t.nav.featuresSlug}`}
+                  href={`#${DEMO_SECTION_ID}`}
                   onClick={(event) => {
                     event.preventDefault();
-                    scrollToLandingSection(t.nav.featuresSlug);
-                    window.history.replaceState(null, "", `/#${t.nav.featuresSlug}`);
+                    scrollToLandingSection(DEMO_SECTION_ID);
+                    window.history.replaceState(null, "", `/#${DEMO_SECTION_ID}`);
                   }}
                 >
-                  {t.hero.ctaSecondary}
+                  <Play className="size-4" />
+                  {t.hero.ctaDemo}
                 </Link>
               </Button>
             </div>
