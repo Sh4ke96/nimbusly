@@ -52,7 +52,7 @@ function getAnonClient(): SupabaseClient {
 
   if (!url || !key) {
     throw new Error(
-      "Brak NEXT_PUBLIC_SUPABASE_URL lub NEXT_PUBLIC_SUPABASE_ANON_KEY — ustaw je w .env.local."
+      "Brak NEXT_PUBLIC_SUPABASE_URL lub NEXT_PUBLIC_SUPABASE_ANON_KEY - ustaw je w .env.local."
     );
   }
 
@@ -163,7 +163,7 @@ export function registerSupabaseTasks(on: Cypress.PluginEvents) {
 
       if (seed.kind === TEST_USER_SEED_KIND.ONBOARDED && !hasAdminAccess()) {
         throw new Error(
-          "Seed onboarded wymaga SUPABASE_SERVICE_ROLE_KEY — użyj cy.setupOnboardedFamilyUser() / cy.setupOnboardedSoloUser()."
+          "Seed onboarded wymaga SUPABASE_SERVICE_ROLE_KEY - użyj cy.setupOnboardedFamilyUser() / cy.setupOnboardedSoloUser()."
         );
       }
 

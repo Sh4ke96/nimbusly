@@ -113,13 +113,13 @@ export function buildBudgetPrintHtml({
                   : labels.entryTypeLabels.expense
               )}</td>
               <td>${escapeHtml(resolveCategoryLabel(entry, labels))}</td>
-              <td>${escapeHtml(entry.description.trim() || "—")}</td>
+              <td>${escapeHtml(entry.description.trim() || "-")}</td>
               <td class="num">${escapeHtml(formatBudgetAmount(Number(entry.amount), lang))}</td>
             </tr>`
           )
           .join("");
 
-  const membersText = memberNames.length > 0 ? memberNames.join(", ") : "—";
+  const membersText = memberNames.length > 0 ? memberNames.join(", ") : "-";
 
   return `<!DOCTYPE html>
 <html lang="${escapeHtml(lang)}">

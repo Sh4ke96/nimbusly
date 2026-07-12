@@ -4,7 +4,7 @@ import type { Database } from '@/lib/supabase/database.types'
 
 /**
  * Creates a Supabase client for use on the server side (Server Components, Server Actions, Route Handlers).
- * Always creates a new instance per request — never share across requests.
+ * Always creates a new instance per request - never share across requests.
  */
 export async function createClient() {
   const cookieStore = await cookies()
@@ -19,12 +19,12 @@ export async function createClient() {
         },
         setAll(cookiesToSet) {
           try {
-            // Setting cookies may fail in Server Components — that's expected
+            // Setting cookies may fail in Server Components - that's expected
             cookiesToSet.forEach(({ name, value, options }) =>
               cookieStore.set(name, value, options)
             )
           } catch {
-            // Ignore — middleware handles session refresh
+            // Ignore - middleware handles session refresh
           }
         },
       },

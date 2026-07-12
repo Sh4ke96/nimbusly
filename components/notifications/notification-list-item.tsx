@@ -3,6 +3,7 @@
 import { COMMON_FORM_FIELD } from "@/lib/form/common-fields";
 import Link from "next/link";
 import { createElement, useActionState } from "react";
+import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { AppNotification } from "@/lib/notifications/types";
 import { getNotificationModuleIcon } from "@/lib/notifications/module-icon";
@@ -11,7 +12,7 @@ import {
   getNotificationModuleId,
   NOTIFICATION_MODULE_LINK_LABEL,
 } from "@/lib/notifications/module-route";
-import { markNotificationRead } from "@/app/(app)/notifications/actions";
+import { markNotificationRead, dismissNotification } from "@/app/(app)/notifications/actions";
 import { useT } from "@/lib/lang-context";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
 import { useNimbusCelebration } from "@/lib/hooks/use-nimbus-celebration";
@@ -28,17 +29,22 @@ interface NotificationListItemProps {
   item: AppNotification;
   locale: string;
   onMarkedRead?: () => void;
+  onDismissed?: () => void;
   onMarkReadLocally: (id: string) => void;
+  onDismissLocally?: (id: string) => void;
 }
 
 export function NotificationListItem({
   item,
   locale,
   onMarkedRead,
+  onDismissed,
   onMarkReadLocally,
+  onDismissLocally,
 }: NotificationListItemProps) {
   const t = useT();
   const [markState, markAction] = useActionState(markNotificationRead, null);
+  const [dismissState, dismissAction] = useActionState(dismissNotification, null);
   const celebrate = useNimbusCelebration();
   const moduleId = getNotificationModuleId(item.type);
   const moduleHref = getNotificationModuleHref(item.type);
@@ -47,6 +53,10 @@ export function NotificationListItem({
   useActionFeedback(markState, () => {
     celebrate("firstNotification");
     onMarkedRead?.();
+  });
+
+  useActionFeedback(dismissState, () => {
+    onDismissed?.();
   });
 
   return (
@@ -83,17 +93,34 @@ export function NotificationListItem({
           </Link>
         )}
       </div>
-      {!item.read_at && (
+      <div className="flex shrink-0 flex-col gap-1">
+        {!item.read_at && (
+          <form
+            action={markAction}
+            onSubmit={() => onMarkReadLocally(item.id)}
+          >
+            <input type="hidden" name={COMMON_FORM_FIELD.ID} value={item.id} />
+            <Button type="submit" variant="ghost" size="sm" className="shrink-0">
+              {t.notifications.markRead}
+            </Button>
+          </form>
+        )}
         <form
-          action={markAction}
-          onSubmit={() => onMarkReadLocally(item.id)}
+          action={dismissAction}
+          onSubmit={() => onDismissLocally?.(item.id)}
         >
           <input type="hidden" name={COMMON_FORM_FIELD.ID} value={item.id} />
-          <Button type="submit" variant="ghost" size="sm" className="shrink-0">
-            {t.notifications.markRead}
+          <Button
+            type="submit"
+            variant="ghost"
+            size="icon"
+            className="shrink-0 text-muted-foreground hover:text-destructive"
+            aria-label={t.notifications.dismiss}
+          >
+            <X className="size-4" />
           </Button>
         </form>
-      )}
+      </div>
     </li>
   );
 }

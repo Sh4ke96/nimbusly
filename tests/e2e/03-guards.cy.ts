@@ -17,7 +17,7 @@ describe("Strażniki tras (auth)", () => {
 
 import type { CreatedTestUser } from "../support/commands";
 
-describe("Strażniki tras — onboarding", () => {
+describe("Strażniki tras - onboarding", () => {
   let testUser: CreatedTestUser;
 
   before(() => {
@@ -47,7 +47,7 @@ describe("Strażniki tras — onboarding", () => {
   });
 });
 
-describe("Strażniki tras — po onboardingu", () => {
+describe("Strażniki tras - po onboardingu", () => {
   let testUser: CreatedTestUser;
 
   before(() => {

@@ -122,7 +122,10 @@ export function NotificationModulePreferences() {
     >
       <p className="text-sm text-muted-foreground">{t.account.notificationSettingsDesc}</p>
 
-      <PwaPushSetting onSubscribed={() => void onPushSubscribed()} />
+      <PwaPushSetting
+        onSubscribed={() => void onPushSubscribed()}
+        onUnsubscribed={() => patchPushNotificationsEnabled(false)}
+      />
 
       <section className="space-y-4">
         <h2 className="font-heading text-sm font-semibold uppercase tracking-wide text-muted-foreground">
@@ -231,7 +234,7 @@ export function NotificationModulePreferences() {
                         onCheckedChange={(checked) =>
                           void onModuleChannelChange(moduleId, channel, checked === true)
                         }
-                        aria-label={`${moduleLabel(moduleId)} — ${label}`}
+                        aria-label={`${moduleLabel(moduleId)} - ${label}`}
                       />
                     </Label>
                   );

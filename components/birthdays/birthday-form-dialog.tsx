@@ -39,6 +39,7 @@ export function BirthdayFormDialog({
   const open = isControlled ? (controlledOpen ?? false) : internalOpen;
   const [personName, setPersonName] = useState<string>("");
   const [date, setDate] = useState<Date | undefined>();
+  const [includeYear, setIncludeYear] = useState<boolean>(false);
   const [description, setDescription] = useState<string>("");
   const [initialSeed, setInitialSeed] = useState<{ open: boolean; initialTime?: number }>({
     open: false,
@@ -64,6 +65,7 @@ export function BirthdayFormDialog({
     if (!next) {
       setPersonName("");
       setDate(undefined);
+      setIncludeYear(false);
       setDescription("");
     }
   }
@@ -104,6 +106,8 @@ export function BirthdayFormDialog({
             onPersonNameChange={setPersonName}
             date={date}
             onDateChange={setDate}
+            includeYear={includeYear}
+            onIncludeYearChange={setIncludeYear}
             description={description}
             onDescriptionChange={setDescription}
           />

@@ -61,7 +61,7 @@ function SheetContent({
   showCloseButton?: boolean;
   closeLabel?: string;
   overlayClassName?: string;
-  /** Full-height sheet above fixed bottom nav — skips side-sheet safe-area padding (header owns inset). */
+  /** Full-height sheet above fixed bottom nav - skips side-sheet safe-area padding (header owns inset). */
   mobileClearNav?: boolean;
 }) {
   const t = useT();
@@ -73,7 +73,7 @@ function SheetContent({
       <SheetPrimitive.Content
         data-slot="sheet-content"
         className={cn(
-          "fixed z-50 flex flex-col gap-4 bg-popover p-4 text-sm text-popover-foreground shadow-lg ring-1 ring-foreground/10 duration-200 outline-none data-open:animate-in data-closed:animate-out",
+          "fixed z-50 flex flex-col gap-4 bg-popover p-4 text-sm text-popover-foreground shadow-lg ring-1 ring-border duration-200 outline-none data-open:animate-in data-closed:animate-out",
           side === "right" &&
             cn(
               "inset-y-0 right-0 h-full w-full max-w-sm border-l data-open:slide-in-from-right data-closed:slide-out-to-right",

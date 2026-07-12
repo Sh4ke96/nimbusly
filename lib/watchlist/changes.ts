@@ -83,7 +83,7 @@ function formatPlatformSummary(
   platforms: StreamingPlatform[],
   labels: Pick<WatchlistChangeLabels, "streamingPlatformLabels" | "streamingPlatformListSeparator">
 ): string {
-  if (platforms.length === 0) return "—";
+  if (platforms.length === 0) return "-";
   return formatStreamingPlatformList(
     platforms,
     labels.streamingPlatformLabels,

@@ -3,7 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useT } from "@/lib/lang-context";
-import { formatBirthdayLabel, type BirthdayEntry, BIRTHDAY_FORM_FIELD } from "@/lib/birthdays/types";
+import { formatBirthdayLabel, computeBirthdayAge, type BirthdayEntry, BIRTHDAY_FORM_FIELD } from "@/lib/birthdays/types";
+import { formatMessage } from "@/lib/i18n/format";
 import { selectionListRowClasses } from "@/lib/ui/selection-styles";
 import { cn } from "@/lib/utils";
 import { Pencil, Trash2 } from "lucide-react";
@@ -65,6 +66,13 @@ export function BirthdaysList({
             >
               <p className="font-medium text-sm truncate">{entry.person_name}</p>
               <p className="text-xs text-muted-foreground">{formatBirthdayLabel(entry)}</p>
+              {entry.birth_year !== null && (
+                <p className="text-xs text-muted-foreground">
+                  {formatMessage(t.birthdays.ageDisplay, {
+                    age: String(computeBirthdayAge(entry.birth_year)),
+                  })}
+                </p>
+              )}
               {entry.description && (
                 <p className="mt-1 text-xs text-muted-foreground line-clamp-2">
                   {entry.description}
@@ -91,6 +99,7 @@ export function BirthdaysList({
                     size="icon"
                     disabled={deletePending}
                     className="cursor-pointer text-destructive hover:text-destructive"
+                    aria-label={t.birthdays.deleteBtn}
                   >
                     <Trash2 className="size-4" />
                   </Button>

@@ -4,6 +4,7 @@ import { BUDGET_FORM_FIELD } from "@/lib/budget/types";
 import { useActionState } from "react";
 import { Trash2, Bell, Repeat } from "lucide-react";
 import { deleteBudgetExpense } from "@/app/(app)/budget/actions";
+import { BudgetExpenseEditDialog } from "@/components/budget/budget-expense-edit-dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -122,7 +123,15 @@ function EntryRow({
               </p>
             )}
           </div>
-          <form action={deleteAction} className="shrink-0">
+          <div className="flex shrink-0 items-start gap-0">
+            {!isIncome && (
+              <BudgetExpenseEditDialog
+                entry={entry}
+                budgetId={budgetId}
+                onSuccess={onChanged}
+              />
+            )}
+            <form action={deleteAction} className="shrink-0">
             <input type="hidden" name={BUDGET_FORM_FIELD.ID} value={entry.id} />
             <input type="hidden" name={BUDGET_FORM_FIELD.BUDGET_ID} value={budgetId} />
             <Button
@@ -138,6 +147,7 @@ function EntryRow({
               <Trash2 className="size-4" />
             </Button>
           </form>
+          </div>
         </div>
       </CardContent>
     </Card>

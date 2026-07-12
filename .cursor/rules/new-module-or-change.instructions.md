@@ -1,4 +1,4 @@
-# New Module or Change — Instructions
+# New Module or Change - Instructions
 
 Use this checklist for **every new feature module** or **non-trivial change** in Nimbusly.
 
@@ -10,7 +10,7 @@ See also: [`project-fundamentals.instructions.md`](project-fundamentals.instruct
 
 1. Read existing code in the same domain (`components/<feature>/`, `lib/<feature>/`, `app/(app)/<feature>/`).
 2. Check `components/ui/` for shadcn primitives you can reuse.
-3. Check `lib/stores/` for existing Zustand stores — extend before creating a new one.
+3. Check `lib/stores/` for existing Zustand stores - extend before creating a new one.
 4. If the feature touches the DB, plan a migration in `supabase/migrations/`.
 
 ---
@@ -21,14 +21,14 @@ See also: [`project-fundamentals.instructions.md`](project-fundamentals.instruct
 
 - **Always** build UI from `components/ui/*` (Button, Card, Dialog, Input, Tabs, Skeleton, …).
 - **Reuse** feature components already in the repo (e.g. `AppHeader`, `AccountBreadcrumbs`, `MemberAvatar`, `SettingsFormFooter`).
-- Add a new shadcn component only when nothing existing fits — install via shadcn CLI, keep in `components/ui/`.
+- Add a new shadcn component only when nothing existing fits - install via shadcn CLI, keep in `components/ui/`.
 - **Do not** create parallel Button/Modal/Input implementations.
 
 ### Tailwind only
 
 - Style with **Tailwind utility classes** in TSX.
 - Merge classes with `cn()` from `@/lib/utils`.
-- Use theme tokens (`bg-primary`, `text-muted-foreground`, `border-border`) — no random hex colors.
+- Use theme tokens (`bg-primary`, `text-muted-foreground`, `border-border`) - no random hex colors.
 - Keep brand style: **`rounded-none`**, fonts from `globals.css`.
 - Global overrides for third-party widgets go in `app/globals.css`, not inline hacks.
 
@@ -36,7 +36,8 @@ See also: [`project-fundamentals.instructions.md`](project-fundamentals.instruct
 
 - All user-visible strings via `useT()` (client) or `getServerT()` (server).
 - Add keys to `lib/i18n/types.ts`, `pl.ts`, and `en.ts` **in the same change**.
-- Use `formatMessage()` for `{placeholder}` templates — no string concatenation for copy.
+- Use `formatMessage()` for `{placeholder}` templates - no string concatenation for copy.
+- Use ASCII hyphen `-` only - no em dash (`—`) or en dash (`–`) in user-facing strings or docs.
 - Emails, metadata, calendar month names, and role labels → translation files, not inline PL/EN objects.
 - Both **Polish and English** are required for every new module.
 
@@ -50,7 +51,7 @@ When shipping:
 2. Set `version` in `package.json` to the **same** version string as that top entry.
 3. Fill `title` and `changes` in **both** `pl` and `en`.
 4. Pick `type`: `CHANGELOG_ENTRY_TYPE.MAJOR` (big launch), `MINOR` (feature), or `FIX` (bugfix).
-5. Update **`README.md`** in the same change — at minimum the current version; also features, env vars, scripts, or testing notes when behaviour changed.
+5. Update **`README.md`** in the same change - at minimum the current version; also features, env vars, scripts, or testing notes when behaviour changed.
 6. Add or update **tests** for new logic (`tests/unit/`, `tests/integration/`, `tests/e2e/` as appropriate) and run **`yarn validate`**.
 
 `/change-log` is public (no login). The version badge (`vX.Y.Z`, bottom-right) links there.
@@ -60,7 +61,7 @@ Skip a version bump only for purely internal refactors with no user-visible or o
 ### Domain constants (mandatory)
 
 - New domain values (statuses, types, tabs, roles) → `lib/constants/<domain>.ts` with `as const` + exported type.
-- Import constants in components, stores, and Server Actions — no magic strings.
+- Import constants in components, stores, and Server Actions - no magic strings.
 - If a value is stored in the DB, the constant string must match the column/check constraint.
 
 ### React local state
@@ -82,8 +83,8 @@ Skip a version bump only for purely internal refactors with no user-visible or o
   - `fetchX(force?: boolean)` with early return when already loaded
   - `dedupeAsync()` from `lib/stores/dedupe-async.ts` for in-flight request deduplication
   - `reset()` when user logs out (wire from `profile-store` if needed)
-- Selectors: `useStore((s) => s.field)` — avoid subscribing to the whole store.
-- Bootstrap session-level data once (see `ProfileBootstrap`) — do not refetch profile on every mount.
+- Selectors: `useStore((s) => s.field)` - avoid subscribing to the whole store.
+- Bootstrap session-level data once (see `ProfileBootstrap`) - do not refetch profile on every mount.
 
 ### Example layout for a new module
 
@@ -131,7 +132,7 @@ Map HTTP semantics explicitly:
 return NextResponse.json({ error: "..." }, { status: 400 });
 ```
 
-Server Actions do not use HTTP status codes — return `{ error: t.... }` with a **specific, translated** message that matches the situation (unauthorized, not found, validation, generic).
+Server Actions do not use HTTP status codes - return `{ error: t.... }` with a **specific, translated** message that matches the situation (unauthorized, not found, validation, generic).
 
 ---
 
@@ -141,7 +142,7 @@ Server Actions do not use HTTP status codes — return `{ error: t.... }` with a
 
 - Wrap **non-critical side effects** (e.g. sending notifications) in `try/catch` so the main operation still succeeds.
 - For **critical paths** (DB write, payment, etc.): check `error` from Supabase; do not swallow failures silently.
-- Never expose raw DB/PostgREST messages to users — map to i18n keys.
+- Never expose raw DB/PostgREST messages to users - map to i18n keys.
 
 ### Input validation (≈ HTTP 400)
 
@@ -156,7 +157,7 @@ if (!personName) return { error: t.birthdays.errorPersonName };
 if (!isValidBirthDate(month, day)) return { error: t.birthdays.errorInvalidDate };
 ```
 
-Client-side `required` / `maxLength` is UX only — server validation is mandatory.
+Client-side `required` / `maxLength` is UX only - server validation is mandatory.
 
 ### Existence & authorization (≈ HTTP 404 / 403)
 
@@ -204,7 +205,7 @@ if (error) {
 
 - **Never** concatenate user input into SQL strings.
 - Use Supabase client `.from().select().eq()` or parameterized `.rpc("name", { p_id: id })`.
-- Migrations and RPC bodies live in `supabase/migrations/` — review any dynamic SQL there.
+- Migrations and RPC bodies live in `supabase/migrations/` - review any dynamic SQL there.
 - Do not use `supabase.rpc` with raw SQL built from form data.
 
 ### No hardcoded secrets
@@ -275,14 +276,14 @@ Reference: `tests/unit/family/invite.test.ts`.
 
 ### Structure
 
-- [ ] `app/(app)/<module>/page.tsx` — thin route
-- [ ] `components/<module>/` — view + subcomponents
-- [ ] `lib/<module>/types.ts` — types and validators
-- [ ] `app/(app)/<module>/actions.ts` — Server Actions (if mutations)
-- [ ] `lib/stores/<module>-store.ts` — Zustand (if client state)
-- [ ] `lib/constants/` — new domain enums if the feature introduces statuses/types/tabs
-- [ ] `lib/i18n` — all new strings (PL + EN + types)
-- [ ] `supabase/migrations/` — if schema changes
+- [ ] `app/(app)/<module>/page.tsx` - thin route
+- [ ] `components/<module>/` - view + subcomponents
+- [ ] `lib/<module>/types.ts` - types and validators
+- [ ] `app/(app)/<module>/actions.ts` - Server Actions (if mutations)
+- [ ] `lib/stores/<module>-store.ts` - Zustand (if client state)
+- [ ] `lib/constants/` - new domain enums if the feature introduces statuses/types/tabs
+- [ ] `lib/i18n` - all new strings (PL + EN + types)
+- [ ] `supabase/migrations/` - if schema changes
 - [ ] Dashboard link in `app/(app)/dashboard/page.tsx` when user-facing
 
 ### UI & state
@@ -314,7 +315,7 @@ Reference: `tests/unit/family/invite.test.ts`.
 
 ## Nimbus companion (mandatory when module UX changes)
 
-Nimbus helps users discover and learn the app. **Any new module, meaningful module change, or new user-facing screen** must include a Nimbus update in the same PR — do not defer.
+Nimbus helps users discover and learn the app. **Any new module, meaningful module change, or new user-facing screen** must include a Nimbus update in the same PR - do not defer.
 
 ### New module checklist
 
@@ -349,14 +350,14 @@ tests/unit/nimbus/
 
 ---
 
-## Quick Reference — Existing Modules
+## Quick Reference - Existing Modules
 
 | Module | Route | Store | Actions |
 |--------|-------|-------|---------|
 | Profile / settings | `/profile/settings` | `profile-store` | `app/(app)/account/actions.ts` |
 | Family invites | settings tab `family` | `profile-store` | `family-invite-actions.ts` |
 | Permissions | settings tab `permissions` | `profile-store` | `family-permissions-actions.ts` |
-| Dashboard | `/dashboard` | multiple (overview cards) | — |
+| Dashboard | `/dashboard` | multiple (overview cards) | - |
 | Budget | `/budget` | `budget-store` | `budget/actions.ts` |
 | Shopping lists | `/shopping` | `shopping-lists-store` | `shopping/actions.ts` |
 | Gifts | `/gifts` | `gifts-store` | `gifts/actions.ts` |

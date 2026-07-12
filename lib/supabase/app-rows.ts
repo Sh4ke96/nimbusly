@@ -9,7 +9,7 @@ import type { Database } from "@/lib/supabase/database.types";
 
 type Tables = Database["public"]["Tables"];
 
-/** Maps a Supabase row (full or partial select) to app enums — DB columns are plain text. */
+/** Maps a Supabase row (full or partial select) to app enums - DB columns are plain text. */
 export function choreTaskFromRow(row: unknown): ChoreTask {
   return row as ChoreTask;
 }

@@ -22,7 +22,7 @@ export function NotificationUnreadBadge({ count, className }: NotificationUnread
     <span
       className={cn(
         "inline-flex min-h-4 min-w-4 items-center justify-center rounded-none bg-primary px-1",
-        "text-[9px] font-bold leading-none text-primary-foreground",
+        "text-[10px] font-bold leading-none text-primary-foreground",
         className
       )}
       aria-hidden

@@ -8,7 +8,7 @@ export const t = {
   },
   register: {
     title: "Załóż rodzinne konto",
-    subtitle: "Bezpłatnie — powiadomienia w aplikacji i push na ekranie blokady",
+    subtitle: "Bezpłatnie - powiadomienia w aplikacji i push na ekranie blokady",
     submit: "Zarejestruj się bezpłatnie",
     successTitle: "Sprawdź swoją skrzynkę!",
     errorPasswordMatch: "Hasła nie są identyczne.",
@@ -77,31 +77,31 @@ export const t = {
   gifts: {
     title: "Prezenty",
     subtitle:
-      "Pomysły na prezenty w formie notatek — solo lub współdzielone z rodziną.",
+      "Pomysły na prezenty w formie notatek - solo lub współdzielone z rodziną.",
     addBtn: "Dodaj pomysł",
     addTitle: "Nowy pomysł na prezent",
   },
   notes: {
     title: "Notatki",
-    subtitle: "Twórz kategorie z emoji i zapisuj notatki — solo lub współdzielone z rodziną.",
+    subtitle: "Twórz kategorie z emoji i zapisuj notatki - solo lub współdzielone z rodziną.",
     addBtn: "Dodaj notatkę",
     addTitle: "Nowa notatka",
   },
   chores: {
     title: "Obowiązki domowe",
-    subtitle: "Zadania z terminami, przypisaniem i powtarzalnością — solo lub z rodziną.",
+    subtitle: "Zadania z terminami, przypisaniem i powtarzalnością - solo lub z rodziną.",
     addBtn: "Dodaj zadanie",
     addTitle: "Nowe zadanie",
   },
   medicineCabinet: {
     title: "Domowa apteczka",
-    subtitle: "Leki w domu — termin ważności, ilość i dostępność. Solo lub współdzielone z rodziną.",
+    subtitle: "Leki w domu - termin ważności, ilość i dostępność. Solo lub współdzielone z rodziną.",
     addBtn: "Dodaj lek",
     addTitle: "Nowy lek",
   },
   pets: {
     title: "Zwierzęta",
-    subtitle: "Profile pupili, szczepienia, wizyty u weterynarza i zapasy — solo lub z rodziną.",
+    subtitle: "Profile pupili, szczepienia, wizyty u weterynarza i zapasy - solo lub z rodziną.",
     addBtn: "Dodaj zwierzę",
     addTitle: "Nowe zwierzę",
   },
@@ -121,32 +121,32 @@ export const t = {
   budget: {
     title: "Budżet",
     subtitle:
-      "Wspólny budżet rodzinny lub osobisty — dochody, wydatki, kategorie i podsumowania.",
+      "Wspólny budżet rodzinny lub osobisty - dochody, wydatki, kategorie i podsumowania.",
     addBtn: "Nowy budżet",
     addTitle: "Nowy budżet",
   },
   birthdays: {
     title: "Urodziny",
-    subtitle: "Kalendarz urodzin — solo lub współdzielony z rodziną.",
+    subtitle: "Kalendarz urodzin - solo lub współdzielony z rodziną.",
     addBtn: "Dodaj urodziny",
     addTitle: "Nowe urodziny",
   },
   schedule: {
     title: "Grafik pracy",
-    subtitle: "Planuj dni pracy, wolne i inne aktywności — solo lub współdzielony z rodziną.",
+    subtitle: "Planuj dni pracy, wolne i inne aktywności - solo lub współdzielony z rodziną.",
     addBtn: "Dodaj wpis",
     addTitle: "Nowy wpis w grafiku",
   },
   watchlist: {
     title: "Filmy i seriale",
-    subtitle: "Lista do obejrzenia — filmy i seriale, solo lub współdzielone z rodziną.",
+    subtitle: "Lista do obejrzenia - filmy i seriale, solo lub współdzielone z rodziną.",
     addBtn: "Dodaj pozycję",
     addTitle: "Nowy film lub serial",
   },
   restaurants: {
     title: "Restauracje i puby",
     subtitle:
-      "Miejsca do odwiedzenia i już odwiedzone — z oceną, adresem i mapą. Solo lub z rodziną.",
+      "Miejsca do odwiedzenia i już odwiedzone - z oceną, adresem i mapą. Solo lub z rodziną.",
     addBtn: "Dodaj miejsce",
     addTitle: "Nowa restauracja lub pub",
   },

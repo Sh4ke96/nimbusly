@@ -331,7 +331,7 @@ export async function updateShoppingListItem(
 
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const { id, listId, content: contentRaw, checked, quantity } =
+  const { id, listId, content: contentRaw, checked, quantity, categoryId } =
     parseShoppingItemUpdateFromForm(formData);
 
   if (!id || !listId) return { error: t.shoppingLists.errorGeneric };
@@ -360,6 +360,10 @@ export async function updateShoppingListItem(
       return { error: t.shoppingLists.errorQuantityInvalid };
     }
     updates.quantity = quantity;
+  }
+
+  if (categoryId !== undefined) {
+    updates.category_id = categoryId;
   }
 
   const { error } = await supabase

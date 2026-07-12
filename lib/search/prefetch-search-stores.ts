@@ -8,6 +8,7 @@ import { usePetsStore } from "@/lib/stores/pets-store";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useRestaurantsStore } from "@/lib/stores/restaurants-store";
 import { useScheduleStore } from "@/lib/stores/schedule-store";
+import { useShoppingCategoriesStore } from "@/lib/stores/shopping-categories-store";
 import { useShoppingListsStore } from "@/lib/stores/shopping-lists-store";
 import { useWatchlistStore } from "@/lib/stores/watchlist-store";
 
@@ -18,6 +19,7 @@ export async function prefetchSearchListStores(): Promise<void> {
     profileLoaded ? Promise.resolve() : useProfileStore.getState().fetchSession(),
     useBudgetStore.getState().fetchBudgets(),
     useShoppingListsStore.getState().fetchLists(),
+    useShoppingCategoriesStore.getState().fetchCategories(),
     useGiftsStore.getState().fetchIdeas(),
     useBirthdaysStore.getState().fetchEntries(),
     useScheduleStore.getState().fetchEntries(),

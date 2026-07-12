@@ -1,4 +1,4 @@
-/** Brand palette — keep in sync with app/globals.css :root */
+/** Brand palette - keep in sync with app/globals.css :root */
 export const BRAND_COLOR = {
   PRIMARY: "#618764",
   PRIMARY_DARK: "#2b5748",
@@ -8,7 +8,7 @@ export const BRAND_COLOR = {
   MUTED_FG: "#455248",
   SURFACE: "#faf9f6",
   ENTRY_BG: "#f0efe8",
-  /** Terracotta — wydatki, sekcja „Wymaga uwagi” */
+  /** Terracotta - wydatki, sekcja „Wymaga uwagi” */
   ATTENTION: "#c45c26",
   ATTENTION_FG: "#fff8f4",
 } as const;

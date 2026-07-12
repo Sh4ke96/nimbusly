@@ -75,6 +75,7 @@ describe("parseShoppingItemUpdateFromForm", () => {
     assert.equal(parsed.listId, "list-1");
     assert.equal(parsed.content, null);
     assert.equal(parsed.checked, true);
+    assert.equal(parsed.categoryId, undefined);
   });
 });
 

@@ -26,7 +26,26 @@ import { getDisplayName } from "@/lib/profile";
 import type { AccountActionState } from "@/app/(app)/account/actions";
 import { getProfileFamilyContext, requireUser } from "@/lib/server-actions/require-user";
 import { notifyFamilyMembers } from "@/lib/server-actions/notify-family";
+import { createClient } from "@/lib/supabase/server";
 import { petCareItemFromRow } from "@/lib/supabase/app-rows";
+
+type AppSupabase = Awaited<ReturnType<typeof createClient>>;
+
+async function loadAccessiblePet(
+  supabase: AppSupabase,
+  petId: string,
+  familyId: string | null,
+  userId: string
+) {
+  let query = supabase.from("pets").select("id, name, family_id").eq("id", petId);
+  if (familyId) {
+    query = query.eq("family_id", familyId);
+  } else {
+    query = query.is("family_id", null).eq("created_by", userId);
+  }
+  const { data } = await query.maybeSingle();
+  return data;
+}
 
 export async function createPet(
   _prev: AccountActionState,
@@ -197,11 +216,12 @@ export async function createPetCareItem(
   const { profile, familyId } = await getProfileFamilyContext(supabase, user.id);
   const payload = carePayload(parsed);
 
-  const { data: pet } = await supabase
-    .from("pets")
-    .select("id, name")
-    .eq("id", payload.pet_id)
-    .maybeSingle();
+  const pet = await loadAccessiblePet(
+    supabase,
+    payload.pet_id,
+    familyId,
+    user.id
+  );
 
   if (!pet) return { error: t.pets.errorPetNotFound };
 
@@ -268,7 +288,11 @@ export async function updatePetCareItem(
 
   if (!existing) return { error: t.pets.errorNotOwner };
 
+  const { profile, familyId } = await getProfileFamilyContext(supabase, user.id);
   const payload = carePayload(parsed);
+  const pet = await loadAccessiblePet(supabase, payload.pet_id, familyId, user.id);
+  if (!pet) return { error: t.pets.errorPetNotFound };
+
   const { error } = await supabase
     .from("pet_care_items")
     .update({ ...payload, updated_at: new Date().toISOString() })
@@ -277,14 +301,7 @@ export async function updatePetCareItem(
 
   if (error) return { error: t.pets.errorGeneric };
 
-  const { profile, familyId } = await getProfileFamilyContext(supabase, user.id);
   if (familyId && profile) {
-    const { data: pet } = await supabase
-      .from("pets")
-      .select("name")
-      .eq("id", payload.pet_id)
-      .maybeSingle();
-
     const changeSummary = buildPetCareChangeSummary(
       petCareItemFromRow(existing), payload, t.pets);
     try {
@@ -305,7 +322,6 @@ export async function updatePetCareItem(
     } catch {
       // Best-effort
     }
-    void pet;
   }
 
   return { success: t.pets.careUpdatedSuccess };

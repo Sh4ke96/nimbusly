@@ -1,7 +1,7 @@
 import type { CreatedTestUser } from "../support/commands";
 import { t } from "../support/texts";
 
-describe("Onboarding — ścieżka rodzinna", () => {
+describe("Onboarding - ścieżka rodzinna", () => {
   let testUser: CreatedTestUser;
 
   before(() => {
@@ -44,7 +44,7 @@ describe("Onboarding — ścieżka rodzinna", () => {
   });
 });
 
-describe("Onboarding — ścieżka solo", () => {
+describe("Onboarding - ścieżka solo", () => {
   let testUser: CreatedTestUser;
 
   before(() => {
@@ -70,7 +70,7 @@ describe("Onboarding — ścieżka solo", () => {
   });
 });
 
-describe("Onboarding — wylogowanie", () => {
+describe("Onboarding - wylogowanie", () => {
   let testUser: CreatedTestUser;
 
   before(() => {

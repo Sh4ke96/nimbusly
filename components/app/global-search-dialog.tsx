@@ -113,17 +113,23 @@ export function GlobalSearchDialog() {
           }
         }}
       >
-        <DialogContent className="rounded-none sm:max-w-lg gap-0 p-0 overflow-hidden">
-          <DialogHeader className="sm:border-b sm:border-border sm:px-4 sm:py-3">
+        <DialogContent className="rounded-none sm:max-w-2xl gap-0 p-0 overflow-hidden max-h-[min(92dvh,calc(100dvh-2rem))] flex flex-col">
+          <DialogHeader className="shrink-0 sm:border-b sm:border-border sm:px-4 sm:py-3">
             <DialogTitle className="font-heading text-base">{t.search.title}</DialogTitle>
           </DialogHeader>
           {open ? (
-            <GlobalSearchDialogBody
+            <div className="min-h-0 flex-1 overflow-y-auto">
+              <GlobalSearchDialogBody
               query={query}
               onQueryChange={setQuery}
               hydrating={hydrating}
               onSelect={handleSelect}
-            />
+              onQuickAddSuccess={() => {
+                setOpen(false);
+                setQuery("");
+              }}
+              />
+            </div>
           ) : null}
         </DialogContent>
       </Dialog>

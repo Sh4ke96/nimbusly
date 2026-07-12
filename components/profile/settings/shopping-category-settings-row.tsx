@@ -100,6 +100,7 @@ export function ShoppingCategorySettingsRow({
           variant="ghost"
           disabled={deletePending}
           className="cursor-pointer text-muted-foreground hover:text-destructive"
+          aria-label={t.shoppingCategories.deleteBtn}
         >
           <Trash2 className="size-4" />
           {t.shoppingCategories.deleteBtn}

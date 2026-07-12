@@ -427,7 +427,7 @@ export function BudgetView() {
                   <div className="border border-primary/25 bg-primary/10 px-2 py-2.5 shadow-sm sm:px-4 sm:py-3">
                     <div className="flex items-center gap-1 text-primary sm:gap-2">
                       <TrendingUp className="size-3.5 shrink-0 sm:size-4" />
-                      <p className="text-[9px] uppercase tracking-wider font-medium leading-tight sm:text-[11px]">
+                      <p className="text-[10px] uppercase tracking-wider font-medium leading-tight sm:text-[11px]">
                         {t.budget.incomeLabel}
                       </p>
                     </div>
@@ -439,7 +439,7 @@ export function BudgetView() {
                   <div className="border border-orange-200/80 bg-orange-50/80 px-2 py-2.5 shadow-sm dark:border-orange-900/50 dark:bg-orange-950/30 sm:px-4 sm:py-3">
                     <div className="flex items-center gap-1 text-orange-700 dark:text-orange-400 sm:gap-2">
                       <TrendingDown className="size-3.5 shrink-0 sm:size-4" />
-                      <p className="text-[9px] uppercase tracking-wider font-medium leading-tight sm:text-[11px]">
+                      <p className="text-[10px] uppercase tracking-wider font-medium leading-tight sm:text-[11px]">
                         {t.budget.expensesLabel}
                       </p>
                     </div>
@@ -465,7 +465,7 @@ export function BudgetView() {
                       )}
                     >
                       <Scale className="size-3.5 shrink-0 sm:size-4" />
-                      <p className="text-[9px] uppercase tracking-wider font-medium leading-tight sm:text-[11px]">
+                      <p className="text-[10px] uppercase tracking-wider font-medium leading-tight sm:text-[11px]">
                         {t.budget.balanceLabel}
                       </p>
                     </div>

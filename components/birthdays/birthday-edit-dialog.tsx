@@ -33,8 +33,11 @@ function BirthdayEditForm({
 }) {
   const t = useT();
   const [personName, setPersonName] = useState<string>(() => entry.person_name);
-  const [date, setDate] = useState<Date | undefined>(
-    () => new Date(2000, entry.birth_month - 1, entry.birth_day)
+  const [includeYear, setIncludeYear] = useState<boolean>(() => entry.birth_year !== null);
+  const [date, setDate] = useState<Date | undefined>(() =>
+    entry.birth_year
+      ? new Date(entry.birth_year, entry.birth_month - 1, entry.birth_day)
+      : new Date(2000, entry.birth_month - 1, entry.birth_day)
   );
   const [description, setDescription] = useState<string>(() => entry.description);
   const [state, action, pending] = useActionState(updateBirthday, null);
@@ -59,6 +62,8 @@ function BirthdayEditForm({
         onPersonNameChange={setPersonName}
         date={date}
         onDateChange={setDate}
+        includeYear={includeYear}
+        onIncludeYearChange={setIncludeYear}
         description={description}
         onDescriptionChange={setDescription}
       />

@@ -125,7 +125,7 @@ export function GiftNoteCard({
             </CardHeaderActionButton>
             <form action={deleteAction} className="border-l border-border">
               <input type="hidden" name={GIFT_FORM_FIELD.ID} value={idea.id} />
-              <CardHeaderActionButton type="submit" destructive disabled={deletePending}>
+              <CardHeaderActionButton type="submit" destructive disabled={deletePending} aria-label={t.gifts.deleteBtn}>
                 <Trash2 className="size-4" />
               </CardHeaderActionButton>
             </form>

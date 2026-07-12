@@ -1,4 +1,4 @@
-# Nimbusly — Development Instructions
+# Nimbusly - Development Instructions
 
 This document is the single source of truth for coding standards, conventions, and project guidelines for **Nimbusly**.
 
@@ -12,13 +12,13 @@ This document is the single source of truth for coding standards, conventions, a
 
 **CRITICAL:** Always use **absolute imports** with the `@/` alias (maps to project root).
 
-**CRITICAL:** Never hardcode user-facing copy — use the **i18n system** (`useT()` / `getServerT()`). Every module must ship **Polish and English** strings in `lib/i18n/pl.ts` and `lib/i18n/en.ts`.
+**CRITICAL:** Never hardcode user-facing copy - use the **i18n system** (`useT()` / `getServerT()`). Every module must ship **Polish and English** strings in `lib/i18n/pl.ts` and `lib/i18n/en.ts`.
 
 **CRITICAL:** Never use raw string literals for domain values (account mode, roles, tabs, notification types, lang codes). Define them in `lib/constants/` as `as const` objects and derive TypeScript types from them.
 
-**CRITICAL:** Reuse **shadcn/ui** primitives from `components/ui/` — do not reinvent Button, Dialog, Input, etc.
+**CRITICAL:** Reuse **shadcn/ui** primitives from `components/ui/` - do not reinvent Button, Dialog, Input, etc.
 
-**CRITICAL:** Prefer **minimal, focused diffs** — match existing patterns in the file you edit.
+**CRITICAL:** Prefer **minimal, focused diffs** - match existing patterns in the file you edit.
 
 ---
 
@@ -52,7 +52,7 @@ Nimbusly is a **family hub** web app: shared budget, shopping, gifts, birthdays,
 
 1. **Node.js** 20+ (LTS recommended)
 2. **yarn**
-3. **Supabase project** — URL + anon key in `.env.local` (see `.env.example`)
+3. **Supabase project** - URL + anon key in `.env.local` (see `.env.example`)
 
 ### Setup
 
@@ -85,7 +85,7 @@ yarn dev          # http://localhost:7777
 ### Building and validation
 
 ```bash
-yarn validate     # lint + test:types + test + build — run before push / after every task
+yarn validate     # lint + test:types + test + build - run before push / after every task
 yarn run check    # alias (Yarn 1 reserves bare `yarn check` for lockfile integrity)
 yarn lint         # ESLint only
 yarn build        # production build only
@@ -109,7 +109,7 @@ yarn cy:run       # Cypress only (server must already run)
 | Integration | `tests/integration/**/*.test.ts` |
 | Component | `tests/component/**/*.test.tsx` |
 | E2E | `tests/e2e/**/*.cy.ts` |
-| Cypress config | `cypress.config.ts` — `baseUrl` from `NEXT_PUBLIC_SITE_URL` or `http://localhost:7777` |
+| Cypress config | `cypress.config.ts` - `baseUrl` from `NEXT_PUBLIC_SITE_URL` or `http://localhost:7777` |
 | Supabase test tasks | `tests/tasks/supabase` |
 
 ---
@@ -154,8 +154,8 @@ tests/                 # Unit tests (tests/unit/), E2E (tests/e2e/), Cypress sup
 
 ### Route groups
 
-- `(auth)` — unauthenticated flows
-- `(app)` — requires session; wrapped with `ProfileBootstrap` in `app/(app)/layout.tsx`
+- `(auth)` - unauthenticated flows
+- `(app)` - requires session; wrapped with `ProfileBootstrap` in `app/(app)/layout.tsx`
 - Session / onboarding guards live in `lib/supabase/middleware.ts`, invoked from `proxy.ts`
 
 ### Settings tabs
@@ -186,16 +186,17 @@ import { useT } from "../../../lib/lang-context";
 
 - **Client:** `useT()` from `@/lib/lang-context` → `t.section.key`
 - **Server:** `getServerT()` / `getServerLang()` from `@/lib/i18n/server`
-- **Types:** extend `lib/i18n/types.ts` (`Dict`), then `pl.ts` and `en.ts` **together** — never add a key in only one language
+- **Types:** extend `lib/i18n/types.ts` (`Dict`), then `pl.ts` and `en.ts` **together** - never add a key in only one language
 - **Interpolations:** `formatMessage(t.section.template, { key: value })` from `@/lib/i18n/format`
-- **Metadata & emails:** use `dict[lang]` / `getServerT()` — no hardcoded titles or inline bilingual email objects in feature code
+- **Metadata & emails:** use `dict[lang]` / `getServerT()` - no hardcoded titles or inline bilingual email objects in feature code
 - **Locales:** `LOCALE_BY_LANG` (`lib/constants/lang.ts`), `getDateFnsLocale()` (`lib/i18n/date-fns-locale.ts`)
 - Never ship Polish-only strings in components, Server Actions, or emails
-- Never branch on `lang === "pl"` for user-facing copy — both languages live in translation files
+- Never branch on `lang === "pl"` for user-facing copy - both languages live in translation files
+- **Typography:** use ASCII hyphen `-` only. Do **not** use em dash (`—`, U+2014) or en dash (`–`, U+2013) in copy, comments, docs, or rules. For pauses or ranges, use `-` with spaces when needed (e.g. `2026-06-14 - 2026-06-16`, `Anna - 3 zmian`).
 
 ### Domain constants & types (CRITICAL)
 
-Domain values belong in `lib/constants/` as `as const` objects with derived types — not raw string literals in components or actions.
+Domain values belong in `lib/constants/` as `as const` objects with derived types - not raw string literals in components or actions.
 
 | Constant | File |
 |----------|------|
@@ -228,8 +229,8 @@ export type AccountMode = (typeof ACCOUNT_MODE)[keyof typeof ACCOUNT_MODE];
 
 ### Client state (Zustand)
 
-- `lib/stores/profile-store.ts` — user, profile, family, members, invitations
-- `lib/stores/notifications-store.ts` — in-app notifications
+- `lib/stores/profile-store.ts` - user, profile, family, members, invitations
+- `lib/stores/notifications-store.ts` - in-app notifications
 - Use `dedupeAsync` (`lib/stores/dedupe-async.ts`) to avoid duplicate fetches on refresh
 - Bootstrap once via `components/profile/profile-bootstrap.tsx`
 
@@ -239,7 +240,7 @@ export type AccountMode = (typeof ACCOUNT_MODE)[keyof typeof ACCOUNT_MODE];
 - **RLS:** default for all tables; use `security definer` RPCs when cross-user writes are needed
 - **Apply:** `yarn db:push` (uses `.env.local`)
 - **Clients:** `lib/supabase/client.ts` (browser), `lib/supabase/server.ts` (Server Components / Actions)
-- Do not bypass RLS from the client for privileged operations — use Server Actions or RPC
+- Do not bypass RLS from the client for privileged operations - use Server Actions or RPC
 
 ### Family domain
 
@@ -255,16 +256,16 @@ export type AccountMode = (typeof ACCOUNT_MODE)[keyof typeof ACCOUNT_MODE];
 ### General rules
 
 - **Client components:** add `"use client"` only when needed (hooks, events, browser APIs)
-- **UI primitives:** `components/ui/*` (shadcn) — extend via `className` + `cn()` from `@/lib/utils`
+- **UI primitives:** `components/ui/*` (shadcn) - extend via `className` + `cn()` from `@/lib/utils`
 - **Icons:** `lucide-react`
 - **Feedback:** `sonner` toasts via `useActionFeedback` or direct `toast.*`
 - **Loading:** `Skeleton` from `components/ui/skeleton` for route-level placeholders
 
 ### Visual language
 
-- **Corners:** `rounded-none` everywhere (brand style — no border radius)
-- **Fonts:** Nunito (body), Quicksand (headings) — CSS variables in `globals.css`
-- **Colors:** semantic tokens (`primary`, `muted`, `destructive`, …) — never hardcode hex in components
+- **Corners:** `rounded-none` everywhere (brand style - no border radius)
+- **Fonts:** Nunito (body), Quicksand (headings) - CSS variables in `globals.css`
+- **Colors:** semantic tokens (`primary`, `muted`, `destructive`, …) - never hardcode hex in components
 - **Layout:** `AppHeader`, `AccountBreadcrumbs`, `Card` + `max-w-7xl` content width on app pages
 
 ### Feature components
@@ -279,7 +280,7 @@ components/birthdays/
 └── birthday-entry-form.tsx  # shared form fields
 ```
 
-- Page files in `app/(app)/<route>/page.tsx` stay thin — delegate to view components
+- Page files in `app/(app)/<route>/page.tsx` stay thin - delegate to view components
 - Co-locate small helpers in `lib/<feature>/`, not inside UI files
 
 ### Forms
@@ -293,11 +294,11 @@ components/birthdays/
 
 ## Styling Guidelines
 
-- **Tailwind CSS v4** — utility classes in TSX
+- **Tailwind CSS v4** - utility classes in TSX
 - **Global theme:** `app/globals.css` (`:root` / `.dark` CSS variables, `@theme inline`)
 - **Merge classes:** `cn()` from `lib/utils` (clsx + tailwind-merge)
 - **No CSS modules / SCSS** in this project
-- **No px-vs-em mandate** — use Tailwind spacing scale (`p-4`, `gap-6`, `text-sm`)
+- **No px-vs-em mandate** - use Tailwind spacing scale (`p-4`, `gap-6`, `text-sm`)
 - Third-party overrides (e.g. `react-day-picker`) go in `globals.css` using `var(--primary)`
 
 ---
@@ -307,7 +308,7 @@ components/birthdays/
 | Check | Requirement |
 |-------|-------------|
 | ESLint | `yarn lint` must pass |
-| TypeScript | `strict: true` — `npx tsc --noEmit` clean |
+| TypeScript | `strict: true` - `npx tsc --noEmit` clean |
 | i18n | New UI strings in `types.ts` + `pl.ts` + `en.ts` |
 | Scope | Smallest correct change; no drive-by refactors |
 | Secrets | Never commit `.env.local` or service role keys |
@@ -315,10 +316,10 @@ components/birthdays/
 ### Style conventions (observed in repo)
 
 - 2-space indentation in TS/TSX
-- Double quotes in TS (single in some legacy middleware files — match the file)
+- Double quotes in TS (single in some legacy middleware files - match the file)
 - Named exports for components; default export OK for `page.tsx` / `layout.tsx`
 - Types near usage or in `lib/<domain>/types.ts`
-- **`useState`:** always pass an explicit type argument — e.g. `useState<boolean>(false)`, `useState<string>("")`, `useState<Date | undefined>()`, `useState<Item[]>([])`. With lazy init: `useState<string>(() => readValue())`
+- **`useState`:** always pass an explicit type argument - e.g. `useState<boolean>(false)`, `useState<string>("")`, `useState<Date | undefined>()`, `useState<Item[]>([])`. With lazy init: `useState<string>(() => readValue())`
 
 ---
 
@@ -330,14 +331,14 @@ yarn validate     # full gate: lint, types, unit tests, production build
 yarn e2e          # needs .env.local + Supabase admin for full suite
 ```
 
-For **any shipped change** (feature, fix, infra users care about — PWA, push, analytics, env vars, etc.), update in the **same PR / same commit batch**:
+For **any shipped change** (feature, fix, infra users care about - PWA, push, analytics, env vars, etc.), update in the **same PR / same commit batch**:
 
-- `lib/changelog/entries.ts` — **new entry at the top**, PL + EN `title` and `changes`
-- `package.json` — `version` must equal the top changelog entry
-- `README.md` — current version; features, env vars, or testing notes when relevant
+- `lib/changelog/entries.ts` - **new entry at the top**, PL + EN `title` and `changes`
+- `package.json` - `version` must equal the top changelog entry
+- `README.md` - current version; features, env vars, or testing notes when relevant
 - Unit / E2E tests when behaviour changes
 
-**Do not** merge or hand off work without a changelog entry when the product behaviour changed. Internal-only refactors with zero user impact may skip a version bump — when in doubt, add an entry.
+**Do not** merge or hand off work without a changelog entry when the product behaviour changed. Internal-only refactors with zero user impact may skip a version bump - when in doubt, add an entry.
 
 Only create git commits when explicitly requested.
 
@@ -345,7 +346,7 @@ Only create git commits when explicitly requested.
 
 ## Related Instructions
 
-- **New module or change:** [`new-module-or-change.instructions.md`](new-module-or-change.instructions.md) — shadcn, Zustand, Tailwind, tests, error handling, Supabase safety checklist
+- **New module or change:** [`new-module-or-change.instructions.md`](new-module-or-change.instructions.md) - shadcn, Zustand, Tailwind, tests, error handling, Supabase safety checklist
 
 ---
 
@@ -354,12 +355,12 @@ Only create git commits when explicitly requested.
 1. Read **Next.js 16 docs** in `node_modules/next/dist/docs/` before framework changes
 2. Use **`yarn`**, not npm
 3. Use **`@/`** absolute imports only
-4. Use **`useT()` / `getServerT()`** — no hardcoded user-facing text
+4. Use **`useT()` / `getServerT()`** - no hardcoded user-facing text
 5. Reuse **`components/ui/`** shadcn primitives
 6. Mutations via **Server Actions** + Supabase server client
 7. Client session/family state via **Zustand** + **ProfileBootstrap**
 8. Schema changes via **`supabase/migrations/`** + `yarn db:push`
 9. Visual style: **`rounded-none`**, theme tokens, Tailwind utilities
 10. Validate with **`yarn validate`** (lint, types, unit tests, build)
-11. **Changelog always** (when behaviour changes): `lib/changelog/entries.ts` (top entry, PL + EN), matching **`package.json` version**, **`README.md`**, tests — same change
+11. **Changelog always** (when behaviour changes): `lib/changelog/entries.ts` (top entry, PL + EN), matching **`package.json` version**, **`README.md`**, tests - same change
 12. Keep diffs **minimal** and consistent with surrounding code

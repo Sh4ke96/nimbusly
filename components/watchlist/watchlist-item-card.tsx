@@ -98,7 +98,7 @@ export function WatchlistItemCard({
             </CardHeaderActionButton>
             <form action={deleteAction} className="border-l border-border">
               <input type="hidden" name={WATCHLIST_FORM_FIELD.ID} value={item.id} />
-              <CardHeaderActionButton type="submit" destructive disabled={deletePending}>
+              <CardHeaderActionButton type="submit" destructive disabled={deletePending} aria-label={t.watchlist.deleteBtn}>
                 <Trash2 className="size-4" />
               </CardHeaderActionButton>
             </form>

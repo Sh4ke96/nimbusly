@@ -152,6 +152,7 @@ export function ShoppingListItemsPanel({
                 listId={listId}
                 items={items}
                 itemIds={itemIds}
+                categories={categories}
                 onChanged={onChanged}
               />
             ) : null}

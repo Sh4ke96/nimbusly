@@ -24,7 +24,7 @@ export function useActionFeedback(
       return;
     }
 
-    // Deduplicate per action result object — not by message text, so repeated
+    // Deduplicate per action result object - not by message text, so repeated
     // successes (e.g. adding two medicines) still refresh the UI.
     if (lastHandledState.current === state) return;
     lastHandledState.current = state;

@@ -1,10 +1,10 @@
 # Nimbusly
 
-**Your family's shared home — all in one place.**
+**Your family's shared home - all in one place.**
 
 Nimbusly is a family hub web app: shared budget, shopping, gifts, birthdays, schedule, medicine cabinet, watchlist, restaurants, pets, household chores, notes, and family account management. Each member has their own profile; family data stays in sync.
 
-Available in **Polish** and **English**. Current version: **0.8.3** — see `/change-log` or the in-app version badge.
+Available in **Polish** and **English**. Current version: **0.9.6** - see `/change-log` or the in-app version badge.
 
 ---
 
@@ -17,6 +17,7 @@ Available in **Polish** and **English**. Current version: **0.8.3** — see `/ch
 | Gifts | `/gifts` | Gift ideas per recipient without spoiling surprises |
 | Birthdays | `/birthdays` | Calendar (weekly mobile view), collapsible list on mobile, upcoming birthdays, reminders |
 | Schedule | `/schedule` | Shared work / family schedule with multi-day date ranges |
+| Family calendar | `/calendar` | Unified month view: birthdays, schedule entries, and chores |
 | Medicine cabinet | `/medicine-cabinet` | Home pharmacy with expiry tracking |
 | Watchlist | `/watchlist` | Movies & series to watch together |
 | Restaurants | `/restaurants` | Places to visit and ratings |
@@ -28,16 +29,16 @@ Available in **Polish** and **English**. Current version: **0.8.3** — see `/ch
 
 Additional:
 
-- **Mobile-first layout** — bottom navigation, larger touch targets, safe-area insets, module grid via `?view=modules`; shopping lists and birthdays have dedicated mobile flows (list detail sheet, accordion + weekly calendar)
-- **PWA** — web manifest, service worker, offline fallback, install prompt, **Web Push** (iOS 16.4+ / Android)
-- **Vercel Analytics & Speed Insights** — traffic and Core Web Vitals in the Vercel project dashboard (production)
-- **Nimbus** — in-app companion (bottom-right): guided tours (driver.js) for the app and every module, contextual hints, FAQ, cross-module suggestions, celebrations, quiet mode, tour resume (Esc), keyboard shortcuts (A/D, arrows), and Needs attention awareness
-- **Dashboard** (`/dashboard`) — Summary / Modules tabs, customizable overview cards, brown “needs attention” banner
-- **Global search** — quick jump to modules, lists, budgets, notes, chores, and more (`Ctrl+K` / `Cmd+K` in the navbar)
-- **Notifications** (`/notifications`) — in-app family activity feed, quiet hours, optional weekly digest
-- **Change log** (`/change-log`) — public release history (no login required)
-- **Onboarding** — guided setup for new accounts
-- **Solo or family mode** — up to 6 members with roles (founder, admin, member); family admins can manage shopping categories alongside the founder
+- **Mobile-first layout** - bottom navigation, larger touch targets, safe-area insets, module grid via `?view=modules`; shopping lists and birthdays have dedicated mobile flows (list detail sheet, accordion + weekly calendar)
+- **PWA** - web manifest, service worker, offline fallback, install prompt, **Web Push** (iOS 16.4+ / Android)
+- **Vercel Analytics & Speed Insights** - traffic and Core Web Vitals in the Vercel project dashboard (production)
+- **Nimbus** - in-app companion (bottom-right): guided tours (driver.js) for the app and every module, contextual hints, FAQ, cross-module suggestions, celebrations, quiet mode, tour resume (Esc), keyboard shortcuts (A/D, arrows), and Needs attention awareness
+- **Dashboard** (`/dashboard`) - Summary / Modules tabs, customizable overview cards, brown “needs attention” banner
+- **Global search** - quick jump to modules, lists, budgets, notes, chores, and more (`Ctrl+K` / `Cmd+K` in the navbar)
+- **Notifications** (`/notifications`) - in-app family activity feed, quiet hours, optional weekly digest
+- **Change log** (`/change-log`) - public release history (no login required)
+- **Onboarding** - guided setup for new accounts
+- **Solo or family mode** - up to 6 members with roles (founder, admin, member); family admins can manage shopping categories alongside the founder
 
 ---
 
@@ -108,8 +109,8 @@ See [`.env.example`](.env.example) for the full list.
 | `RESEND_API_KEY` | Optional | Family invite & reminder emails |
 | `RESEND_FROM_EMAIL` | Optional | Sender address for Resend |
 | `CRON_SECRET` | Optional | Protects cron API routes |
-| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | Optional | Web Push — client subscription (`yarn push:vapid`) |
-| `VAPID_PRIVATE_KEY` | Optional | Web Push — server send (never expose to client) |
+| `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | Optional | Web Push - client subscription (`yarn push:vapid`) |
+| `VAPID_PRIVATE_KEY` | Optional | Web Push - server send (never expose to client) |
 | `SUPABASE_ACCESS_TOKEN` | Optional | Supabase CLI (`db:push`, etc.) |
 
 Never commit `.env.local` or secrets.
@@ -125,7 +126,7 @@ When `NEXT_PUBLIC_VAPID_PUBLIC_KEY` and `VAPID_PRIVATE_KEY` are set (generate wi
 3. User enables push in **Profile → Settings** or via the in-app prompt
 4. Family in-app notifications and budget reminders also trigger push
 
-**iOS:** requires iOS 16.4+, Safari, app added to home screen — no push in the browser tab.
+**iOS:** requires iOS 16.4+, Safari, app added to home screen - no push in the browser tab.
 
 ---
 
@@ -147,7 +148,7 @@ GET /api/cron/budget-payment-reminders
 Authorization: Bearer <CRON_SECRET>
 ```
 
-**Weekly digest** (Monday 08:00 UTC — summary of unread notifications when enabled in profile settings):
+**Weekly digest** (Monday 08:00 UTC - summary of unread notifications when enabled in profile settings):
 
 ```http
 GET /api/cron/weekly-digest
@@ -165,8 +166,8 @@ On Vercel, `vercel.json` schedules `/api/cron/weekly-digest` automatically when 
 | `yarn dev` | Development server |
 | `yarn build` | Production build |
 | `yarn start` | Production server |
-| `yarn validate` | **Full validation** — lint, `test:types`, unit tests, production build |
-| `yarn run check` | Alias for `yarn validate` (use `run` — Yarn 1 reserves bare `yarn check`) |
+| `yarn validate` | **Full validation** - lint, `test:types`, unit tests, production build |
+| `yarn run check` | Alias for `yarn validate` (use `run` - Yarn 1 reserves bare `yarn check`) |
 | `yarn verify` | Alias for `yarn validate` |
 | `yarn lint` | ESLint only |
 | `yarn test` | Unit tests (`tests/unit/**/*.test.ts`) |
@@ -197,7 +198,7 @@ When you ship a **user-visible** feature, fix, or module:
 
 1. Prepend an entry to `lib/changelog/entries.ts` (PL + EN `title` and `changes`).
 2. Bump `version` in `package.json` to match that entry.
-3. Update **`README.md`** — current version, feature list, env vars, or testing notes if they changed.
+3. Update **`README.md`** - current version, feature list, env vars, or testing notes if they changed.
 4. Add or update **tests** (`tests/unit/`, `tests/e2e/`) for new behaviour; run **`yarn validate`**.
 
 ### Nimbus companion (`lib/nimbus/`, `components/nimbus/`)

@@ -60,7 +60,7 @@ export async function loadModulePreferencesForUsers(
   return map;
 }
 
-/** Notification dispatch — read other users' prefs (RLS blocks the actor's session client). */
+/** Notification dispatch - read other users' prefs (RLS blocks the actor's session client). */
 export async function loadRecipientModulePreferences(
   userIds: string[],
   moduleId: NotificationModuleId

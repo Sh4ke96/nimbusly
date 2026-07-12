@@ -72,6 +72,7 @@ export function MedicineItemCard({
   const locale = getDateFnsLocale(lang);
   const isFamily = profile?.account_mode === ACCOUNT_MODE.FAMILY && !!profile.family_id;
   const isOwner = item.created_by === userId;
+  const canEdit = isOwner || (!!userId && item.taken_by === userId);
   const creator = resolveCreatorName(item.created_by, userId, profile, members);
   const takenByName = resolveMedicineTakenByName(
     item.taken_by,
@@ -98,14 +99,14 @@ export function MedicineItemCard({
           {t.medicineCabinet.formLabels[item.form_type]}
           {item.quantity ? ` · ${item.quantity}` : ""}
         </CardDescription>
-        {isOwner && (
+        {canEdit && (
           <CardHeaderActions>
             <CardHeaderActionButton onClick={onEdit} aria-label={t.medicineCabinet.editBtn}>
               <Pencil className="size-4" />
             </CardHeaderActionButton>
             <form action={deleteAction} className="border-l border-border">
               <input type="hidden" name={MEDICINE_FORM_FIELD.ID} value={item.id} />
-              <CardHeaderActionButton type="submit" destructive disabled={deletePending}>
+              <CardHeaderActionButton type="submit" destructive disabled={deletePending} aria-label={t.medicineCabinet.deleteBtn}>
                 <Trash2 className="size-4" />
               </CardHeaderActionButton>
             </form>

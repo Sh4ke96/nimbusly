@@ -1,4 +1,4 @@
-import { formatBirthdayLabel, isValidBirthDate, parseBirthdayFromForm } from "@/lib/birthdays/types";
+import { formatBirthdayLabel, isValidBirthDate, isValidBirthYear, parseBirthdayFromForm } from "@/lib/birthdays/types";
 import { NOTIFICATION_TYPE, type NotificationType } from "@/lib/constants/notifications";
 import { getDisplayName } from "@/lib/profile";
 import { getProfileFamilyContext } from "@/lib/server-actions/require-user";
@@ -34,11 +34,14 @@ export async function executeCreateBirthday(
 ): Promise<AccountActionState> {
   if (!user) return { error: t.account.errorUnauthorized };
 
-  const { personName, birthMonth, birthDay, description } = parseBirthdayFromForm(formData);
+  const { personName, birthMonth, birthDay, birthYear, description } = parseBirthdayFromForm(formData);
 
   if (!personName) return { error: t.birthdays.errorPersonName };
-  if (!isValidBirthDate(birthMonth, birthDay)) {
+  if (!isValidBirthDate(birthMonth, birthDay, birthYear)) {
     return { error: t.birthdays.errorInvalidDate };
+  }
+  if (!isValidBirthYear(birthYear)) {
+    return { error: t.birthdays.errorInvalidBirthYear };
   }
 
   const { profile, familyId } = await getProfileFamilyContext(supabase, user.id);
@@ -50,7 +53,7 @@ export async function executeCreateBirthday(
       person_name: personName,
       birth_month: birthMonth,
       birth_day: birthDay,
-      birth_year: null,
+      birth_year: birthYear,
       description,
       created_by: user.id,
     })

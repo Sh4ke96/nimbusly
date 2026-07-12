@@ -12,6 +12,8 @@ interface BirthdayEntryFormProps {
   onPersonNameChange: (value: string) => void;
   date: Date | undefined;
   onDateChange: (date: Date | undefined) => void;
+  includeYear: boolean;
+  onIncludeYearChange: (value: boolean) => void;
   description: string;
   onDescriptionChange: (value: string) => void;
 }
@@ -22,6 +24,8 @@ export function BirthdayEntryForm({
   onPersonNameChange,
   date,
   onDateChange,
+  includeYear,
+  onIncludeYearChange,
   description,
   onDescriptionChange,
 }: BirthdayEntryFormProps) {
@@ -45,7 +49,12 @@ export function BirthdayEntryForm({
         />
       </div>
 
-      <BirthdayDatePicker date={date} onDateChange={onDateChange} />
+      <BirthdayDatePicker
+        date={date}
+        onDateChange={onDateChange}
+        includeYear={includeYear}
+        onIncludeYearChange={onIncludeYearChange}
+      />
 
       <div className="space-y-1.5">
         <Label htmlFor={descriptionId}>{t.birthdays.descriptionLabel}</Label>

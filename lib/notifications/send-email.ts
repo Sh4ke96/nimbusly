@@ -39,7 +39,7 @@ export async function sendReminderEmail({
   return { sent: true };
 }
 
-/** @deprecated Use sendReminderEmail — kept for compatibility */
+/** @deprecated Use sendReminderEmail - kept for compatibility */
 export async function sendBirthdayNotificationEmail(): Promise<{ sent: false }> {
   return { sent: false };
 }

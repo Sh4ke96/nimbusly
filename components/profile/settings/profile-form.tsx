@@ -14,6 +14,7 @@ import { useProfileStore } from "@/lib/stores/profile-store";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
 import { SettingsFormFooter } from "@/components/profile/settings/settings-form-footer";
 import { NimbusCompanionSetting } from "@/components/profile/settings/nimbus-companion-setting";
+import { QuickAddSetting } from "@/components/profile/settings/quick-add-setting";
 import { updateProfile } from "@/app/(app)/account/actions";
 import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus";
 
@@ -49,57 +50,61 @@ export function ProfileForm() {
   }
 
   return (
-    <form action={action} className="space-y-6 max-w-md" data-nimbus-tour={NIMBUS_TOUR_TARGET.SETTINGS_PROFILE}>
-      <div className="flex justify-center sm:justify-start">
-        <MemberAvatar name={getDisplayName(profile)} color={displayColor} size="lg" />
-      </div>
-
-      <input type="hidden" name={PROFILE_FORM_FIELD.AVATAR_COLOR} value={displayColor} />
-
-      <div className="grid grid-cols-7 gap-3">
-        {AVATAR_COLORS.map((color) => (
-          <button
-            key={color.id}
-            type="button"
-            onClick={() => setAvatarColor(color.value)}
-            className={cn(
-              "size-9 rounded-none transition-all hover:scale-110",
-              displayColor === color.value &&
-                "ring-2 ring-offset-2 ring-offset-background ring-primary scale-110"
-            )}
-            style={{ backgroundColor: color.value }}
-          />
-        ))}
-      </div>
-
-      <div className="space-y-4">
-        <div className="space-y-1.5">
-          <Label htmlFor="settings-firstName">{t.account.firstNameLabel}</Label>
-          <Input
-            id="settings-firstName"
-            name={PROFILE_FORM_FIELD.FIRST_NAME}
-            defaultValue={profile.first_name}
-            key={profile.first_name}
-          />
+    <div className="space-y-6 max-w-md" data-nimbus-tour={NIMBUS_TOUR_TARGET.SETTINGS_PROFILE}>
+      <form action={action} className="space-y-6">
+        <div className="flex justify-center sm:justify-start">
+          <MemberAvatar name={getDisplayName(profile)} color={displayColor} size="lg" />
         </div>
-        <div className="space-y-1.5">
-          <Label htmlFor="settings-lastName">{t.account.lastNameLabel}</Label>
-          <Input
-            id="settings-lastName"
-            name={PROFILE_FORM_FIELD.LAST_NAME}
-            defaultValue={profile.last_name}
-            key={profile.last_name}
-          />
+
+        <input type="hidden" name={PROFILE_FORM_FIELD.AVATAR_COLOR} value={displayColor} />
+
+        <div className="grid grid-cols-7 gap-3">
+          {AVATAR_COLORS.map((color) => (
+            <button
+              key={color.id}
+              type="button"
+              onClick={() => setAvatarColor(color.value)}
+              className={cn(
+                "size-9 rounded-none transition-all hover:scale-110",
+                displayColor === color.value &&
+                  "ring-2 ring-offset-2 ring-offset-background ring-primary scale-110"
+              )}
+              style={{ backgroundColor: color.value }}
+            />
+          ))}
         </div>
-      </div>
+
+        <div className="space-y-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="settings-firstName">{t.account.firstNameLabel}</Label>
+            <Input
+              id="settings-firstName"
+              name={PROFILE_FORM_FIELD.FIRST_NAME}
+              defaultValue={profile.first_name}
+              key={profile.first_name}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="settings-lastName">{t.account.lastNameLabel}</Label>
+            <Input
+              id="settings-lastName"
+              name={PROFILE_FORM_FIELD.LAST_NAME}
+              defaultValue={profile.last_name}
+              key={profile.last_name}
+            />
+          </div>
+        </div>
+
+        <SettingsFormFooter
+          pending={pending}
+          savingLabel={t.account.saving}
+          saveLabel={t.account.save}
+        />
+      </form>
 
       <NimbusCompanionSetting />
 
-      <SettingsFormFooter
-        pending={pending}
-        savingLabel={t.account.saving}
-        saveLabel={t.account.save}
-      />
-    </form>
+      <QuickAddSetting />
+    </div>
   );
 }

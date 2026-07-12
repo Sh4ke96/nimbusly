@@ -1,7 +1,7 @@
 import type { CreatedTestUser } from "../support/commands";
 import { t } from "../support/texts";
 
-describe("Zakupy — powiadomienie modułu zakupów", () => {
+describe("Zakupy - powiadomienie modułu zakupów", () => {
   let owner: CreatedTestUser;
   let member: CreatedTestUser;
   const listName = "Lista E2E powiadomień";

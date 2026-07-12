@@ -199,6 +199,26 @@ export function parseBudgetExpenseUpdateFromForm(formData: FormData): {
   };
 }
 
+export function parseBudgetExpenseFullUpdateFromForm(formData: FormData): {
+  id: string;
+  budgetId: string;
+  category: string;
+  amount: number | null;
+  description: string;
+  expenseDate: string;
+} {
+  const { id, budgetId } = parseBudgetExpenseUpdateFromForm(formData);
+  const expense = parseBudgetExpenseFromForm(formData);
+  return {
+    id,
+    budgetId,
+    category: expense.category,
+    amount: expense.amount,
+    description: expense.description,
+    expenseDate: expense.expenseDate,
+  };
+}
+
 export function dateToExpenseDateString(date: Date): string {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");

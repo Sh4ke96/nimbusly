@@ -20,12 +20,14 @@ import { reorderShoppingListItems } from "@/app/(app)/shopping/actions";
 import { SHOPPING_FORM_FIELD } from "@/lib/shopping-lists/types";
 import { ShoppingListItemRow } from "@/components/shopping/shopping-list-item-row";
 import { applyItemOrder, type ShoppingListItem } from "@/lib/shopping-lists/types";
+import type { ShoppingListCategory } from "@/lib/shopping-lists/categories";
 import { useShoppingListsStore } from "@/lib/stores/shopping-lists-store";
 
 interface ShoppingListItemsSortableProps {
   listId: string;
   items: ShoppingListItem[];
   itemIds: string[];
+  categories?: ShoppingListCategory[];
   onChanged?: () => void;
 }
 
@@ -33,6 +35,7 @@ export function ShoppingListItemsSortable({
   listId,
   items,
   itemIds,
+  categories = [],
   onChanged,
 }: ShoppingListItemsSortableProps) {
   const setItemsForList = useShoppingListsStore((s) => s.setItemsForList);
@@ -80,6 +83,7 @@ export function ShoppingListItemsSortable({
               key={item.id}
               item={item}
               listId={listId}
+              categories={categories}
               onChanged={onChanged}
             />
           ))}

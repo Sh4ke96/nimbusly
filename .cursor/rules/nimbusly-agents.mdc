@@ -3,7 +3,7 @@ description: Always follow Nimbusly project instructions in .cursor/rules/
 alwaysApply: true
 ---
 
-# Nimbusly — project rules (always apply)
+# Nimbusly - project rules (always apply)
 
 Instructions live in **`.cursor/rules/`**. Read and follow them before coding.
 
@@ -16,15 +16,15 @@ Instructions live in **`.cursor/rules/`**. Read and follow them before coding.
 
 ## Non-negotiables (summary)
 
-- **UI:** shadcn / existing `components/ui/` — do not reinvent primitives
+- **UI:** shadcn / existing `components/ui/` - do not reinvent primitives
 - **State:** Zustand in `lib/stores/` for shared client state
 - **Styles:** Tailwind + `cn()` + theme tokens; `rounded-none` brand style
-- **Copy:** i18n via `useT()` / `getServerT()` — update `types.ts`, `pl.ts`, `en.ts` (PL + EN always)
-- **Constants:** domain values in `lib/constants/` (`as const` + types) — no magic strings for modes, roles, tabs, langs
+- **Copy:** i18n via `useT()` / `getServerT()` - update `types.ts`, `pl.ts`, `en.ts` (PL + EN always); ASCII `-` only (no em/en dashes)
+- **Constants:** domain values in `lib/constants/` (`as const` + types) - no magic strings for modes, roles, tabs, langs
 - **Data:** Server Actions + Supabase; migrations in `supabase/migrations/`
 - **Tests:** add/update `tests/unit/`, `tests/e2e/`; run **`yarn validate`** before finishing (lint + types + tests + build)
-- **Changelog (always):** every completed feature, fix, or user-visible change → new entry at top of `lib/changelog/entries.ts` (PL + EN), matching `package.json` version, `README.md` — same PR. Never ship without updating the changelog if behaviour changed.
+- **Changelog (always):** every completed feature, fix, or user-visible change → new entry at top of `lib/changelog/entries.ts` (PL + EN), matching `package.json` version, `README.md` - same PR. Never ship without updating the changelog if behaviour changed.
 - **Safety:** validate on server, check existence/ownership, no SQL injection, no secrets in code
 - **React state:** explicit `useState<Type>(...)` on every `useState` call
 
-If instructions conflict with a one-off user message, follow the user — otherwise prefer `.cursor/rules/`.
+If instructions conflict with a one-off user message, follow the user - otherwise prefer `.cursor/rules/`.

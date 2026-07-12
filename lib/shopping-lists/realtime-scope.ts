@@ -18,7 +18,7 @@ export function shoppingListMatchesRealtimeScope(
 
 /**
  * Supabase DELETE payloads often include only the primary key unless REPLICA IDENTITY FULL.
- * Do not rely on server-side realtime filters for list deletes — match by known list ids.
+ * Do not rely on server-side realtime filters for list deletes - match by known list ids.
  */
 export function shouldApplyShoppingListRealtimeEvent(
   payload: RealtimePostgresChangesPayload<ShoppingList>,

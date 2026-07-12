@@ -22,6 +22,6 @@ export function writeCollapsedCategoryKeys(listId: string, keys: ReadonlySet<str
   try {
     sessionStorage.setItem(storageKey(listId), JSON.stringify([...keys]));
   } catch {
-    // SSR, private mode, or quota — ignore; UI still works for this session.
+    // SSR, private mode, or quota - ignore; UI still works for this session.
   }
 }

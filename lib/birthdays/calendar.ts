@@ -100,7 +100,7 @@ export function formatWeekDayRangeLabel(
   const last = inMonth[inMonth.length - 1]!.day!;
 
   if (first === last) return `${first} ${monthName}`;
-  return `${first} – ${last} ${monthName}`;
+  return `${first} - ${last} ${monthName}`;
 }
 
 export function formatCalendarDayLabel(

@@ -56,16 +56,25 @@ export async function enablePushAfterBrowserSubscription(): Promise<PushActionSt
 
   await ensureModulePreferencesForUser(supabase, user.id);
 
-  const { error: prefsError } = await supabase
-    .from("notification_module_preferences")
+  return { success: "enabled" };
+}
+
+/** After browser unsubscribe: turn off global push flag (module prefs stay as user set them). */
+export async function disablePushAfterBrowserUnsubscribe(): Promise<PushActionState> {
+  const { supabase, user } = await requireUser();
+  if (!user) return { error: "unauthorized" };
+
+  const now = new Date().toISOString();
+  const { error: profileError } = await supabase
+    .from("profiles")
     .update({
-      push_enabled: true,
+      push_notifications_enabled: false,
       updated_at: now,
     })
-    .eq("user_id", user.id);
+    .eq("id", user.id);
 
-  if (prefsError) return { error: prefsError.message };
-  return { success: "enabled" };
+  if (profileError) return { error: profileError.message };
+  return { success: "disabled" };
 }
 
 export async function removePushSubscription(endpoint?: string): Promise<PushActionState> {

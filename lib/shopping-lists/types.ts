@@ -160,15 +160,23 @@ export function parseShoppingItemUpdateFromForm(formData: FormData): {
   content: string | null;
   checked: boolean | null;
   quantity: number | null;
+  categoryId: string | null | undefined;
 } {
   const contentRaw = formData.get(SHOPPING_FORM_FIELD.CONTENT);
   const checkedRaw = formData.get(SHOPPING_FORM_FIELD.CHECKED);
   const quantityRaw = formData.get(SHOPPING_FORM_FIELD.QUANTITY);
+  const categoryRaw = formData.get(SHOPPING_FORM_FIELD.CATEGORY_ID);
 
   let quantity: number | null = null;
   if (typeof quantityRaw === "string" && quantityRaw.length > 0) {
     const parsed = Number.parseInt(quantityRaw, 10);
     quantity = Number.isFinite(parsed) ? parsed : null;
+  }
+
+  let categoryId: string | null | undefined = undefined;
+  if (categoryRaw !== null) {
+    categoryId =
+      typeof categoryRaw === "string" && categoryRaw.length > 0 ? categoryRaw : null;
   }
 
   return {
@@ -178,6 +186,7 @@ export function parseShoppingItemUpdateFromForm(formData: FormData): {
     checked:
       checkedRaw === "true" ? true : checkedRaw === "false" ? false : null,
     quantity,
+    categoryId,
   };
 }
 

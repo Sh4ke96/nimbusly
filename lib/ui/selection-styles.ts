@@ -37,7 +37,7 @@ export function selectionPickerTileClasses(selected: boolean) {
 const SELECTION_PICKER_TILE_BUTTON_BASE =
   "flex cursor-pointer items-center rounded-none px-3 py-2.5 text-left text-sm font-medium transition-colors";
 
-/** Grid tile button — combines base layout with {@link selectionPickerTileClasses}. */
+/** Grid tile button - combines base layout with {@link selectionPickerTileClasses}. */
 export function selectionPickerTileButtonClasses(
   selected: boolean,
   className?: string

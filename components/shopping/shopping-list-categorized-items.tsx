@@ -54,6 +54,7 @@ interface ShoppingListCategorizedItemsProps {
 function SortableCategorySection({
   group,
   listId,
+  categories,
   expanded,
   onToggle,
   onItemDragEnd,
@@ -61,6 +62,7 @@ function SortableCategorySection({
 }: {
   group: ShoppingCategoryGroup;
   listId: string;
+  categories: ShoppingListCategory[];
   expanded: boolean;
   onToggle: () => void;
   onItemDragEnd: (categoryKey: string, event: DragEndEvent) => void;
@@ -166,6 +168,7 @@ function SortableCategorySection({
                       key={item.id}
                       item={item}
                       listId={listId}
+                      categories={categories}
                       onChanged={onChanged}
                     />
                   ))}
@@ -304,6 +307,7 @@ export function ShoppingListCategorizedItems({
               key={group.key}
               group={group}
               listId={listId}
+              categories={categories}
               expanded={!collapsedKeys.has(group.key)}
               onToggle={() => toggleCategoryCollapsed(group.key)}
               onItemDragEnd={handleItemDragEnd}

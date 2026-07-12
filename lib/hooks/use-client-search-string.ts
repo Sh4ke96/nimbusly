@@ -1,20 +1,27 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { useSyncExternalStore } from "react";
 
-/**
- * Current query string (no leading `?`) without `useSearchParams`.
- * Use in persistent layout chrome so navigation does not suspend/unmount shell UI.
- */
+function subscribe(onStoreChange: () => void): () => void {
+  window.addEventListener("popstate", onStoreChange);
+  return () => window.removeEventListener("popstate", onStoreChange);
+}
+
+function getServerSearchSnapshot(): string {
+  return "";
+}
+
 export function useClientSearchString(): string {
   const pathname = usePathname();
 
-  if (typeof window === "undefined") {
-    return "";
-  }
-
-  // Re-read after soft navigations when pathname updates.
-  void pathname;
-  const raw = window.location.search;
-  return raw.startsWith("?") ? raw.slice(1) : raw;
+  return useSyncExternalStore(
+    subscribe,
+    () => {
+      void pathname;
+      const raw = window.location.search;
+      return raw.startsWith("?") ? raw.slice(1) : raw;
+    },
+    getServerSearchSnapshot
+  );
 }

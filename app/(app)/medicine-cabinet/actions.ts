@@ -237,10 +237,13 @@ export async function updateMedicineItem(
       "id, name, form_type, quantity, expiry_date, availability, location, notes, taken_by, family_id, created_by"
     )
     .eq("id", id)
-    .eq("created_by", user.id)
     .maybeSingle();
 
   if (!existing) return { error: t.medicineCabinet.errorNotOwner };
+
+  const canEdit =
+    existing.created_by === user.id || existing.taken_by === user.id;
+  if (!canEdit) return { error: t.medicineCabinet.errorNotOwner };
 
   const formType = parsed.formType!;
   const availability = parsed.availability!;
@@ -264,8 +267,7 @@ export async function updateMedicineItem(
       taken_by: takenBy,
       updated_at: new Date().toISOString(),
     })
-    .eq("id", id)
-    .eq("created_by", user.id);
+    .eq("id", id);
 
   if (error) return { error: t.medicineCabinet.errorGeneric };
 

@@ -14,6 +14,7 @@ const base = {
   person_name: "Anna",
   birth_month: 6,
   birth_day: 14,
+  birth_year: null,
   description: "",
 };
 

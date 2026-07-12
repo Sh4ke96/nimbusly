@@ -10,6 +10,7 @@ import {
 } from "@/lib/constants/chores";
 import {
   computeChoreStateAfterOccurrenceComplete,
+  computeChoreStateAfterOccurrenceUncomplete,
   isChoreOccurrenceCompleted,
   isOccurrenceInChoreSeries,
   resolveOccurrenceDateToComplete,
@@ -380,6 +381,96 @@ export async function completeChoreOccurrence(
         ? t.chores.completedSuccess
         : t.chores.completedOccurrenceSuccess,
   };
+}
+
+export async function uncompleteChoreOccurrence(
+  _prev: AccountActionState,
+  formData: FormData
+): Promise<AccountActionState> {
+  const t = await getServerT();
+  const { supabase, user } = await requireUser();
+  if (!user) return { error: t.account.errorUnauthorized };
+
+  const { id, occurrenceDate } = parseChoreOccurrenceCompleteFromForm(formData);
+
+  if (!id || !isValidChoreDateString(occurrenceDate)) {
+    return { error: t.chores.errorInvalidOccurrenceDate };
+  }
+
+  const { data: existing } = await supabase
+    .from("chore_tasks")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (!existing) return { error: t.chores.errorNotOwner };
+
+  if (existing.family_id === null && existing.created_by !== user.id) {
+    return { error: t.chores.errorNotOwner };
+  }
+
+  const chore = choreTaskFromRow(existing);
+
+  if (!isOccurrenceInChoreSeries(chore, occurrenceDate)) {
+    return { error: t.chores.errorInvalidOccurrenceDate };
+  }
+
+  if (!isChoreOccurrenceCompleted(chore, occurrenceDate)) {
+    return { success: t.chores.uncompletedOccurrenceSuccess };
+  }
+
+  const next = computeChoreStateAfterOccurrenceUncomplete(chore, occurrenceDate);
+
+  const { error } = await supabase
+    .from("chore_tasks")
+    .update({
+      completed_dates: next.completed_dates,
+      due_date: next.due_date,
+      status: next.status,
+      completed_at: next.completed_at,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", id);
+
+  if (error) return { error: t.chores.errorGeneric };
+
+  const { profile, familyId } = await getProfileFamilyContext(supabase, user.id);
+  if (familyId && profile) {
+    const { data: members } = await supabase
+      .from("profiles")
+      .select("id, first_name, last_name")
+      .eq("family_id", familyId);
+
+    const after = { ...chore, ...next };
+    const changeSummary = buildChoreChangeSummary(
+      chore,
+      after,
+      t.chores,
+      (assigneeId) =>
+        resolveAssigneeLabel(assigneeId, profile, members ?? [], t.chores.assigneeUnassigned)
+    );
+
+    try {
+      await notifyFamilyMembers(supabase, {
+        type: NOTIFICATION_TYPE.CHORE_UPDATED,
+        actorId: user.id,
+        actorName: getDisplayName(profile),
+        familyId,
+        body: changeSummary,
+        payload: {
+          chore_task_id: id,
+          actor_id: user.id,
+          family_id: familyId,
+          change_summary: changeSummary,
+        },
+        onlyRecipientIds: resolveAssigneeNotificationRecipients(chore.assigned_to),
+      });
+    } catch {
+      // Best-effort
+    }
+  }
+
+  return { success: t.chores.uncompletedOccurrenceSuccess };
 }
 
 export async function setChoreTaskStatus(

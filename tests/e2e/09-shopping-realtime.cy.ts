@@ -1,6 +1,6 @@
 import type { CreatedTestUser } from "../support/commands";
 
-describe("Zakupy — realtime", () => {
+describe("Zakupy - realtime", () => {
   let testUser: CreatedTestUser;
 
   before(() => {

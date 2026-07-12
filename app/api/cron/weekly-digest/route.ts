@@ -89,8 +89,8 @@ export async function GET(request: Request) {
       });
       const subject =
         lang === LANG.PL
-          ? `Nimbusly — tygodniowe podsumowanie (${itemCount})`
-          : `Nimbusly — weekly summary (${itemCount})`;
+          ? `Nimbusly - tygodniowe podsumowanie (${itemCount})`
+          : `Nimbusly - weekly summary (${itemCount})`;
       const result = await sendReminderEmail({ to: email, subject, html });
       if (result.sent) sent += 1;
     } catch (error) {

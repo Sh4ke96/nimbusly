@@ -12,6 +12,8 @@ import {
   normalizeRestaurantName,
   parseRestaurantIdFromForm,
   parseRestaurantPlaceFromForm,
+  parseRestaurantVisitStatusFromForm,
+  dateToRestaurantDateString,
 } from "@/lib/restaurants/types";
 import { RESTAURANT_VISIT_STATUS } from "@/lib/constants/restaurants";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
@@ -255,4 +257,89 @@ export async function deleteRestaurantPlace(
   }
 
   return { success: t.restaurants.deletedSuccess };
+}
+
+export async function setRestaurantVisitStatus(
+  _prev: AccountActionState,
+  formData: FormData
+): Promise<AccountActionState> {
+  const t = await getServerT();
+  const { supabase, user } = await requireUser();
+
+  if (!user) return { error: t.account.errorUnauthorized };
+
+  const { id, visitStatus: statusRaw } = parseRestaurantVisitStatusFromForm(formData);
+
+  if (!id || !isValidRestaurantVisitStatus(statusRaw)) {
+    return { error: t.restaurants.errorVisitStatusRequired };
+  }
+
+  const { data: existing } = await supabase
+    .from("restaurant_places")
+    .select(
+      "id, name, venue_type, visit_status, rating, comment, notes, address, visited_at, family_id, created_by"
+    )
+    .eq("id", id)
+    .eq("created_by", user.id)
+    .maybeSingle();
+
+  if (!existing) return { error: t.restaurants.errorNotOwner };
+  if (existing.visit_status === statusRaw) {
+    return { success: t.restaurants.updatedSuccess };
+  }
+
+  const isVisited = statusRaw === RESTAURANT_VISIT_STATUS.VISITED;
+  const { error } = await supabase
+    .from("restaurant_places")
+    .update({
+      visit_status: statusRaw,
+      visited_at: isVisited
+        ? existing.visited_at ?? dateToRestaurantDateString(new Date())
+        : null,
+      rating: isVisited ? existing.rating : null,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", id)
+    .eq("created_by", user.id);
+
+  if (error) return { error: t.restaurants.errorGeneric };
+
+  const { profile } = await getProfileFamilyContext(supabase, user.id);
+
+  const familyId = existing.family_id;
+  if (familyId && profile?.account_mode === ACCOUNT_MODE.FAMILY) {
+    const actorName = getDisplayName(profile);
+    const before = restaurantPlaceFromRow(existing);
+    const after = restaurantPlaceFromRow({
+      ...existing,
+      visit_status: statusRaw,
+      visited_at: isVisited
+        ? existing.visited_at ?? dateToRestaurantDateString(new Date())
+        : null,
+      rating: isVisited ? existing.rating : null,
+    });
+    const changeSummary = buildRestaurantChangeSummary(before, after, t.restaurants);
+
+    try {
+      await notifyFamilyMembers(supabase, {
+        type: NOTIFICATION_TYPE.RESTAURANT_UPDATED,
+        actorId: user.id,
+        actorName,
+        familyId,
+        body: `${existing.name}${t.notifications.notificationBodySeparator}${changeSummary}`,
+        payload: {
+          restaurant_place_id: id,
+          restaurant_name: existing.name,
+          actor_id: user.id,
+          family_id: familyId,
+          change_summary: changeSummary,
+          updated_at: new Date().toISOString(),
+        },
+      });
+    } catch {
+      // Best-effort
+    }
+  }
+
+  return { success: t.restaurants.updatedSuccess };
 }

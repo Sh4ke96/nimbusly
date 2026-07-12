@@ -26,13 +26,15 @@ type MonthCalendarNavProps = {
 };
 
 export function MonthCalendarNav({ title, onPrev, onNext }: MonthCalendarNavProps) {
+  const t = useT();
+
   return (
     <div className="flex items-center justify-between gap-3">
-      <Button type="button" variant="outline" size="icon" onClick={onPrev}>
+      <Button type="button" variant="outline" size="icon" onClick={onPrev} aria-label={t.calendar.prevMonth}>
         <ChevronLeft className="size-4" />
       </Button>
       <h2 className="font-heading font-semibold text-lg">{title}</h2>
-      <Button type="button" variant="outline" size="icon" onClick={onNext}>
+      <Button type="button" variant="outline" size="icon" onClick={onNext} aria-label={t.calendar.nextMonth}>
         <ChevronRight className="size-4" />
       </Button>
     </div>

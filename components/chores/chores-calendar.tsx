@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import { format } from "date-fns";
 import { ChoreOccurrenceCompleteButton } from "@/components/chores/chore-occurrence-complete-button";
+import { ChoreOccurrenceUncompleteButton } from "@/components/chores/chore-occurrence-uncomplete-button";
 import {
   Tooltip,
   TooltipContent,
@@ -196,6 +197,16 @@ export function ChoresCalendar({
                       )}
                       {occurrence.isNextDue && !occurrence.isCompleted && (
                         <p className="text-xs opacity-90">{t.chores.calendarNextDue}</p>
+                      )}
+                      {occurrence.isCompleted && canComplete && (
+                        <div onClick={(e) => e.stopPropagation()}>
+                          <ChoreOccurrenceUncompleteButton
+                            taskId={occurrence.taskId}
+                            occurrenceDate={occurrence.date}
+                            appearance="inline"
+                            onSuccess={onChanged}
+                          />
+                        </div>
                       )}
                       {canComplete && !occurrence.isCompleted && (
                         <div onClick={(e) => e.stopPropagation()}>

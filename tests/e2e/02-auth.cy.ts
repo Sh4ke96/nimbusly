@@ -88,7 +88,7 @@ describe("Logowanie", () => {
   });
 });
 
-describe("Logowanie — użytkownik po onboardingu", () => {
+describe("Logowanie - użytkownik po onboardingu", () => {
   let testUser: CreatedTestUser;
 
   before(() => {

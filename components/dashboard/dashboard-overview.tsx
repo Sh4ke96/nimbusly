@@ -12,6 +12,8 @@ import { sortBirthdaysByUpcoming } from "@/lib/dashboard/birthdays";
 import { buildAttentionItems, sortAttentionItems } from "@/lib/dashboard/attention";
 import { formatMessage } from "@/lib/i18n/format";
 import { DashboardAttentionBanner } from "@/components/dashboard/dashboard-attention-banner";
+import { DashboardTodayBanner } from "@/components/dashboard/dashboard-today-banner";
+import { buildTodayItems } from "@/lib/dashboard/today";
 import {
   netBalance,
   sumExpensesOnly,
@@ -534,6 +536,22 @@ export function DashboardOverview() {
     t.dashboard,
   ]);
 
+  const todayItems = useMemo(
+    () =>
+      buildTodayItems({
+        choreTasks,
+        scheduleEntries,
+        birthdays,
+        labels: {
+          choreDue: (title) => formatMessage(t.dashboard.todayChoreDue, { title }),
+          scheduleToday: (description) =>
+            formatMessage(t.dashboard.todaySchedule, { description }),
+          birthdayToday: (name) => formatMessage(t.dashboard.todayBirthday, { name }),
+        },
+      }),
+    [choreTasks, scheduleEntries, birthdays, t.dashboard]
+  );
+
   const cardErrorById = useMemo(
     (): Record<DashboardOverviewCardId, boolean> => ({
       [DASHBOARD_OVERVIEW_CARD.BUDGET]: budgetError,
@@ -743,6 +761,8 @@ export function DashboardOverview() {
 
   return (
     <section className="space-y-4">
+      <DashboardTodayBanner items={todayItems} />
+
       <DashboardAttentionBanner
         items={attentionItems}
         pinnedKeys={layout.attentionPinned ?? []}

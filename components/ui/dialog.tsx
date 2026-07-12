@@ -185,7 +185,7 @@ function DialogContent({
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          "fixed z-50 rounded-none bg-popover text-sm text-popover-foreground ring-1 ring-foreground/10 duration-100 outline-none",
+          "fixed z-50 rounded-none bg-popover text-sm text-popover-foreground ring-1 ring-border duration-100 outline-none",
           "max-sm:inset-x-0 max-sm:flex max-sm:w-full max-sm:max-w-none max-sm:flex-col max-sm:gap-0 max-sm:translate-x-0 max-sm:translate-y-0 max-sm:p-0",
           mobilePositionClass,
           isMobileFullscreen && APP_NIMBUS_POPOVER_Z,

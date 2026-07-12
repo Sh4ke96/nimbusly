@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { describe, it, beforeEach, afterEach } from "node:test";
+import { describe, it } from "node:test";
 import { SHOPPING_COLLAPSED_CATEGORIES_STORAGE_PREFIX } from "@/lib/constants/shopping-lists";
 import {
   readCollapsedCategoryKeys,

@@ -39,6 +39,7 @@ export type Profile = {
   dashboard_overview_layout?: unknown;
   nimbus_companion_enabled?: boolean;
   nimbus_companion_quiet?: boolean;
+  quick_add_enabled?: boolean;
   push_notifications_enabled?: boolean;
   email_digest_enabled?: boolean;
   notification_quiet_hours_enabled?: boolean;

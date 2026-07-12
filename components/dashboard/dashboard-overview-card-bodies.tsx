@@ -22,6 +22,7 @@ import dynamic from "next/dynamic";
 import { MemberAvatar } from "@/components/member-avatar";
 import { RestaurantStarRating } from "@/components/restaurants/restaurant-star-rating";
 import { BigStat, EmptyHint, StatTile } from "@/components/dashboard/overview-cards/primitives";
+import { overviewAccentStyles } from "@/components/dashboard/sortable-overview-card";
 import { formatBirthdayLabel, type BirthdayEntry } from "@/lib/birthdays/types";
 import { daysUntilBirthday } from "@/lib/dashboard/birthdays";
 import {
@@ -34,6 +35,7 @@ import { MEDICINE_EXPIRY_STATUS } from "@/lib/constants/medicine";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DASHBOARD_OVERVIEW_CARD, type DashboardOverviewCardId } from "@/lib/constants/dashboard-overview";
+import { getAppModuleOverviewMeta } from "@/lib/constants/app-modules";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import type { Lang } from "@/lib/constants/lang";
 import { SCHEDULE_ENTRY_EMOJI, type ScheduleEntryType } from "@/lib/constants/schedule";
@@ -52,7 +54,49 @@ import type { PetCarePreviewRow } from "@/lib/pets/dashboard";
 import type { ChoreTask } from "@/lib/chores/types";
 import { formatPetDueCountdown } from "@/lib/pets/due";
 import type { ScheduleEntry } from "@/lib/schedule/types";
+import type { OverviewAccent } from "@/lib/constants/overview-accent";
+import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+function overviewAccent(cardId: DashboardOverviewCardId): OverviewAccent {
+  return getAppModuleOverviewMeta(cardId).overviewAccent;
+}
+
+function OverviewAccentIcon({
+  accent,
+  icon: Icon,
+}: {
+  accent: OverviewAccent;
+  icon: LucideIcon;
+}) {
+  const styles = overviewAccentStyles[accent];
+  return (
+    <span
+      className={cn(
+        "inline-flex size-6 shrink-0 items-center justify-center rounded-none",
+        styles.icon
+      )}
+    >
+      <Icon className="size-3.5" />
+    </span>
+  );
+}
+
+function OverviewAccentHint({
+  accent,
+  children,
+  className,
+}: {
+  accent: OverviewAccent;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <p className={cn("text-xs font-medium", overviewAccentStyles[accent].badge, className)}>
+      {children}
+    </p>
+  );
+}
 
 const BudgetOverviewMiniChart = dynamic(
   () =>
@@ -210,7 +254,8 @@ export function OverviewCardBody({
         </div>
       );
 
-    case DASHBOARD_OVERVIEW_CARD.SHOPPING:
+    case DASHBOARD_OVERVIEW_CARD.SHOPPING: {
+      const accent = overviewAccent(cardId);
       return lists.length === 0 ? (
         <EmptyHint icon={ListChecks} text={t.dashboard.shoppingListsEmpty} />
       ) : (
@@ -220,7 +265,7 @@ export function OverviewCardBody({
             label={formatMessage(t.dashboard.shoppingListsCount, {
               count: String(lists.length),
             })}
-            accent="orange"
+            accent={accent}
           />
           <ul className="space-y-1.5">
             {previewLists.map((list) => (
@@ -228,15 +273,17 @@ export function OverviewCardBody({
                 key={list.id}
                 className="flex items-center gap-2 text-sm border border-border bg-muted/20 px-2.5 py-2"
               >
-                <ListChecks className="size-3.5 shrink-0 text-orange-600 dark:text-orange-400" />
+                <OverviewAccentIcon accent={accent} icon={ListChecks} />
                 <span className="truncate font-medium">{list.name}</span>
               </li>
             ))}
           </ul>
         </div>
       );
+    }
 
-    case DASHBOARD_OVERVIEW_CARD.GIFTS:
+    case DASHBOARD_OVERVIEW_CARD.GIFTS: {
+      const accent = overviewAccent(cardId);
       return gifts.length === 0 ? (
         <EmptyHint icon={Gift} text={t.dashboard.giftsEmpty} />
       ) : (
@@ -246,7 +293,7 @@ export function OverviewCardBody({
             label={formatMessage(t.dashboard.giftsCount, {
               count: String(gifts.length),
             })}
-            accent="violet"
+            accent={accent}
           />
           <ul className="space-y-1.5">
             {previewGifts.map((idea) => (
@@ -260,8 +307,10 @@ export function OverviewCardBody({
           </ul>
         </div>
       );
+    }
 
-    case DASHBOARD_OVERVIEW_CARD.MEDICINE_CABINET:
+    case DASHBOARD_OVERVIEW_CARD.MEDICINE_CABINET: {
+      const accent = overviewAccent(cardId);
       return medicineItems.length === 0 ? (
         <EmptyHint icon={Cross} text={t.dashboard.medicineItemsEmpty} />
       ) : (
@@ -271,15 +320,15 @@ export function OverviewCardBody({
             label={formatMessage(t.dashboard.medicineItemsCount, {
               count: String(medicineItems.length),
             })}
-            accent="emerald"
+            accent={accent}
           />
           {expiringMedicinesCount > 0 ? (
             <>
-              <p className="text-xs text-emerald-800 dark:text-emerald-300 font-medium">
+              <OverviewAccentHint accent={accent}>
                 {formatMessage(t.dashboard.medicineExpiringCount, {
                   count: String(expiringMedicinesCount),
                 })}
-              </p>
+              </OverviewAccentHint>
               <ul className="space-y-1.5">
                 {previewMedicines.map((item) => {
                   if (!item.expiry_date) {
@@ -288,7 +337,7 @@ export function OverviewCardBody({
                         key={item.id}
                         className="flex items-center gap-2 text-sm border border-border bg-muted/20 px-2.5 py-2"
                       >
-                        <Cross className="size-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                        <OverviewAccentIcon accent={accent} icon={Cross} />
                         <span className="truncate font-medium">{item.name}</span>
                       </li>
                     );
@@ -306,7 +355,7 @@ export function OverviewCardBody({
                       key={item.id}
                       className="flex items-center gap-2 text-sm border border-border bg-muted/20 px-2.5 py-2"
                     >
-                      <Cross className="size-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                      <OverviewAccentIcon accent={accent} icon={Cross} />
                       <span className="truncate font-medium flex-1 min-w-0">{item.name}</span>
                       {whenLabel && (
                         <span
@@ -330,8 +379,10 @@ export function OverviewCardBody({
           ) : null}
         </div>
       );
+    }
 
-    case DASHBOARD_OVERVIEW_CARD.WATCHLIST:
+    case DASHBOARD_OVERVIEW_CARD.WATCHLIST: {
+      const accent = overviewAccent(cardId);
       return watchlistItems.length === 0 ? (
         <EmptyHint icon={Clapperboard} text={t.dashboard.watchlistItemsEmpty} />
       ) : (
@@ -341,22 +392,22 @@ export function OverviewCardBody({
             label={formatMessage(t.dashboard.watchlistItemsCount, {
               count: String(watchlistItems.length),
             })}
-            accent="indigo"
+            accent={accent}
           />
           {toWatchCount > 0 && (
             <>
-              <p className="text-xs text-indigo-800 dark:text-indigo-300 font-medium">
+              <OverviewAccentHint accent={accent}>
                 {formatMessage(t.dashboard.watchlistToWatchCount, {
                   count: String(toWatchCount),
                 })}
-              </p>
+              </OverviewAccentHint>
               <ul className="space-y-1.5">
                 {previewWatchlistItems.map((item) => (
                   <li
                     key={item.id}
                     className="flex items-center gap-2 text-sm border border-border bg-muted/20 px-2.5 py-2"
                   >
-                    <Clapperboard className="size-3.5 shrink-0 text-indigo-600 dark:text-indigo-400" />
+                    <OverviewAccentIcon accent={accent} icon={Clapperboard} />
                     <span className="truncate font-medium flex-1 min-w-0">{item.title}</span>
                     <span className="shrink-0 text-[10px] font-medium text-muted-foreground uppercase">
                       {t.watchlist.statusLabels[item.status]}
@@ -368,8 +419,10 @@ export function OverviewCardBody({
           )}
         </div>
       );
+    }
 
-    case DASHBOARD_OVERVIEW_CARD.RESTAURANTS:
+    case DASHBOARD_OVERVIEW_CARD.RESTAURANTS: {
+      const accent = overviewAccent(cardId);
       return restaurantPlaces.length === 0 ? (
         <EmptyHint icon={UtensilsCrossed} text={t.dashboard.restaurantsEmpty} />
       ) : (
@@ -379,14 +432,14 @@ export function OverviewCardBody({
             label={formatMessage(t.dashboard.restaurantsCount, {
               count: String(restaurantPlaces.length),
             })}
-            accent="amber"
+            accent={accent}
           />
           {plannedRestaurantCount > 0 && (
-            <p className="text-xs text-amber-800 dark:text-amber-300 font-medium">
+            <OverviewAccentHint accent={accent}>
               {formatMessage(t.dashboard.restaurantsPlannedCount, {
                 count: String(plannedRestaurantCount),
               })}
-            </p>
+            </OverviewAccentHint>
           )}
           {previewRestaurantPlaces.length > 0 ? (
             <>
@@ -399,7 +452,7 @@ export function OverviewCardBody({
                     key={place.id}
                     className="flex items-center gap-2 text-sm border border-border bg-muted/20 px-2.5 py-2"
                   >
-                    <UtensilsCrossed className="size-3.5 shrink-0 text-amber-600 dark:text-amber-400" />
+                    <OverviewAccentIcon accent={accent} icon={UtensilsCrossed} />
                     <span className="truncate font-medium flex-1 min-w-0">{place.name}</span>
                     {place.rating !== null && (
                       <RestaurantStarRating value={place.rating} size="sm" />
@@ -415,8 +468,11 @@ export function OverviewCardBody({
           )}
         </div>
       );
+    }
 
-    case DASHBOARD_OVERVIEW_CARD.PETS:
+    case DASHBOARD_OVERVIEW_CARD.PETS: {
+      const accent = overviewAccent(cardId);
+      const accentStyles = overviewAccentStyles[accent];
       return pets.length === 0 ? (
         <EmptyHint icon={PawPrint} text={t.dashboard.petsEmpty} />
       ) : (
@@ -426,15 +482,15 @@ export function OverviewCardBody({
             label={formatMessage(t.dashboard.petsCount, {
               count: String(pets.length),
             })}
-            accent="rose"
+            accent={accent}
           />
           {duePetCareCount > 0 && (
             <>
-              <p className="text-xs text-rose-800 dark:text-rose-300 font-medium">
+              <OverviewAccentHint accent={accent}>
                 {formatMessage(t.dashboard.petsDueCount, {
                   count: String(duePetCareCount),
                 })}
-              </p>
+              </OverviewAccentHint>
               <p className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
                 {t.dashboard.petsDueSoonHeading}
               </p>
@@ -447,11 +503,16 @@ export function OverviewCardBody({
                       key={item.id}
                       className="flex items-center gap-2 text-sm border border-border bg-muted/20 px-2.5 py-2"
                     >
-                      <PawPrint className="size-3.5 shrink-0 text-rose-600 dark:text-rose-400" />
+                      <OverviewAccentIcon accent={accent} icon={PawPrint} />
                       <span className="truncate font-medium flex-1 min-w-0">
                         {petName ? `${petName}: ${item.name}` : item.name}
                       </span>
-                      <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wide px-2 py-1 border rounded-none bg-rose-500/10 text-rose-800 dark:text-rose-300 border-rose-500/20">
+                      <span
+                        className={cn(
+                          "shrink-0 text-[10px] font-semibold uppercase tracking-wide px-2 py-1 border rounded-none",
+                          accentStyles.badge
+                        )}
+                      >
                         {whenLabel}
                       </span>
                     </li>
@@ -462,8 +523,10 @@ export function OverviewCardBody({
           )}
         </div>
       );
+    }
 
-    case DASHBOARD_OVERVIEW_CARD.CHORES:
+    case DASHBOARD_OVERVIEW_CARD.CHORES: {
+      const accent = overviewAccent(cardId);
       return activeChoreCount === 0 ? (
         <EmptyHint icon={ListChecks} text={t.dashboard.choresEmpty} />
       ) : (
@@ -473,7 +536,7 @@ export function OverviewCardBody({
             label={formatMessage(t.dashboard.choresCount, {
               count: String(activeChoreCount),
             })}
-            accent="orange"
+            accent={accent}
           />
           {overdueChoreCount > 0 && (
             <p className="text-xs text-destructive font-medium">
@@ -489,7 +552,7 @@ export function OverviewCardBody({
                   key={task.id}
                   className="flex items-center gap-2 text-sm border border-border bg-muted/20 px-2.5 py-2"
                 >
-                  <ListChecks className="size-3.5 shrink-0 text-orange-600 dark:text-orange-400" />
+                  <OverviewAccentIcon accent={accent} icon={ListChecks} />
                   <span className="truncate font-medium flex-1 min-w-0">{task.title}</span>
                   <span className="shrink-0 text-[10px] font-medium text-muted-foreground uppercase">
                     {t.chores.statusLabels[task.status]}
@@ -500,8 +563,10 @@ export function OverviewCardBody({
           )}
         </div>
       );
+    }
 
-    case DASHBOARD_OVERVIEW_CARD.NOTES:
+    case DASHBOARD_OVERVIEW_CARD.NOTES: {
+      const accent = overviewAccent(cardId);
       return notes.length === 0 ? (
         <EmptyHint icon={StickyNote} text={t.dashboard.notesEmpty} />
       ) : (
@@ -511,7 +576,7 @@ export function OverviewCardBody({
             label={formatMessage(t.dashboard.notesCount, {
               count: String(notes.length),
             })}
-            accent="amber"
+            accent={accent}
           />
           <ul className="space-y-1.5">
             {previewNotes.map((note) => (
@@ -525,8 +590,11 @@ export function OverviewCardBody({
           </ul>
         </div>
       );
+    }
 
-    case DASHBOARD_OVERVIEW_CARD.BIRTHDAYS:
+    case DASHBOARD_OVERVIEW_CARD.BIRTHDAYS: {
+      const accent = overviewAccent(cardId);
+      const accentStyles = overviewAccentStyles[accent];
       return upcomingBirthdays.length === 0 ? (
         <EmptyHint icon={Cake} text={t.dashboard.birthdaysEmpty} />
       ) : (
@@ -545,7 +613,12 @@ export function OverviewCardBody({
                 key={entry.id}
                 className="flex items-center gap-3 border border-border bg-muted/20 px-3 py-2.5"
               >
-                <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-none bg-rose-500/10 text-rose-700 dark:text-rose-400">
+                <span
+                  className={cn(
+                    "inline-flex size-9 shrink-0 items-center justify-center rounded-none",
+                    accentStyles.icon
+                  )}
+                >
                   <Cake className="size-4" />
                 </span>
                 <div className="min-w-0 flex-1">
@@ -558,7 +631,7 @@ export function OverviewCardBody({
                   className={cn(
                     "shrink-0 text-[10px] font-semibold uppercase tracking-wide px-2 py-1 border rounded-none",
                     days === 0
-                      ? "bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-500/25"
+                      ? accentStyles.badge
                       : "bg-muted text-muted-foreground border-border"
                   )}
                 >
@@ -569,8 +642,11 @@ export function OverviewCardBody({
           })}
         </ul>
       );
+    }
 
-    case DASHBOARD_OVERVIEW_CARD.CALENDAR:
+    case DASHBOARD_OVERVIEW_CARD.CALENDAR: {
+      const accent = overviewAccent(cardId);
+      const accentStyles = overviewAccentStyles[accent];
       return monthScheduleEntries.length === 0 ? (
         <EmptyHint icon={CalendarDays} text={t.dashboard.scheduleEmpty} />
       ) : (
@@ -580,7 +656,7 @@ export function OverviewCardBody({
             label={formatMessage(t.dashboard.scheduleThisMonth, {
               count: String(monthScheduleEntries.length),
             })}
-            accent="sky"
+            accent={accent}
           />
           <ul className="space-y-1.5">
             {scheduleByType.slice(0, 4).map(([type, count]) => (
@@ -599,7 +675,7 @@ export function OverviewCardBody({
                     )}
                   </span>
                 </span>
-                <span className="font-heading font-semibold text-sky-800 dark:text-sky-300 shrink-0">
+                <span className={cn("font-heading font-semibold shrink-0", accentStyles.badge)}>
                   {count}
                 </span>
               </li>
@@ -607,6 +683,7 @@ export function OverviewCardBody({
           </ul>
         </div>
       );
+    }
 
     case DASHBOARD_OVERVIEW_CARD.FAMILY:
       return profile?.account_mode === ACCOUNT_MODE.FAMILY && members.length > 0 ? (

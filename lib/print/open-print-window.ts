@@ -1,4 +1,4 @@
-/** Opens print preview via hidden iframe — avoids browser headers with URL/title. */
+/** Opens print preview via hidden iframe - avoids browser headers with URL/title. */
 export function openPrintWindow(html: string): boolean {
   const iframe = document.createElement("iframe");
   iframe.setAttribute("title", "print");

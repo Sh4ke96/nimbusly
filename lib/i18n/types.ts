@@ -476,6 +476,12 @@ export type Dict = {
     choresOverdueCount: string;
     notesCount: string;
     notesEmpty: string;
+    todayHeading: string;
+    todayEmpty: string;
+    todayChoreDue: string;
+    todaySchedule: string;
+    todayBirthday: string;
+    openFamilyCalendar: string;
     attentionHeading: string;
     attentionCount: string;
     attentionEmptyTourHint: string;
@@ -514,6 +520,10 @@ export type Dict = {
     personNamePlaceholder: string;
     dateLabel: string;
     dateHint: string;
+    dateHintWithYear: string;
+    includeBirthYearLabel: string;
+    includeBirthYearHint: string;
+    ageDisplay: string;
     pickDate: string;
     dayLabel: string;
     monthLabel: string;
@@ -525,6 +535,7 @@ export type Dict = {
     empty: string;
     addedBy: string;
     editBtn: string;
+    deleteBtn: string;
     editTitle: string;
     createdSuccess: string;
     updatedSuccess: string;
@@ -532,6 +543,7 @@ export type Dict = {
     errorPersonName: string;
     errorDateRequired: string;
     errorInvalidDate: string;
+    errorInvalidBirthYear: string;
     errorNotOwner: string;
     errorGeneric: string;
     changeSummaryName: string;
@@ -551,6 +563,7 @@ export type Dict = {
     addTitle: string;
     editTitle: string;
     editBtn: string;
+    deleteBtn: string;
     printBtn: string;
     printTitle: string;
     dateLabel: string;
@@ -601,6 +614,7 @@ export type Dict = {
     addTitle: string;
     editTitle: string;
     editBtn: string;
+    deleteBtn: string;
     recipientLabel: string;
     recipientHint: string;
     recipientFamilyMember: string;
@@ -651,6 +665,7 @@ export type Dict = {
     addTitle: string;
     editTitle: string;
     editBtn: string;
+    deleteBtn: string;
     nameLabel: string;
     nameHint: string;
     namePlaceholder: string;
@@ -727,6 +742,7 @@ export type Dict = {
     addTitle: string;
     editTitle: string;
     editBtn: string;
+    deleteBtn: string;
     titleLabel: string;
     titleHint: string;
     titlePlaceholder: string;
@@ -791,6 +807,7 @@ export type Dict = {
     addTitle: string;
     editTitle: string;
     editBtn: string;
+    deleteBtn: string;
     nameLabel: string;
     nameHint: string;
     namePlaceholder: string;
@@ -858,6 +875,8 @@ export type Dict = {
     addTitle: string;
     editTitle: string;
     editBtn: string;
+    deleteBtn: string;
+    deletePetBtn: string;
     addCareBtn: string;
     addCareTitle: string;
     editCareTitle: string;
@@ -1014,6 +1033,8 @@ export type Dict = {
     calendarAddOnDay: string;
     completedDaysProgress: string;
     completedOccurrenceSuccess: string;
+    uncompleteOccurrenceBtn: string;
+    uncompletedOccurrenceSuccess: string;
     occurrenceCompletedLabel: string;
     calendarMonths: string[];
     calendarWeekdays: string[];
@@ -1078,6 +1099,9 @@ export type Dict = {
     visibleTo: string;
     addCategoryBtn: string;
     addCategoryTitle: string;
+    editCategoryTitle: string;
+    editCategoryBtn: string;
+    deleteCategoryBtn: string;
     categoryNameLabel: string;
     categoryNamePlaceholder: string;
     categoryEmojiLabel: string;
@@ -1143,6 +1167,9 @@ export type Dict = {
     itemsHeading: string;
     addItemBtn: string;
     addItemDialogTitle: string;
+    editItemDialogTitle: string;
+    editItemBtn: string;
+    saveItemBtn: string;
     addItemFabLabel: string;
     itemLabel: string;
     itemPlaceholder: string;
@@ -1267,6 +1294,9 @@ export type Dict = {
     addIncomeTitle: string;
     saveExpenseBtn: string;
     saveIncomeBtn: string;
+    editExpenseBtn: string;
+    editExpenseTitle: string;
+    expenseUpdatedSuccess: string;
     deleteExpenseBtn: string;
     deleteIncomeBtn: string;
     incomeCategoryLabel: string;
@@ -1356,6 +1386,17 @@ export type Dict = {
       other_income: string;
     };
   };
+  calendar: {
+    prevMonth: string;
+    nextMonth: string;
+  };
+  familyCalendar: {
+    title: string;
+    subtitle: string;
+    legendBirthday: string;
+    legendSchedule: string;
+    legendChore: string;
+  };
   theme: {
     toggleLabel: string;
   };
@@ -1368,6 +1409,8 @@ export type Dict = {
     loading: string;
     viewAll: string;
     markRead: string;
+    dismiss: string;
+    dismissedSuccess: string;
     markAllRead: string;
     markedRead: string;
     allMarkedRead: string;
@@ -1450,6 +1493,7 @@ export type Dict = {
     openPets: string;
     openChores: string;
     openNotes: string;
+    groupedPushTitle: string;
     notificationBodySeparator: string;
   };
   module: {
@@ -1463,6 +1507,17 @@ export type Dict = {
     placeholder: string;
     empty: string;
     loading: string;
+    quickAddHeading: string;
+    quickAddChore: string;
+    quickAddNote: string;
+    quickAddShopping: string;
+    quickAddShoppingListLabel: string;
+    quickAddSubmit: string;
+    quickAddFabLabel: string;
+    settingLabel: string;
+    settingDesc: string;
+    settingSaveError: string;
+    searchOnlyHint: string;
   };
   companion: {
     name: string;

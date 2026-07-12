@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-/** global-error replaces the app shell — force full reloads instead of soft navigations. */
+/** global-error replaces the app shell - force full reloads instead of soft navigations. */
 export function useErrorPageHardNavigation() {
   useEffect(() => {
     function onClick(event: MouseEvent) {

@@ -4,7 +4,7 @@ import { useMemo, useState, useCallback } from "react";
 import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
-import { Pencil } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import { AppHeader } from "@/components/app/app-header";
 import { AppPage } from "@/components/app/app-page";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
@@ -20,6 +20,10 @@ import { FamilyRealtimeHint } from "@/components/ui/family-realtime-hint";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PET_FILTER_ALL } from "@/lib/constants/pets";
+import { PET_FORM_FIELD } from "@/lib/pets/types";
+import { deletePet } from "@/app/(app)/pets/actions";
+import { useActionState } from "react";
+import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
 import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import {
@@ -57,9 +61,12 @@ export function PetsView() {
   const [careEditOpen, setCareEditOpen] = useState<boolean>(false);
   const [editingPet, setEditingPet] = useState<Pet | null>(null);
   const [petEditOpen, setPetEditOpen] = useState<boolean>(false);
+  const [deletePetState, deletePetAction, deletePetPending] = useActionState(deletePet, null);
 
   useStoreBootstrap(loaded, error, fetchAll);
   const onDataChanged = useModuleRefresh(fetchAll);
+
+  useActionFeedback(deletePetState, onDataChanged);
 
   const onRealtimeChange = useCallback(() => {
     void fetchAll(true);
@@ -155,16 +162,31 @@ export function PetsView() {
                       ({t.pets.speciesLabels[pet.species]})
                     </span>
                     {isOwner && (
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="size-6 cursor-pointer text-muted-foreground hover:text-foreground"
-                        onClick={() => openPetEdit(pet)}
-                        aria-label={t.pets.editBtn}
-                      >
-                        <Pencil className="size-3" />
-                      </Button>
+                      <>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="size-6 cursor-pointer text-muted-foreground hover:text-foreground"
+                          onClick={() => openPetEdit(pet)}
+                          aria-label={t.pets.editBtn}
+                        >
+                          <Pencil className="size-3" />
+                        </Button>
+                        <form action={deletePetAction}>
+                          <input type="hidden" name={PET_FORM_FIELD.ID} value={pet.id} />
+                          <Button
+                            type="submit"
+                            variant="ghost"
+                            size="icon"
+                            disabled={deletePetPending}
+                            className="size-6 cursor-pointer text-muted-foreground hover:text-destructive"
+                            aria-label={t.pets.deletePetBtn}
+                          >
+                            <Trash2 className="size-3" />
+                          </Button>
+                        </form>
+                      </>
                     )}
                   </div>
                 );

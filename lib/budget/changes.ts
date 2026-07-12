@@ -42,5 +42,5 @@ export function formatBudgetExpenseNotificationDetail(
     category: categoryLabel,
   });
   if (!desc) return base;
-  return `${base} — ${desc}`;
+  return `${base} - ${desc}`;
 }

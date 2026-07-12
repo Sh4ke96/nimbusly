@@ -23,6 +23,7 @@ export function mapProfileRow(row: ProfileRow): Profile {
     dashboard_overview_layout: row.dashboard_overview_layout,
     nimbus_companion_enabled: row.nimbus_companion_enabled,
     nimbus_companion_quiet: row.nimbus_companion_quiet,
+    quick_add_enabled: row.quick_add_enabled,
     push_notifications_enabled: row.push_notifications_enabled,
     email_digest_enabled: row.email_digest_enabled,
     notification_quiet_hours_enabled: row.notification_quiet_hours_enabled,

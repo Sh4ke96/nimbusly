@@ -153,3 +153,26 @@ export function computeChoreStateAfterOccurrenceComplete(
     completed_at: null,
   };
 }
+
+export function computeChoreStateAfterOccurrenceUncomplete(
+  task: ChoreCompletionFields,
+  occurrenceDate: string
+): {
+  completed_dates: string[];
+  due_date: string | null;
+  status: ChoreStatus;
+  completed_at: string | null;
+} {
+  const completed_dates = normalizeCompletedDates(
+    normalizeCompletedDates(task.completed_dates).filter((date) => date !== occurrenceDate)
+  );
+
+  const nextDue = findNextIncompleteOccurrenceDate({ ...task, completed_dates });
+
+  return {
+    completed_dates,
+    due_date: nextDue ?? occurrenceDate,
+    status: CHORE_STATUS.PENDING,
+    completed_at: null,
+  };
+}

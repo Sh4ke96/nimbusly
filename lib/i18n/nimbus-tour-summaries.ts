@@ -13,7 +13,7 @@ function summary(
 
 export const nimbusModuleSummariesPl: Record<string, SummaryCopy> = {
   budget: summary(
-    "Budżet — podsumowanie",
+    "Budżet - podsumowanie",
     "Masz już obraz modułu budżetu. Oto skrót tego, co warto zapamiętać.",
     [
       "Tworzysz osobne budżety i wybierasz aktywny z listy.",
@@ -22,13 +22,13 @@ export const nimbusModuleSummariesPl: Record<string, SummaryCopy> = {
     ],
     [
       "Dodaj pierwszy budżet i wpisy na bieżący miesiąc.",
-      "Ustaw daty ważności leków w apteczce — uzupełni to domowy obraz finansów i zdrowia.",
+      "Ustaw daty ważności leków w apteczce - uzupełni to domowy obraz finansów i zdrowia.",
       "Wróć do Nimbusa po krótki przewodnik po innym module.",
     ]
   ),
   shopping: summary(
-    "Zakupy — podsumowanie",
-    "Listy zakupów są gotowe do użycia — solo lub w rodzinie na żywo.",
+    "Zakupy - podsumowanie",
+    "Listy zakupów są gotowe do użycia - solo lub w rodzinie na żywo.",
     [
       "Każda lista ma własne produkty do odhaczania.",
       "Rodzina widzi zmiany na liście w czasie rzeczywistym.",
@@ -41,7 +41,7 @@ export const nimbusModuleSummariesPl: Record<string, SummaryCopy> = {
     ]
   ),
   gifts: summary(
-    "Prezenty — podsumowanie",
+    "Prezenty - podsumowanie",
     "Moduł prezentów zbiera pomysły, zanim znikną z pamięci.",
     [
       "Pomysły można filtrować po odbiorcy.",
@@ -50,13 +50,13 @@ export const nimbusModuleSummariesPl: Record<string, SummaryCopy> = {
     ],
     [
       "Dodaj pierwszy pomysł z odbiorcą.",
-      "Uzupełnij urodziny bliskich — łatwiej planować sezon prezentowy.",
+      "Uzupełnij urodziny bliskich - łatwiej planować sezon prezentowy.",
       "Oznaczaj kupione prezenty, gdy sezon ruszy.",
     ]
   ),
   birthdays: summary(
-    "Urodziny — podsumowanie",
-    "Daty urodzin są pod kontrolą — kalendarz i lista nadchodzących.",
+    "Urodziny - podsumowanie",
+    "Daty urodzin są pod kontrolą - kalendarz i lista nadchodzących.",
     [
       "Kalendarz pokazuje urodziny w kontekście miesiąca.",
       "Lista po prawej sortuje najbliższe daty.",
@@ -65,11 +65,11 @@ export const nimbusModuleSummariesPl: Record<string, SummaryCopy> = {
     [
       "Dodaj urodziny najbliższych osób.",
       "Połącz z modułem prezentów na pomysły upominków.",
-      "Sprawdź harmonogram — unikniesz kolizji z wydarzeniami.",
+      "Sprawdź harmonogram - unikniesz kolizji z wydarzeniami.",
     ]
   ),
   schedule: summary(
-    "Grafik — podsumowanie",
+    "Grafik - podsumowanie",
     "Harmonogram łączy wydarzenia jedno- i wielodniowe w jednym kalendarzu.",
     [
       "Kalendarz i lista miesiąca uzupełniają się nawzajem.",
@@ -78,12 +78,12 @@ export const nimbusModuleSummariesPl: Record<string, SummaryCopy> = {
     ],
     [
       "Dodaj najbliższe wydarzenie lub wyjazd.",
-      "Uzupełnij urodziny — łatwiej planować wspólny czas.",
+      "Uzupełnij urodziny - łatwiej planować wspólny czas.",
       "Sprawdź panel „Wymaga uwagi” na dashboardzie.",
     ]
   ),
   medicine: summary(
-    "Apteczka — podsumowanie",
+    "Apteczka - podsumowanie",
     "Domowa apteczka z datami ważności i filtrowaniem.",
     [
       "Każdy lek ma formę, ilość i termin ważności.",
@@ -97,8 +97,8 @@ export const nimbusModuleSummariesPl: Record<string, SummaryCopy> = {
     ]
   ),
   watchlist: summary(
-    "Watchlista — podsumowanie",
-    "Filmy i seriale w jednej liście — solo lub wspólnie.",
+    "Watchlista - podsumowanie",
+    "Filmy i seriale w jednej liście - solo lub wspólnie.",
     [
       "Status obejrzane / do obejrzenia trzyma porządek.",
       "Filtry platform pomagają przy wyborze wieczoru.",
@@ -111,7 +111,7 @@ export const nimbusModuleSummariesPl: Record<string, SummaryCopy> = {
     ]
   ),
   restaurants: summary(
-    "Restauracje — podsumowanie",
+    "Restauracje - podsumowanie",
     "Zapisuj lokale do odwiedzenia i notatki po wizycie.",
     [
       "Filtry sortują po typie lokalu i statusie wizyty.",
@@ -125,8 +125,8 @@ export const nimbusModuleSummariesPl: Record<string, SummaryCopy> = {
     ]
   ),
   pets: summary(
-    "Zwierzęta — podsumowanie",
-    "Opieka nad pupilem — zwierzęta, zadania i terminy.",
+    "Zwierzęta - podsumowanie",
+    "Opieka nad pupilem - zwierzęta, zadania i terminy.",
     [
       "Każde zwierzę ma własne zadania opieki.",
       "Szczepienia i wizyty weterynaryjne mają terminy.",
@@ -139,7 +139,7 @@ export const nimbusModuleSummariesPl: Record<string, SummaryCopy> = {
     ]
   ),
   chores: summary(
-    "Obowiązki — podsumowanie",
+    "Obowiązki - podsumowanie",
     "Domowe zadania z przypisaniem i powtarzalnością.",
     [
       "Zadania można przypisać członkom rodziny.",
@@ -153,7 +153,7 @@ export const nimbusModuleSummariesPl: Record<string, SummaryCopy> = {
     ]
   ),
   notes: summary(
-    "Notatki — podsumowanie",
+    "Notatki - podsumowanie",
     "Wspólne notatki z kategoriami i pilnością.",
     [
       "Kategorie porządkują notatki kolorem.",
@@ -167,7 +167,7 @@ export const nimbusModuleSummariesPl: Record<string, SummaryCopy> = {
     ]
   ),
   notifications: summary(
-    "Powiadomienia — podsumowanie",
+    "Powiadomienia - podsumowanie",
     "Skrzynka aktywności rodziny i aplikacji w jednym miejscu.",
     [
       "Filtry dzielą wpisy na wszystkie, nieprzeczytane i przeczytane.",
@@ -177,14 +177,14 @@ export const nimbusModuleSummariesPl: Record<string, SummaryCopy> = {
     [
       "Sprawdzaj nieprzeczytane po logowaniu.",
       "Włącz powiadomienia w przeglądarce, jeśli chcesz alerty poza aplikacją.",
-      "Wróć do dashboardu — „Wymaga uwagi” pokazuje terminy.",
+      "Wróć do dashboardu - „Wymaga uwagi” pokazuje terminy.",
     ]
   ),
   settingsSolo: summary(
-    "Konto solo — podsumowanie",
-    "Ustawienia konta indywidualnego — dołączenie do rodziny, założenie własnej i bezpieczeństwo.",
+    "Konto solo - podsumowanie",
+    "Ustawienia konta indywidualnego - dołączenie do rodziny, założenie własnej i bezpieczeństwo.",
     [
-      "Typ konta wybierasz przy rejestracji — później tylko podgląd.",
+      "Typ konta wybierasz przy rejestracji - później tylko podgląd.",
       "Kod zaproszenia lub formularz „Załóż rodzinę” w zakładce Typ konta.",
       "Hasło zmieniasz w dedykowanej sekcji.",
     ],
@@ -198,7 +198,7 @@ export const nimbusModuleSummariesPl: Record<string, SummaryCopy> = {
 
 export const nimbusModuleSummariesEn: Record<string, SummaryCopy> = {
   budget: summary(
-    "Budget — summary",
+    "Budget - summary",
     "You now know the budget module. Here's what to remember.",
     [
       "Create separate budgets and pick the active one from the list.",
@@ -207,13 +207,13 @@ export const nimbusModuleSummariesEn: Record<string, SummaryCopy> = {
     ],
     [
       "Add your first budget and entries for this month.",
-      "Set medicine expiry dates in the cabinet — it completes the household picture.",
+      "Set medicine expiry dates in the cabinet - it completes the household picture.",
       "Ask Nimbus for a tour of another module anytime.",
     ]
   ),
   shopping: summary(
-    "Shopping — summary",
-    "Shopping lists are ready — solo or live with family.",
+    "Shopping - summary",
+    "Shopping lists are ready - solo or live with family.",
     [
       "Each list has its own items to check off.",
       "Family sees list changes in real time.",
@@ -226,7 +226,7 @@ export const nimbusModuleSummariesEn: Record<string, SummaryCopy> = {
     ]
   ),
   gifts: summary(
-    "Gifts — summary",
+    "Gifts - summary",
     "The gifts module collects ideas before they slip away.",
     [
       "Filter ideas by recipient.",
@@ -235,13 +235,13 @@ export const nimbusModuleSummariesEn: Record<string, SummaryCopy> = {
     ],
     [
       "Add your first idea with a recipient.",
-      "Fill in birthdays — easier gift season planning.",
+      "Fill in birthdays - easier gift season planning.",
       "Mark bought gifts when the season starts.",
     ]
   ),
   birthdays: summary(
-    "Birthdays — summary",
-    "Birthday dates are under control — calendar and upcoming list.",
+    "Birthdays - summary",
+    "Birthday dates are under control - calendar and upcoming list.",
     [
       "The calendar shows birthdays in month context.",
       "The side list sorts nearest dates.",
@@ -254,7 +254,7 @@ export const nimbusModuleSummariesEn: Record<string, SummaryCopy> = {
     ]
   ),
   schedule: summary(
-    "Schedule — summary",
+    "Schedule - summary",
     "The schedule combines single- and multi-day events in one calendar.",
     [
       "Calendar and month list complement each other.",
@@ -263,12 +263,12 @@ export const nimbusModuleSummariesEn: Record<string, SummaryCopy> = {
     ],
     [
       "Add your next event or trip.",
-      "Add birthdays — easier to plan shared time.",
+      "Add birthdays - easier to plan shared time.",
       "Check Needs attention on the dashboard.",
     ]
   ),
   medicine: summary(
-    "Medicine cabinet — summary",
+    "Medicine cabinet - summary",
     "Home medicine tracking with expiry dates and filters.",
     [
       "Each medicine has form, quantity, and expiry.",
@@ -282,8 +282,8 @@ export const nimbusModuleSummariesEn: Record<string, SummaryCopy> = {
     ]
   ),
   watchlist: summary(
-    "Watchlist — summary",
-    "Movies and series in one list — solo or shared.",
+    "Watchlist - summary",
+    "Movies and series in one list - solo or shared.",
     [
       "Watched / to-watch status keeps things tidy.",
       "Platform filters help pick a evening show.",
@@ -296,7 +296,7 @@ export const nimbusModuleSummariesEn: Record<string, SummaryCopy> = {
     ]
   ),
   restaurants: summary(
-    "Restaurants — summary",
+    "Restaurants - summary",
     "Save places to visit and notes after dining.",
     [
       "Filters sort by venue type and visit status.",
@@ -310,8 +310,8 @@ export const nimbusModuleSummariesEn: Record<string, SummaryCopy> = {
     ]
   ),
   pets: summary(
-    "Pets — summary",
-    "Pet care — animals, tasks, and due dates.",
+    "Pets - summary",
+    "Pet care - animals, tasks, and due dates.",
     [
       "Each pet has its own care tasks.",
       "Vaccines and vet visits have due dates.",
@@ -324,7 +324,7 @@ export const nimbusModuleSummariesEn: Record<string, SummaryCopy> = {
     ]
   ),
   chores: summary(
-    "Chores — summary",
+    "Chores - summary",
     "Household tasks with assignment and recurrence.",
     [
       "Tasks can be assigned to family members.",
@@ -338,7 +338,7 @@ export const nimbusModuleSummariesEn: Record<string, SummaryCopy> = {
     ]
   ),
   notes: summary(
-    "Notes — summary",
+    "Notes - summary",
     "Shared notes with categories and urgency.",
     [
       "Categories organize notes by color.",
@@ -352,7 +352,7 @@ export const nimbusModuleSummariesEn: Record<string, SummaryCopy> = {
     ]
   ),
   notifications: summary(
-    "Notifications — summary",
+    "Notifications - summary",
     "Family and app activity inbox in one place.",
     [
       "Filters split all, unread, and read entries.",
@@ -362,14 +362,14 @@ export const nimbusModuleSummariesEn: Record<string, SummaryCopy> = {
     [
       "Check unread after sign-in.",
       "Enable browser notifications if you want alerts outside the app.",
-      "Return to the dashboard — Needs attention shows due items.",
+      "Return to the dashboard - Needs attention shows due items.",
     ]
   ),
   settingsSolo: summary(
-    "Solo account — summary",
-    "Individual account settings — joining a family, creating your own, and security.",
+    "Solo account - summary",
+    "Individual account settings - joining a family, creating your own, and security.",
     [
-      "Account type is chosen at sign-up — later it's read-only.",
+      "Account type is chosen at sign-up - later it's read-only.",
       "Invite code or Create family form on the Account type tab.",
       "Change your password in the dedicated section.",
     ],
@@ -388,11 +388,11 @@ export const nimbusFamilyTourPl: Dict["nimbusTour"]["family"] = {
   },
   members: {
     title: "Zaproszenia i nazwa",
-    body: "Zmień nazwę rodziny, wyślij zaproszenie mailem lub udostępnij kod — nowi członkowie dołączą do wspólnego konta.",
+    body: "Zmień nazwę rodziny, wyślij zaproszenie mailem lub udostępnij kod - nowi członkowie dołączą do wspólnego konta.",
   },
   memberRoles: {
     title: "Członkowie i role",
-    body: "Administrator nadaje role i usuwa członków. Założyciel może przekazać swoją rolę innemu — wtedy może opuścić rodzinę.",
+    body: "Administrator nadaje role i usuwa członków. Założyciel może przekazać swoją rolę innemu - wtedy może opuścić rodzinę.",
   },
   leaveFamily: {
     title: "Opuść rodzinę",
@@ -400,10 +400,10 @@ export const nimbusFamilyTourPl: Dict["nimbusTour"]["family"] = {
   },
   realtime: {
     title: "Współdzielenie na żywo",
-    body: "W modułach rodzinnych zmiany synchronizują się od razu — np. lista zakupów przy telefonie i komputerze.",
+    body: "W modułach rodzinnych zmiany synchronizują się od razu - np. lista zakupów przy telefonie i komputerze.",
   },
   summary: {
-    title: "Konto rodzinne — podsumowanie",
+    title: "Konto rodzinne - podsumowanie",
     body: "Wspólne konto to współdzielone moduły, zarządzanie członkami i synchronizacja na żywo.",
     learned: [
       "Zarządzaj rodziną łączy zaproszenia, role i członków w jednym miejscu.",
@@ -425,11 +425,11 @@ export const nimbusFamilyTourEn: Dict["nimbusTour"]["family"] = {
   },
   members: {
     title: "Invites and name",
-    body: "Rename the family, send email invites, or share your code — new members join the shared account.",
+    body: "Rename the family, send email invites, or share your code - new members join the shared account.",
   },
   memberRoles: {
     title: "Members and roles",
-    body: "Admins assign roles and remove members. The founder can transfer ownership — then leave the family.",
+    body: "Admins assign roles and remove members. The founder can transfer ownership - then leave the family.",
   },
   leaveFamily: {
     title: "Leave family",
@@ -437,10 +437,10 @@ export const nimbusFamilyTourEn: Dict["nimbusTour"]["family"] = {
   },
   realtime: {
     title: "Live sharing",
-    body: "Family modules sync instantly — e.g. a shopping list on phone and desktop.",
+    body: "Family modules sync instantly - e.g. a shopping list on phone and desktop.",
   },
   summary: {
-    title: "Family account — summary",
+    title: "Family account - summary",
     body: "A family account means shared modules, member management, and live sync.",
     learned: [
       "Manage family combines invites, roles, and members in one place.",

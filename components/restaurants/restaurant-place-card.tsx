@@ -13,12 +13,14 @@ import {
   CardTitle,
   CARD_TITLE_ROW_CLASSNAME,
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { RestaurantMapPreview } from "@/components/restaurants/restaurant-map-preview";
 import { RestaurantStarRating } from "@/components/restaurants/restaurant-star-rating";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import {
   RESTAURANT_VENUE_TYPE,
   RESTAURANT_VISIT_STATUS,
+  RESTAURANT_VISIT_STATUSES,
 } from "@/lib/constants/restaurants";
 import type { RestaurantPlace } from "@/lib/restaurants/types";
 import { parseRestaurantDateString } from "@/lib/restaurants/types";
@@ -26,7 +28,7 @@ import { getDateFnsLocale } from "@/lib/i18n/date-fns-locale";
 import { useLang, useT } from "@/lib/lang-context";
 import { getDisplayName, type FamilyMember, type Profile } from "@/lib/profile";
 import { cn } from "@/lib/utils";
-import { deleteRestaurantPlace } from "@/app/(app)/restaurants/actions";
+import { deleteRestaurantPlace, setRestaurantVisitStatus } from "@/app/(app)/restaurants/actions";
 import { useActionState } from "react";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
 
@@ -79,10 +81,18 @@ export function RestaurantPlaceCard({
     deleteRestaurantPlace,
     null
   );
+  const [statusState, statusAction, statusPending] = useActionState(
+    setRestaurantVisitStatus,
+    null
+  );
 
   useActionFeedback(deleteState, () => {
     onChanged?.();
   }, deletePending);
+
+  useActionFeedback(statusState, () => {
+    onChanged?.();
+  });
 
   const visitedLabel = place.visited_at
     ? format(parseRestaurantDateString(place.visited_at) ?? new Date(), "d MMM yyyy", {
@@ -105,7 +115,7 @@ export function RestaurantPlaceCard({
             </CardHeaderActionButton>
             <form action={deleteAction} className="border-l border-border">
               <input type="hidden" name={RESTAURANT_FORM_FIELD.ID} value={place.id} />
-              <CardHeaderActionButton type="submit" destructive disabled={deletePending}>
+              <CardHeaderActionButton type="submit" destructive disabled={deletePending} aria-label={t.restaurants.deleteBtn}>
                 <Trash2 className="size-4" />
               </CardHeaderActionButton>
             </form>
@@ -165,6 +175,26 @@ export function RestaurantPlaceCard({
           <p className="text-[11px] text-muted-foreground">
             {t.restaurants.addedBy}: {creator}
           </p>
+        )}
+
+        {isOwner && (
+          <div className="flex flex-wrap gap-1.5 border-t border-border pt-3">
+            {RESTAURANT_VISIT_STATUSES.map((status) => (
+              <form key={status} action={statusAction}>
+                <input type="hidden" name={RESTAURANT_FORM_FIELD.ID} value={place.id} />
+                <input type="hidden" name={RESTAURANT_FORM_FIELD.VISIT_STATUS} value={status} />
+                <Button
+                  type="submit"
+                  size="sm"
+                  variant={place.visit_status === status ? "default" : "outline"}
+                  disabled={statusPending || place.visit_status === status}
+                  className="cursor-pointer rounded-none h-7 text-xs"
+                >
+                  {t.restaurants.visitStatusLabels[status]}
+                </Button>
+              </form>
+            ))}
+          </div>
         )}
       </CardContent>
     </Card>

@@ -1,4 +1,5 @@
 import { ProfileBootstrap } from "@/components/profile/profile-bootstrap";
+import { QuickAddFab } from "@/components/app/quick-add-fab";
 import { NotificationsRealtimeBridge } from "@/components/notifications/notifications-realtime-bridge";
 import { NimbusCompanionHostLazy } from "@/components/nimbus/nimbus-companion-host-lazy";
 import { MobileBottomNav } from "@/components/app/mobile-bottom-nav";
@@ -19,6 +20,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <NavigationTransition />
       </div>
       <NimbusCompanionHostLazy />
+      <QuickAddFab />
       <MobileBottomNav />
     </ProfileBootstrap>
   );

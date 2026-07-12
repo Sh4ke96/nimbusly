@@ -35,6 +35,7 @@ import { parseChoreDateString } from "@/lib/chores/types";
 import { isChoreOverdue } from "@/lib/chores/filters";
 import { formatChoreScheduleLabel } from "@/lib/chores/recurrence";
 import { ChoreOccurrenceCompleteButton } from "@/components/chores/chore-occurrence-complete-button";
+import { ChoreOccurrenceUncompleteButton } from "@/components/chores/chore-occurrence-uncomplete-button";
 import { formatMessage } from "@/lib/i18n/format";
 import { getDateFnsLocale } from "@/lib/i18n/date-fns-locale";
 import { useLang, useT } from "@/lib/lang-context";
@@ -137,6 +138,7 @@ export function ChoreTaskCard({
   const occurrenceToComplete = resolveOccurrenceDateToComplete(task);
   const seriesDoneCount = normalizeCompletedDates(task.completed_dates).length;
   const seriesTotal = isSeries ? countChoreSeriesOccurrences(task) : 0;
+  const lastCompletedOccurrence = normalizeCompletedDates(task.completed_dates).at(-1) ?? null;
   const hasMeta =
     !!scheduleLabel ||
     isFamily ||
@@ -305,6 +307,13 @@ export function ChoreTaskCard({
 
         {canChangeStatus && (
           <div className="flex flex-wrap gap-1.5 border-t border-border pt-3">
+            {isSeries && lastCompletedOccurrence && (
+              <ChoreOccurrenceUncompleteButton
+                taskId={task.id}
+                occurrenceDate={lastCompletedOccurrence}
+                onSuccess={onChanged}
+              />
+            )}
             {CHORE_STATUSES.map((status) => {
               if (status === CHORE_STATUS.COMPLETED && occurrenceToComplete) {
                 return (

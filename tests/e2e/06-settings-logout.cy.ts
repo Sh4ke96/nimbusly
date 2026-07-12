@@ -89,7 +89,7 @@ describe("Ustawienia konta", () => {
   });
 });
 
-describe("Ustawienia — konto solo", () => {
+describe("Ustawienia - konto solo", () => {
   let testUser: CreatedTestUser;
 
   before(() => {

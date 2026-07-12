@@ -37,7 +37,8 @@ const MOBILE_NAV_SLOT = {
 
 type MobileNavSlot = MobileNavItem | typeof MOBILE_NAV_SLOT.NIMBUS;
 
-const NAV_CELL_CLASS = "app-mobile-bottom-nav-control transition-colors";
+const NAV_CELL_CLASS =
+  "app-mobile-bottom-nav-control transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
 export function MobileBottomNav() {
   const t = useT();

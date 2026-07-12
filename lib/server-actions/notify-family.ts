@@ -4,6 +4,7 @@ import { getServerT } from "@/lib/i18n/server";
 import type { NotificationType } from "@/lib/constants/notifications";
 import { notifyModuleSubscribers } from "@/lib/notifications/dispatch-module-notification";
 import { getFamilyNotificationTitle } from "@/lib/notifications/family-notification";
+import { getNotificationModuleId } from "@/lib/notifications/module-route";
 import { createClient } from "@/lib/supabase/server";
 
 export async function notifyFamilyMembers(
@@ -36,6 +37,9 @@ export async function notifyFamilyMembers(
   if (recipientIds.length === 0) return;
 
   const title = getFamilyNotificationTitle(params.type, t.notifications, params.actorName);
+  const moduleId = getNotificationModuleId(params.type);
+  const moduleLabel =
+    moduleId != null ? t.dashboard.moduleLabels[moduleId] : params.actorName;
 
   await notifyModuleSubscribers(supabase, {
     type: params.type,
@@ -43,6 +47,9 @@ export async function notifyFamilyMembers(
     body: params.body,
     payload: params.payload,
     actorId: params.actorId,
+    actorName: params.actorName,
+    moduleLabel,
+    groupedPushTitle: t.notifications.groupedPushTitle,
     recipientIds,
   });
 }

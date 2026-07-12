@@ -101,7 +101,7 @@
   --sidebar-ring: #9cb080;
 }
 
-/* react-day-picker defaults to blue — align with app primary */
+/* react-day-picker defaults to blue - align with app primary */
 .rdp-root {
   --rdp-accent-color: var(--primary);
   --rdp-accent-background-color: color-mix(in oklch, var(--primary) 14%, transparent);
@@ -194,7 +194,7 @@
 }
 
 @layer utilities {
-  /* Nimbusly float — heart window / icon hover */
+  /* Nimbusly float - heart window / icon hover */
   @keyframes nimbus-float {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-4px); }
@@ -413,7 +413,7 @@
     }
   }
 
-  /* Mobile / installed PWA — static background only (blur + drift heat the GPU on iOS). */
+  /* Mobile / installed PWA - static background only (blur + drift heat the GPU on iOS). */
   @media (max-width: 767px) {
     .ambient-lite .ambient-blob,
     .ambient-lite .ambient-shape,
@@ -432,7 +432,7 @@
     display: none;
   }
 
-  /* Light mode app hub — white canvas; decorations match dark (desktop only; mobile rules above). */
+  /* Light mode app hub - white canvas; decorations match dark (desktop only; mobile rules above). */
   html:not(.dark) .ambient-lite .ambient-base {
     background: var(--background) !important;
   }
@@ -445,7 +445,7 @@
     opacity: 0.35;
   }
 
-  /* Backgrounded tab/PWA — pause decorative work (timers gated in JS separately). */
+  /* Backgrounded tab/PWA - pause decorative work (timers gated in JS separately). */
   html[data-page-hidden] .ambient-background-root {
     visibility: hidden;
   }
@@ -628,7 +628,7 @@
     gap: 0.125rem;
     padding: 0;
     text-align: center;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 500;
     line-height: 1.25;
   }
@@ -648,7 +648,7 @@
 
   /*
    * Mobile sheet (e.g. shopping list detail): fill viewport above the fixed nav.
-   * Safe-area top lives in the sheet header — not here (avoids double inset with side sheets).
+   * Safe-area top lives in the sheet header - not here (avoids double inset with side sheets).
    */
   [data-slot="sheet-content"].app-mobile-sheet-clear-nav {
     top: 0;
@@ -677,7 +677,7 @@
       max-height: calc(100dvh - env(safe-area-inset-top, 0px));
     }
 
-    /* Shopping list sheet: safe-area only in header — never stack with side-sheet padding. */
+    /* Shopping list sheet: safe-area only in header - never stack with side-sheet padding. */
     [data-slot="sheet-content"].app-mobile-sheet-clear-nav {
       padding-top: 0 !important;
       height: calc(100dvh - var(--app-mobile-nav-offset)) !important;
@@ -698,7 +698,7 @@
   }
 
   /*
-   * Installed PWA: do not pad fixed bottom chrome — iOS often leaves an unpainted strip.
+   * Installed PWA: do not pad fixed bottom chrome - iOS often leaves an unpainted strip.
    * Extend background into the home-indicator zone with a pseudo-element instead.
    */
   @media (display-mode: standalone), (display-mode: fullscreen), (display-mode: minimal-ui) {
@@ -767,7 +767,7 @@ html[data-scroll-behavior="smooth"] {
   scroll-behavior: smooth;
 }
 
-/* Nimbus guided tour (driver.js) — unlayered so it wins over driver.css */
+/* Nimbus guided tour (driver.js) - unlayered so it wins over driver.css */
 .driver-popover.nimbus-driver-popover {
   border-radius: 0;
   border: 1px solid var(--border);

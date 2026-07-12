@@ -13,8 +13,14 @@ type BirthdayChangeLabels = Pick<
 >;
 
 export function buildBirthdayChangeSummary(
-  before: Pick<BirthdayEntry, "person_name" | "birth_month" | "birth_day" | "description">,
-  after: Pick<BirthdayEntry, "person_name" | "birth_month" | "birth_day" | "description">,
+  before: Pick<
+    BirthdayEntry,
+    "person_name" | "birth_month" | "birth_day" | "birth_year" | "description"
+  >,
+  after: Pick<
+    BirthdayEntry,
+    "person_name" | "birth_month" | "birth_day" | "birth_year" | "description"
+  >,
   labels: BirthdayChangeLabels
 ): string {
   const parts: string[] = [];
@@ -28,7 +34,11 @@ export function buildBirthdayChangeSummary(
     );
   }
 
-  if (before.birth_month !== after.birth_month || before.birth_day !== after.birth_day) {
+  if (
+    before.birth_month !== after.birth_month ||
+    before.birth_day !== after.birth_day ||
+    before.birth_year !== after.birth_year
+  ) {
     parts.push(
       formatMessage(labels.changeSummaryDate, {
         from: formatBirthdayLabel(before),

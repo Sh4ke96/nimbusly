@@ -243,14 +243,14 @@ otp_expiry = 3600
 # admin_email = "admin@email.com"
 # sender_name = "Admin"
 
-# Email templates — paste into Supabase Dashboard → Authentication → Email Templates
+# Email templates - paste into Supabase Dashboard → Authentication → Email Templates
 # or use content_path below for local `supabase start`
 [auth.email.template.confirmation]
 subject = "Potwierdź rejestrację w Nimbusly"
 content_path = "./supabase/templates/confirm-signup.html"
 
 [auth.email.template.recovery]
-subject = "Ustaw nowe hasło — Nimbusly"
+subject = "Ustaw nowe hasło - Nimbusly"
 content_path = "./supabase/templates/recovery.html"
 
 # Uncomment to customize notification email template
@@ -379,8 +379,8 @@ allow_dynamic_registration = false
 [edge_runtime]
 enabled = true
 # Supported request policies: `oneshot`, `per_worker`.
-# `per_worker` (default) — enables hot reload during local development.
-# `oneshot` — fallback mode if hot reload causes issues (e.g. in large repos or with symlinks).
+# `per_worker` (default) - enables hot reload during local development.
+# `oneshot` - fallback mode if hot reload causes issues (e.g. in large repos or with symlinks).
 policy = "per_worker"
 # Port to attach the Chrome inspector for debugging edge functions.
 inspector_port = 8083

@@ -15,6 +15,7 @@ import {
   isValidExpenseDescription,
   normalizeBudgetName,
   parseBudgetExpenseFromForm,
+  parseBudgetExpenseFullUpdateFromForm,
   parseBudgetExpenseUpdateFromForm,
   parseBudgetHiddenFromForm,
   parseBudgetIdFromForm,
@@ -571,4 +572,70 @@ export async function deleteBudgetExpense(
       : t.budget.expenseDeletedSuccess;
 
   return { success: successMessage };
+}
+
+export async function updateBudgetExpense(
+  _prev: AccountActionState,
+  formData: FormData
+): Promise<AccountActionState> {
+  const t = await getServerT();
+  const { supabase, user } = await requireUser();
+  if (!user) return { error: t.account.errorUnauthorized };
+
+  const { id, budgetId, category, amount, description, expenseDate } =
+    parseBudgetExpenseFullUpdateFromForm(formData);
+
+  if (!id || !budgetId) return { error: t.budget.errorGeneric };
+  if (!isValidBudgetExpenseCategory(category)) return { error: t.budget.errorCategory };
+  if (amount === null) return { error: t.budget.errorAmount };
+  if (!isValidExpenseDescription(description)) return { error: t.budget.errorDescription };
+  if (!isValidExpenseDateString(expenseDate)) return { error: t.budget.errorDate };
+
+  const recurrenceFields = parseBudgetEntryRecurrence(formData, expenseDate, true);
+  if ("error" in recurrenceFields) {
+    if (recurrenceFields.error === "recurrence") return { error: t.budget.errorRecurrence };
+    if (recurrenceFields.error === "recurrenceEnd") {
+      return { error: t.budget.errorRecurrenceEndBeforeStart };
+    }
+    return { error: t.budget.errorDate };
+  }
+
+  const budget = await getAccessibleBudget(supabase, budgetId);
+  if (!budget) return { error: t.budget.errorNotFound };
+
+  const { data: existing } = await supabase
+    .from("budget_expenses")
+    .select("id, entry_type")
+    .eq("id", id)
+    .eq("budget_id", budgetId)
+    .maybeSingle();
+
+  if (!existing) return { error: t.budget.errorGeneric };
+  if (existing.entry_type !== BUDGET_ENTRY_TYPE.EXPENSE) {
+    return { error: t.budget.errorCategory };
+  }
+
+  const { error } = await supabase
+    .from("budget_expenses")
+    .update({
+      category,
+      amount,
+      description,
+      expense_date: expenseDate,
+      recurrence: recurrenceFields.recurrence,
+      recurrence_end_date: recurrenceFields.recurrence_end_date,
+      payment_reminder_enabled: recurrenceFields.payment_reminder_enabled,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", id)
+    .eq("budget_id", budgetId);
+
+  if (error) return { error: t.budget.errorGeneric };
+
+  await supabase
+    .from("budgets")
+    .update({ updated_at: new Date().toISOString() })
+    .eq("id", budgetId);
+
+  return { success: t.budget.expenseUpdatedSuccess };
 }

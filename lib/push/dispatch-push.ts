@@ -8,6 +8,7 @@ type DispatchPushParams = {
   title: string;
   body: string;
   url?: string;
+  tag?: string;
 };
 
 export async function dispatchPushNotifications(
@@ -50,6 +51,7 @@ export async function dispatchPushNotifications(
     title: params.title,
     body: params.body,
     url: params.url,
+    tag: params.tag,
   });
 
   let sent = 0;

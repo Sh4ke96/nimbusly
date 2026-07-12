@@ -16,7 +16,7 @@ const modulePages = [
   { path: "/notifications", title: t.notifications.title },
 ] as const;
 
-describe("Moduły — smoke", () => {
+describe("Moduły - smoke", () => {
   let testUser: CreatedTestUser;
 
   before(() => {

@@ -101,6 +101,7 @@ export function NotificationsView() {
   const fetchNotificationsPage = useNotificationsStore((s) => s.fetchNotificationsPage);
   const markReadLocally = useNotificationsStore((s) => s.markReadLocally);
   const markAllReadLocally = useNotificationsStore((s) => s.markAllReadLocally);
+  const [dismissedIds, setDismissedIds] = useState<string[]>([]);
 
   const [markAllState, markAllAction] = useActionState(markAllNotificationsRead, null);
 
@@ -172,8 +173,15 @@ export function NotificationsView() {
 
   function handleItemMarkedRead() {
     void fetchNotifications(true);
-    void fetchNotificationsPage({ filter, page });
+    void fetchNotificationsPage({ filter, page, moduleId });
   }
+
+  function handleItemDismissed() {
+    void fetchNotifications(true);
+    void fetchNotificationsPage({ filter, page, moduleId });
+  }
+
+  const visiblePageItems = pageItems.filter((item) => !dismissedIds.includes(item.id));
 
   function renderFilterTabTriggers(mobile: boolean) {
     return filterTabs.map((tab, index) => (
@@ -249,20 +257,26 @@ export function NotificationsView() {
             <Skeleton className="h-16 w-full rounded-none" />
             <Skeleton className="h-16 w-full rounded-none" />
           </div>
-        ) : pageItems.length === 0 ? (
+        ) : visiblePageItems.length === 0 ? (
           <p className="py-8 text-center text-sm text-muted-foreground max-md:px-4 md:px-0">
             {emptyMessageForFilter(filter, t)}
           </p>
         ) : (
           <>
             <ul className="w-full divide-y divide-border rounded-none border border-border max-md:border-x-0">
-              {pageItems.map((item) => (
+              {visiblePageItems.map((item) => (
                 <NotificationListItem
                   key={item.id}
                   item={item}
                   locale={locale}
                   onMarkReadLocally={markReadLocally}
                   onMarkedRead={handleItemMarkedRead}
+                  onDismissLocally={(id) =>
+                    setDismissedIds((current) =>
+                      current.includes(id) ? current : [...current, id]
+                    )
+                  }
+                  onDismissed={handleItemDismissed}
                 />
               ))}
             </ul>

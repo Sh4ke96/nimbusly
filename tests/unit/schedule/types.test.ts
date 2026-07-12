@@ -86,13 +86,13 @@ describe("scheduleEntryIncludesDate", () => {
 
 describe("formatScheduleDateRangeLabel", () => {
   it("formats single-day entries", () => {
-    assert.equal(formatScheduleDateRangeLabel("2026-06-14", null, " – "), "14.06.2026");
+    assert.equal(formatScheduleDateRangeLabel("2026-06-14", null, " - "), "14.06.2026");
   });
 
   it("formats multi-day entries", () => {
     assert.equal(
-      formatScheduleDateRangeLabel("2026-06-14", "2026-06-20", " – "),
-      "14.06.2026 – 20.06.2026"
+      formatScheduleDateRangeLabel("2026-06-14", "2026-06-20", " - "),
+      "14.06.2026 - 20.06.2026"
     );
   });
 });

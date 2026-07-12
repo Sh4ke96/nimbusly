@@ -6,7 +6,10 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useT } from "@/lib/lang-context";
-import { removePushSubscription } from "@/app/(app)/push/actions";
+import {
+  disablePushAfterBrowserUnsubscribe,
+  removePushSubscription,
+} from "@/app/(app)/push/actions";
 import {
   getPushUnsupportedReason,
   isPushSupported,
@@ -30,6 +33,7 @@ type PushSettingState = {
 
 type PwaPushSettingProps = {
   onSubscribed?: () => void;
+  onUnsubscribed?: () => void;
 };
 
 async function persistPushSubscription(userAgent: string | null): Promise<boolean> {
@@ -60,7 +64,7 @@ function getInitialPushSettingState(): PushSettingState {
   };
 }
 
-export function PwaPushSetting({ onSubscribed }: PwaPushSettingProps) {
+export function PwaPushSetting({ onSubscribed, onUnsubscribed }: PwaPushSettingProps) {
   const t = useT();
   const [pushState, setPushState] = useState<PushSettingState>(getInitialPushSettingState);
   const [busy, setBusy] = useState<boolean>(false);
@@ -76,7 +80,7 @@ export function PwaPushSetting({ onSubscribed }: PwaPushSettingProps) {
         const saved = await persistPushSubscription(
           typeof navigator !== "undefined" ? navigator.userAgent : null
         );
-        nextSubscribed = saved || active;
+        nextSubscribed = saved;
       }
 
       setPushState((prev) => ({
@@ -120,7 +124,13 @@ export function PwaPushSetting({ onSubscribed }: PwaPushSettingProps) {
     try {
       await unsubscribeBrowserFromPush();
       await removePushSubscription();
+      const disableResult = await disablePushAfterBrowserUnsubscribe();
+      if (disableResult?.error) {
+        toast.error(t.pwa.pushError);
+        return;
+      }
       setPushState((prev) => ({ ...prev, subscribed: false }));
+      onUnsubscribed?.();
       toast.success(t.pwa.pushDisabled);
     } finally {
       setBusy(false);

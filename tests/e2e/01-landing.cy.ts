@@ -3,7 +3,7 @@ describe("Strona główna", () => {
     cy.visit("/");
     cy.contains("Wszystko, co dzieje się w domu").should("be.visible");
     cy.contains("Dwanaście modułów pod jednym dachem").should("be.visible");
-    cy.contains("Nimbus — przewodnik, który zna Twój dom").should("be.visible");
+    cy.contains("Nimbus - przewodnik, który zna Twój dom").should("be.visible");
     cy.contains("Trzy kroki do rodzinnego porządku").should("be.visible");
   });
 

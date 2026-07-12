@@ -11,6 +11,159 @@ export { CHANGELOG_ENTRY_TYPE, type ChangelogEntry };
  */
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "0.9.6",
+    date: "2026-07-12",
+    type: CHANGELOG_ENTRY_TYPE.FIX,
+    title: {
+      pl: "Naprawa zapisu ustawienia szybkiego dodawania",
+      en: "Fix quick-add setting persistence",
+    },
+    changes: {
+      pl: [
+        "Zapis quick_add_enabled weryfikuje odpowiedź bazy i pokazuje błąd przy niepowodzeniu",
+        "Po zapisie profil jest odświeżany z serwera",
+      ],
+      en: [
+        "quick_add_enabled save verifies DB response and surfaces errors on failure",
+        "Profile refreshes from server after a successful save",
+      ],
+    },
+  },
+  {
+    version: "0.9.5",
+    date: "2026-07-12",
+    type: CHANGELOG_ENTRY_TYPE.MINOR,
+    title: {
+      pl: "Szybkie dodawanie: pełniejsze formularze i ustawienie profilu",
+      en: "Quick add: richer forms and profile setting",
+    },
+    changes: {
+      pl: [
+        "Obowiązki: termin i przypisanie osoby w szybkim dodawaniu",
+        "Notatki: kategoria i widoczność rodzinna w szybkim dodawaniu",
+        "Profil: opcja włączenia/wyłączenia szybkiego dodawania (Ctrl+K i +)",
+      ],
+      en: [
+        "Chores: due date and assignee in quick add",
+        "Notes: category and family visibility in quick add",
+        "Profile: toggle to enable or disable quick add (Ctrl+K and +)",
+      ],
+    },
+  },
+  {
+    version: "0.9.4",
+    date: "2026-07-12",
+    type: CHANGELOG_ENTRY_TYPE.FIX,
+    title: {
+      pl: "Szybkie dodawanie: lista i kategoria zakupów",
+      en: "Quick add: shopping list and category",
+    },
+    changes: {
+      pl: [
+        "Szybkie dodawanie produktu: wybór listy zakupów i opcjonalnej kategorii",
+      ],
+      en: [
+        "Quick-add shopping item: pick target list and optional category",
+      ],
+    },
+  },
+  {
+    version: "0.9.3",
+    date: "2026-07-12",
+    type: CHANGELOG_ENTRY_TYPE.FIX,
+    title: {
+      pl: "Spójna typografia: zwykły myślnik",
+      en: "Consistent typography: plain hyphen",
+    },
+    changes: {
+      pl: [
+        "Wszystkie teksty w aplikacji: długie myślniki zastąpione zwykłym -",
+        "Zasada w regułach repo: nie używać em dash ani en dash w copy",
+      ],
+      en: [
+        "All in-app copy: long dashes replaced with plain hyphen (-)",
+        "Repo rule added: do not use em dash or en dash in copy",
+      ],
+    },
+  },
+  {
+    version: "0.9.2",
+    date: "2026-07-12",
+    type: CHANGELOG_ENTRY_TYPE.FIX,
+    title: {
+      pl: "Kalendarz rodziny i większe szybkie dodawanie",
+      en: "Family calendar and larger quick-add modal",
+    },
+    changes: {
+      pl: [
+        "Kalendarz rodziny: breadcrumbs jak w innych modułach",
+        "Szybkie dodawanie (Ctrl+K / +): szerszy modal i czytelniejsze przyciski opcji",
+        "Na mobile w kalendarzu rodziny ukryty przycisk + - tylko podgląd",
+      ],
+      en: [
+        "Family calendar: breadcrumbs matching other modules",
+        "Quick add (Ctrl+K / +): wider modal and clearer action buttons",
+        "Family calendar on mobile hides the + button - view only",
+      ],
+    },
+  },
+  {
+    version: "0.9.1",
+    date: "2026-07-12",
+    type: CHANGELOG_ENTRY_TYPE.MINOR,
+    title: {
+      pl: "Kalendarz rodziny, szybkie dodawanie i panel „Dziś”",
+      en: "Family calendar, quick add, and Today panel",
+    },
+    changes: {
+      pl: [
+        "Kalendarz rodziny (/calendar): urodziny, grafik i obowiązki w jednym widoku",
+        "Szybkie dodawanie: Ctrl+K oraz przycisk + na mobile (obowiązek, notatka, produkt)",
+        "Panel „Dziś” na dashboardzie obok „Wymaga uwagi”",
+        "Push: grupowanie powiadomień od tej samej osoby w module (okno 2 min)",
+        "Testy integracyjne widoczności multi-user (migracja 048)",
+      ],
+      en: [
+        "Family calendar (/calendar): birthdays, schedule, and chores in one view",
+        "Quick add: Ctrl+K and mobile + button (chore, note, shopping item)",
+        "“Today” panel on the dashboard next to “Needs attention”",
+        "Push: batch notifications from the same actor in a module (2 min window)",
+        "Multi-user visibility integration tests (migration 048)",
+      ],
+    },
+  },
+  {
+    version: "0.9.0",
+    date: "2026-07-12",
+    type: CHANGELOG_ENTRY_TYPE.MINOR,
+    title: {
+      pl: "Uzupełnienie modułów, naprawy i dostępność",
+      en: "Module completeness, fixes, and accessibility",
+    },
+    changes: {
+      pl: [
+        "Budżet: edycja wpisów; RLS budżetów zgodny z dostępem członków",
+        "Zakupy: edycja pozycji (treść i kategoria); notatki: edycja/usuwanie kategorii",
+        "Zwierzęta: usuwanie pupila; restauracje: szybka zmiana statusu wizyty",
+        "Obowiązki: cofnięcie ukończenia terminu; urodziny: opcjonalny rok i wiek",
+        "Powiadomienia: usuwanie z listy; apteczka: edycja przez przypisaną osobę",
+        "Push: wyłączenie synchronizuje profil; włączenie nie nadpisuje wyłączonych modułów",
+        "Naprawa hydracji nawigacji mobile; etykiety delete i focus dla czytników ekranu",
+        "Dalszy polish wizualny: akcenty modułów, kontrast, pierścienie obramowań",
+      ],
+      en: [
+        "Budget: edit entries; budget RLS aligned with member access",
+        "Shopping: edit items (content and category); notes: edit/delete categories",
+        "Pets: delete pet; restaurants: quick visit-status toggle",
+        "Chores: undo occurrence completion; birthdays: optional year and age",
+        "Notifications: dismiss from list; medicine: assignee can edit items",
+        "Push: disable syncs profile; enable no longer overwrites opted-out modules",
+        "Mobile nav hydration fix; delete aria-labels and focus rings for screen readers",
+        "Further visual polish: module accents, contrast, overlay borders",
+      ],
+    },
+  },
+  {
     version: "0.8.3",
     date: "2026-07-10",
     type: CHANGELOG_ENTRY_TYPE.MINOR,
@@ -43,11 +196,11 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
     },
     changes: {
       pl: [
-        "Strona główna: usunięto wzmianki o karcie kredytowej i kartach dashboardu — w zamian copy o push i powiadomieniach per moduł",
+        "Strona główna: usunięto wzmianki o karcie kredytowej i kartach dashboardu - w zamian copy o push i powiadomieniach per moduł",
         "Rejestracja: podtytuł o powiadomieniach i push zamiast „bez karty kredytowej”",
       ],
       en: [
-        "Homepage: removed credit-card and dashboard-card mentions — replaced with push and per-module notification copy",
+        "Homepage: removed credit-card and dashboard-card mentions - replaced with push and per-module notification copy",
         "Register: subtitle about alerts and push instead of “no credit card required”",
       ],
     },
@@ -81,12 +234,12 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
     },
     changes: {
       pl: [
-        "Obowiązki i apteczka: przypisane wpisy widzi tylko osoba przypisana i autor (nieprzypisane — cała rodzina)",
+        "Obowiązki i apteczka: przypisane wpisy widzi tylko osoba przypisana i autor (nieprzypisane - cała rodzina)",
         "Budżet: ograniczenie do wybranych członków działa w RLS; prezenty dla członka rodziny domyślnie tylko dla niego",
         "Powiadomienia i digest e-mail respektują te same zasady widoczności",
       ],
       en: [
-        "Chores and medicine: assigned items visible only to assignee and creator (unassigned — whole family)",
+        "Chores and medicine: assigned items visible only to assignee and creator (unassigned - whole family)",
         "Budget: selected-member restriction enforced in RLS; family-member gifts default to recipient-only visibility",
         "Notifications and email digest follow the same visibility rules",
       ],
@@ -121,10 +274,10 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
     },
     changes: {
       pl: [
-        "Statyczny splash PWA jest tylko chowany (CSS), nie usuwany z DOM — koniec z błędem removeChild/insertBefore przy starcie",
+        "Statyczny splash PWA jest tylko chowany (CSS), nie usuwany z DOM - koniec z błędem removeChild/insertBefore przy starcie",
       ],
       en: [
-        "Static PWA splash is hidden via CSS only, not removed from the DOM — fixes removeChild/insertBefore errors on startup",
+        "Static PWA splash is hidden via CSS only, not removed from the DOM - fixes removeChild/insertBefore errors on startup",
       ],
     },
   },
@@ -138,11 +291,11 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
     },
     changes: {
       pl: [
-        "Dolna nawigacja i overlay przejścia bez useSearchParams — shell nie jest odmontowywany przy zmianie trasy",
+        "Dolna nawigacja i overlay przejścia bez useSearchParams - shell nie jest odmontowywany przy zmianie trasy",
         "Usunięto auto-reset error boundary podczas nawigacji (konflikt DOM)",
       ],
       en: [
-        "Bottom nav and transition overlay no longer use useSearchParams — shell stays mounted on route changes",
+        "Bottom nav and transition overlay no longer use useSearchParams - shell stays mounted on route changes",
         "Removed auto-reset error boundary during navigation (DOM conflict)",
       ],
     },
@@ -157,11 +310,11 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
     },
     changes: {
       pl: [
-        "Dolna nawigacja mobile: usunięty portal do body — koniec z błędem hydracji przy przejściach między ekranami",
+        "Dolna nawigacja mobile: usunięty portal do body - koniec z błędem hydracji przy przejściach między ekranami",
         "Strony błędów: twarde przeładowanie przy zmianie trasy i komunikat błędu w UI",
       ],
       en: [
-        "Mobile bottom nav: removed body portal — fixes hydration crash when switching screens",
+        "Mobile bottom nav: removed body portal - fixes hydration crash when switching screens",
         "Error pages: hard reload on route change and error message shown in the UI",
       ],
     },
@@ -176,11 +329,11 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
     },
     changes: {
       pl: [
-        "Wyłączono integrację Sentry i tunel /monitoring — mniej requestów przy nawigacji",
+        "Wyłączono integrację Sentry i tunel /monitoring - mniej requestów przy nawigacji",
         "Strony błędów zostają z i18n PL/EN i twardym odświeżeniem aplikacji",
       ],
       en: [
-        "Removed Sentry integration and the /monitoring tunnel — fewer requests on navigation",
+        "Removed Sentry integration and the /monitoring tunnel - fewer requests on navigation",
         "Error pages keep PL/EN i18n and a hard app reload action",
       ],
     },
@@ -217,13 +370,13 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
         "Zakupy na mobile: pełnoekranowy widok listy z nazwą; plus otwiera dialog dodawania produktu z wyborem kategorii",
         "Urodziny na mobile: lista w accordionie nad kalendarzem; pełne etykiety dni i tygodni; klik w zajęty kafelek otwiera edycję",
         "Kategorie zakupów: zarządzanie także dla administratora rodziny (nie tylko założyciel)",
-        "Kalendarz modułów: zakres tygodnia z odstępami przy myślniku (np. 6 – 12 Lipiec)",
+        "Kalendarz modułów: zakres tygodnia z odstępami przy myślniku (np. 6 - 12 Lipiec)",
       ],
       en: [
         "Mobile shopping: full-screen list detail with name; plus opens add-product dialog with category picker",
         "Mobile birthdays: collapsible list above calendar; full day/week labels; tap occupied day tile to edit",
         "Shopping categories: family admins can manage categories, not only the founder",
-        "Module calendars: spaced week range labels (e.g. 6 – 12 July)",
+        "Module calendars: spaced week range labels (e.g. 6 - 12 July)",
       ],
     },
   },
@@ -262,7 +415,7 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
     },
     changes: {
       pl: [
-        "Strona /family — zarządzanie rodziną poza ustawieniami profilu",
+        "Strona /family - zarządzanie rodziną poza ustawieniami profilu",
         "Notatki: Markdown, przypinanie i załączniki (obrazy/PDF do 5 MB)",
         "Kategorie zakupów także na kontach solo",
         "Powiadomienia: godziny ciszy push i tygodniowy digest e-mail (poniedziałek)",
@@ -270,7 +423,7 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
         "Skeletony stron modułów; cookie onboardingu czyszczone przy wylogowaniu",
       ],
       en: [
-        "New /family page — manage family outside profile settings",
+        "New /family page - manage family outside profile settings",
         "Notes: Markdown, pinning, and attachments (images/PDF up to 5 MB)",
         "Shopping categories on solo accounts too",
         "Notifications: push quiet hours and weekly email digest (Mondays)",
@@ -292,13 +445,13 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
         "Statyczny landing i marketing bez blokującego render cookies() w root layout",
         "Middleware: mniej zapytań Supabase na publicznych ścieżkach i cache onboardingu",
         "Fonty z display: swap; dashboard z jednym server fetch i skeletonem pod CLS",
-        "PWA i Nimbus ładowane dynamicznie — mniejszy initial JS na pierwszym malowaniu",
+        "PWA i Nimbus ładowane dynamicznie - mniejszy initial JS na pierwszym malowaniu",
       ],
       en: [
         "Static landing and marketing without blocking cookies() in the root layout",
         "Middleware: fewer Supabase calls on public paths and cached onboarding status",
         "Fonts with display: swap; dashboard with one server fetch and CLS-friendly skeleton",
-        "PWA and Nimbus loaded dynamically — smaller initial JS on first paint",
+        "PWA and Nimbus loaded dynamically - smaller initial JS on first paint",
       ],
     },
   },
@@ -357,11 +510,11 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
     changes: {
       pl: [
         "Pełnoekranowy loader z pulsującym logo podczas nawigacji w aplikacji",
-        "Docelowa strona pojawia się dopiero po załadowaniu — z miękkim fade-out",
+        "Docelowa strona pojawia się dopiero po załadowaniu - z miękkim fade-out",
       ],
       en: [
         "Full-screen loader with pulsing logo during in-app navigation",
-        "Destination page appears only after load — with a soft fade-out",
+        "Destination page appears only after load - with a soft fade-out",
       ],
     },
   },
@@ -378,20 +531,20 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
         "Dzwonek powiadomień odświeża się na żywo (Supabase Realtime)",
         "Preferencje w profilu: push z serwera i codzienny digest e-mail",
         "Push i deep linki do listy zakupów (/shopping?list=…) i budżetu",
-        "Poprawka notify-family — sprawdzanie błędu RPC przed pushem",
+        "Poprawka notify-family - sprawdzanie błędu RPC przed pushem",
         "ESLint wymusza importy @/ zamiast ../ w kodzie produkcyjnym",
         "Yarn jako menedżer pakietów (yarn.lock, CI i dokumentacja)",
-        "Sentry aktywny tylko na produkcji — szybszy yarn dev",
+        "Sentry aktywny tylko na produkcji - szybszy yarn dev",
         "Usunięte podpisy „wkrótce” i placeholdery funkcji w UI",
       ],
       en: [
         "Notification bell updates live via Supabase Realtime",
         "Profile preferences: server push and daily email digest",
         "Push deep links to shopping lists (/shopping?list=…) and budgets",
-        "notify-family fix — RPC error check before push dispatch",
+        "notify-family fix - RPC error check before push dispatch",
         "ESLint enforces @/ imports instead of ../ in production code",
         "Yarn as package manager (yarn.lock, CI, and docs)",
-        "Sentry enabled only in production — faster yarn dev",
+        "Sentry enabled only in production - faster yarn dev",
         "Removed “coming soon” teasers and placeholder copy in the UI",
       ],
     },
@@ -401,7 +554,7 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
     date: "2026-06-28",
     type: CHANGELOG_ENTRY_TYPE.MINOR,
     title: {
-      pl: "Sentry — śledzenie błędów",
+      pl: "Sentry - śledzenie błędów",
       en: "Sentry error monitoring",
     },
     changes: {
@@ -429,12 +582,12 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
     },
     changes: {
       pl: [
-        "Vercel Web Analytics — ruch i odwiedziny w panelu Vercel",
-        "Vercel Speed Insights — metryki wydajności (Core Web Vitals) na produkcji",
+        "Vercel Web Analytics - ruch i odwiedziny w panelu Vercel",
+        "Vercel Speed Insights - metryki wydajności (Core Web Vitals) na produkcji",
       ],
       en: [
-        "Vercel Web Analytics — traffic and visits in the Vercel dashboard",
-        "Vercel Speed Insights — performance metrics (Core Web Vitals) in production",
+        "Vercel Web Analytics - traffic and visits in the Vercel dashboard",
+        "Vercel Speed Insights - performance metrics (Core Web Vitals) in production",
       ],
     },
   },
@@ -448,17 +601,17 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
     },
     changes: {
       pl: [
-        "iOS — stabilniejsza subskrypcja push (service worker, walidacja VAPID, ponowna próba)",
-        "Push na Vercel — await wysyłki przed zakończeniem server action",
-        "Listy zakupów i budżet — powiadomienia dla obserwatorów (RPC create_watcher_notifications, migracja 039)",
-        "Naprawa RLS — serwer widzi wszystkich obserwatorów listy, nie tylko aktora",
+        "iOS - stabilniejsza subskrypcja push (service worker, walidacja VAPID, ponowna próba)",
+        "Push na Vercel - await wysyłki przed zakończeniem server action",
+        "Listy zakupów i budżet - powiadomienia dla obserwatorów (RPC create_watcher_notifications, migracja 039)",
+        "Naprawa RLS - serwer widzi wszystkich obserwatorów listy, nie tylko aktora",
         "Poprawka VAPID subject (mailto:) przy wysyłce push",
       ],
       en: [
-        "iOS — more reliable push subscribe (service worker, VAPID validation, retry)",
-        "Push on Vercel — await dispatch before server action exits",
-        "Shopping lists and budget — watcher notifications (create_watcher_notifications RPC, migration 039)",
-        "RLS fix — server loads all list watchers, not only the actor",
+        "iOS - more reliable push subscribe (service worker, VAPID validation, retry)",
+        "Push on Vercel - await dispatch before server action exits",
+        "Shopping lists and budget - watcher notifications (create_watcher_notifications RPC, migration 039)",
+        "RLS fix - server loads all list watchers, not only the actor",
         "VAPID subject (mailto:) fix for push delivery",
       ],
     },
@@ -473,16 +626,16 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
     },
     changes: {
       pl: [
-        "Web Push po zainstalowaniu aplikacji — Android i iOS 16.4+ z ekranu głównego",
+        "Web Push po zainstalowaniu aplikacji - Android i iOS 16.4+ z ekranu głównego",
         "Włączanie w ustawieniach profilu i baner po instalacji PWA",
         "Push przy powiadomieniach rodzinnych i przypomnieniach budżetu",
-        "Klucze VAPID (yarn push:vapid) — migracja push_subscriptions",
+        "Klucze VAPID (yarn push:vapid) - migracja push_subscriptions",
       ],
       en: [
-        "Web Push after installing the app — Android and iOS 16.4+ from the home screen",
+        "Web Push after installing the app - Android and iOS 16.4+ from the home screen",
         "Enable in profile settings and prompt after PWA install",
         "Push for family notifications and budget payment reminders",
-        "VAPID keys (yarn push:vapid) — push_subscriptions migration",
+        "VAPID keys (yarn push:vapid) - push_subscriptions migration",
       ],
     },
   },
@@ -491,17 +644,17 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
     date: "2026-06-27",
     type: CHANGELOG_ENTRY_TYPE.FIX,
     title: {
-      pl: "PWA — ikona na ekranie głównym iOS",
-      en: "PWA — iOS home screen icon",
+      pl: "PWA - ikona na ekranie głównym iOS",
+      en: "PWA - iOS home screen icon",
     },
     changes: {
       pl: [
-        "Ikony PNG (180, 192, 512 px) i apple-touch-icon — iOS nie obsługuje SVG na ekranie głównym",
+        "Ikony PNG (180, 192, 512 px) i apple-touch-icon - iOS nie obsługuje SVG na ekranie głównym",
         "Manifest i metadane strony wskazują na PNG zamiast samego SVG",
         "Skrypt yarn pwa:icons do regeneracji ikon z public/pwa-icon.svg",
       ],
       en: [
-        "PNG icons (180, 192, 512 px) and apple-touch-icon — iOS does not use SVG on the home screen",
+        "PNG icons (180, 192, 512 px) and apple-touch-icon - iOS does not use SVG on the home screen",
         "Manifest and page metadata point to PNG instead of SVG only",
         "yarn pwa:icons script to regenerate icons from public/pwa-icon.svg",
       ],
@@ -537,14 +690,14 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
     date: "2026-06-27",
     type: CHANGELOG_ENTRY_TYPE.FIX,
     title: {
-      pl: "Nimbus — toury na driver.js",
-      en: "Nimbus — tours on driver.js",
+      pl: "Nimbus - toury na driver.js",
+      en: "Nimbus - tours on driver.js",
     },
     changes: {
       pl: [
         "Przewodniki Nimbusa korzystają z driver.js zamiast własnego overlay",
         "Popover touru: avatar, nagłówek z nazwą kroku, ramka ze skrótami klawiatury",
-        "Skróty A/D i strzałki do nawigacji między krokami; Esc — pauza touru",
+        "Skróty A/D i strzałki do nawigacji między krokami; Esc - pauza touru",
         "Nimbus pozostaje widoczny podczas touru (mobile i desktop)",
         "Style popovera poza warstwą Tailwind, aby nadpisać domyślne CSS driver.js",
       ],
@@ -608,8 +761,8 @@ export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
     date: "2026-06-14",
     type: CHANGELOG_ENTRY_TYPE.MINOR,
     title: {
-      pl: "Nimbus — towarzysz po aplikacji",
-      en: "Nimbus — your in-app companion",
+      pl: "Nimbus - towarzysz po aplikacji",
+      en: "Nimbus - your in-app companion",
     },
     changes: {
       pl: [

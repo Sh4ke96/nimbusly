@@ -15,7 +15,7 @@ function getPageVisibleServerSnapshot(): boolean {
   return true;
 }
 
-/** False when the tab/PWA is backgrounded — pause timers, realtime, and animations. */
+/** False when the tab/PWA is backgrounded - pause timers, realtime, and animations. */
 export function usePageVisible(): boolean {
   return useSyncExternalStore(
     subscribePageVisible,

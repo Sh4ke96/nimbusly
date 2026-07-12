@@ -69,7 +69,7 @@ export function buildSearchIndexInput(
       dateLabel: formatScheduleDateRangeLabel(
         entry.entry_date,
         entry.entry_end_date,
-        " – "
+        " - "
       ),
     })),
     medicineItems: snapshot.medicineItems.map((item) => ({

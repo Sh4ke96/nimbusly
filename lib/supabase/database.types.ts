@@ -829,6 +829,7 @@ export type Database = {
           last_name: string
           nimbus_companion_enabled: boolean
           nimbus_companion_quiet: boolean
+          quick_add_enabled: boolean
           onboarding_completed: boolean
           preferred_lang: string
           push_notifications_enabled: boolean
@@ -851,6 +852,7 @@ export type Database = {
           last_name?: string
           nimbus_companion_enabled?: boolean
           nimbus_companion_quiet?: boolean
+          quick_add_enabled?: boolean
           onboarding_completed?: boolean
           preferred_lang?: string
           push_notifications_enabled?: boolean
@@ -873,6 +875,7 @@ export type Database = {
           last_name?: string
           nimbus_companion_enabled?: boolean
           nimbus_companion_quiet?: boolean
+          quick_add_enabled?: boolean
           onboarding_completed?: boolean
           preferred_lang?: string
           push_notifications_enabled?: boolean

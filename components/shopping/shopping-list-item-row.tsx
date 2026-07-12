@@ -22,17 +22,21 @@ import {
   useShoppingListsStore,
 } from "@/lib/stores/shopping-lists-store";
 import { ShoppingListItemQuantity } from "@/components/shopping/shopping-list-item-quantity";
+import { ShoppingListItemEditDialog } from "@/components/shopping/shopping-list-item-edit-dialog";
+import type { ShoppingListCategory } from "@/lib/shopping-lists/categories";
 import { cn } from "@/lib/utils";
 
 interface ShoppingListItemRowProps {
   item: ShoppingListItem;
   listId: string;
+  categories?: ShoppingListCategory[];
   onChanged?: () => void;
 }
 
 export function ShoppingListItemRow({
   item,
   listId,
+  categories = [],
   onChanged,
 }: ShoppingListItemRowProps) {
   const t = useT();
@@ -118,6 +122,13 @@ export function ShoppingListItemRow({
       </p>
 
       <ShoppingListItemQuantity item={item} listId={listId} />
+
+      <ShoppingListItemEditDialog
+        item={item}
+        listId={listId}
+        categories={categories}
+        onSuccess={onChanged}
+      />
 
       <form action={deleteAction}>
         <input type="hidden" name={SHOPPING_FORM_FIELD.ID} value={item.id} />

@@ -140,6 +140,16 @@ export function parseRestaurantIdFromForm(formData: FormData): string {
   return getFormTrimmedString(formData, RESTAURANT_FORM_FIELD.ID);
 }
 
+export function parseRestaurantVisitStatusFromForm(formData: FormData): {
+  id: string;
+  visitStatus: string;
+} {
+  return {
+    id: getFormTrimmedString(formData, RESTAURANT_FORM_FIELD.ID),
+    visitStatus: getFormTrimmedString(formData, RESTAURANT_FORM_FIELD.VISIT_STATUS),
+  };
+}
+
 export function parseRestaurantPlaceFromForm(formData: FormData): {
   name: string;
   venueType: RestaurantVenueType | null;

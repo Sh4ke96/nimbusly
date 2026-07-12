@@ -16,7 +16,7 @@ const labels = {
   changeSummaryDescription: "description changed",
   changeSummaryEmpty: "empty",
   changeSummarySeparator: "; ",
-  dateRangeSeparator: " – ",
+  dateRangeSeparator: " - ",
   typeLabels: {
     work: "Work",
     free: "Free",

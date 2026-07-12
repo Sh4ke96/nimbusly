@@ -98,7 +98,7 @@ export function NimbusCharacter({
           <circle cx="9" cy="60" r="4.5" fill={`url(#${cheekGrad})`} />
         </g>
 
-        {/* Right arm — waves on hover / calling */}
+        {/* Right arm - waves on hover / calling */}
         <g className="nimbus-npc-arm-right">
           <ellipse cx="68" cy="50" rx="5" ry="7" fill={`url(#${bodyGrad})`} />
           <circle cx="71" cy="42" r="4.5" fill={`url(#${cheekGrad})`} />

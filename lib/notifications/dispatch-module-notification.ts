@@ -6,6 +6,7 @@ import { dispatchInAppAndPushNotifications } from "@/lib/notifications/dispatch-
 import { loadRecipientModulePreferences } from "@/lib/notifications/module-preferences/load-module-preferences";
 import { partitionRecipientsByChannel } from "@/lib/notifications/module-preferences/filter-recipients-by-channel";
 import { getNotificationModuleId } from "@/lib/notifications/module-route";
+import type { GroupedPushTitleLabel } from "@/lib/push/resolve-grouped-push";
 import { createClient } from "@/lib/supabase/server";
 import type { Json } from "@/lib/supabase/database.types";
 
@@ -16,6 +17,9 @@ type NotifyModuleSubscribersParams = {
   body: string;
   payload: Record<string, unknown>;
   actorId: string;
+  actorName: string;
+  moduleLabel: string;
+  groupedPushTitle: GroupedPushTitleLabel;
   recipientIds: string[];
 };
 
@@ -59,6 +63,13 @@ export async function notifyModuleSubscribers(
       body: params.body,
       payload: params.payload,
       skipInApp: true,
+      pushGroup: {
+        actorId: params.actorId,
+        actorName: params.actorName,
+        moduleId,
+        moduleLabel: params.moduleLabel,
+        labels: params.groupedPushTitle,
+      },
     });
   }
 }

@@ -10,6 +10,7 @@ import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { NoteEditDialog } from "@/components/notes/note-edit-dialog";
 import { NoteFormDialog } from "@/components/notes/note-form-dialog";
 import { NoteCategoryFormDialog } from "@/components/notes/note-category-form-dialog";
+import { NoteCategoriesPanel } from "@/components/notes/note-categories-panel";
 import { NotesFilters } from "@/components/notes/notes-filters";
 import { NoteCard } from "@/components/notes/note-card";
 import { NimbusTourToolbarAnchor } from "@/components/nimbus/nimbus-tour-toolbar-anchor";
@@ -122,6 +123,14 @@ export function NotesView() {
         </div>
 
         {familyId ? <FamilyRealtimeHint /> : null}
+
+        {!loading && categories.length > 0 && (
+          <NoteCategoriesPanel
+            categories={categories}
+            userId={user?.id}
+            onChanged={onNotesChanged}
+          />
+        )}
 
         {error ? (
           <ModuleFetchError onRetry={() => void fetchNotes(true)} />

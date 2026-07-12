@@ -117,7 +117,7 @@ export function PetCareItemCard({
             </CardHeaderActionButton>
             <form action={deleteAction} className="border-l border-border">
               <input type="hidden" name={PET_FORM_FIELD.ID} value={item.id} />
-              <CardHeaderActionButton type="submit" destructive disabled={deletePending}>
+              <CardHeaderActionButton type="submit" destructive disabled={deletePending} aria-label={t.pets.deleteBtn}>
                 <Trash2 className="size-4" />
               </CardHeaderActionButton>
             </form>

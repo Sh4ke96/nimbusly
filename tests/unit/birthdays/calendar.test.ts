@@ -84,8 +84,8 @@ describe("formatWeekDayRangeLabel", () => {
       "November",
       "December",
     ];
-    assert.equal(formatWeekDayRangeLabel(weeks[0]!, months), "1 – 7 June");
-    assert.equal(formatWeekDayRangeLabel(weeks[4]!, months), "29 – 30 June");
+    assert.equal(formatWeekDayRangeLabel(weeks[0]!, months), "1 - 7 June");
+    assert.equal(formatWeekDayRangeLabel(weeks[4]!, months), "29 - 30 June");
   });
 
   it("formats a single-day week without a range dash", () => {

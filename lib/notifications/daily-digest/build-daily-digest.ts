@@ -41,7 +41,7 @@ export function groupNotificationsForDigest(
     const moduleId = getNotificationModuleId(notification.type);
     if (!moduleId || !enabled.has(moduleId)) continue;
     const lines = byModule.get(moduleId) ?? [];
-    lines.push(`${notification.title} — ${notification.body}`);
+    lines.push(`${notification.title} - ${notification.body}`);
     byModule.set(moduleId, lines);
   }
 

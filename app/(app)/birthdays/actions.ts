@@ -2,7 +2,7 @@
 
 import { getServerT } from "@/lib/i18n/server";
 import { buildBirthdayChangeSummary } from "@/lib/birthdays/changes";
-import { isValidBirthDate, parseBirthdayFromForm, parseBirthdayIdFromForm } from "@/lib/birthdays/types";
+import { isValidBirthDate, isValidBirthYear, parseBirthdayFromForm, parseBirthdayIdFromForm } from "@/lib/birthdays/types";
 import { formatBirthdayLabel } from "@/lib/birthdays/types";
 import { executeCreateBirthday } from "@/lib/birthdays/server/create-birthday";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
@@ -35,17 +35,20 @@ export async function updateBirthday(
   if (!user) return { error: t.account.errorUnauthorized };
 
   const id = parseBirthdayIdFromForm(formData);
-  const { personName, birthMonth, birthDay, description } = parseBirthdayFromForm(formData);
+  const { personName, birthMonth, birthDay, birthYear, description } = parseBirthdayFromForm(formData);
 
   if (!id) return { error: t.birthdays.errorGeneric };
   if (!personName) return { error: t.birthdays.errorPersonName };
-  if (!isValidBirthDate(birthMonth, birthDay)) {
+  if (!isValidBirthDate(birthMonth, birthDay, birthYear)) {
     return { error: t.birthdays.errorInvalidDate };
+  }
+  if (!isValidBirthYear(birthYear)) {
+    return { error: t.birthdays.errorInvalidBirthYear };
   }
 
   const { data: existing } = await supabase
     .from("birthday_entries")
-    .select("id, person_name, birth_month, birth_day, description, family_id, created_by")
+    .select("id, person_name, birth_month, birth_day, birth_year, description, family_id, created_by")
     .eq("id", id)
     .eq("created_by", user.id)
     .maybeSingle();
@@ -60,7 +63,7 @@ export async function updateBirthday(
       person_name: personName,
       birth_month: birthMonth,
       birth_day: birthDay,
-      birth_year: null,
+      birth_year: birthYear,
       description,
       updated_at: new Date().toISOString(),
     })
@@ -75,6 +78,7 @@ export async function updateBirthday(
       person_name: personName,
       birth_month: birthMonth,
       birth_day: birthDay,
+      birth_year: birthYear,
       description,
     },
     t.birthdays
@@ -121,7 +125,7 @@ export async function deleteBirthday(
 
   const { data: existing } = await supabase
     .from("birthday_entries")
-    .select("id, person_name, birth_month, birth_day, description, family_id, created_by")
+    .select("id, person_name, birth_month, birth_day, birth_year, description, family_id, created_by")
     .eq("id", id)
     .eq("created_by", user.id)
     .maybeSingle();

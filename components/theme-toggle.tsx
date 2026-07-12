@@ -1,5 +1,6 @@
 "use client";
 
+import { useSyncExternalStore } from "react";
 import { useTheme } from "next-themes";
 import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,11 +10,16 @@ import { cn } from "@/lib/utils";
 
 export function ThemeToggle({ className }: { className?: string }) {
   const t = useT();
-  const { setTheme } = useTheme();
+  const { setTheme, resolvedTheme } = useTheme();
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
 
   function toggleTheme() {
-    const isDark = document.documentElement.classList.contains("dark");
-    setTheme(isDark ? "light" : "dark");
+    if (!mounted) return;
+    setTheme(resolvedTheme === "dark" ? "light" : "dark");
   }
 
   return (

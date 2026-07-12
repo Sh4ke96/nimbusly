@@ -297,6 +297,7 @@ export function ScheduleView() {
                                 size="icon"
                                 disabled={deletePending}
                                 className="cursor-pointer text-destructive hover:text-destructive"
+                                aria-label={t.schedule.deleteBtn}
                               >
                                 <Trash2 className="size-4" />
                               </Button>
