@@ -1,5 +1,5 @@
 import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
-import type { ShoppingList } from "@/lib/shopping-lists/types";
+import type { ShoppingList, ShoppingListItem } from "@/lib/shopping-lists/types";
 
 const REALTIME_PAYLOAD_BASE = {
   schema: "public",
@@ -31,4 +31,17 @@ export function testRealtimeUpdatePayload(
     new: row,
     old,
   } as RealtimePostgresChangesPayload<ShoppingList>;
+}
+
+export function testRealtimeItemUpdatePayload(
+  row: ShoppingListItem,
+  old: Partial<ShoppingListItem> = row
+): RealtimePostgresChangesPayload<ShoppingListItem> {
+  return {
+    ...REALTIME_PAYLOAD_BASE,
+    table: "shopping_list_items",
+    eventType: "UPDATE",
+    new: row,
+    old,
+  } as RealtimePostgresChangesPayload<ShoppingListItem>;
 }

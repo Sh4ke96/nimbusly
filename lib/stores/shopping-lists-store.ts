@@ -6,6 +6,7 @@ import {
   type ShoppingList,
   type ShoppingListItem,
 } from "@/lib/shopping-lists/types";
+import { getPendingItemQuantity } from "@/lib/shopping-lists/pending-item-quantity";
 import { dedupeAsync } from "@/lib/stores/dedupe-async";
 import { listFetchInitial, runListFetch } from "@/lib/stores/list-fetch";
 import { compareNamesByProfileLang } from "@/lib/stores/sort-lang";
@@ -163,9 +164,24 @@ export const useShoppingListsStore = create<ShoppingListsStore>((set, get) => ({
           items.push(payload.new);
         }
       } else if (payload.eventType === "UPDATE" && payload.new) {
-        items = items.map((item) =>
-          item.id === payload.new.id ? payload.new : item
-        );
+        const incoming = payload.new;
+        items = items.map((item) => {
+          if (item.id !== incoming.id) return item;
+
+          const pendingQuantity = getPendingItemQuantity(item.id);
+          if (
+            pendingQuantity !== undefined &&
+            incoming.quantity !== pendingQuantity
+          ) {
+            return item;
+          }
+
+          if (incoming.updated_at < item.updated_at) {
+            return item;
+          }
+
+          return incoming;
+        });
       } else if (payload.eventType === "DELETE" && payload.old) {
         items = items.filter((item) => item.id !== payload.old.id);
       }

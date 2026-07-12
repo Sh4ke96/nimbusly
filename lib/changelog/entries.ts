@@ -11,6 +11,25 @@ export { CHANGELOG_ENTRY_TYPE, type ChangelogEntry };
  */
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "0.9.7",
+    date: "2026-07-12",
+    type: CHANGELOG_ENTRY_TYPE.FIX,
+    title: {
+      pl: "Naprawa przeskakiwania ilości w liście zakupowej",
+      en: "Fix shopping list quantity jumping on rapid taps",
+    },
+    changes: {
+      pl: [
+        "Szybkie klikanie +/- zbiera zmiany i wysyła jedną synchronizację zamiast wielu równoległych requestów",
+        "Realtime nie nadpisuje lokalnej ilości przestarzałymi wartościami podczas edycji",
+      ],
+      en: [
+        "Rapid +/- taps batch into one sync instead of many parallel requests",
+        "Realtime no longer overwrites local quantity with stale values during edits",
+      ],
+    },
+  },
+  {
     version: "0.9.6",
     date: "2026-07-12",
     type: CHANGELOG_ENTRY_TYPE.FIX,
