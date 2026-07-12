@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+import { StickyNote } from "lucide-react";
 import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
@@ -16,6 +17,7 @@ import { NoteCard } from "@/components/notes/note-card";
 import { NimbusTourToolbarAnchor } from "@/components/nimbus/nimbus-tour-toolbar-anchor";
 import { FamilyRealtimeHint } from "@/components/ui/family-realtime-hint";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
+import { ModuleEmptyState } from "@/components/ui/module-empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { NOTE_FILTER_ALL } from "@/lib/notes/types";
 import { filterNotesByCategory } from "@/lib/notes/types";
@@ -48,6 +50,7 @@ export function NotesView() {
   const [focusedId, setFocusedId] = useState<string | null>(null);
   const [editingNote, setEditingNote] = useState<Note | null>(null);
   const [editOpen, setEditOpen] = useState<boolean>(false);
+  const [formOpen, setFormOpen] = useState<boolean>(false);
 
   useStoreBootstrap(loaded, error, fetchNotes);
   const onNotesChanged = useModuleRefresh(fetchNotes);
@@ -117,6 +120,8 @@ export function NotesView() {
                 profile={profile}
                 members={members}
                 onSuccess={onNotesChanged}
+                open={formOpen}
+                onOpenChange={setFormOpen}
               />
             </div>
           </div>
@@ -140,9 +145,12 @@ export function NotesView() {
             <Skeleton className="h-40 w-full rounded-none" />
           </div>
         ) : filteredNotes.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-16 border border-dashed border-border">
-            {hasActiveFilter ? t.notes.emptyFiltered : t.notes.empty}
-          </p>
+          <ModuleEmptyState
+            icon={StickyNote}
+            message={hasActiveFilter ? t.notes.emptyFiltered : t.notes.empty}
+            actionLabel={notes.length === 0 ? t.notes.addBtn : undefined}
+            onAction={notes.length === 0 ? () => setFormOpen(true) : undefined}
+          />
         ) : (
           <div className="grid gap-4 sm:grid-cols-2" data-nimbus-tour={NIMBUS_TOUR_TARGET.NOTES_LIST}>
             {filteredNotes.map((note) => (

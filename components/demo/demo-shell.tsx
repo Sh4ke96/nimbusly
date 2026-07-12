@@ -26,7 +26,7 @@ export function DemoShell({ embedded = false, className }: DemoShellProps) {
     <div
       className={cn(
         "flex flex-col overflow-hidden border border-border bg-background shadow-lg",
-        embedded ? "h-[min(42rem,72vh)] rounded-none" : "min-h-[calc(100vh-8rem)] rounded-none",
+        embedded ? "h-[min(46rem,78vh)] rounded-none" : "min-h-[calc(100vh-8rem)] rounded-none",
         className
       )}
       data-demo-shell
@@ -39,7 +39,7 @@ export function DemoShell({ embedded = false, className }: DemoShellProps) {
           </span>
         </div>
         <div className="flex shrink-0 items-center gap-1 sm:gap-2">
-          <span className="rounded-none border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-900 dark:text-amber-100 sm:text-xs">
+          <span className="rounded-none border border-attention/40 bg-attention/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-attention sm:text-xs">
             {t.demo.badge}
           </span>
           <LanguageToggle className="hidden sm:flex" />
@@ -64,7 +64,7 @@ export function DemoShell({ embedded = false, className }: DemoShellProps) {
 
       <div
         role="status"
-        className="border-b border-amber-500/25 bg-amber-500/10 px-3 py-2 text-center text-xs text-amber-950 dark:text-amber-50 sm:text-sm"
+        className="border-b border-attention/25 bg-attention/10 px-3 py-2 text-center text-xs text-attention sm:text-sm"
       >
         {t.demo.banner}
       </div>

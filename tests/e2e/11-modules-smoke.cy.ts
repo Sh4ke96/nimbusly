@@ -7,6 +7,8 @@ const modulePages = [
   { path: "/gifts", title: t.modules.gifts },
   { path: "/birthdays", title: t.modules.birthdays },
   { path: "/schedule", title: t.modules.schedule },
+  { path: "/calendar", title: t.modules.familyCalendar },
+  { path: "/family", title: t.modules.family },
   { path: "/medicine-cabinet", title: t.modules.medicineCabinet },
   { path: "/watchlist", title: t.modules.watchlist },
   { path: "/restaurants", title: t.modules.restaurants },

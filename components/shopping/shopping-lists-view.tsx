@@ -17,6 +17,7 @@ import { ShoppingListItemsPanel } from "@/components/shopping/shopping-list-item
 import { ShoppingListMobileSheet } from "@/components/shopping/shopping-list-mobile-sheet";
 import { Button } from "@/components/ui/button";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
+import { ModuleEmptyState } from "@/components/ui/module-empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useShoppingListsRealtime } from "@/lib/hooks/use-shopping-lists-realtime";
 import { downloadShoppingListCsv } from "@/lib/shopping-lists/export-csv";
@@ -33,7 +34,7 @@ import {
 import type { ShoppingList } from "@/lib/shopping-lists/types";
 import { FamilyRealtimeHint } from "@/components/ui/family-realtime-hint";
 import { ModuleSectionHeading } from "@/components/ui/module-section-heading";
-import { ClipboardList, Download, ShoppingBag } from "lucide-react";
+import { ClipboardList, Download, ShoppingBag, ShoppingCart } from "lucide-react";
 
 export function ShoppingListsView() {
   const t = useT();
@@ -55,6 +56,7 @@ export function ShoppingListsView() {
   const [editingList, setEditingList] = useState<ShoppingList | null>(null);
   const [editOpen, setEditOpen] = useState<boolean>(false);
   const [mobileDetailListId, setMobileDetailListId] = useState<string | null>(null);
+  const [formOpen, setFormOpen] = useState<boolean>(false);
 
   const familyId =
     profile?.account_mode === ACCOUNT_MODE.FAMILY && profile.family_id
@@ -156,7 +158,11 @@ export function ShoppingListsView() {
             <p className="text-sm text-muted-foreground">{t.shoppingLists.subtitle}</p>
           </div>
           <div data-nimbus-tour={NIMBUS_TOUR_TARGET.SHOPPING_ADD}>
-            <ShoppingListFormDialog onSuccess={onListsChanged} />
+            <ShoppingListFormDialog
+              onSuccess={onListsChanged}
+              open={formOpen}
+              onOpenChange={setFormOpen}
+            />
           </div>
         </div>
 
@@ -170,9 +176,12 @@ export function ShoppingListsView() {
             <Skeleton className="h-64 w-full rounded-none" />
           </div>
         ) : lists.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-16 border border-dashed border-border">
-            {t.shoppingLists.empty}
-          </p>
+          <ModuleEmptyState
+            icon={ShoppingCart}
+            message={t.shoppingLists.empty}
+            actionLabel={t.shoppingLists.addBtn}
+            onAction={() => setFormOpen(true)}
+          />
         ) : (
           <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
             <section className="space-y-3" data-nimbus-tour={NIMBUS_TOUR_TARGET.SHOPPING_LISTS}>

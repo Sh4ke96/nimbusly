@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useCallback } from "react";
+import { Clapperboard } from "lucide-react";
 import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
@@ -13,6 +14,7 @@ import { WatchlistFormDialog } from "@/components/watchlist/watchlist-form-dialo
 import { WatchlistItemCard } from "@/components/watchlist/watchlist-item-card";
 import { NimbusTourToolbarAnchor } from "@/components/nimbus/nimbus-tour-toolbar-anchor";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
+import { ModuleEmptyState } from "@/components/ui/module-empty-state";
 import { FamilyRealtimeHint } from "@/components/ui/family-realtime-hint";
 import { Skeleton } from "@/components/ui/skeleton";
 import { WATCHLIST_FILTER_ALL } from "@/lib/constants/watchlist";
@@ -49,6 +51,7 @@ export function WatchlistView() {
   const [platformFilter, setPlatformFilter] = useState<string>(WATCHLIST_FILTER_ALL);
   const [editingItem, setEditingItem] = useState<WatchlistItem | null>(null);
   const [editOpen, setEditOpen] = useState<boolean>(false);
+  const [formOpen, setFormOpen] = useState<boolean>(false);
 
   useStoreBootstrap(loaded, error, fetchItems);
   const onItemsChanged = useModuleRefresh(fetchItems);
@@ -111,7 +114,11 @@ export function WatchlistView() {
               />
             </NimbusTourToolbarAnchor>
             <div data-nimbus-tour={NIMBUS_TOUR_TARGET.WATCHLIST_ADD}>
-              <WatchlistFormDialog onSuccess={onItemsChanged} />
+              <WatchlistFormDialog
+                onSuccess={onItemsChanged}
+                open={formOpen}
+                onOpenChange={setFormOpen}
+              />
             </div>
           </div>
         </div>
@@ -126,13 +133,18 @@ export function WatchlistView() {
             <Skeleton className="h-44 w-full rounded-none" />
           </div>
         ) : filteredItems.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-16 border border-dashed border-border">
-            {items.length === 0
-              ? t.watchlist.empty
-              : hasActiveFilter
-                ? t.watchlist.emptyFiltered
-                : t.watchlist.empty}
-          </p>
+          <ModuleEmptyState
+            icon={Clapperboard}
+            message={
+              items.length === 0
+                ? t.watchlist.empty
+                : hasActiveFilter
+                  ? t.watchlist.emptyFiltered
+                  : t.watchlist.empty
+            }
+            actionLabel={items.length === 0 ? t.watchlist.addBtn : undefined}
+            onAction={items.length === 0 ? () => setFormOpen(true) : undefined}
+          />
         ) : (
           <div className="grid gap-4 sm:grid-cols-2" data-nimbus-tour={NIMBUS_TOUR_TARGET.WATCHLIST_LIST}>
             {filteredItems.map((item) => (

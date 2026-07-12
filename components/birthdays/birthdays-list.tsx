@@ -1,13 +1,14 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { ModuleEmptyState } from "@/components/ui/module-empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useT } from "@/lib/lang-context";
 import { formatBirthdayLabel, computeBirthdayAge, type BirthdayEntry, BIRTHDAY_FORM_FIELD } from "@/lib/birthdays/types";
 import { formatMessage } from "@/lib/i18n/format";
 import { selectionListRowClasses } from "@/lib/ui/selection-styles";
 import { cn } from "@/lib/utils";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, Cake } from "lucide-react";
 
 type BirthdaysListProps = {
   entries: BirthdayEntry[];
@@ -19,6 +20,7 @@ type BirthdaysListProps = {
   deletePending: boolean;
   onFocus: (entry: BirthdayEntry) => void;
   onEdit: (entry: BirthdayEntry) => void;
+  onAdd?: () => void;
 };
 
 export function BirthdaysList({
@@ -31,6 +33,7 @@ export function BirthdaysList({
   deletePending,
   onFocus,
   onEdit,
+  onAdd,
 }: BirthdaysListProps) {
   const t = useT();
 
@@ -44,7 +47,15 @@ export function BirthdaysList({
   }
 
   if (entries.length === 0) {
-    return <p className="p-4 text-sm text-muted-foreground">{t.birthdays.empty}</p>;
+    return (
+      <ModuleEmptyState
+        icon={Cake}
+        message={t.birthdays.empty}
+        actionLabel={onAdd ? t.birthdays.addBtn : undefined}
+        onAction={onAdd}
+        className="m-4"
+      />
+    );
   }
 
   return (

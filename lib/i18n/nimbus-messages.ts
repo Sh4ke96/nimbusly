@@ -145,6 +145,10 @@ const modulesPl = {
     list: step("Lista miesiąca", "Chronologiczna lista wydarzeń z bieżącego miesiąca."),
     print: step("Druk grafiku", "Wydrukuj miesiąc - przydatne na lodówkę lub spotkanie rodzinne."),
   },
+  familyCalendar: {
+    header: step("Kalendarz rodziny", "Jeden widok miesiąca: urodziny, grafik i obowiązki razem."),
+    view: step("Widok miesiąca", "Kliknij kafelek dnia, aby przejść do modułu źródłowego."),
+  },
   medicine: {
     header: step("Apteczka", "Trzymaj leki, daty ważności i lokalizację w jednym miejscu."),
     add: step("Dodaj lek", "Zapisz nazwę, formę, ilość i termin ważności."),
@@ -244,6 +248,10 @@ const modulesEn: Record<string, Record<string, StepCopy>> = {
     calendar: step("Calendar", "Browse the month and click days for details."),
     list: step("Month list", "Chronological list of events in the current month."),
     print: step("Print schedule", "Print the month - handy for the fridge or family meetings."),
+  },
+  familyCalendar: {
+    header: step("Family calendar", "One month view combining birthdays, schedule, and chores."),
+    view: step("Month view", "Click a day tile to jump to the source module."),
   },
   medicine: {
     header: step("Medicine cabinet", "Track medicines, expiry dates, and storage location."),
@@ -438,6 +446,8 @@ export const nimbusCompanionExtraPl = {
     gifts: "Zbieraj pomysły na prezenty z odbiorcą - nic nie umknie przed świętami.",
     birthdays: "Daty urodzin pojawią się na dashboardzie - dodaj bliskich z wyprzedzeniem.",
     schedule: "Grafik łączy wydarzenia jedno- i wielodniowe - mogę pokazać jak dodawać wpisy.",
+    familyCalendar:
+      "Kalendarz rodziny zbiera urodziny, grafik i obowiązki w jednym widoku miesiąca - mogę pokazać legendę i skróty.",
     watchlist: "Lista do obejrzenia działa solo lub w rodzinie - oznaczaj platformy i status.",
     restaurants: "Zapisuj miejsca do odwiedzenia - notatki po wizycie pomogą później.",
     pets: "Tu pilnujesz szczepień i wizyt u weterynarza - dodaj pupila i zadania opieki.",
@@ -642,6 +652,8 @@ export const nimbusCompanionExtraEn = {
     gifts: "Collect gift ideas with recipients - nothing slips away before the holidays.",
     birthdays: "Birthdays surface on the dashboard - add loved ones ahead of time.",
     schedule: "Schedule combines single- and multi-day events - I can show you how to add entries.",
+    familyCalendar:
+      "The family calendar merges birthdays, schedule, and chores in one month view - I can show the legend and shortcuts.",
     watchlist: "Watchlist works solo or with family - tag platforms and watched status.",
     restaurants: "Save places to visit - post-visit notes help later.",
     pets: "Track vaccines and vet visits here - add your pet and care tasks.",

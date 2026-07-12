@@ -1,6 +1,7 @@
 import {
   DASHBOARD_OVERVIEW_CARDS,
   DEFAULT_DASHBOARD_OVERVIEW_ORDER,
+  isDashboardOverviewCardId,
   type DashboardOverviewCardId,
 } from "@/lib/constants/dashboard-overview";
 import { normalizeAppModuleId } from "@/lib/constants/app-modules";
@@ -26,7 +27,7 @@ function uniqueValidCardIds(values: unknown): DashboardOverviewCardId[] {
   for (const value of values) {
     if (typeof value !== "string") continue;
     const cardId = normalizeAppModuleId(value);
-    if (!cardId || seen.has(cardId)) continue;
+    if (!cardId || !isDashboardOverviewCardId(cardId) || seen.has(cardId)) continue;
     seen.add(cardId);
     result.push(cardId);
   }

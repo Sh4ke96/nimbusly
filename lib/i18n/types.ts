@@ -29,11 +29,15 @@ export type Dict = {
   mobileNav: {
     ariaLabel: string;
     home: string;
+    homeShort: string;
     modules: string;
+    modulesShort: string;
     nimbus: string;
     notifications: string;
+    notificationsShort: string;
     notificationsUnread: string;
     settings: string;
+    settingsShort: string;
   };
   navigation: {
     loading: string;
@@ -88,6 +92,7 @@ export type Dict = {
     nimbusSlug: string;
     demo: string;
     demoSlug: string;
+    mobileSectionsAria: string;
     login: string;
     getStarted: string;
     dashboard: string;
@@ -158,6 +163,7 @@ export type Dict = {
     giftsHint: string;
     birthdaysHint: string;
     calendarHint: string;
+    familyCalendarHint: string;
     medicineHint: string;
     watchlistHint: string;
     restaurantsHint: string;
@@ -199,6 +205,11 @@ export type Dict = {
       gifts: { title: string; detail: string; badge?: string }[];
       birthdays: { title: string; detail: string; badge?: string }[];
       calendar: { title: string; detail: string; badge?: string }[];
+      familyCalendarEvents: {
+        day: number;
+        kind: "birthday" | "schedule" | "chore";
+        label: string;
+      }[];
       medicine: { title: string; detail: string; badge?: string }[];
       watchlist: { title: string; detail: string; badge?: string }[];
       restaurants: { title: string; detail: string; badge?: string }[];
@@ -493,6 +504,7 @@ export type Dict = {
       gifts: string;
       birthdays: string;
       calendar: string;
+      familyCalendar: string;
       family: string;
       medicineCabinet: string;
       watchlist: string;
@@ -507,6 +519,7 @@ export type Dict = {
       gifts: string;
       birthdays: string;
       calendar: string;
+      familyCalendar: string;
       family: string;
       medicineCabinet: string;
       watchlist: string;
@@ -1215,6 +1228,7 @@ export type Dict = {
     markdownLabel: string;
     markdownHint: string;
     attachmentsLabel: string;
+    attachmentsFetchError: string;
     attachmentsHint: string;
     attachmentUploadBtn: string;
     attachmentDeleteBtn: string;
@@ -1472,6 +1486,7 @@ export type Dict = {
     legendBirthday: string;
     legendSchedule: string;
     legendChore: string;
+    empty: string;
   };
   theme: {
     toggleLabel: string;
@@ -1678,6 +1693,7 @@ export type Dict = {
       gifts: string;
       birthdays: string;
       schedule: string;
+      familyCalendar: string;
       watchlist: string;
       restaurants: string;
       pets: string;

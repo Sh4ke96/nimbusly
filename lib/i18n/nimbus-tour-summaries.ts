@@ -82,6 +82,19 @@ export const nimbusModuleSummariesPl: Record<string, SummaryCopy> = {
       "Sprawdź panel „Wymaga uwagi” na dashboardzie.",
     ]
   ),
+  familyCalendar: summary(
+    "Kalendarz rodziny - podsumowanie",
+    "Wspólny miesiąc z urodzinami, grafikiem i obowiązkami.",
+    [
+      "Legenda kolorów rozróżnia typ wydarzenia.",
+      "Kliknięcie wpisu prowadzi do właściwego modułu.",
+      "Baner „Dziś” na dashboardzie też linkuje tutaj.",
+    ],
+    [
+      "Dodaj urodziny lub wpis w grafiku, aby zobaczyć je tutaj.",
+      "Odhacz obowiązek - pojawi się w kalendarzu w terminie.",
+    ]
+  ),
   medicine: summary(
     "Apteczka - podsumowanie",
     "Domowa apteczka z datami ważności i filtrowaniem.",
@@ -265,6 +278,19 @@ export const nimbusModuleSummariesEn: Record<string, SummaryCopy> = {
       "Add your next event or trip.",
       "Add birthdays - easier to plan shared time.",
       "Check Needs attention on the dashboard.",
+    ]
+  ),
+  familyCalendar: summary(
+    "Family calendar - summary",
+    "One month view for birthdays, schedule, and chores together.",
+    [
+      "Color legend shows event types at a glance.",
+      "Clicking an entry opens the source module.",
+      "The dashboard Today banner links here too.",
+    ],
+    [
+      "Add birthdays or schedule entries to populate the month.",
+      "Complete chores to see them on their due dates.",
     ]
   ),
   medicine: summary(

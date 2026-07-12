@@ -25,14 +25,22 @@ function AttachmentIcon({ mimeType }: { mimeType: string }) {
   return <FileText className="size-4 shrink-0" aria-hidden />;
 }
 
-async function fetchNoteAttachments(noteId: string): Promise<NoteAttachment[]> {
+async function fetchNoteAttachments(noteId: string): Promise<{
+  rows: NoteAttachment[];
+  error: boolean;
+}> {
   const supabase = createClient();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("note_attachments")
     .select("*")
     .eq("note_id", noteId)
     .order("created_at", { ascending: true });
-  return (data ?? []) as NoteAttachment[];
+
+  if (error) {
+    return { rows: [], error: true };
+  }
+
+  return { rows: (data ?? []) as NoteAttachment[], error: false };
 }
 
 export function NoteAttachmentsPanel({ noteId }: NoteAttachmentsPanelProps) {
@@ -40,28 +48,37 @@ export function NoteAttachmentsPanel({ noteId }: NoteAttachmentsPanelProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [attachments, setAttachments] = useState<NoteAttachment[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [fetchError, setFetchError] = useState<boolean>(false);
   const [uploadState, uploadAction, uploadPending] = useActionState(uploadNoteAttachment, null);
   const [deleteState, deleteAction, deletePending] = useActionState(deleteNoteAttachment, null);
 
   const refreshAttachments = useCallback(async () => {
-    const rows = await fetchNoteAttachments(noteId);
+    const { rows, error } = await fetchNoteAttachments(noteId);
     setAttachments(rows);
+    setFetchError(error);
     setLoading(false);
-  }, [noteId]);
+    if (error) {
+      toast.error(t.notes.attachmentsFetchError);
+    }
+  }, [noteId, t.notes.attachmentsFetchError]);
 
   useEffect(() => {
     let cancelled = false;
 
-    void fetchNoteAttachments(noteId).then((rows) => {
+    void fetchNoteAttachments(noteId).then(({ rows, error }) => {
       if (cancelled) return;
       setAttachments(rows);
+      setFetchError(error);
       setLoading(false);
+      if (error) {
+        toast.error(t.notes.attachmentsFetchError);
+      }
     });
 
     return () => {
       cancelled = true;
     };
-  }, [noteId]);
+  }, [noteId, t.notes.attachmentsFetchError]);
 
   useActionFeedback(uploadState, () => {
     void refreshAttachments();
@@ -128,6 +145,22 @@ export function NoteAttachmentsPanel({ noteId }: NoteAttachmentsPanelProps) {
 
       {loading ? (
         <p className="text-xs text-muted-foreground">…</p>
+      ) : fetchError ? (
+        <div className="flex flex-col gap-2">
+          <p className="text-xs text-destructive">{t.notes.attachmentsFetchError}</p>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="w-fit rounded-none"
+            onClick={() => {
+              setLoading(true);
+              void refreshAttachments();
+            }}
+          >
+            {t.module.retry}
+          </Button>
+        </div>
       ) : attachments.length === 0 ? null : (
         <ul className="space-y-1">
           {attachments.map((attachment) => (

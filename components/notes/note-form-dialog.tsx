@@ -31,6 +31,8 @@ interface NoteFormDialogProps {
   profile: Profile | null;
   members: FamilyMember[];
   onSuccess: () => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export function NoteFormDialog({
@@ -38,12 +40,16 @@ export function NoteFormDialog({
   profile,
   members,
   onSuccess,
+  open: controlledOpen,
+  onOpenChange,
 }: NoteFormDialogProps) {
   const t = useT();
   const celebrate = useNimbusCelebration();
   const isFamily =
     profile?.account_mode === ACCOUNT_MODE.FAMILY && !!profile.family_id;
-  const [open, setOpen] = useState<boolean>(false);
+  const [internalOpen, setInternalOpen] = useState<boolean>(false);
+  const isControlled = onOpenChange !== undefined;
+  const open = isControlled ? (controlledOpen ?? false) : internalOpen;
   const [title, setTitle] = useState<string>("");
   const [content, setContent] = useState<string>("");
   const [categoryId, setCategoryId] = useState<string>("");
@@ -56,11 +62,7 @@ export function NoteFormDialog({
   const [attachmentFiles, setAttachmentFiles] = useState<File[]>([]);
   const [state, action, pending] = useActionState(createNote, null);
 
-  useActionFeedback(state, () => {
-    if (title.startsWith("!")) {
-      celebrate("firstUrgentNote");
-    }
-    setOpen(false);
+  function resetForm() {
     setTitle("");
     setContent("");
     setCategoryId("");
@@ -68,6 +70,22 @@ export function NoteFormDialog({
     setIsPinned(false);
     setUseMarkdown(false);
     setAttachmentFiles([]);
+  }
+
+  function handleOpenChange(next: boolean) {
+    if (isControlled) {
+      onOpenChange?.(next);
+    } else {
+      setInternalOpen(next);
+    }
+    if (!next) resetForm();
+  }
+
+  useActionFeedback(state, () => {
+    if (title.startsWith("!")) {
+      celebrate("firstUrgentNote");
+    }
+    handleOpenChange(false);
     onSuccess();
   });
 
@@ -90,7 +108,7 @@ export function NoteFormDialog({
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button>
           <Plus className="size-4" />

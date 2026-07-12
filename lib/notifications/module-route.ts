@@ -1,10 +1,5 @@
 import { Bell, type LucideIcon } from "lucide-react";
-import {
-  APP_MODULE,
-  APP_MODULE_ROUTES,
-  getAppModuleIcon,
-  type AppModuleId,
-} from "@/lib/constants/app-modules";
+import type { NotificationModuleId } from "@/lib/constants/notification-modules";
 import {
   BIRTHDAY_NOTIFICATION_TYPES,
   BUDGET_NOTIFICATION_TYPES,
@@ -19,9 +14,12 @@ import {
   WATCHLIST_NOTIFICATION_TYPES,
   type NotificationType,
 } from "@/lib/constants/notifications";
+import {
+  APP_MODULE,
+  APP_MODULE_ROUTES,
+  getAppModuleIcon,
+} from "@/lib/constants/app-modules";
 import type { Dict } from "@/lib/i18n/types";
-
-export type NotificationModuleId = Exclude<AppModuleId, typeof APP_MODULE.FAMILY>;
 
 const NOTIFICATION_TYPES_BY_MODULE: Record<NotificationModuleId, readonly NotificationType[]> = {
   [APP_MODULE.BIRTHDAYS]: BIRTHDAY_NOTIFICATION_TYPES,

@@ -21,23 +21,43 @@ import { toast } from "sonner";
 
 interface PetFormDialogProps {
   onSuccess: () => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function PetFormDialog({ onSuccess }: PetFormDialogProps) {
+export function PetFormDialog({
+  onSuccess,
+  open: controlledOpen,
+  onOpenChange,
+}: PetFormDialogProps) {
   const t = useT();
   const celebrate = useNimbusCelebration();
-  const [open, setOpen] = useState<boolean>(false);
+  const [internalOpen, setInternalOpen] = useState<boolean>(false);
+  const isControlled = onOpenChange !== undefined;
+  const open = isControlled ? (controlledOpen ?? false) : internalOpen;
   const [name, setName] = useState<string>("");
   const [species, setSpecies] = useState<PetSpecies | null>(null);
   const [notes, setNotes] = useState<string>("");
   const [state, action, pending] = useActionState(createPet, null);
 
-  useActionFeedback(state, () => {
-    celebrate("firstPet");
-    setOpen(false);
+  function resetForm() {
     setName("");
     setSpecies(null);
     setNotes("");
+  }
+
+  function handleOpenChange(next: boolean) {
+    if (isControlled) {
+      onOpenChange?.(next);
+    } else {
+      setInternalOpen(next);
+    }
+    if (!next) resetForm();
+  }
+
+  useActionFeedback(state, () => {
+    celebrate("firstPet");
+    handleOpenChange(false);
     onSuccess();
   }, pending);
 
@@ -54,7 +74,7 @@ export function PetFormDialog({ onSuccess }: PetFormDialogProps) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button variant="outline">
           <Plus className="size-4" />

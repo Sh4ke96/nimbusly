@@ -4,13 +4,8 @@ import { useActionState, useMemo } from "react";
 import { GripVertical, Trash2 } from "lucide-react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { toast } from "sonner";
-import {
-  deleteShoppingListItem,
-  toggleShoppingListItemChecked,
-} from "@/app/(app)/shopping/actions";
+import { deleteShoppingListItem } from "@/app/(app)/shopping/actions";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
 import { useT } from "@/lib/lang-context";
 import {
@@ -21,6 +16,7 @@ import {
   selectShoppingListItems,
   useShoppingListsStore,
 } from "@/lib/stores/shopping-lists-store";
+import { ShoppingListItemChecked } from "@/components/shopping/shopping-list-item-checked";
 import { ShoppingListItemQuantity } from "@/components/shopping/shopping-list-item-quantity";
 import { ShoppingListItemEditDialog } from "@/components/shopping/shopping-list-item-edit-dialog";
 import type { ShoppingListCategory } from "@/lib/shopping-lists/categories";
@@ -42,7 +38,6 @@ export function ShoppingListItemRow({
   const t = useT();
   const selectItems = useMemo(() => selectShoppingListItems(listId), [listId]);
   const items = useShoppingListsStore(selectItems);
-  const setItemsForList = useShoppingListsStore((s) => s.setItemsForList);
 
   const {
     attributes,
@@ -65,27 +60,6 @@ export function ShoppingListItemRow({
 
   useActionFeedback(deleteState, onChanged);
 
-  async function handleToggle(checked: boolean) {
-    const previous = items;
-    setItemsForList(
-      listId,
-      items.map((entry) =>
-        entry.id === item.id ? { ...entry, checked } : entry
-      )
-    );
-
-    const formData = new FormData();
-    formData.set(SHOPPING_FORM_FIELD.ID, item.id);
-    formData.set(SHOPPING_FORM_FIELD.LIST_ID, listId);
-    formData.set(SHOPPING_FORM_FIELD.CHECKED, String(checked));
-
-    const result = await toggleShoppingListItemChecked(null, formData);
-    if (result && "error" in result) {
-      setItemsForList(listId, previous);
-      toast.error(result.error);
-    }
-  }
-
   return (
     <div
       ref={setNodeRef}
@@ -105,17 +79,14 @@ export function ShoppingListItemRow({
         <GripVertical className="size-4" />
       </button>
 
-      <Checkbox
-        checked={item.checked}
-        onCheckedChange={(value) => void handleToggle(value === true)}
-        className="cursor-pointer"
-        aria-label={t.shoppingLists.toggleItemLabel}
-      />
+      <ShoppingListItemChecked item={item} listId={listId} />
 
       <p
         className={cn(
           "flex-1 min-w-0 text-sm leading-snug",
-          item.checked && "text-muted-foreground line-through"
+          items.find((entry) => entry.id === item.id)?.checked ?? item.checked
+            ? "text-muted-foreground line-through"
+            : undefined
         )}
       >
         {item.content}

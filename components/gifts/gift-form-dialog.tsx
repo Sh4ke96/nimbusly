@@ -28,13 +28,21 @@ import { toast } from "sonner";
 
 interface GiftFormDialogProps {
   onSuccess: () => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function GiftFormDialog({ onSuccess }: GiftFormDialogProps) {
+export function GiftFormDialog({
+  onSuccess,
+  open: controlledOpen,
+  onOpenChange,
+}: GiftFormDialogProps) {
   const t = useT();
   const profile = useProfileStore((s) => s.profile);
   const members = useProfileStore((s) => s.members);
-  const [open, setOpen] = useState<boolean>(false);
+  const [internalOpen, setInternalOpen] = useState<boolean>(false);
+  const isControlled = onOpenChange !== undefined;
+  const open = isControlled ? (controlledOpen ?? false) : internalOpen;
   const [recipient, setRecipient] = useState<GiftRecipientSelection | null>(null);
   const [content, setContent] = useState<string>("");
   const [linkUrl, setLinkUrl] = useState<string>("");
@@ -45,13 +53,25 @@ export function GiftFormDialog({ onSuccess }: GiftFormDialogProps) {
   const [state, action, pending] = useActionState(createGiftIdea, null);
   const celebrate = useNimbusCelebration();
 
-  useActionFeedback(state, () => {
-    celebrate("firstGift");
-    setOpen(false);
+  function resetForm() {
     setRecipient(null);
     setContent("");
     setLinkUrl("");
     setVisibility({ visibleToAll: true, memberIds: [] });
+  }
+
+  function handleOpenChange(next: boolean) {
+    if (isControlled) {
+      onOpenChange?.(next);
+    } else {
+      setInternalOpen(next);
+    }
+    if (!next) resetForm();
+  }
+
+  useActionFeedback(state, () => {
+    celebrate("firstGift");
+    handleOpenChange(false);
     onSuccess();
   });
 
@@ -87,7 +107,7 @@ export function GiftFormDialog({ onSuccess }: GiftFormDialogProps) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button>
           <Plus className="size-4" />

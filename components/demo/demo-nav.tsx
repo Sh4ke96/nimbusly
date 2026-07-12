@@ -41,7 +41,7 @@ export function DemoNav({ embedded = false }: DemoNavProps) {
     >
       <ul
         className={cn(
-          "flex gap-1 overflow-x-auto p-2 lg:flex-col lg:overflow-x-visible lg:p-3",
+          "flex gap-1 overflow-x-auto scroll-px-2 p-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:flex-col lg:overflow-x-visible lg:p-3",
           embedded ? "lg:max-h-none" : "lg:sticky lg:top-0"
         )}
       >

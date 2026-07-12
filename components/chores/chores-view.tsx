@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { LayoutGrid, List } from "lucide-react";
+import { LayoutGrid, List, ListChecks } from "lucide-react";
 import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
@@ -16,6 +16,7 @@ import { ChoreTaskCard } from "@/components/chores/chore-task-card";
 import { NimbusTourToolbarAnchor } from "@/components/nimbus/nimbus-tour-toolbar-anchor";
 import { FamilyRealtimeHint } from "@/components/ui/family-realtime-hint";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
+import { ModuleEmptyState } from "@/components/ui/module-empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -33,6 +34,7 @@ import {
 import { useT } from "@/lib/lang-context";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useChoresStore } from "@/lib/stores/chores-store";
+import { hasPendingChoreTasks } from "@/lib/chores/pending-chore-tasks";
 
 type ChoresViewMode = "list" | "calendar";
 
@@ -70,6 +72,7 @@ export function ChoresView() {
   const onTasksChanged = useModuleRefresh(fetchTasks);
 
   const onRealtimeChange = useCallback(() => {
+    if (hasPendingChoreTasks()) return;
     void fetchTasks(true);
   }, [fetchTasks]);
 
@@ -195,13 +198,18 @@ export function ChoresView() {
             <Skeleton className="h-44 w-full rounded-none" />
           </div>
         ) : filteredTasks.length === 0 && viewMode === "list" ? (
-          <p className="text-sm text-muted-foreground text-center py-16 border border-dashed border-border">
-            {tasks.length === 0
-              ? t.chores.empty
-              : hasActiveFilter
-                ? t.chores.emptyFiltered
-                : t.chores.empty}
-          </p>
+          <ModuleEmptyState
+            icon={ListChecks}
+            message={
+              tasks.length === 0
+                ? t.chores.empty
+                : hasActiveFilter
+                  ? t.chores.emptyFiltered
+                  : t.chores.empty
+            }
+            actionLabel={tasks.length === 0 ? t.chores.addBtn : undefined}
+            onAction={tasks.length === 0 ? () => setFormOpen(true) : undefined}
+          />
         ) : viewMode === "calendar" ? (
           <Card
             id="chores-calendar"

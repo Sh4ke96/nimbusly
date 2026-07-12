@@ -295,6 +295,10 @@ export const NIMBUS_TOUR_CATALOG: Record<NimbusTourId, NimbusTourStep[]> = {
     { id: "filters", target: NIMBUS_TOUR_TARGET.NOTES_FILTERS },
     { id: "list", target: NIMBUS_TOUR_TARGET.NOTES_LIST },
   ]),
+  [NIMBUS_TOUR_ID.FAMILY_CALENDAR]: moduleSteps("/calendar", "familyCalendar", [
+    { id: "header", target: NIMBUS_TOUR_TARGET.FAMILY_CALENDAR_HEADER },
+    { id: "view", target: NIMBUS_TOUR_TARGET.FAMILY_CALENDAR_VIEW },
+  ]),
 };
 
 export function getNimbusTourSteps(tourId: NimbusTourId): NimbusTourStep[] {

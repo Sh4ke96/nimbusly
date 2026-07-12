@@ -23,6 +23,7 @@ import { NimbusTourToolbarAnchor } from "@/components/nimbus/nimbus-tour-toolbar
 import { FamilyRealtimeHint } from "@/components/ui/family-realtime-hint";
 import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus-tour";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
+import { ModuleEmptyState } from "@/components/ui/module-empty-state";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -121,6 +122,7 @@ export function BudgetView() {
   }, [filterState, activeBudgetId]);
   const [editingBudget, setEditingBudget] = useState<Budget | null>(null);
   const [editOpen, setEditOpen] = useState<boolean>(false);
+  const [formOpen, setFormOpen] = useState<boolean>(false);
 
   const selectExpenses = useMemo(
     () =>
@@ -334,7 +336,12 @@ export function BudgetView() {
             <p className="text-sm text-muted-foreground">{t.budget.subtitle}</p>
           </div>
           <div className="w-full sm:w-auto" data-nimbus-tour={NIMBUS_TOUR_TARGET.BUDGET_ADD}>
-            <BudgetFormDialog onSuccess={onDataChanged} triggerClassName="w-full sm:w-auto" />
+            <BudgetFormDialog
+              onSuccess={onDataChanged}
+              triggerClassName="w-full sm:w-auto"
+              open={formOpen}
+              onOpenChange={setFormOpen}
+            />
           </div>
         </div>
 
@@ -348,9 +355,12 @@ export function BudgetView() {
             <Skeleton className="h-72 w-full rounded-none" />
           </div>
         ) : budgets.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-16 border border-dashed border-border">
-            {t.budget.empty}
-          </p>
+          <ModuleEmptyState
+            icon={Wallet}
+            message={t.budget.empty}
+            actionLabel={t.budget.addBtn}
+            onAction={() => setFormOpen(true)}
+          />
         ) : visibleBudgets.length === 0 ? (
           <div className="space-y-3 text-center py-16 border border-dashed border-border">
             <p className="text-sm text-muted-foreground">{t.budget.emptyHidden}</p>

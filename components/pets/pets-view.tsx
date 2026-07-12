@@ -4,7 +4,7 @@ import { useMemo, useState, useCallback } from "react";
 import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, PawPrint } from "lucide-react";
 import { AppHeader } from "@/components/app/app-header";
 import { AppPage } from "@/components/app/app-page";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
@@ -16,6 +16,7 @@ import { PetEditDialog } from "@/components/pets/pet-edit-dialog";
 import { PetFormDialog } from "@/components/pets/pet-form-dialog";
 import { NimbusTourToolbarAnchor } from "@/components/nimbus/nimbus-tour-toolbar-anchor";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
+import { ModuleEmptyState } from "@/components/ui/module-empty-state";
 import { FamilyRealtimeHint } from "@/components/ui/family-realtime-hint";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -61,6 +62,8 @@ export function PetsView() {
   const [careEditOpen, setCareEditOpen] = useState<boolean>(false);
   const [editingPet, setEditingPet] = useState<Pet | null>(null);
   const [petEditOpen, setPetEditOpen] = useState<boolean>(false);
+  const [petFormOpen, setPetFormOpen] = useState<boolean>(false);
+  const [careFormOpen, setCareFormOpen] = useState<boolean>(false);
   const [deletePetState, deletePetAction, deletePetPending] = useActionState(deletePet, null);
 
   useStoreBootstrap(loaded, error, fetchAll);
@@ -136,10 +139,19 @@ export function PetsView() {
               />
             </NimbusTourToolbarAnchor>
             <div data-nimbus-tour={NIMBUS_TOUR_TARGET.PETS_ADD}>
-              <PetFormDialog onSuccess={onDataChanged} />
+              <PetFormDialog
+                onSuccess={onDataChanged}
+                open={petFormOpen}
+                onOpenChange={setPetFormOpen}
+              />
             </div>
             <div data-nimbus-tour={NIMBUS_TOUR_TARGET.PETS_CARE}>
-              <PetCareFormDialog pets={pets} onSuccess={onDataChanged} />
+              <PetCareFormDialog
+                pets={pets}
+                onSuccess={onDataChanged}
+                open={careFormOpen}
+                onOpenChange={setCareFormOpen}
+              />
             </div>
           </div>
         </div>
@@ -202,17 +214,25 @@ export function PetsView() {
             <Skeleton className="h-44 w-full rounded-none" />
           </div>
         ) : pets.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-16 border border-dashed border-border">
-            {t.pets.emptyNoPets}
-          </p>
+          <ModuleEmptyState
+            icon={PawPrint}
+            message={t.pets.emptyNoPets}
+            actionLabel={t.pets.addBtn}
+            onAction={() => setPetFormOpen(true)}
+          />
         ) : filteredItems.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-16 border border-dashed border-border">
-            {careItems.length === 0
-              ? t.pets.empty
-              : hasActiveFilter
-                ? t.pets.emptyFiltered
-                : t.pets.empty}
-          </p>
+          <ModuleEmptyState
+            icon={PawPrint}
+            message={
+              careItems.length === 0
+                ? t.pets.empty
+                : hasActiveFilter
+                  ? t.pets.emptyFiltered
+                  : t.pets.empty
+            }
+            actionLabel={careItems.length === 0 ? t.pets.addCareBtn : undefined}
+            onAction={careItems.length === 0 ? () => setCareFormOpen(true) : undefined}
+          />
         ) : (
           <div className="grid gap-4 sm:grid-cols-2" data-nimbus-tour={NIMBUS_TOUR_TARGET.PETS_LIST}>
             {filteredItems.map((item) => (

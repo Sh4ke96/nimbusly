@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import { Minus, Plus, Pin, CalendarDays, ArrowRight, LayoutDashboard } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
@@ -10,13 +11,27 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
+  MONTH_CALENDAR_ENTRY_BUTTON_CLASS,
+  MonthCalendarGrid,
+  MonthCalendarNav,
+} from "@/components/ui/month-calendar-grid";
+import {
+  FAMILY_CALENDAR_EVENT_KIND,
+  type FamilyCalendarEventKind,
+} from "@/lib/calendar/family-calendar";
+import { buildMonthGrid, getMonthName, getWeekdayLabels, shiftMonth } from "@/lib/birthdays/calendar";
+import {
+  familyCalendarEventStyles,
+  familyCalendarLegendStyles,
+} from "@/lib/ui/status-badge-styles";
+import {
   DEMO_VIEW,
   isDemoModuleView,
   type DemoViewId,
 } from "@/lib/constants/demo-mode";
 import {
   APP_MODULE,
-  APP_MODULE_IDS,
+  APP_MODULE_DISCOVER_IDS,
   getAppModuleIcon,
   getAppModuleLabel,
   getAppModuleOverviewMeta,
@@ -30,8 +45,20 @@ import { cn } from "@/lib/utils";
 const DEMO_VIEW_ICONS: Record<DemoViewId, LucideIcon> = {
   [DEMO_VIEW.DASHBOARD]: LayoutDashboard,
   ...(Object.fromEntries(
-    APP_MODULE_IDS.map((moduleId) => [moduleId, getAppModuleIcon(moduleId)])
+    APP_MODULE_DISCOVER_IDS.map((moduleId) => [moduleId, getAppModuleIcon(moduleId)])
   ) as Record<AppModuleId, LucideIcon>),
+};
+
+const demoFamilyCalendarEventStyles: Record<FamilyCalendarEventKind, string> = {
+  [FAMILY_CALENDAR_EVENT_KIND.BIRTHDAY]: familyCalendarEventStyles.birthday,
+  [FAMILY_CALENDAR_EVENT_KIND.SCHEDULE]: familyCalendarEventStyles.schedule,
+  [FAMILY_CALENDAR_EVENT_KIND.CHORE]: familyCalendarEventStyles.chore,
+};
+
+const demoFamilyCalendarLegendStyles: Record<FamilyCalendarEventKind, string> = {
+  [FAMILY_CALENDAR_EVENT_KIND.BIRTHDAY]: familyCalendarLegendStyles.birthday,
+  [FAMILY_CALENDAR_EVENT_KIND.SCHEDULE]: familyCalendarLegendStyles.schedule,
+  [FAMILY_CALENDAR_EVENT_KIND.CHORE]: familyCalendarLegendStyles.chore,
 };
 
 function DemoPanelHeading({
@@ -340,6 +367,113 @@ function DemoListPanel({
   );
 }
 
+function DemoFamilyCalendarPanel() {
+  const t = useT();
+  const now = new Date();
+  const [year, setYear] = useState<number>(now.getFullYear());
+  const [month, setMonth] = useState<number>(now.getMonth() + 1);
+  const events = t.demo.samples.familyCalendarEvents;
+
+  const eventsByDay = useMemo(() => {
+    const map = new Map<number, typeof events>();
+    for (const event of events) {
+      const list = map.get(event.day) ?? [];
+      list.push(event);
+      map.set(event.day, list);
+    }
+    return map;
+  }, [events]);
+
+  const cells = useMemo(() => buildMonthGrid(year, month), [year, month]);
+  const weekdays = getWeekdayLabels(t.birthdays.calendarWeekdays);
+  const monthNames = t.birthdays.calendarMonths;
+
+  function handlePrev() {
+    const shifted = shiftMonth(year, month, -1);
+    setYear(shifted.year);
+    setMonth(shifted.month);
+  }
+
+  function handleNext() {
+    const shifted = shiftMonth(year, month, 1);
+    setYear(shifted.year);
+    setMonth(shifted.month);
+  }
+
+  return (
+    <div className="space-y-4">
+      <DemoPanelHeading
+        view={APP_MODULE.FAMILY_CALENDAR}
+        hint={t.demo.familyCalendarHint}
+      />
+
+      <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+        <span className="inline-flex items-center gap-1.5">
+          <span
+            className={cn(
+              "size-2.5 border",
+              demoFamilyCalendarLegendStyles[FAMILY_CALENDAR_EVENT_KIND.BIRTHDAY],
+            )}
+          />
+          {t.familyCalendar.legendBirthday}
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span
+            className={cn(
+              "size-2.5 border",
+              demoFamilyCalendarLegendStyles[FAMILY_CALENDAR_EVENT_KIND.SCHEDULE],
+            )}
+          />
+          {t.familyCalendar.legendSchedule}
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span
+            className={cn(
+              "size-2.5 border",
+              demoFamilyCalendarLegendStyles[FAMILY_CALENDAR_EVENT_KIND.CHORE],
+            )}
+          />
+          {t.familyCalendar.legendChore}
+        </span>
+      </div>
+
+      <MonthCalendarNav
+        title={`${getMonthName(month, monthNames)} ${year}`}
+        onPrev={handlePrev}
+        onNext={handleNext}
+      />
+
+      <MonthCalendarGrid
+        cells={cells}
+        weekdays={weekdays}
+        monthNames={monthNames}
+        dayDataAttribute="demo-family-calendar-day"
+        renderDayContent={({ day }) => {
+          if (!day) return null;
+          const dayEvents = eventsByDay.get(day) ?? [];
+          return (
+            <ul className="space-y-1">
+              {dayEvents.map((event) => (
+                <li key={`${event.day}-${event.kind}-${event.label}`}>
+                  <span
+                    className={cn(
+                      MONTH_CALENDAR_ENTRY_BUTTON_CLASS,
+                      "border",
+                      demoFamilyCalendarEventStyles[event.kind],
+                    )}
+                  >
+                    <span className="line-clamp-2">{event.label}</span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          );
+        }}
+      />
+    </div>
+  );
+}
+
 function DemoFamilyPanel() {
   const t = useT();
   const members = t.demo.samples.familyMembers;
@@ -475,6 +609,10 @@ export function DemoPanels() {
 
   if (activeView === APP_MODULE.FAMILY) {
     return <DemoFamilyPanel />;
+  }
+
+  if (activeView === APP_MODULE.FAMILY_CALENDAR) {
+    return <DemoFamilyCalendarPanel />;
   }
 
   if (isDemoModuleView(activeView)) {

@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { SiteNavbar } from "@/components/landing/navbar";
+import { LandingMobileNav } from "@/components/landing/landing-mobile-nav";
 import { HeroSection } from "@/components/landing/hero";
 import { HighlightsSection } from "@/components/landing/highlights";
 import { DemoSection } from "@/components/landing/demo-section";
@@ -26,6 +27,7 @@ export function HomePage() {
 
       <div className="relative z-10 flex min-h-screen flex-col">
         <SiteNavbar />
+        <LandingMobileNav />
         <main className="flex-1">
           <HeroSection />
           <HighlightsSection />

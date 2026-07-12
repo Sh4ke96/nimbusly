@@ -2,7 +2,7 @@
 
 import { CHORE_FORM_FIELD } from "@/lib/chores/types";
 import { format } from "date-fns";
-import { useActionState, useRef } from "react";
+import { useActionState, useEffect, useRef } from "react";
 import {
   AlertTriangle,
   Calendar,
@@ -47,6 +47,10 @@ import {
 } from "@/app/(app)/chores/actions";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
 import { useNimbusCelebration } from "@/lib/hooks/use-nimbus-celebration";
+import {
+  clearPendingChoreTask,
+  setPendingChoreTask,
+} from "@/lib/chores/pending-chore-tasks";
 
 interface ChoreTaskCardProps {
   task: ChoreTask;
@@ -158,9 +162,17 @@ export function ChoreTaskCard({
     if (pendingStatusRef.current === CHORE_STATUS.COMPLETED) {
       celebrate("firstChore");
     }
+    clearPendingChoreTask(task.id);
     pendingStatusRef.current = null;
     onChanged?.();
   }, statusPending);
+
+  useEffect(() => {
+    if (statusState && "error" in statusState) {
+      clearPendingChoreTask(task.id);
+      pendingStatusRef.current = null;
+    }
+  }, [statusState, task.id]);
 
   return (
     <Card
@@ -338,6 +350,7 @@ export function ChoreTaskCard({
                     className="cursor-pointer rounded-none h-8 text-xs gap-1.5 px-2.5"
                     onClick={() => {
                       pendingStatusRef.current = status;
+                      setPendingChoreTask(task.id);
                     }}
                   >
                     <ChoreStatusIcon status={status} className="size-3.5" />

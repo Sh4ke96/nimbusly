@@ -20,7 +20,7 @@ export function FamilyCalendarPage() {
           <AccountBreadcrumbs current={t.familyCalendar.title} />
         </div>
 
-        <header className="space-y-1 no-print">
+        <header className="space-y-1 no-print" data-nimbus-tour="family-calendar-header">
           <h1 className="font-heading text-2xl font-bold tracking-tight">
             {t.familyCalendar.title}
           </h1>

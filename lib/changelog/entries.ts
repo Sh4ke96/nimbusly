@@ -11,6 +11,99 @@ export { CHANGELOG_ENTRY_TYPE, type ChangelogEntry };
  */
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "0.11.4",
+    date: "2026-07-12",
+    type: CHANGELOG_ENTRY_TYPE.MINOR,
+    title: {
+      pl: "Demo: kalendarz rodziny z siatką miesiąca",
+      en: "Demo: family calendar month grid",
+    },
+    changes: {
+      pl: [
+        "Sekcja kalendarza rodzinnego w demo pokazuje legendę, nawigację miesiąca i kolorowe wpisy",
+        "Moduł grafiku w demo ma osobny opis od kalendarza rodzinnego",
+      ],
+      en: [
+        "Family calendar demo shows legend, month navigation, and color-coded entries",
+        "Schedule module demo has its own description separate from the family calendar",
+      ],
+    },
+  },
+  {
+    version: "0.11.3",
+    date: "2026-07-12",
+    type: CHANGELOG_ENTRY_TYPE.FIX,
+    title: {
+      pl: "Naprawa zawieszonego loadera nawigacji",
+      en: "Fix stuck navigation loader",
+    },
+    changes: {
+      pl: [
+        "Loader znika po przerwanej nawigacji (np. szybki powrót do /dashboard) i ma limit czasu jako zabezpieczenie",
+      ],
+      en: [
+        "Loader dismisses after interrupted navigation (e.g. quick return to /dashboard) and has a timeout safety cap",
+      ],
+    },
+  },
+  {
+    version: "0.11.2",
+    date: "2026-07-12",
+    type: CHANGELOG_ENTRY_TYPE.FIX,
+    title: {
+      pl: "Czytelniejszy opis demo na stronie głównej",
+      en: "Clearer landing demo copy",
+    },
+    changes: {
+      pl: [
+        "Opis sekcji demo skupia się na korzyści dla użytkownika, bez technicznych wzmianek o bazie danych",
+      ],
+      en: [
+        "Landing demo copy focuses on user value, without technical database mentions",
+      ],
+    },
+  },
+  {
+    version: "0.11.1",
+    date: "2026-07-12",
+    type: CHANGELOG_ENTRY_TYPE.FIX,
+    title: {
+      pl: "Większe demo na stronie głównej",
+      en: "Larger landing page demo",
+    },
+    changes: {
+      pl: [
+        "Sekcja demo na / jest nieco szersza i wyższa, żeby lepiej pokazać panel",
+      ],
+      en: [
+        "The / demo section is slightly wider and taller for a clearer panel preview",
+      ],
+    },
+  },
+  {
+    version: "0.11.0",
+    date: "2026-07-12",
+    type: CHANGELOG_ENTRY_TYPE.MINOR,
+    title: {
+      pl: "Sprint stabilizacji: kalendarz, UX i mobile",
+      en: "Stabilization sprint: calendar, UX, and mobile",
+    },
+    changes: {
+      pl: [
+        "Kalendarz rodziny w nawigacji, wyszukiwaniu i demo; lepsze stany pusty/ładowanie/błąd",
+        "Naprawa wyścigów przy odhaczaniu zakupów i obowiązków; powiadomienia aktualizują się dopiero po sukcesie",
+        "Wspólne puste stany modułów, tokeny statusów, rounded-none w UI, mobilna nawigacja landingu i krótsze etykiety dolnego paska",
+        "Nimbus: przewodnik po /calendar, podpowiedzi kontekstowe i podsumowanie touru",
+      ],
+      en: [
+        "Family calendar in nav, search, and demo; improved empty, loading, and error states",
+        "Race fixes for shopping checkboxes and chores; notifications update only after server success",
+        "Shared module empty states, status tokens, rounded-none UI polish, landing mobile nav, and shorter bottom-nav labels",
+        "Nimbus: /calendar tour, context hints, and tour summary",
+      ],
+    },
+  },
+  {
     version: "0.10.0",
     date: "2026-07-12",
     type: CHANGELOG_ENTRY_TYPE.MINOR,

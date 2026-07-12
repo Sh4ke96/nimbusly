@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { APP_MODULE_IDS } from "@/lib/constants/app-modules";
+import { APP_MODULE_DISCOVER_IDS } from "@/lib/constants/app-modules";
 import { buildSearchIndex, filterSearchResults } from "@/lib/search/global-search";
 import { pl } from "@/lib/i18n/pl";
 
@@ -43,7 +43,7 @@ describe("filterSearchResults", () => {
   it("returns all modules when query is empty", () => {
     const results = filterSearchResults(index, "");
     assert.ok(results.every((item) => item.kind === "module"));
-    assert.equal(results.length, APP_MODULE_IDS.length);
+    assert.equal(results.length, APP_MODULE_DISCOVER_IDS.length);
   });
 
   it("matches budget names, entries, and shopping items", () => {

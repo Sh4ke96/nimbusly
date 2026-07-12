@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useCallback } from "react";
+import { Cross } from "lucide-react";
 import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
@@ -13,6 +14,7 @@ import { MedicineFormDialog } from "@/components/medicine-cabinet/medicine-form-
 import { MedicineItemCard } from "@/components/medicine-cabinet/medicine-item-card";
 import { NimbusTourToolbarAnchor } from "@/components/nimbus/nimbus-tour-toolbar-anchor";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
+import { ModuleEmptyState } from "@/components/ui/module-empty-state";
 import { FamilyRealtimeHint } from "@/components/ui/family-realtime-hint";
 import { Skeleton } from "@/components/ui/skeleton";
 import { MEDICINE_FILTER_ALL } from "@/lib/constants/medicine";
@@ -46,6 +48,7 @@ export function MedicineView() {
   const [filterKey, setFilterKey] = useState<string>(MEDICINE_FILTER_ALL);
   const [editingItem, setEditingItem] = useState<MedicineItem | null>(null);
   const [editOpen, setEditOpen] = useState<boolean>(false);
+  const [formOpen, setFormOpen] = useState<boolean>(false);
 
   useStoreBootstrap(loaded, error, fetchItems);
   const onItemsChanged = useModuleRefresh(fetchItems);
@@ -100,7 +103,11 @@ export function MedicineView() {
               />
             </NimbusTourToolbarAnchor>
             <div data-nimbus-tour={NIMBUS_TOUR_TARGET.MEDICINE_ADD}>
-              <MedicineFormDialog onSuccess={onItemsChanged} />
+              <MedicineFormDialog
+                onSuccess={onItemsChanged}
+                open={formOpen}
+                onOpenChange={setFormOpen}
+              />
             </div>
           </div>
         </div>
@@ -115,13 +122,18 @@ export function MedicineView() {
             <Skeleton className="h-44 w-full rounded-none" />
           </div>
         ) : filteredItems.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-16 border border-dashed border-border">
-            {filterKey === MEDICINE_FILTER_ALL
-              ? t.medicineCabinet.empty
-              : hasActiveFilter
-                ? t.medicineCabinet.emptyFiltered
-                : t.medicineCabinet.empty}
-          </p>
+          <ModuleEmptyState
+            icon={Cross}
+            message={
+              filterKey === MEDICINE_FILTER_ALL
+                ? t.medicineCabinet.empty
+                : hasActiveFilter
+                  ? t.medicineCabinet.emptyFiltered
+                  : t.medicineCabinet.empty
+            }
+            actionLabel={items.length === 0 ? t.medicineCabinet.addBtn : undefined}
+            onAction={items.length === 0 ? () => setFormOpen(true) : undefined}
+          />
         ) : (
           <div className="grid gap-4 sm:grid-cols-2" data-nimbus-tour={NIMBUS_TOUR_TARGET.MEDICINE_LIST}>
             {filteredItems.map((item) => (

@@ -6,6 +6,7 @@ import { Logo } from "@/components/logo";
 import { NAV_TRANSITION } from "@/lib/constants/navigation";
 import { useClientSearchString } from "@/lib/hooks/use-client-search-string";
 import { useT } from "@/lib/lang-context";
+import { buildRouteKey, getWindowRouteKey } from "@/lib/navigation/route-key";
 import { shouldStartNavigationTransition } from "@/lib/navigation/should-start-transition";
 import { cn } from "@/lib/utils";
 
@@ -15,13 +16,14 @@ export function NavigationTransition() {
   const t = useT();
   const pathname = usePathname();
   const search = useClientSearchString();
-  const routeKey = `${pathname}?${search}`;
+  const routeKey = buildRouteKey(pathname, search);
 
   const [phase, setPhase] = useState<TransitionPhase>("idle");
   const pendingRef = useRef(false);
   const startedAtRef = useRef(0);
   const routeKeyRef = useRef(routeKey);
   const exitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const watchdogTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const clearExitTimer = useCallback(() => {
     if (exitTimerRef.current) {
@@ -30,25 +32,26 @@ export function NavigationTransition() {
     }
   }, []);
 
-  const startTransition = useCallback(() => {
-    if (pendingRef.current) {
-      return;
+  const clearWatchdogTimer = useCallback(() => {
+    if (watchdogTimerRef.current) {
+      clearTimeout(watchdogTimerRef.current);
+      watchdogTimerRef.current = null;
     }
+  }, []);
+
+  const resetTransition = useCallback(() => {
     clearExitTimer();
-    pendingRef.current = true;
-    startedAtRef.current = Date.now();
-    setPhase("entering");
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        setPhase("visible");
-      });
-    });
-  }, [clearExitTimer]);
+    clearWatchdogTimer();
+    pendingRef.current = false;
+    setPhase("idle");
+  }, [clearExitTimer, clearWatchdogTimer]);
 
   const finishTransition = useCallback(() => {
     if (!pendingRef.current) {
       return;
     }
+
+    clearWatchdogTimer();
 
     const elapsed = Date.now() - startedAtRef.current;
     const remaining = Math.max(0, NAV_TRANSITION.MIN_VISIBLE_MS - elapsed);
@@ -62,7 +65,31 @@ export function NavigationTransition() {
         exitTimerRef.current = null;
       }, NAV_TRANSITION.FADE_MS);
     }, remaining);
-  }, [clearExitTimer]);
+  }, [clearExitTimer, clearWatchdogTimer]);
+
+  const startTransition = useCallback(
+    (options?: { force?: boolean }) => {
+      if (pendingRef.current && !options?.force) {
+        return;
+      }
+
+      clearExitTimer();
+      clearWatchdogTimer();
+      pendingRef.current = true;
+      startedAtRef.current = Date.now();
+      setPhase("entering");
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          setPhase("visible");
+        });
+      });
+
+      watchdogTimerRef.current = setTimeout(() => {
+        resetTransition();
+      }, NAV_TRANSITION.MAX_VISIBLE_MS);
+    },
+    [clearExitTimer, clearWatchdogTimer, resetTransition],
+  );
 
   useEffect(() => {
     const onClick = (event: MouseEvent) => {
@@ -99,7 +126,7 @@ export function NavigationTransition() {
         return;
       }
 
-      startTransition();
+      startTransition({ force: true });
     };
 
     document.addEventListener("click", onClick, true);
@@ -108,22 +135,44 @@ export function NavigationTransition() {
 
   useEffect(() => {
     const onPopState = () => {
+      if (pendingRef.current) {
+        routeKeyRef.current = getWindowRouteKey();
+        finishTransition();
+        return;
+      }
+
       startTransition();
     };
 
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
-  }, [startTransition]);
+  }, [finishTransition, startTransition]);
 
   useEffect(() => {
+    if (pendingRef.current) {
+      const windowKey = getWindowRouteKey();
+      if (windowKey !== routeKey) {
+        routeKeyRef.current = windowKey;
+        finishTransition();
+        return;
+      }
+    }
+
     if (routeKey === routeKeyRef.current) {
       return;
     }
+
     routeKeyRef.current = routeKey;
     finishTransition();
   }, [routeKey, finishTransition]);
 
-  useEffect(() => clearExitTimer, [clearExitTimer]);
+  useEffect(
+    () => () => {
+      clearExitTimer();
+      clearWatchdogTimer();
+    },
+    [clearExitTimer, clearWatchdogTimer],
+  );
 
   if (phase === "idle") {
     return null;

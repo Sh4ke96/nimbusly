@@ -1,12 +1,11 @@
 "use client";
 
+import { StickyNote } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { NOTE_FORM_FIELD } from "@/lib/notes/types";
 import type { NoteCategory } from "@/lib/notes/types";
 import { useT } from "@/lib/lang-context";
 import { selectionPickerTileButtonClasses } from "@/lib/ui/selection-styles";
-
-const UNCATEGORIZED_EMOJI = "🗒️";
 
 interface NoteCategoryPickerProps {
   value: string;
@@ -33,9 +32,7 @@ export function NoteCategoryPicker({
           onClick={() => onChange("")}
           className={selectionPickerTileButtonClasses(value === "", "gap-2")}
         >
-          <span className="text-lg leading-none" aria-hidden>
-            {UNCATEGORIZED_EMOJI}
-          </span>
+          <StickyNote className="size-5 shrink-0 text-muted-foreground" aria-hidden />
           <span className="font-medium">{t.notes.uncategorizedLabel}</span>
         </button>
         {categories.map((category) => {

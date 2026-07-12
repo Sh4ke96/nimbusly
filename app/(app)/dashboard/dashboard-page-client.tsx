@@ -63,7 +63,7 @@ export default function DashboardPageClient({ snapshot }: DashboardPageClientPro
       <AppPage width="full">
         <div className="animate-rise" data-nimbus-tour={NIMBUS_TOUR_TARGET.DASHBOARD_GREETING}>
           <h1 className="font-heading font-bold text-2xl sm:text-3xl tracking-tight min-h-[2.25rem] sm:min-h-[2.75rem]">
-            {t.dashboard.greeting}, {displayName} 👋
+            {t.dashboard.greeting}, {displayName}
           </h1>
         </div>
 

@@ -193,7 +193,7 @@ export function SortableOverviewCard({
               </Button>
             )}
             {!editMode && (
-              <ArrowRight className="size-4 text-muted-foreground/40 transition-all group-hover:text-primary group-hover:translate-x-0.5" />
+              <ArrowRight className="size-4 text-muted-foreground/70 transition-all group-hover:text-primary group-hover:translate-x-0.5" />
             )}
           </div>
         </CardHeader>

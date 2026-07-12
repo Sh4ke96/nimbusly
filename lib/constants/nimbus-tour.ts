@@ -14,6 +14,7 @@ export const NIMBUS_TOUR_ID = {
   PETS: "pets",
   CHORES: "chores",
   NOTES: "notes",
+  FAMILY_CALENDAR: "familyCalendar",
 } as const;
 
 export type NimbusTourId = (typeof NIMBUS_TOUR_ID)[keyof typeof NIMBUS_TOUR_ID];
@@ -101,6 +102,8 @@ export const NIMBUS_TOUR_TARGET = {
   NOTES_CATEGORY: "notes-category",
   NOTES_FILTERS: "notes-filters",
   NOTES_LIST: "notes-list",
+  FAMILY_CALENDAR_HEADER: "family-calendar-header",
+  FAMILY_CALENDAR_VIEW: "family-calendar-view",
   TOUR_SUMMARY: "tour-summary",
   FAMILY_SETTINGS_TAB: "family-settings-tab",
   FAMILY_MEMBERS: "family-members",
@@ -115,6 +118,7 @@ export const NIMBUS_PATH_TOUR: Record<string, NimbusTourId> = {
   "/gifts": NIMBUS_TOUR_ID.GIFTS,
   "/birthdays": NIMBUS_TOUR_ID.BIRTHDAYS,
   "/schedule": NIMBUS_TOUR_ID.SCHEDULE,
+  "/calendar": NIMBUS_TOUR_ID.FAMILY_CALENDAR,
   "/medicine-cabinet": NIMBUS_TOUR_ID.MEDICINE,
   "/watchlist": NIMBUS_TOUR_ID.WATCHLIST,
   "/restaurants": NIMBUS_TOUR_ID.RESTAURANTS,

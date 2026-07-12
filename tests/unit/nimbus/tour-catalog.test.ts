@@ -7,6 +7,10 @@ import { getNimbusTourSteps } from "@/lib/nimbus/tour-catalog";
 describe("nimbus tour catalog", () => {
   it("resolves module tour ids from paths", () => {
     assert.equal(getModuleTourIdForPath("/budget"), NIMBUS_TOUR_ID.BUDGET);
+    assert.equal(
+      getModuleTourIdForPath("/calendar"),
+      NIMBUS_TOUR_ID.FAMILY_CALENDAR
+    );
     assert.equal(getModuleTourIdForPath("/notifications"), NIMBUS_TOUR_ID.NOTIFICATIONS);
     assert.equal(getModuleTourIdForPath("/unknown"), null);
   });

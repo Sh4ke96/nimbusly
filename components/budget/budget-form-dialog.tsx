@@ -25,26 +25,43 @@ import { cn } from "@/lib/utils";
 interface BudgetFormDialogProps {
   onSuccess?: () => void;
   triggerClassName?: string;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function BudgetFormDialog({ onSuccess, triggerClassName }: BudgetFormDialogProps) {
+export function BudgetFormDialog({
+  onSuccess,
+  triggerClassName,
+  open: controlledOpen,
+  onOpenChange,
+}: BudgetFormDialogProps) {
   const t = useT();
   const celebrate = useNimbusCelebration();
   const profile = useProfileStore((s) => s.profile);
   const members = useProfileStore((s) => s.members);
-  const [open, setOpen] = useState<boolean>(false);
+  const [internalOpen, setInternalOpen] = useState<boolean>(false);
+  const isControlled = onOpenChange !== undefined;
+  const open = isControlled ? (controlledOpen ?? false) : internalOpen;
   const [selectedMemberIds, setSelectedMemberIds] = useState<string[]>([]);
   const [state, action, pending] = useActionState(createBudget, null);
 
+  function handleOpenChange(next: boolean) {
+    if (isControlled) {
+      onOpenChange?.(next);
+    } else {
+      setInternalOpen(next);
+    }
+    if (!next) setSelectedMemberIds([]);
+  }
+
   useActionFeedback(state, () => {
     celebrate("firstBudget");
-    setOpen(false);
-    setSelectedMemberIds([]);
+    handleOpenChange(false);
     onSuccess?.();
   });
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button type="button" className={cn("w-full cursor-pointer sm:w-auto", triggerClassName)}>
           <Plus className="size-4" />

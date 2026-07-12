@@ -52,10 +52,12 @@ export function NotificationListItem({
 
   useActionFeedback(markState, () => {
     celebrate("firstNotification");
+    onMarkReadLocally(item.id);
     onMarkedRead?.();
   });
 
   useActionFeedback(dismissState, () => {
+    onDismissLocally?.(item.id);
     onDismissed?.();
   });
 
@@ -95,20 +97,14 @@ export function NotificationListItem({
       </div>
       <div className="flex shrink-0 flex-col gap-1">
         {!item.read_at && (
-          <form
-            action={markAction}
-            onSubmit={() => onMarkReadLocally(item.id)}
-          >
+          <form action={markAction}>
             <input type="hidden" name={COMMON_FORM_FIELD.ID} value={item.id} />
             <Button type="submit" variant="ghost" size="sm" className="shrink-0">
               {t.notifications.markRead}
             </Button>
           </form>
         )}
-        <form
-          action={dismissAction}
-          onSubmit={() => onDismissLocally?.(item.id)}
-        >
+        <form action={dismissAction}>
           <input type="hidden" name={COMMON_FORM_FIELD.ID} value={item.id} />
           <Button
             type="submit"

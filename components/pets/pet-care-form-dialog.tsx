@@ -33,11 +33,20 @@ import { toast } from "sonner";
 interface PetCareFormDialogProps {
   pets: Pet[];
   onSuccess: () => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function PetCareFormDialog({ pets, onSuccess }: PetCareFormDialogProps) {
+export function PetCareFormDialog({
+  pets,
+  onSuccess,
+  open: controlledOpen,
+  onOpenChange,
+}: PetCareFormDialogProps) {
   const t = useT();
-  const [open, setOpen] = useState<boolean>(false);
+  const [internalOpen, setInternalOpen] = useState<boolean>(false);
+  const isControlled = onOpenChange !== undefined;
+  const open = isControlled ? (controlledOpen ?? false) : internalOpen;
   const [petId, setPetId] = useState<string>("");
   const [name, setName] = useState<string>("");
   const [careType, setCareType] = useState<PetCareType | null>(null);
@@ -61,9 +70,17 @@ export function PetCareFormDialog({ pets, onSuccess }: PetCareFormDialogProps) {
     setNotes("");
   }
 
+  function handleOpenChange(next: boolean) {
+    if (isControlled) {
+      onOpenChange?.(next);
+    } else {
+      setInternalOpen(next);
+    }
+    if (!next) resetForm();
+  }
+
   useActionFeedback(state, () => {
-    setOpen(false);
-    resetForm();
+    handleOpenChange(false);
     onSuccess();
   }, pending);
 
@@ -104,7 +121,7 @@ export function PetCareFormDialog({ pets, onSuccess }: PetCareFormDialogProps) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button disabled={pets.length === 0}>
           <Plus className="size-4" />

@@ -35,7 +35,7 @@ export function QuickAddFab() {
       <Button
         type="button"
         size="icon"
-        className="fixed right-4 z-40 size-12 rounded-full shadow-lg md:hidden bottom-[calc(var(--app-mobile-bottom-inset)+0.75rem)]"
+        className="fixed right-4 z-40 size-12 rounded-none shadow-lg md:hidden bottom-[calc(var(--app-mobile-bottom-inset)+0.75rem)]"
         onClick={handleOpen}
         aria-label={t.search.quickAddFabLabel}
       >

@@ -1,6 +1,6 @@
 import {
   APP_MODULE,
-  APP_MODULE_IDS,
+  APP_MODULE_DISCOVER_IDS,
   APP_MODULE_ROUTES,
   getAppModuleDesc,
   getAppModuleLabel,
@@ -67,7 +67,7 @@ function searchHaystack(item: Pick<SearchResult, "title" | "subtitle" | "keyword
 }
 
 export function buildSearchIndex(input: SearchIndexInput): SearchResult[] {
-  const results: SearchResult[] = APP_MODULE_IDS.map((moduleId) => ({
+  const results: SearchResult[] = APP_MODULE_DISCOVER_IDS.map((moduleId) => ({
     id: `module:${moduleId}`,
     title: getAppModuleLabel(moduleId, input.moduleLabels),
     subtitle: getAppModuleDesc(moduleId, input.moduleDescs),

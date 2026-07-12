@@ -21,22 +21,38 @@ import { SHOPPING_LIST_NAME_MAX_LENGTH } from "@/lib/constants/shopping-lists";
 
 interface ShoppingListFormDialogProps {
   onSuccess?: () => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function ShoppingListFormDialog({ onSuccess }: ShoppingListFormDialogProps) {
+export function ShoppingListFormDialog({
+  onSuccess,
+  open: controlledOpen,
+  onOpenChange,
+}: ShoppingListFormDialogProps) {
   const t = useT();
   const celebrate = useNimbusCelebration();
-  const [open, setOpen] = useState<boolean>(false);
+  const [internalOpen, setInternalOpen] = useState<boolean>(false);
+  const isControlled = onOpenChange !== undefined;
+  const open = isControlled ? (controlledOpen ?? false) : internalOpen;
   const [state, action, pending] = useActionState(createShoppingList, null);
 
+  function handleOpenChange(next: boolean) {
+    if (isControlled) {
+      onOpenChange?.(next);
+    } else {
+      setInternalOpen(next);
+    }
+  }
+
   useActionFeedback(state, () => {
-    setOpen(false);
+    handleOpenChange(false);
     celebrate("firstShoppingList");
     onSuccess?.();
   });
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button type="button" className="cursor-pointer">
           <Plus className="size-4" />

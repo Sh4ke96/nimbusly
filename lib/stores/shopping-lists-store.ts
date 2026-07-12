@@ -7,6 +7,7 @@ import {
   type ShoppingListItem,
 } from "@/lib/shopping-lists/types";
 import { getPendingItemQuantity } from "@/lib/shopping-lists/pending-item-quantity";
+import { getPendingItemChecked } from "@/lib/shopping-lists/pending-item-checked";
 import { dedupeAsync } from "@/lib/stores/dedupe-async";
 import { listFetchInitial, runListFetch } from "@/lib/stores/list-fetch";
 import { compareNamesByProfileLang } from "@/lib/stores/sort-lang";
@@ -172,6 +173,14 @@ export const useShoppingListsStore = create<ShoppingListsStore>((set, get) => ({
           if (
             pendingQuantity !== undefined &&
             incoming.quantity !== pendingQuantity
+          ) {
+            return item;
+          }
+
+          const pendingChecked = getPendingItemChecked(item.id);
+          if (
+            pendingChecked !== undefined &&
+            incoming.checked !== pendingChecked
           ) {
             return item;
           }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+import { Gift } from "lucide-react";
 import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
@@ -14,6 +15,7 @@ import { GiftNoteCard } from "@/components/gifts/gift-note-card";
 import { NimbusTourToolbarAnchor } from "@/components/nimbus/nimbus-tour-toolbar-anchor";
 import { FamilyRealtimeHint } from "@/components/ui/family-realtime-hint";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
+import { ModuleEmptyState } from "@/components/ui/module-empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { GIFT_FILTER_ALL } from "@/lib/constants/gifts";
 import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus";
@@ -45,6 +47,7 @@ export function GiftsView() {
   const [focusedId, setFocusedId] = useState<string | null>(null);
   const [editingIdea, setEditingIdea] = useState<GiftIdea | null>(null);
   const [editOpen, setEditOpen] = useState<boolean>(false);
+  const [formOpen, setFormOpen] = useState<boolean>(false);
 
   useStoreBootstrap(loaded, error, fetchIdeas);
   const onGiftsChanged = useModuleRefresh(fetchIdeas);
@@ -98,7 +101,11 @@ export function GiftsView() {
               />
             </NimbusTourToolbarAnchor>
             <div data-nimbus-tour={NIMBUS_TOUR_TARGET.GIFTS_ADD}>
-              <GiftFormDialog onSuccess={onGiftsChanged} />
+              <GiftFormDialog
+                onSuccess={onGiftsChanged}
+                open={formOpen}
+                onOpenChange={setFormOpen}
+              />
             </div>
           </div>
         </div>
@@ -113,9 +120,18 @@ export function GiftsView() {
             <Skeleton className="h-40 w-full rounded-none" />
           </div>
         ) : filteredIdeas.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-16 border border-dashed border-border">
-            {filterKey === GIFT_FILTER_ALL ? t.gifts.empty : hasActiveFilter ? t.gifts.emptyFiltered : t.gifts.empty}
-          </p>
+          <ModuleEmptyState
+            icon={Gift}
+            message={
+              filterKey === GIFT_FILTER_ALL
+                ? t.gifts.empty
+                : hasActiveFilter
+                  ? t.gifts.emptyFiltered
+                  : t.gifts.empty
+            }
+            actionLabel={ideas.length === 0 ? t.gifts.addBtn : undefined}
+            onAction={ideas.length === 0 ? () => setFormOpen(true) : undefined}
+          />
         ) : (
           <div className="grid gap-4 sm:grid-cols-2" data-nimbus-tour={NIMBUS_TOUR_TARGET.GIFTS_LIST}>
             {filteredIdeas.map((idea) => (

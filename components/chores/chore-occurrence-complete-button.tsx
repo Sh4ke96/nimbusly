@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { CircleCheck } from "lucide-react";
 import { type VariantProps } from "class-variance-authority";
 import { CHORE_FORM_FIELD } from "@/lib/chores/types";
@@ -8,6 +8,10 @@ import { CHORE_STATUS } from "@/lib/constants/chores";
 import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { completeChoreOccurrence } from "@/app/(app)/chores/actions";
+import {
+  clearPendingChoreTask,
+  setPendingChoreTask,
+} from "@/lib/chores/pending-chore-tasks";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
 import { useNimbusCelebration } from "@/lib/hooks/use-nimbus-celebration";
 import { useT } from "@/lib/lang-context";
@@ -40,12 +44,23 @@ export function ChoreOccurrenceCompleteButton({
   const [state, action, pending] = useActionState(completeChoreOccurrence, null);
 
   useActionFeedback(state, () => {
+    clearPendingChoreTask(taskId);
     celebrate("firstChore");
     onSuccess?.();
   }, pending);
 
+  useEffect(() => {
+    if (state && "error" in state) {
+      clearPendingChoreTask(taskId);
+    }
+  }, [state, taskId]);
+
   return (
-    <form action={action} className={className}>
+    <form
+      action={action}
+      className={className}
+      onSubmit={() => setPendingChoreTask(taskId)}
+    >
       <input type="hidden" name={CHORE_FORM_FIELD.ID} value={taskId} />
       <input type="hidden" name={CHORE_FORM_FIELD.OCCURRENCE_DATE} value={occurrenceDate} />
       {appearance === "inline" ? (

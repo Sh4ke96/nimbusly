@@ -117,6 +117,8 @@ export const t = {
     pets: "Zwierzęta",
     chores: "Obowiązki domowe",
     notes: "Notatki",
+    familyCalendar: "Kalendarz rodziny",
+    family: "Rodzina",
   },
   budget: {
     title: "Budżet",

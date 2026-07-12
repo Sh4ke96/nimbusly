@@ -70,6 +70,13 @@ export function MobileBottomNav() {
     [MOBILE_NAV_ITEM.SETTINGS]: t.mobileNav.settings,
   };
 
+  const shortLabels: Record<MobileNavItem, string> = {
+    [MOBILE_NAV_ITEM.HOME]: t.mobileNav.homeShort,
+    [MOBILE_NAV_ITEM.MODULES]: t.mobileNav.modulesShort,
+    [MOBILE_NAV_ITEM.NOTIFICATIONS]: t.mobileNav.notificationsShort,
+    [MOBILE_NAV_ITEM.SETTINGS]: t.mobileNav.settingsShort,
+  };
+
   const slots: MobileNavSlot[] = showNimbus
     ? [
         MOBILE_NAV_ITEM.HOME,
@@ -136,7 +143,8 @@ export function MobileBottomNav() {
               />
             ) : null}
           </span>
-          <span className="w-full truncate">{labels[id]}</span>
+          <span className="w-full truncate sm:hidden">{shortLabels[id]}</span>
+          <span className="hidden w-full truncate sm:inline">{labels[id]}</span>
         </Link>
       </li>
     );

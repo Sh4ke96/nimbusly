@@ -18,6 +18,7 @@ type BirthdaysMobileAccordionProps = {
   deletePending: boolean;
   onFocus: (entry: BirthdayEntry) => void;
   onEdit: (entry: BirthdayEntry) => void;
+  onAdd?: () => void;
   tourTarget?: string;
 };
 
@@ -31,6 +32,7 @@ export function BirthdaysMobileAccordion({
   deletePending,
   onFocus,
   onEdit,
+  onAdd,
   tourTarget,
 }: BirthdaysMobileAccordionProps) {
   const t = useT();
@@ -68,6 +70,7 @@ export function BirthdaysMobileAccordion({
             deletePending={deletePending}
             onFocus={onFocus}
             onEdit={onEdit}
+            onAdd={onAdd}
           />
         </div>
       ) : null}

@@ -38,7 +38,8 @@ import { DASHBOARD_OVERVIEW_CARD, type DashboardOverviewCardId } from "@/lib/con
 import { getAppModuleOverviewMeta } from "@/lib/constants/app-modules";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import type { Lang } from "@/lib/constants/lang";
-import { SCHEDULE_ENTRY_EMOJI, type ScheduleEntryType } from "@/lib/constants/schedule";
+import { type ScheduleEntryType } from "@/lib/constants/schedule";
+import { getScheduleEntryIcon } from "@/lib/schedule/entry-icons";
 import { getScheduleTypeLabel } from "@/lib/schedule/types";
 import { formatMessage } from "@/lib/i18n/format";
 import type { Dict } from "@/lib/i18n/types";
@@ -659,14 +660,16 @@ export function OverviewCardBody({
             accent={accent}
           />
           <ul className="space-y-1.5">
-            {scheduleByType.slice(0, 4).map(([type, count]) => (
+            {scheduleByType.slice(0, 4).map(([type, count]) => {
+              const ScheduleIcon = getScheduleEntryIcon(type as ScheduleEntryType);
+              return (
               <li
                 key={type}
                 className="flex items-center justify-between gap-2 text-sm border border-border bg-muted/20 px-2.5 py-2"
               >
                 <span className="flex items-center gap-2 min-w-0">
-                  <span className="text-base leading-none">
-                    {SCHEDULE_ENTRY_EMOJI[type as ScheduleEntryType]}
+                  <span className="inline-flex size-6 shrink-0 items-center justify-center rounded-none bg-primary/10 text-primary">
+                    <ScheduleIcon className="size-3.5" aria-hidden />
                   </span>
                   <span className="truncate">
                     {getScheduleTypeLabel(
@@ -679,7 +682,8 @@ export function OverviewCardBody({
                   {count}
                 </span>
               </li>
-            ))}
+            );
+            })}
           </ul>
         </div>
       );

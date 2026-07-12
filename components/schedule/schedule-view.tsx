@@ -15,6 +15,7 @@ import { ScheduleTypeBadge } from "@/components/schedule/schedule-type-picker";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CARD_TITLE_ROW_CLASSNAME } from "@/components/ui/card";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
+import { ModuleEmptyState } from "@/components/ui/module-empty-state";
 import { FamilyRealtimeHint } from "@/components/ui/family-realtime-hint";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLang, useT } from "@/lib/lang-context";
@@ -36,7 +37,7 @@ import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
 import { deleteScheduleEntry } from "@/app/(app)/schedule/actions";
 import { getMonthName } from "@/lib/birthdays/calendar";
 import { buildSchedulePrintHtml, openSchedulePrintWindow } from "@/lib/schedule/print-document";
-import { Printer, Pencil, Trash2 } from "lucide-react";
+import { Printer, Pencil, Trash2, CalendarDays } from "lucide-react";
 
 function entryInMonth(entry: ScheduleEntry, year: number, month: number): boolean {
   return scheduleEntryOverlapsMonth(entry, year, month);
@@ -234,7 +235,13 @@ export function ScheduleView() {
                   <Skeleton className="h-10 w-full rounded-none" />
                 </div>
               ) : monthEntries.length === 0 ? (
-                <p className="p-4 text-sm text-muted-foreground">{t.schedule.empty}</p>
+                <ModuleEmptyState
+                  icon={CalendarDays}
+                  message={t.schedule.empty}
+                  actionLabel={t.schedule.addBtn}
+                  onAction={() => setFormOpen(true)}
+                  className="m-4"
+                />
               ) : (
                 <ul className="divide-y divide-border">
                   {monthEntries.map((entry) => {

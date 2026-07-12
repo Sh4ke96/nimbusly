@@ -5,6 +5,11 @@ import {
   resetPendingItemQuantities,
   setPendingItemQuantity,
 } from "@/lib/shopping-lists/pending-item-quantity";
+import {
+  clearPendingItemChecked,
+  resetPendingItemChecked,
+  setPendingItemChecked,
+} from "@/lib/shopping-lists/pending-item-checked";
 import type { ShoppingListItem } from "@/lib/shopping-lists/types";
 import { useShoppingListsStore } from "@/lib/stores/shopping-lists-store";
 import type { ShoppingList } from "@/lib/shopping-lists/types";
@@ -40,6 +45,7 @@ describe("shopping lists store realtime", () => {
   afterEach(() => {
     useShoppingListsStore.getState().reset();
     resetPendingItemQuantities();
+    resetPendingItemChecked();
   });
 
   it("updates list name from realtime UPDATE", () => {
@@ -134,5 +140,30 @@ describe("shopping lists store realtime", () => {
     );
 
     clearPendingItemQuantity("item-1");
+  });
+
+  it("ignores item checked UPDATE while local pending checked differs", () => {
+    useShoppingListsStore.setState({
+      itemsByListId: {
+        "list-1": [{ ...baseItem, checked: true }],
+      },
+    });
+    setPendingItemChecked("item-1", true);
+
+    useShoppingListsStore.getState().applyItemChange(
+      "list-1",
+      testRealtimeItemUpdatePayload({
+        ...baseItem,
+        checked: false,
+        updated_at: "2026-01-02T00:00:00.000Z",
+      })
+    );
+
+    assert.equal(
+      useShoppingListsStore.getState().itemsByListId["list-1"]?.[0]?.checked,
+      true
+    );
+
+    clearPendingItemChecked("item-1");
   });
 });

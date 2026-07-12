@@ -12,7 +12,7 @@ export function DemoSection() {
 
   return (
     <section id={DEMO_SECTION_ID} className="scroll-mt-20 border-y border-border bg-muted/20 py-20">
-      <div className="mx-auto max-w-6xl space-y-8 px-4">
+      <div className="mx-auto max-w-7xl space-y-8 px-4">
         <div className="mx-auto max-w-2xl space-y-3 text-center">
           <h2 className="font-heading text-3xl font-bold tracking-tight text-balance sm:text-4xl">
             {t.demo.sectionHeading}

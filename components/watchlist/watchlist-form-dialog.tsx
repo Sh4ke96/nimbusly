@@ -30,11 +30,19 @@ import { toast } from "sonner";
 
 interface WatchlistFormDialogProps {
   onSuccess: () => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function WatchlistFormDialog({ onSuccess }: WatchlistFormDialogProps) {
+export function WatchlistFormDialog({
+  onSuccess,
+  open: controlledOpen,
+  onOpenChange,
+}: WatchlistFormDialogProps) {
   const t = useT();
-  const [open, setOpen] = useState<boolean>(false);
+  const [internalOpen, setInternalOpen] = useState<boolean>(false);
+  const isControlled = onOpenChange !== undefined;
+  const open = isControlled ? (controlledOpen ?? false) : internalOpen;
   const [title, setTitle] = useState<string>("");
   const [mediaType, setMediaType] = useState<WatchlistMediaType | null>(null);
   const [status, setStatus] = useState<WatchlistStatus | null>(WATCHLIST_STATUS.TO_WATCH);
@@ -43,14 +51,26 @@ export function WatchlistFormDialog({ onSuccess }: WatchlistFormDialogProps) {
   const [state, action, pending] = useActionState(createWatchlistItem, null);
   const celebrate = useNimbusCelebration();
 
-  useActionFeedback(state, () => {
-    celebrate("firstWatchlistItem");
-    setOpen(false);
+  function resetForm() {
     setTitle("");
     setMediaType(null);
     setStatus(WATCHLIST_STATUS.TO_WATCH);
     setNotes("");
     setStreamingPlatforms([]);
+  }
+
+  function handleOpenChange(next: boolean) {
+    if (isControlled) {
+      onOpenChange?.(next);
+    } else {
+      setInternalOpen(next);
+    }
+    if (!next) resetForm();
+  }
+
+  useActionFeedback(state, () => {
+    celebrate("firstWatchlistItem");
+    handleOpenChange(false);
     onSuccess();
   }, pending);
 
@@ -72,7 +92,7 @@ export function WatchlistFormDialog({ onSuccess }: WatchlistFormDialogProps) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button>
           <Plus className="size-4" />

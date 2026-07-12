@@ -112,6 +112,7 @@ export function BirthdaysView() {
     deletePending,
     onFocus: focusBirthday,
     onEdit: openEdit,
+    onAdd: () => setFormOpen(true),
   };
 
   return (

@@ -29,13 +29,21 @@ import { toast } from "sonner";
 
 interface MedicineFormDialogProps {
   onSuccess: () => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function MedicineFormDialog({ onSuccess }: MedicineFormDialogProps) {
+export function MedicineFormDialog({
+  onSuccess,
+  open: controlledOpen,
+  onOpenChange,
+}: MedicineFormDialogProps) {
   const t = useT();
   const profile = useProfileStore((s) => s.profile);
   const members = useProfileStore((s) => s.members);
-  const [open, setOpen] = useState<boolean>(false);
+  const [internalOpen, setInternalOpen] = useState<boolean>(false);
+  const isControlled = onOpenChange !== undefined;
+  const open = isControlled ? (controlledOpen ?? false) : internalOpen;
   const [name, setName] = useState<string>("");
   const [formType, setFormType] = useState<MedicineFormType | null>(null);
   const [quantity, setQuantity] = useState<string>("");
@@ -48,8 +56,7 @@ export function MedicineFormDialog({ onSuccess }: MedicineFormDialogProps) {
   const [takenBy, setTakenBy] = useState<string | null>(null);
   const [state, action, pending] = useActionState(createMedicineItem, null);
 
-  useActionFeedback(state, () => {
-    setOpen(false);
+  function resetForm() {
     setName("");
     setFormType(null);
     setQuantity("");
@@ -58,6 +65,19 @@ export function MedicineFormDialog({ onSuccess }: MedicineFormDialogProps) {
     setLocation("");
     setNotes("");
     setTakenBy(null);
+  }
+
+  function handleOpenChange(next: boolean) {
+    if (isControlled) {
+      onOpenChange?.(next);
+    } else {
+      setInternalOpen(next);
+    }
+    if (!next) resetForm();
+  }
+
+  useActionFeedback(state, () => {
+    handleOpenChange(false);
     onSuccess();
   }, pending);
 
@@ -79,7 +99,7 @@ export function MedicineFormDialog({ onSuccess }: MedicineFormDialogProps) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button>
           <Plus className="size-4" />

@@ -1,6 +1,7 @@
 import {
   Cake,
   CalendarDays,
+  CalendarRange,
   Clapperboard,
   Cross,
   Gift,
@@ -27,7 +28,10 @@ export const APP_MODULE = {
   CHORES: "chores",
   NOTES: "notes",
   BIRTHDAYS: "birthdays",
+  /** Work / family schedule at `/schedule`. */
   CALENDAR: "calendar",
+  /** Unified month view at `/calendar` (not on dashboard overview cards). */
+  FAMILY_CALENDAR: "familyCalendar",
   FAMILY: "family",
 } as const;
 
@@ -63,6 +67,7 @@ export const APP_MODULE_NAV_IDS: AppModuleId[] = [
   APP_MODULE.SHOPPING,
   APP_MODULE.GIFTS,
   APP_MODULE.BIRTHDAYS,
+  APP_MODULE.FAMILY_CALENDAR,
   APP_MODULE.CALENDAR,
   APP_MODULE.MEDICINE_CABINET,
   APP_MODULE.WATCHLIST,
@@ -88,6 +93,12 @@ export const APP_MODULE_HERO_IDS: AppModuleId[] = [
   APP_MODULE.FAMILY,
 ];
 
+/** Nav + search entries including modules outside dashboard overview cards. */
+export const APP_MODULE_DISCOVER_IDS: AppModuleId[] = [
+  ...APP_MODULE_IDS,
+  APP_MODULE.FAMILY_CALENDAR,
+];
+
 export const APP_MODULE_ROUTES: Record<AppModuleId, string> = {
   [APP_MODULE.BUDGET]: "/budget",
   [APP_MODULE.SHOPPING]: "/shopping",
@@ -100,6 +111,7 @@ export const APP_MODULE_ROUTES: Record<AppModuleId, string> = {
   [APP_MODULE.NOTES]: "/notes",
   [APP_MODULE.BIRTHDAYS]: "/birthdays",
   [APP_MODULE.CALENDAR]: "/schedule",
+  [APP_MODULE.FAMILY_CALENDAR]: "/calendar",
   [APP_MODULE.FAMILY]: "/family",
 };
 
@@ -125,11 +137,12 @@ const MODULE_META: Record<AppModuleId, AppModuleMeta> = {
   [APP_MODULE.NOTES]: { icon: StickyNote, overviewAccent: "lime" },
   [APP_MODULE.BIRTHDAYS]: { icon: Cake, overviewAccent: "rose" },
   [APP_MODULE.CALENDAR]: { icon: CalendarDays, overviewAccent: "sky" },
+  [APP_MODULE.FAMILY_CALENDAR]: { icon: CalendarRange, overviewAccent: "sky" },
   [APP_MODULE.FAMILY]: { icon: Users, overviewAccent: "slate" },
 };
 
 export function isAppModuleId(value: string): value is AppModuleId {
-  return (APP_MODULE_IDS as readonly string[]).includes(value);
+  return (Object.values(APP_MODULE) as readonly string[]).includes(value);
 }
 
 export function normalizeAppModuleId(value: string): AppModuleId | null {
