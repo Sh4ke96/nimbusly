@@ -13,6 +13,7 @@ import {
   FAMILY_CALENDAR_EVENT_KIND,
   groupFamilyCalendarEventsByDay,
 } from "@/lib/calendar/family-calendar";
+import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus-tour";
 import {
   MONTH_CALENDAR_ENTRY_BUTTON_CLASS,
   MonthCalendarGrid,
@@ -158,7 +159,7 @@ export function FamilyCalendarView() {
   }
 
   return (
-    <div className="space-y-6" data-nimbus-tour="family-calendar-view">
+    <div className="space-y-6" data-nimbus-tour={NIMBUS_TOUR_TARGET.FAMILY_CALENDAR_VIEW}>
       <div className="hidden flex-wrap items-center gap-3 text-xs text-muted-foreground md:flex">
         <span className="inline-flex items-center gap-1.5">
           <span className={cn("size-2.5 border", legendStyles[FAMILY_CALENDAR_EVENT_KIND.BIRTHDAY])} />

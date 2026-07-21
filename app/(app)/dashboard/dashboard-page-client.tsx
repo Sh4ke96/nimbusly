@@ -8,7 +8,7 @@ import { AppViewShell } from "@/components/app/app-view-shell";
 import { DashboardHome } from "@/components/dashboard/dashboard-home";
 import { DashboardPageSkeleton } from "@/components/dashboard/dashboard-page-skeleton";
 import {
-  APP_MODULE_IDS,
+  APP_MODULE_DISCOVER_IDS,
 } from "@/lib/constants/app-modules";
 import { hydrateDashboardSnapshot } from "@/lib/dashboard/hydrate-dashboard-snapshot";
 import type { DashboardSnapshot } from "@/lib/dashboard/snapshot-types";
@@ -44,7 +44,7 @@ export default function DashboardPageClient({ snapshot }: DashboardPageClientPro
     ? getDisplayName(profile)
     : user?.email?.split("@")[0] ?? "…";
 
-  const modules = APP_MODULE_IDS.map((moduleId) => ({
+  const modules = APP_MODULE_DISCOVER_IDS.map((moduleId) => ({
     key: moduleId,
   }));
 

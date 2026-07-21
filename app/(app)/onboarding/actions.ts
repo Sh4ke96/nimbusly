@@ -10,9 +10,9 @@ import { createClient } from "@/lib/supabase/server";
 import { getServerT } from "@/lib/i18n/server";
 import { isAvatarColor } from "@/lib/avatar-colors";
 import { INVITE_TOKEN_COOKIE, INVITE_CODE_COOKIE } from "@/lib/family/constants";
-import { isValidInviteCodeFormat, normalizeInviteCode } from "@/lib/family/invite";
 import { parseOnboardingFromForm } from "@/lib/profile/form";
 import { FAMILY_SETUP_INTENT } from "@/lib/constants/account";
+import { resolveOnboardingRpc } from "@/lib/onboarding/resolve-onboarding-rpc";
 
 export type OnboardingState = { error: string } | null;
 
@@ -66,99 +66,36 @@ export async function completeOnboarding(
     return { error: t.onboarding.errorGeneric };
   }
 
-  let profileError: { message: string } | null = null;
+  const cookieStore = await cookies();
+  const tokenFromCookie = cookieStore.get(INVITE_TOKEN_COOKIE)?.value ?? "";
+  const codeFromCookie = cookieStore.get(INVITE_CODE_COOKIE)?.value ?? "";
+  const token = inviteToken || tokenFromCookie;
+  const code = inviteCode || codeFromCookie;
 
-  if (familyIntent === FAMILY_SETUP_INTENT.SOLO) {
-    profileError = (
-      await supabase.rpc("complete_solo_onboarding", {
-        p_first_name: firstName,
-        p_last_name: lastName,
-        p_avatar_color: avatarColor,
-      })
-    ).error;
-  } else if (familyIntent === FAMILY_SETUP_INTENT.CREATE) {
-    if (!familyName) {
+  const rpcPlan = resolveOnboardingRpc({
+    familyIntent,
+    firstName,
+    lastName,
+    avatarColor,
+    familyName,
+    inviteToken: token,
+    inviteCode: code,
+  });
+
+  if (!rpcPlan.ok) {
+    if (rpcPlan.error === "missing_family_name") {
       return { error: t.onboarding.errorFamilyName };
     }
 
-    let familyId = existingProfile?.family_id ?? null;
-
-    if (familyId) {
-      const { error: familyError } = await supabase
-        .from("families")
-        .update({ name: familyName })
-        .eq("id", familyId)
-        .eq("created_by", user.id);
-
-      if (familyError) {
-        return { error: t.onboarding.errorGeneric };
-      }
-    } else {
-      const { data: createdFamilyId, error: familyError } = await supabase.rpc(
-        "create_family_and_join",
-        { p_family_name: familyName }
-      );
-
-      if (familyError || !createdFamilyId) {
-        return { error: t.onboarding.errorGeneric };
-      }
-
-      familyId = createdFamilyId as string;
-    }
-
-    profileError = (
-      await supabase.rpc("complete_founder_onboarding", {
-        p_first_name: firstName,
-        p_last_name: lastName,
-        p_avatar_color: avatarColor,
-        p_family_id: familyId,
-      })
-    ).error;
-  } else if (familyIntent === FAMILY_SETUP_INTENT.JOIN) {
-    const cookieStore = await cookies();
-    const tokenFromCookie = cookieStore.get(INVITE_TOKEN_COOKIE)?.value ?? "";
-    const codeFromCookie = cookieStore.get(INVITE_CODE_COOKIE)?.value ?? "";
-    const token = inviteToken || tokenFromCookie;
-    const code = inviteCode || codeFromCookie;
-
-    if (token) {
-      profileError = (
-        await supabase.rpc("onboard_with_invitation_token", {
-          p_token: token,
-          p_first_name: firstName,
-          p_last_name: lastName,
-          p_avatar_color: avatarColor,
-        })
-      ).error;
-    } else {
-      if (!code || !isValidInviteCodeFormat(code)) {
-        return { error: t.onboarding.errorInviteCodeInvalid };
-      }
-
-      profileError = (
-        await supabase.rpc("onboard_with_invite_code", {
-          p_code: normalizeInviteCode(code),
-          p_first_name: firstName,
-          p_last_name: lastName,
-          p_avatar_color: avatarColor,
-        })
-      ).error;
-    }
-  } else {
-    profileError = (
-      await supabase.rpc("complete_solo_onboarding", {
-        p_first_name: firstName,
-        p_last_name: lastName,
-        p_avatar_color: avatarColor,
-      })
-    ).error;
+    return { error: t.onboarding.errorInviteCodeInvalid };
   }
+
+  const profileError = (await supabase.rpc(rpcPlan.call.rpc, rpcPlan.call.args)).error;
 
   if (profileError) {
     return { error: t.onboarding.errorGeneric };
   }
 
-  const cookieStore = await cookies();
   cookieStore.set(ONBOARDING_COMPLETE_COOKIE, ONBOARDING_COMPLETE_COOKIE_VALUE, {
     path: "/",
     maxAge: 60 * 60 * 24 * 365,

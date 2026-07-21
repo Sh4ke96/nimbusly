@@ -1647,6 +1647,7 @@ export const en: Dict = {
     empty: "No budgets yet. Create your first spending plan.",
     emptyExpenses: "No expenses in this budget yet.",
     emptyEntries: "No entries in this budget yet.",
+    emptyFiltered: "No entries for the selected filters.",
     budgetsHeading: "Your budgets",
     detailsHeading: "Details",
     totalLabel: "Total",

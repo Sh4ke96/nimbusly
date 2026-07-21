@@ -11,10 +11,8 @@ describe("getNimbusContextHintKey", () => {
     assert.equal(getNimbusContextHintKey(NIMBUS_CONTEXT_PATH.SHOPPING), "shopping");
     assert.equal(getNimbusContextHintKey(NIMBUS_CONTEXT_PATH.NOTIFICATIONS), "notifications");
     assert.equal(getNimbusContextHintKey(NIMBUS_CONTEXT_PATH.PETS), "pets");
-    assert.equal(
-      getNimbusContextHintKey(NIMBUS_CONTEXT_PATH.FAMILY_CALENDAR),
-      "familyCalendar"
-    );
+    assert.equal(getNimbusContextHintKey(NIMBUS_CONTEXT_PATH.FAMILY_CALENDAR), "familyCalendar");
+    assert.equal(getNimbusContextHintKey(NIMBUS_CONTEXT_PATH.FAMILY), "family");
   });
 
   it("returns null for unknown paths", () => {

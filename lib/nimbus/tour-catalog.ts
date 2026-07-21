@@ -87,6 +87,13 @@ const INTRO_TOUR: NimbusTourStep[] = [
     prepare: NIMBUS_TOUR_PREPARE.DASHBOARD_SUMMARY,
   },
   {
+    id: "dashboard-today",
+    route: "/dashboard",
+    target: NIMBUS_TOUR_TARGET.DASHBOARD_TODAY,
+    copyKey: "intro.dashboardToday",
+    prepare: NIMBUS_TOUR_PREPARE.DASHBOARD_SUMMARY,
+  },
+  {
     id: "dashboard-layout",
     route: "/dashboard",
     target: NIMBUS_TOUR_TARGET.DASHBOARD_LAYOUT_EDIT,

@@ -1177,10 +1177,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      accept_family_invitation: {
-        Args: { p_token: string }
-        Returns: string
-      }
       complete_solo_onboarding: {
         Args: {
           p_avatar_color: string
@@ -1198,13 +1194,10 @@ export type Database = {
         }
         Returns: undefined
       }
-      join_family_after_invitation: {
-        Args: { p_family_id: string }
-        Returns: undefined
-      }
-      finalize_onboarding_profile: {
+      onboard_create_family: {
         Args: {
           p_avatar_color: string
+          p_family_name: string
           p_first_name: string
           p_last_name: string
         }
@@ -1267,14 +1260,6 @@ export type Database = {
         Returns: {
           id: string
           name: string
-        }[]
-      }
-      lookup_family_invitation: {
-        Args: { p_token: string }
-        Returns: {
-          email: string
-          family_id: string
-          family_name: string
         }[]
       }
       normalize_family_invite_code: {

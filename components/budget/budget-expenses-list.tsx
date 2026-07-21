@@ -2,7 +2,7 @@
 
 import { BUDGET_FORM_FIELD } from "@/lib/budget/types";
 import { useActionState } from "react";
-import { Trash2, Bell, Repeat } from "lucide-react";
+import { Trash2, Bell, Repeat, ListFilter } from "lucide-react";
 import { deleteBudgetExpense } from "@/app/(app)/budget/actions";
 import { BudgetExpenseEditDialog } from "@/components/budget/budget-expense-edit-dialog";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,7 @@ import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
 import { useLang, useT } from "@/lib/lang-context";
 import { getDisplayName, type FamilyMember, type Profile } from "@/lib/profile";
 import { cn } from "@/lib/utils";
+import { ModuleEmptyState } from "@/components/ui/module-empty-state";
 
 interface BudgetExpensesListProps {
   budgetId: string;
@@ -27,6 +28,8 @@ interface BudgetExpensesListProps {
   profile: Profile | null;
   members: FamilyMember[];
   userId: string | undefined;
+  isFilteredEmpty?: boolean;
+  onClearFilters?: () => void;
   onChanged?: () => void;
 }
 
@@ -160,15 +163,20 @@ export function BudgetExpensesList({
   profile,
   members,
   userId,
+  isFilteredEmpty = false,
+  onClearFilters,
   onChanged,
 }: BudgetExpensesListProps) {
   const t = useT();
 
   if (entries.length === 0) {
     return (
-      <p className="text-sm text-muted-foreground text-center py-10 border border-dashed border-border">
-        {t.budget.emptyEntries}
-      </p>
+      <ModuleEmptyState
+        icon={ListFilter}
+        message={isFilteredEmpty ? t.budget.emptyFiltered : t.budget.emptyEntries}
+        actionLabel={isFilteredEmpty ? t.common.clearFilters : undefined}
+        onAction={isFilteredEmpty ? onClearFilters : undefined}
+      />
     );
   }
 

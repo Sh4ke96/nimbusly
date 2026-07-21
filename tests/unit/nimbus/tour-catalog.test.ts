@@ -53,5 +53,6 @@ describe("nimbus tour catalog", () => {
     const ids = getNimbusTourSteps(NIMBUS_TOUR_ID.INTRO).map((step) => step.id);
     assert.ok(ids.includes("settings-notifications"));
     assert.ok(ids.includes("mobile-modules"));
+    assert.ok(ids.includes("dashboard-today"));
   });
 });

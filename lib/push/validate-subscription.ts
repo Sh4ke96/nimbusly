@@ -1,3 +1,5 @@
+import { allowsPushEndpointProtocol, isProductionNodeEnv } from "@/lib/env/node-env";
+
 const PUSH_ENDPOINT_MAX_LENGTH = 2048;
 const PUSH_KEY_MAX_LENGTH = 512;
 
@@ -18,12 +20,8 @@ export function isValidPushSubscriptionInput(input: {
     return false;
   }
 
-  if (parsed.protocol !== "https:") {
-    if (process.env.NODE_ENV !== "production" && parsed.protocol === "http:") {
-      // Local dev push services may use http.
-    } else {
-      return false;
-    }
+  if (!allowsPushEndpointProtocol(parsed.protocol, isProductionNodeEnv())) {
+    return false;
   }
 
   if (

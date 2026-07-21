@@ -222,6 +222,17 @@ export function ChoresView() {
             }
           />
         ) : viewMode === "calendar" ? (
+          filteredTasks.length === 0 && hasActiveFilter && tasks.length > 0 ? (
+            <ModuleEmptyState
+              icon={ListChecks}
+              message={t.chores.emptyFiltered}
+              actionLabel={t.common.clearFilters}
+              onAction={() => {
+                setStatusFilter(CHORE_FILTER_ALL);
+                setAssigneeFilter(CHORE_FILTER_ALL);
+              }}
+            />
+          ) : (
           <Card
             id="chores-calendar"
             className="rounded-none py-0 shadow-sm scroll-mt-24"
@@ -248,6 +259,7 @@ export function ChoresView() {
               />
             </CardContent>
           </Card>
+          )
         ) : (
           <div className="grid gap-4 sm:grid-cols-2" data-nimbus-tour={NIMBUS_TOUR_TARGET.CHORES_LIST}>
             {filteredTasks.map((task) => (

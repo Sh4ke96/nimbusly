@@ -11,6 +11,31 @@ export { CHANGELOG_ENTRY_TYPE, type ChangelogEntry };
  */
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "0.14.1",
+    date: "2026-07-22",
+    type: CHANGELOG_ENTRY_TYPE.FIX,
+    title: {
+      pl: "Domknięcie audytu bezpieczeństwa i UX",
+      en: "Security and UX audit closeout",
+    },
+    changes: {
+      pl: [
+        "Migracja 054: revoke INSERT na families, atomowe onboard_create_family, usunięte martwe RPC",
+        "Budżet: emptyFiltered i CTA wyczyść filtry; chores kalendarz z tym samym wzorcem",
+        "Desktop i mobile: ta sama lista modułów (APP_MODULE_DISCOVER_IDS)",
+        "Nimbus: krok tour Dzisiaj, context hints /family, stałe FAMILY_CALENDAR_VIEW",
+        "Cookie zaproszeń z flagą Secure w produkcji; testy RPC onboardingu i push HTTPS",
+      ],
+      en: [
+        "Migration 054: revoke families INSERT, atomic onboard_create_family, removed dead RPCs",
+        "Budget: emptyFiltered and clear-filters CTA; chores calendar uses the same pattern",
+        "Desktop and mobile share the same module list (APP_MODULE_DISCOVER_IDS)",
+        "Nimbus: Today tour step, /family context hints, FAMILY_CALENDAR_VIEW constant",
+        "Invite cookies use Secure in production; onboarding RPC and push HTTPS tests",
+      ],
+    },
+  },
+  {
     version: "0.14.0",
     date: "2026-07-21",
     type: CHANGELOG_ENTRY_TYPE.MINOR,

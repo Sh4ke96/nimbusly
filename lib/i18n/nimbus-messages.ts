@@ -33,6 +33,10 @@ const introPl = {
     "Karty podsumowania",
     "Szybki podgląd budżetu, list zakupów, grafiku i innych modułów. Możesz też dostosować układ kart."
   ),
+  dashboardToday: step(
+    "Dzisiaj",
+    "Panel „Dzisiaj” zbiera wydarzenia i terminy na bieżący dzień - skrót do kalendarza rodziny."
+  ),
   dashboardLayout: step(
     "Układ kart",
     "W trybie edycji włączasz i ukrywasz karty modułów - dashboard pokazuje tylko to, co Ci potrzebne."
@@ -83,6 +87,10 @@ const introEn = {
   dashboardOverview: step(
     "Overview cards",
     "Quick snapshots of budget, shopping, schedule, and more. You can customize the layout."
+  ),
+  dashboardToday: step(
+    "Today",
+    "The Today panel collects events and due items for the current day - a shortcut to the family calendar."
   ),
   dashboardLayout: step(
     "Card layout",
@@ -456,6 +464,7 @@ export const nimbusCompanionExtraPl = {
     schedule: "Grafik łączy wydarzenia jedno- i wielodniowe - mogę pokazać jak dodawać wpisy.",
     familyCalendar:
       "Kalendarz rodziny zbiera urodziny, grafik i obowiązki w jednym widoku miesiąca - mogę pokazać legendę i skróty.",
+    family: "Tu zarządzasz członkami, rolami i zaproszeniami - mogę pokazać jak dołączyć rodzinę.",
     watchlist: "Lista do obejrzenia działa solo lub w rodzinie - oznaczaj platformy i status.",
     restaurants: "Zapisuj miejsca do odwiedzenia - notatki po wizycie pomogą później.",
     pets: "Tu pilnujesz szczepień i wizyt u weterynarza - dodaj pupila i zadania opieki.",
@@ -662,6 +671,7 @@ export const nimbusCompanionExtraEn = {
     schedule: "Schedule combines single- and multi-day events - I can show you how to add entries.",
     familyCalendar:
       "The family calendar merges birthdays, schedule, and chores in one month view - I can show the legend and shortcuts.",
+    family: "Manage members, roles, and invites here - I can show you how to grow your family.",
     watchlist: "Watchlist works solo or with family - tag platforms and watched status.",
     restaurants: "Save places to visit - post-visit notes help later.",
     pets: "Track vaccines and vet visits here - add your pet and care tasks.",

@@ -1358,6 +1358,7 @@ export type Dict = {
     empty: string;
     emptyExpenses: string;
     emptyEntries: string;
+    emptyFiltered: string;
     budgetsHeading: string;
     detailsHeading: string;
     totalLabel: string;
@@ -1696,8 +1697,9 @@ export type Dict = {
       gifts: string;
       birthdays: string;
       schedule: string;
-      familyCalendar: string;
-      watchlist: string;
+    familyCalendar: string;
+    family: string;
+    watchlist: string;
       restaurants: string;
       pets: string;
       notifications: string;

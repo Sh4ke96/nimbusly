@@ -5,7 +5,8 @@ import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { getServerT } from '@/lib/i18n/server'
 import { getPostAuthRedirectPath } from '@/lib/profile/server'
-import { INVITE_CODE_COOKIE, INVITE_MAX_AGE_SEC } from '@/lib/family/constants'
+import { INVITE_CODE_COOKIE } from '@/lib/family/constants'
+import { getInviteCookieOptions } from '@/lib/family/invite-cookie-options'
 import { executeSignIn } from '@/lib/auth/server/sign-in'
 import { executeSignUp } from '@/lib/auth/server/sign-up'
 import { DEV_SITE_URL } from '@/lib/constants/dev'
@@ -45,11 +46,7 @@ export async function register(
 
   if (result.inviteCode) {
     const cookieStore = await cookies()
-    cookieStore.set(INVITE_CODE_COOKIE, result.inviteCode, {
-      path: '/',
-      maxAge: INVITE_MAX_AGE_SEC,
-      sameSite: 'lax',
-    })
+    cookieStore.set(INVITE_CODE_COOKIE, result.inviteCode, getInviteCookieOptions())
   }
 
   return { success: result.success }

@@ -251,6 +251,21 @@ export function BudgetView() {
     }));
   }
 
+  function clearEntryFilters() {
+    setFilterState((prev) => ({
+      scopeId: activeBudgetId,
+      typeFilter: BUDGET_FILTER_ALL,
+      categoryFilter: BUDGET_FILTER_ALL,
+      selectedMonthKey:
+        prev.scopeId === activeBudgetId ? prev.selectedMonthKey : getCurrentMonthKey(),
+    }));
+  }
+
+  const hasActiveEntryFilters =
+    typeFilter !== BUDGET_FILTER_ALL || categoryFilter !== BUDGET_FILTER_ALL;
+  const isFilteredEntriesEmpty =
+    filteredEntries.length === 0 && hasActiveEntryFilters && monthlyEntries.length > 0;
+
   const onDataChanged = useModuleRefresh(fetchBudgets);
 
   function openEdit(budget: Budget) {
@@ -585,6 +600,8 @@ export function BudgetView() {
                     profile={profile}
                     members={members}
                     userId={user?.id}
+                    isFilteredEmpty={isFilteredEntriesEmpty}
+                    onClearFilters={clearEntryFilters}
                     onChanged={onDataChanged}
                   />
                 </>
