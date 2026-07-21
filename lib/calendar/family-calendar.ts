@@ -1,6 +1,7 @@
 import type { BirthdayEntry } from "@/lib/birthdays/types";
 import { scheduleDateKey, scheduleEntryIncludesDate } from "@/lib/schedule/types";
 import type { ScheduleEntry } from "@/lib/schedule/types";
+import type { ScheduleEntryType } from "@/lib/constants/schedule";
 import { getChoreOccurrencesInMonth } from "@/lib/chores/calendar";
 import type { ChoreTask } from "@/lib/chores/types";
 import { APP_MODULE, APP_MODULE_ROUTES } from "@/lib/constants/app-modules";
@@ -21,6 +22,7 @@ export interface FamilyCalendarEvent {
   label: string;
   href: string;
   detail?: string;
+  scheduleEntryType?: ScheduleEntryType;
 }
 
 export function groupFamilyCalendarEventsByDay(
@@ -70,6 +72,7 @@ export function buildFamilyCalendarEvents(params: {
         dateKey,
         label: entry.description,
         href: APP_MODULE_ROUTES[APP_MODULE.CALENDAR],
+        scheduleEntryType: entry.entry_type,
       });
     }
   }

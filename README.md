@@ -4,7 +4,7 @@
 
 Nimbusly is a family hub web app: shared budget, shopping, gifts, birthdays, schedule, medicine cabinet, watchlist, restaurants, pets, household chores, notes, and family account management. Each member has their own profile; family data stays in sync.
 
-Available in **Polish** and **English**. Current version: **0.11.4** - see `/change-log` or the in-app version badge.
+Available in **Polish** and **English**. Current version: **0.11.9** - see `/change-log` or the in-app version badge.
 
 ---
 

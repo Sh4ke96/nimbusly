@@ -78,7 +78,8 @@ describe("buildFamilyCalendarEvents", () => {
         (e) =>
           e.kind === FAMILY_CALENDAR_EVENT_KIND.SCHEDULE &&
           e.dateKey === "2026-07-11" &&
-          e.label === "Dyżur"
+          e.label === "Dyżur" &&
+          e.scheduleEntryType === SCHEDULE_ENTRY_TYPE.WORK
       )
     );
     assert.ok(

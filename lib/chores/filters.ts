@@ -4,6 +4,12 @@ import type { ChoreTask } from "@/lib/chores/types";
 
 export function filterChoresByStatus(items: ChoreTask[], filterKey: string): ChoreTask[] {
   if (filterKey === CHORE_FILTER_ALL) return items;
+  if (filterKey === CHORE_STATUS.PENDING) {
+    return items.filter(
+      (item) =>
+        item.status === CHORE_STATUS.PENDING || item.status === CHORE_STATUS.IN_PROGRESS
+    );
+  }
   return items.filter((item) => item.status === filterKey);
 }
 
@@ -29,6 +35,10 @@ export function countChoresByStatus(
   } as Record<ChoreStatus | "all", number>;
 
   for (const item of items) {
+    if (item.status === CHORE_STATUS.IN_PROGRESS) {
+      counts.pending += 1;
+      continue;
+    }
     counts[item.status] += 1;
   }
 
@@ -45,8 +55,8 @@ export function countActiveChores(items: ChoreTask[]): number {
 export function sortChoresForDisplay(items: ChoreTask[]): ChoreTask[] {
   const statusOrder: Record<ChoreStatus, number> = {
     [CHORE_STATUS.PENDING]: 0,
-    [CHORE_STATUS.IN_PROGRESS]: 1,
-    [CHORE_STATUS.COMPLETED]: 2,
+    [CHORE_STATUS.IN_PROGRESS]: 0,
+    [CHORE_STATUS.COMPLETED]: 1,
   };
 
   return [...items].sort((a, b) => {

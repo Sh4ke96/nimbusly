@@ -1487,6 +1487,7 @@ export type Dict = {
     legendSchedule: string;
     legendChore: string;
     empty: string;
+    noEventsOnDay: string;
   };
   theme: {
     toggleLabel: string;

@@ -11,6 +11,99 @@ export { CHANGELOG_ENTRY_TYPE, type ChangelogEntry };
  */
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "0.11.9",
+    date: "2026-07-21",
+    type: CHANGELOG_ENTRY_TYPE.FIX,
+    title: {
+      pl: "Szybkie dodawanie w kalendarzu rodziny",
+      en: "Quick add on the family calendar",
+    },
+    changes: {
+      pl: [
+        "Przycisk + w nagłówku znów działa na /calendar (wcześniej ukryty jako podgląd)",
+      ],
+      en: [
+        "Header + quick add works again on /calendar (was hidden as view-only)",
+      ],
+    },
+  },
+  {
+    version: "0.11.8",
+    date: "2026-07-21",
+    type: CHANGELOG_ENTRY_TYPE.FIX,
+    title: {
+      pl: "Jedna legenda kalendarza na mobile",
+      en: "Single family calendar legend on mobile",
+    },
+    changes: {
+      pl: [
+        "Urodziny, obowiązki i kategorie grafiku w jednym rzędzie pod kalendarzem",
+      ],
+      en: [
+        "Birthdays, chores, and schedule categories in one row below the calendar",
+      ],
+    },
+  },
+  {
+    version: "0.11.7",
+    date: "2026-07-21",
+    type: CHANGELOG_ENTRY_TYPE.FIX,
+    title: {
+      pl: "Legenda kategorii grafiku w kalendarzu",
+      en: "Family calendar schedule legend layout",
+    },
+    changes: {
+      pl: [
+        "Desktop: kategorie grafiku w tej samej formie co urodziny i obowiązki (kolor + etykieta)",
+        "Mobile: legenda w jednym rzędzie, kategorie obok siebie",
+      ],
+      en: [
+        "Desktop: schedule categories use the same color-square legend as birthdays and chores",
+        "Mobile: legend items flow in a single row side by side",
+      ],
+    },
+  },
+  {
+    version: "0.11.6",
+    date: "2026-07-21",
+    type: CHANGELOG_ENTRY_TYPE.MINOR,
+    title: {
+      pl: "Kategorie grafiku w kalendarzu rodziny",
+      en: "Schedule categories in the family calendar",
+    },
+    changes: {
+      pl: [
+        "Pod kalendarzem rodziny legenda typów grafiku z ikonami (praca, wolne, zakupy i inne)",
+        "Kreski w siatce i lista dnia pokazują kolor i typ wpisu grafiku",
+      ],
+      en: [
+        "Family calendar shows a schedule-type legend with icons (work, free, shopping, and more)",
+        "Grid bars and the day list use colors and labels per schedule entry type",
+      ],
+    },
+  },
+  {
+    version: "0.11.5",
+    date: "2026-07-21",
+    type: CHANGELOG_ENTRY_TYPE.MINOR,
+    title: {
+      pl: "Kalendarz mobilny, szybkie dodawanie w nagłówku i uproszczone obowiązki",
+      en: "Mobile calendar, header quick add, and simplified chores",
+    },
+    changes: {
+      pl: [
+        "Kalendarz rodziny na mobile: pełny miesiąc, kolorowe kreski, legenda i lista wybranego dnia",
+        "Szybkie dodawanie (+) obok wyszukiwarki na mobile; formularz obowiązku ma wszystkie pola jak przy normalnym dodawaniu",
+        "Usunięto status „W trakcie” z obowiązków (istniejące wpisy traktowane jak oczekujące)",
+      ],
+      en: [
+        "Family calendar on mobile: full month, color bars, legend, and selected-day list",
+        "Quick add (+) next to search on mobile; chore quick add includes the full form fields",
+        "Removed the In progress chore status (existing rows count as pending)",
+      ],
+    },
+  },
+  {
     version: "0.11.4",
     date: "2026-07-12",
     type: CHANGELOG_ENTRY_TYPE.MINOR,

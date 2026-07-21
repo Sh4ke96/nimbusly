@@ -11,10 +11,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
+  CHORE_FORM_STATUSES,
   CHORE_NOTES_MAX_LENGTH,
   CHORE_RECURRENCE,
   CHORE_RECURRENCES,
-  CHORE_STATUSES,
   CHORE_TITLE_MAX_LENGTH,
   type ChoreRecurrence,
   type ChoreRecurrenceDuration,
@@ -104,7 +104,7 @@ export function ChoreEntryForm({
         <Label>{t.chores.statusLabel}</Label>
         <p className="text-xs text-muted-foreground">{t.chores.statusHint}</p>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-          {CHORE_STATUSES.map((value) => (
+          {CHORE_FORM_STATUSES.map((value) => (
             <button
               key={value}
               type="button"

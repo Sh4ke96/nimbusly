@@ -20,8 +20,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardHeaderActionButton, CardHeaderActions, CardTitle, CARD_TITLE_ROW_CLASSNAME } from "@/components/ui/card";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import {
+  CHORE_FORM_STATUSES,
   CHORE_RECURRENCE,
-  CHORE_STATUSES,
   CHORE_STATUS,
   type ChoreStatus,
 } from "@/lib/constants/chores";
@@ -47,6 +47,7 @@ import {
 } from "@/app/(app)/chores/actions";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
 import { useNimbusCelebration } from "@/lib/hooks/use-nimbus-celebration";
+import { normalizeChoreStatusForDisplay } from "@/lib/chores/display-status";
 import {
   clearPendingChoreTask,
   setPendingChoreTask,
@@ -123,7 +124,8 @@ export function ChoreTaskCard({
   const isAssignee = !!task.assigned_to && task.assigned_to === userId;
   const isUnassigned = !task.assigned_to;
   const canChangeStatus = isOwner || (isFamily && (isUnassigned || isAssignee));
-  const isCompleted = task.status === CHORE_STATUS.COMPLETED;
+  const displayStatus = normalizeChoreStatusForDisplay(task.status);
+  const isCompleted = displayStatus === CHORE_STATUS.COMPLETED;
   const creator = resolveCreatorName(task.created_by, userId, profile, members);
   const overdue = isChoreOverdue(task) && !isCompleted;
   const completedAtLabel = formatCompletedAtLabel(task.completed_at, locale);
@@ -285,15 +287,15 @@ export function ChoreTaskCard({
           <span
             className={cn(
               "inline-flex items-center gap-1.5 rounded-none border px-3 py-1.5 text-xs font-semibold",
-              statusStyles[task.status],
+              statusStyles[displayStatus],
               isCompleted && "border-primary/30 bg-primary text-primary-foreground"
             )}
           >
             <ChoreStatusIcon
-              status={task.status}
+              status={displayStatus}
               className={cn("size-4 shrink-0", isCompleted && "text-primary-foreground")}
             />
-            {t.chores.statusLabels[task.status]}
+            {t.chores.statusLabels[displayStatus]}
           </span>
 
           {overdue && (
@@ -326,7 +328,7 @@ export function ChoreTaskCard({
                 onSuccess={onChanged}
               />
             )}
-            {CHORE_STATUSES.map((status) => {
+            {CHORE_FORM_STATUSES.map((status) => {
               if (status === CHORE_STATUS.COMPLETED && occurrenceToComplete) {
                 return (
                   <ChoreOccurrenceCompleteButton
@@ -345,8 +347,8 @@ export function ChoreTaskCard({
                   <Button
                     type="submit"
                     size="sm"
-                    variant={task.status === status ? "default" : "outline"}
-                    disabled={statusPending || task.status === status}
+                    variant={displayStatus === status ? "default" : "outline"}
+                    disabled={statusPending || displayStatus === status}
                     className="cursor-pointer rounded-none h-8 text-xs gap-1.5 px-2.5"
                     onClick={() => {
                       pendingStatusRef.current = status;

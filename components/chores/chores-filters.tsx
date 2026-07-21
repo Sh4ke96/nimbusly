@@ -7,8 +7,8 @@ import {
   FilterToggleGroup,
 } from "@/components/filters";
 import {
+  CHORE_FORM_STATUSES,
   CHORE_FILTER_ALL,
-  CHORE_STATUSES,
 } from "@/lib/constants/chores";
 import {
   buildChoreAssigneeFilterOptions,
@@ -62,7 +62,7 @@ export function ChoresFilters({
 
   const statusOptions = [
     { value: CHORE_FILTER_ALL, label: t.chores.filterAll, count: statusCounts.all },
-    ...CHORE_STATUSES.map((status) => ({
+    ...CHORE_FORM_STATUSES.map((status) => ({
       value: status,
       label: t.chores.statusLabels[status],
       count: statusCounts[status],

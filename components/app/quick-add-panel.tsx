@@ -6,8 +6,8 @@ import { createChoreTask } from "@/app/(app)/chores/actions";
 import { createNote } from "@/app/(app)/notes/actions";
 import { addShoppingListItem } from "@/app/(app)/shopping/actions";
 import type { AccountActionState } from "@/app/(app)/account/actions";
-import { ChoreAssigneePicker } from "@/components/chores/chore-assignee-picker";
-import { ChoreDatePicker } from "@/components/chores/chore-date-picker";
+import { ChoreEntryForm } from "@/components/chores/chore-entry-form";
+import { isValidChoreCustomRecurrenceForm } from "@/components/chores/chore-custom-recurrence-fields";
 import { NoteCategoryPicker } from "@/components/notes/note-category-picker";
 import {
   NoteVisibilityPicker,
@@ -28,12 +28,25 @@ import { Textarea } from "@/components/ui/textarea";
 import { QUICK_ADD_ACTION, type QuickAddActionId } from "@/lib/constants/quick-add";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { NOTE_CONTENT_FORMAT } from "@/lib/constants/notes";
-import { CHORE_FORM_FIELD } from "@/lib/chores/types";
+import {
+  dateToChoreDateString,
+  isValidChoreDateString,
+  isValidChoreRecurrence,
+  isValidChoreStatus,
+  isValidChoreTitle,
+} from "@/lib/chores/types";
 import { NOTE_FORM_FIELD } from "@/lib/notes/types";
 import { SHOPPING_FORM_FIELD } from "@/lib/shopping-lists/types";
 import type { ShoppingList } from "@/lib/shopping-lists/types";
 import { SHOPPING_LIST_ITEM_MAX_LENGTH } from "@/lib/constants/shopping-lists";
-import { CHORE_RECURRENCE, CHORE_STATUS, CHORE_TITLE_MAX_LENGTH } from "@/lib/constants/chores";
+import {
+  CHORE_RECURRENCE,
+  CHORE_RECURRENCE_DURATION,
+  CHORE_STATUS,
+  type ChoreRecurrence,
+  type ChoreRecurrenceDuration,
+  type ChoreStatus,
+} from "@/lib/constants/chores";
 import { useActionFeedback } from "@/lib/hooks/use-action-feedback";
 import { useNotesStore } from "@/lib/stores/notes-store";
 import { useProfileStore } from "@/lib/stores/profile-store";
@@ -107,49 +120,104 @@ function QuickAddChoreForm({ onSuccess }: { onSuccess?: () => void }) {
   const profile = useProfileStore((s) => s.profile);
   const members = useProfileStore((s) => s.members);
   const [title, setTitle] = useState<string>("");
-  const [dueDate, setDueDate] = useState<Date | undefined>(() => new Date());
+  const [iconEmoji, setIconEmoji] = useState<string | null>(null);
+  const [notes, setNotes] = useState<string>("");
+  const [status, setStatus] = useState<ChoreStatus | null>(CHORE_STATUS.PENDING);
   const [assignedTo, setAssignedTo] = useState<string | null>(null);
+  const [dueDate, setDueDate] = useState<Date | undefined>(() => new Date());
+  const [recurrence, setRecurrence] = useState<ChoreRecurrence | null>(CHORE_RECURRENCE.NONE);
+  const [recurrenceIntervalDays, setRecurrenceIntervalDays] = useState<number | null>(2);
+  const [recurrenceDuration, setRecurrenceDuration] = useState<ChoreRecurrenceDuration | null>(
+    CHORE_RECURRENCE_DURATION.MONTH
+  );
   const [state, action, pending] = useActionState(createChoreTask, null);
-  useActionFeedback(state, onSuccess);
+
+  useActionFeedback(state, () => {
+    setTitle("");
+    setIconEmoji(null);
+    setNotes("");
+    setStatus(CHORE_STATUS.PENDING);
+    setAssignedTo(null);
+    setDueDate(new Date());
+    setRecurrence(CHORE_RECURRENCE.NONE);
+    setRecurrenceIntervalDays(2);
+    setRecurrenceDuration(CHORE_RECURRENCE_DURATION.MONTH);
+    onSuccess?.();
+  }, pending);
+
+  function handleRecurrenceChange(value: ChoreRecurrence) {
+    setRecurrence(value);
+    if (value === CHORE_RECURRENCE.NONE) {
+      setRecurrenceDuration(null);
+      return;
+    }
+    if (recurrenceDuration === null) {
+      setRecurrenceDuration(CHORE_RECURRENCE_DURATION.MONTH);
+    }
+    if (value === CHORE_RECURRENCE.CUSTOM && recurrenceIntervalDays === null) {
+      setRecurrenceIntervalDays(2);
+    }
+  }
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    if (!title.trim()) {
+    if (!isValidChoreTitle(title)) {
       e.preventDefault();
       toast.error(t.chores.errorTitleRequired);
+      return;
+    }
+    if (!status || !isValidChoreStatus(status)) {
+      e.preventDefault();
+      toast.error(t.chores.errorStatusRequired);
+      return;
+    }
+    if (!recurrence || !isValidChoreRecurrence(recurrence)) {
+      e.preventDefault();
+      toast.error(t.chores.errorRecurrenceRequired);
+      return;
+    }
+    if (!isValidChoreCustomRecurrenceForm(recurrence, recurrenceIntervalDays, recurrenceDuration)) {
+      e.preventDefault();
+      toast.error(
+        recurrence === CHORE_RECURRENCE.CUSTOM
+          ? t.chores.errorCustomRecurrenceRequired
+          : t.chores.errorRecurrenceDurationRequired
+      );
+      return;
+    }
+    if (recurrence !== CHORE_RECURRENCE.NONE && !dueDate) {
+      e.preventDefault();
+      toast.error(t.chores.errorRecurrenceStartDateRequired);
+      return;
+    }
+    if (!isValidChoreDateString(dueDate ? dateToChoreDateString(dueDate) : null)) {
+      e.preventDefault();
+      toast.error(t.chores.errorInvalidDueDate);
     }
   }
 
   return (
     <form action={action} className="space-y-3 border border-border p-3" onSubmit={onSubmit}>
-      <input type="hidden" name={CHORE_FORM_FIELD.STATUS} value={CHORE_STATUS.PENDING} />
-      <input type="hidden" name={CHORE_FORM_FIELD.RECURRENCE} value={CHORE_RECURRENCE.NONE} />
-
-      <div className="space-y-1.5">
-        <Label htmlFor="quick-add-chore-title">{t.chores.titleLabel}</Label>
-        <Input
-          id="quick-add-chore-title"
-          name={CHORE_FORM_FIELD.TITLE}
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-          maxLength={CHORE_TITLE_MAX_LENGTH}
-          className="rounded-none"
-          placeholder={t.chores.titlePlaceholder}
-          disabled={pending}
-        />
-      </div>
-
-      <ChoreDatePicker
-        date={dueDate}
-        onDateChange={setDueDate}
-        recurrence={CHORE_RECURRENCE.NONE}
-      />
-
-      <ChoreAssigneePicker
+      <ChoreEntryForm
         profile={profile}
         members={members}
+        title={title}
+        onTitleChange={setTitle}
+        iconEmoji={iconEmoji}
+        onIconEmojiChange={setIconEmoji}
+        notes={notes}
+        onNotesChange={setNotes}
+        status={status}
+        onStatusChange={setStatus}
         assignedTo={assignedTo}
         onAssigneeChange={setAssignedTo}
+        dueDate={dueDate}
+        onDueDateChange={setDueDate}
+        recurrence={recurrence}
+        onRecurrenceChange={handleRecurrenceChange}
+        recurrenceIntervalDays={recurrenceIntervalDays}
+        onRecurrenceIntervalDaysChange={setRecurrenceIntervalDays}
+        recurrenceDuration={recurrenceDuration}
+        onRecurrenceDurationChange={setRecurrenceDuration}
       />
 
       <Button type="submit" size="sm" className="rounded-none w-full" disabled={pending}>

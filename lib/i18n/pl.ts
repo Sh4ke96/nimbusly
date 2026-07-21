@@ -1775,6 +1775,7 @@ export const pl: Dict = {
     legendSchedule: "Grafik",
     legendChore: "Obowiązki",
     empty: "Brak wydarzeń w tym miesiącu - dodaj urodziny, wpis w grafiku lub obowiązek w odpowiednich modułach.",
+    noEventsOnDay: "Brak wydarzeń w tym dniu.",
   },
   theme: {
     toggleLabel: "Przełącz motyw",

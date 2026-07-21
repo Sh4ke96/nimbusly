@@ -1777,6 +1777,7 @@ export const en: Dict = {
     legendSchedule: "Schedule",
     legendChore: "Chores",
     empty: "No events this month - add birthdays, schedule entries, or chores in their modules.",
+    noEventsOnDay: "No events on this day.",
   },
   theme: {
     toggleLabel: "Toggle theme",

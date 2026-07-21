@@ -1,6 +1,7 @@
 "use client";
 
 import { GlobalSearchDialog } from "@/components/app/global-search-dialog";
+import { QuickAddHeaderButton } from "@/components/app/quick-add-header-button";
 import { Logo } from "@/components/logo";
 import { AccountMenu } from "@/components/account/account-menu";
 import { NotificationsBell } from "@/components/notifications/notifications-bell";
@@ -17,6 +18,7 @@ export function AppHeader() {
         </div>
         <div className="flex h-10 sm:h-8 items-center gap-1 sm:gap-2">
           <GlobalSearchDialog />
+          <QuickAddHeaderButton />
           <LanguageToggle className="hidden sm:flex" />
           <ThemeToggle />
           <div className="hidden md:block">

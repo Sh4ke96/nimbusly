@@ -10,6 +10,14 @@ export const CHORE_STATUSES = [
   CHORE_STATUS.COMPLETED,
 ] as const;
 
+/** Status options shown in forms, filters, and quick actions. */
+export const CHORE_FORM_STATUSES = [
+  CHORE_STATUS.PENDING,
+  CHORE_STATUS.COMPLETED,
+] as const;
+
+export type ChoreFormStatus = (typeof CHORE_FORM_STATUSES)[number];
+
 export type ChoreStatus = (typeof CHORE_STATUSES)[number];
 
 export const CHORE_RECURRENCE = {
