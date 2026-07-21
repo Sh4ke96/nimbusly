@@ -42,16 +42,3 @@ export function mapFamilyMemberRow(row: FamilyMemberRow): FamilyMember {
     family_role: row.family_role as FamilyRole | null,
   };
 }
-
-export type FamilyInsert = Database["public"]["Tables"]["families"]["Insert"];
-
-/** DB trigger generates invite_code when empty. */
-export function familyInsertPayload(
-  params: Pick<FamilyInsert, "name" | "created_by">
-): FamilyInsert {
-  return {
-    name: params.name,
-    created_by: params.created_by,
-    invite_code: "",
-  };
-}

@@ -1185,15 +1185,6 @@ export type Database = {
         }
         Returns: undefined
       }
-      complete_founder_onboarding: {
-        Args: {
-          p_avatar_color: string
-          p_family_id: string
-          p_first_name: string
-          p_last_name: string
-        }
-        Returns: undefined
-      }
       onboard_create_family: {
         Args: {
           p_avatar_color: string

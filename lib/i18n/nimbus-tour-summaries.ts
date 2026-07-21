@@ -408,10 +408,6 @@ export const nimbusModuleSummariesEn: Record<string, SummaryCopy> = {
 };
 
 export const nimbusFamilyTourPl: Dict["nimbusTour"]["family"] = {
-  familyTab: {
-    title: "Zarządzaj rodziną",
-    body: "Jedna zakładka na wszystko: nazwa, zaproszenia, członkowie, role i opuszczenie grupy.",
-  },
   members: {
     title: "Zaproszenia i nazwa",
     body: "Zmień nazwę rodziny, wyślij zaproszenie mailem lub udostępnij kod - nowi członkowie dołączą do wspólnego konta.",
@@ -445,10 +441,6 @@ export const nimbusFamilyTourPl: Dict["nimbusTour"]["family"] = {
 };
 
 export const nimbusFamilyTourEn: Dict["nimbusTour"]["family"] = {
-  familyTab: {
-    title: "Manage family",
-    body: "One tab for everything: name, invites, members, roles, and leaving the group.",
-  },
   members: {
     title: "Invites and name",
     body: "Rename the family, send email invites, or share your code - new members join the shared account.",

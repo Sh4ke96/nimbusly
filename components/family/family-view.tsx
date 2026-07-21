@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useT } from "@/lib/lang-context";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
-import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus-tour";
 
 export function FamilyView() {
   const t = useT();
@@ -26,10 +25,7 @@ export function FamilyView() {
           breadcrumb={t.family.pageTitle}
         />
 
-        <Card
-          className="gap-0 rounded-none py-0 shadow-sm overflow-hidden"
-          data-nimbus-tour={NIMBUS_TOUR_TARGET.FAMILY_MEMBERS}
-        >
+        <Card className="gap-0 rounded-none py-0 shadow-sm overflow-hidden">
           <CardContent className="p-4 sm:p-6 md:p-8">
             {showFamily ? (
               <FamilySection />

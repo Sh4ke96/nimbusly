@@ -11,6 +11,27 @@ export { CHANGELOG_ENTRY_TYPE, type ChangelogEntry };
  */
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "0.14.2",
+    date: "2026-07-22",
+    type: CHANGELOG_ENTRY_TYPE.FIX,
+    title: {
+      pl: "Higiena po audycie",
+      en: "Post-audit hygiene",
+    },
+    changes: {
+      pl: [
+        "Migracja 055: usunięte complete_founder_onboarding i przestarzała polityka RLS families INSERT",
+        "Nawigacja modułów w headerze na APP_MODULE_DISCOVER_IDS (jak dashboard i mobile)",
+        "Jeden cel tour FAMILY_MEMBERS; usunięty martwy familyInsertPayload i copy familyTab",
+      ],
+      en: [
+        "Migration 055: dropped complete_founder_onboarding and stale families INSERT RLS policy",
+        "Header module nav uses APP_MODULE_DISCOVER_IDS (same as dashboard and mobile)",
+        "Single FAMILY_MEMBERS tour target; removed dead familyInsertPayload and familyTab copy",
+      ],
+    },
+  },
+  {
     version: "0.14.1",
     date: "2026-07-22",
     type: CHANGELOG_ENTRY_TYPE.FIX,
