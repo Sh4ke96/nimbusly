@@ -1,16 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import {
-  APP_MODULE_DISCOVER_IDS,
-  getAppModuleDesc,
-  getAppModuleIcon,
-  getAppModuleLabel,
-  getAppModuleOverviewMeta,
-  getAppModuleRoute,
-} from "@/lib/constants/app-modules";
-import { overviewAccentStyles } from "@/components/dashboard/sortable-overview-card";
 import {
   Sheet,
   SheetContent,
@@ -18,8 +7,10 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { APP_MODULE_DISCOVER_IDS } from "@/lib/constants/app-modules";
+import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus-tour";
+import { ModuleDiscoverCard } from "@/components/app/module-discover-card";
 import { useT } from "@/lib/lang-context";
-import { cn } from "@/lib/utils";
 
 interface MobileModulesSheetProps {
   open: boolean;
@@ -34,6 +25,7 @@ export function MobileModulesSheet({ open, onOpenChange }: MobileModulesSheetPro
       <SheetContent
         side="bottom"
         className="max-h-[85dvh] rounded-none border-x-0 border-b-0 px-0 pb-[env(safe-area-inset-bottom,0px)]"
+        data-nimbus-tour={NIMBUS_TOUR_TARGET.MOBILE_MODULES_SHEET}
       >
         <SheetHeader className="border-b border-border px-4 pb-4 text-left">
           <SheetTitle className="font-heading">{t.mobileNav.modules}</SheetTitle>
@@ -42,41 +34,15 @@ export function MobileModulesSheet({ open, onOpenChange }: MobileModulesSheetPro
 
         <div className="overflow-y-auto px-4 py-4">
           <div className="grid gap-3">
-            {APP_MODULE_DISCOVER_IDS.map((moduleId) => {
-              const Icon = getAppModuleIcon(moduleId);
-              const accent = getAppModuleOverviewMeta(moduleId).overviewAccent;
-              const accentStyles = overviewAccentStyles[accent];
-
-              return (
-                <Link
-                  key={moduleId}
-                  href={getAppModuleRoute(moduleId)}
-                  onClick={() => onOpenChange(false)}
-                  className={cn(
-                    "group flex items-center gap-4 rounded-none border border-border/80 bg-card/90 p-4 shadow-sm",
-                    "transition-all duration-200 active:scale-[0.99]"
-                  )}
-                >
-                  <span
-                    className={cn(
-                      "inline-flex size-11 shrink-0 items-center justify-center rounded-none",
-                      accentStyles.icon
-                    )}
-                  >
-                    <Icon className="size-5" aria-hidden />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="font-heading text-sm font-semibold">
-                      {getAppModuleLabel(moduleId, t.dashboard.moduleLabels)}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {getAppModuleDesc(moduleId, t.dashboard.moduleDescs)}
-                    </p>
-                  </div>
-                  <ArrowRight className="size-4 shrink-0 text-muted-foreground/40" aria-hidden />
-                </Link>
-              );
-            })}
+            {APP_MODULE_DISCOVER_IDS.map((moduleId) => (
+              <ModuleDiscoverCard
+                key={moduleId}
+                moduleId={moduleId}
+                labels={t.dashboard.moduleLabels}
+                descs={t.dashboard.moduleDescs}
+                onNavigate={() => onOpenChange(false)}
+              />
+            ))}
           </div>
         </div>
       </SheetContent>

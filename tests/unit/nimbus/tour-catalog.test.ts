@@ -12,6 +12,7 @@ describe("nimbus tour catalog", () => {
       NIMBUS_TOUR_ID.FAMILY_CALENDAR
     );
     assert.equal(getModuleTourIdForPath("/notifications"), NIMBUS_TOUR_ID.NOTIFICATIONS);
+    assert.equal(getModuleTourIdForPath("/family"), NIMBUS_TOUR_ID.FAMILY);
     assert.equal(getModuleTourIdForPath("/unknown"), null);
   });
 
@@ -51,5 +52,6 @@ describe("nimbus tour catalog", () => {
   it("intro tour includes settings notifications step", () => {
     const ids = getNimbusTourSteps(NIMBUS_TOUR_ID.INTRO).map((step) => step.id);
     assert.ok(ids.includes("settings-notifications"));
+    assert.ok(ids.includes("mobile-modules"));
   });
 });

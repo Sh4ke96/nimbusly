@@ -18,8 +18,12 @@ export function isValidPushSubscriptionInput(input: {
     return false;
   }
 
-  if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
-    return false;
+  if (parsed.protocol !== "https:") {
+    if (process.env.NODE_ENV !== "production" && parsed.protocol === "http:") {
+      // Local dev push services may use http.
+    } else {
+      return false;
+    }
   }
 
   if (

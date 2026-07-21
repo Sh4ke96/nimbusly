@@ -9,10 +9,6 @@ import { DashboardHome } from "@/components/dashboard/dashboard-home";
 import { DashboardPageSkeleton } from "@/components/dashboard/dashboard-page-skeleton";
 import {
   APP_MODULE_IDS,
-  getAppModuleDesc,
-  getAppModuleIcon,
-  getAppModuleLabel,
-  getAppModuleRoute,
 } from "@/lib/constants/app-modules";
 import { hydrateDashboardSnapshot } from "@/lib/dashboard/hydrate-dashboard-snapshot";
 import type { DashboardSnapshot } from "@/lib/dashboard/snapshot-types";
@@ -50,10 +46,6 @@ export default function DashboardPageClient({ snapshot }: DashboardPageClientPro
 
   const modules = APP_MODULE_IDS.map((moduleId) => ({
     key: moduleId,
-    label: getAppModuleLabel(moduleId, t.dashboard.moduleLabels),
-    desc: getAppModuleDesc(moduleId, t.dashboard.moduleDescs),
-    href: getAppModuleRoute(moduleId),
-    Icon: getAppModuleIcon(moduleId),
   }));
 
   return (

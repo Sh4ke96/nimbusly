@@ -6,8 +6,8 @@ import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { useResolvedItemSelection } from "@/lib/hooks/use-resolved-item-selection";
 import { useLgViewport } from "@/lib/hooks/use-lg-viewport";
-import { ModulePageShell } from "@/components/app/module-page-shell";
-import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
+import { ModulePageHeader, ModulePageShell } from "@/components/app/module-page-shell";
+import { APP_MODULE } from "@/lib/constants/app-modules";
 import { ShoppingListCard } from "@/components/shopping/shopping-list-card";
 import { ShoppingListEditDialog } from "@/components/shopping/shopping-list-edit-dialog";
 import { ShoppingListFormDialog } from "@/components/shopping/shopping-list-form-dialog";
@@ -144,23 +144,22 @@ export function ShoppingListsView() {
   return (
     <>
       <ModulePageShell width="wide">
-        <AccountBreadcrumbs current={t.shoppingLists.title} />
-
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="space-y-1" data-nimbus-tour={NIMBUS_TOUR_TARGET.SHOPPING_HEADER}>
-            <h1 className="font-heading font-bold text-2xl tracking-tight">
-              {t.shoppingLists.title}
-            </h1>
-            <p className="text-sm text-muted-foreground">{t.shoppingLists.subtitle}</p>
-          </div>
-          <div data-nimbus-tour={NIMBUS_TOUR_TARGET.SHOPPING_ADD}>
-            <ShoppingListFormDialog
-              onSuccess={onListsChanged}
-              open={formOpen}
-              onOpenChange={setFormOpen}
-            />
-          </div>
-        </div>
+        <ModulePageHeader
+          title={t.shoppingLists.title}
+          subtitle={t.shoppingLists.subtitle}
+          moduleId={APP_MODULE.SHOPPING}
+          breadcrumb={t.shoppingLists.title}
+          tourTarget={NIMBUS_TOUR_TARGET.SHOPPING_HEADER}
+          actions={
+            <div data-nimbus-tour={NIMBUS_TOUR_TARGET.SHOPPING_ADD}>
+              <ShoppingListFormDialog
+                onSuccess={onListsChanged}
+                open={formOpen}
+                onOpenChange={setFormOpen}
+              />
+            </div>
+          }
+        />
 
         {familyId ? <FamilyRealtimeHint /> : null}
 

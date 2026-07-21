@@ -1787,6 +1787,7 @@ export const en: Dict = {
     title: "Notifications",
     subtitle: "Family activity and reminders.",
     empty: "No notifications.",
+    emptyFiltered: "No notifications for the selected module.",
     emptyUnread: "No unread notifications.",
     emptyRead: "No read notifications.",
     loading: "Loading…",

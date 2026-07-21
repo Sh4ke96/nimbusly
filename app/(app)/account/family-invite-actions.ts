@@ -36,7 +36,7 @@ async function requireFamilyOwner() {
 
   const { data: family } = await supabase
     .from("families")
-    .select("id, name, created_by, invite_code")
+    .select("id, name, created_by")
     .eq("id", profile.family_id)
     .maybeSingle();
 

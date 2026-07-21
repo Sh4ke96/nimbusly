@@ -1,18 +1,11 @@
 "use client";
 
-import { ArrowRight } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
 import type { AppModuleId } from "@/lib/constants/app-modules";
-import { getAppModuleOverviewMeta } from "@/lib/constants/app-modules";
-import { overviewAccentStyles } from "@/components/dashboard/sortable-overview-card";
-import { cn } from "@/lib/utils";
+import { ModuleDiscoverCard } from "@/components/app/module-discover-card";
+import { useT } from "@/lib/lang-context";
 
 export interface DashboardModuleItem {
   key: AppModuleId;
-  label: string;
-  desc: string;
-  Icon: LucideIcon;
-  href: string;
 }
 
 interface DashboardModulesGridProps {
@@ -20,39 +13,19 @@ interface DashboardModulesGridProps {
 }
 
 export function DashboardModulesGrid({ modules }: DashboardModulesGridProps) {
+  const t = useT();
+
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {modules.map((module) => {
-        const accent = getAppModuleOverviewMeta(module.key).overviewAccent;
-        const accentStyles = overviewAccentStyles[accent];
-
-        return (
-        <a
+      {modules.map((module) => (
+        <ModuleDiscoverCard
           key={module.key}
-          href={module.href}
-          className={cn(
-            "group flex items-center gap-4 rounded-none border border-border/80 bg-card/90 p-5 shadow-sm backdrop-blur-sm",
-            "transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md",
-            accentStyles.ring
-          )}
-        >
-          <span
-            className={cn(
-              "inline-flex size-11 shrink-0 items-center justify-center rounded-none transition-transform duration-200",
-              "group-hover:scale-110 group-hover:-rotate-6",
-              accentStyles.icon
-            )}
-          >
-            <module.Icon className="size-5" />
-          </span>
-          <div className="min-w-0 flex-1">
-            <p className="font-heading text-sm font-semibold">{module.label}</p>
-            <p className="text-xs text-muted-foreground">{module.desc}</p>
-          </div>
-          <ArrowRight className="size-4 shrink-0 text-muted-foreground/40 transition-all group-hover:translate-x-0.5 group-hover:text-primary" />
-        </a>
-        );
-      })}
+          moduleId={module.key}
+          labels={t.dashboard.moduleLabels}
+          descs={t.dashboard.moduleDescs}
+          className="p-5"
+        />
+      ))}
     </div>
   );
 }

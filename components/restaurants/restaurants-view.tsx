@@ -5,8 +5,8 @@ import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
 import { UtensilsCrossed } from "lucide-react";
-import { ModulePageShell } from "@/components/app/module-page-shell";
-import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
+import { ModulePageHeader, ModulePageShell } from "@/components/app/module-page-shell";
+import { APP_MODULE } from "@/lib/constants/app-modules";
 import { RestaurantEditDialog } from "@/components/restaurants/restaurant-edit-dialog";
 import { RestaurantFormDialog } from "@/components/restaurants/restaurant-form-dialog";
 import { RestaurantsFilters } from "@/components/restaurants/restaurants-filters";
@@ -82,33 +82,32 @@ export function RestaurantsView() {
   return (
     <>
       <ModulePageShell>
-        <AccountBreadcrumbs current={t.restaurants.title} />
-
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="space-y-1" data-nimbus-tour={NIMBUS_TOUR_TARGET.RESTAURANTS_HEADER}>
-            <h1 className="font-heading font-bold text-2xl tracking-tight">
-              {t.restaurants.title}
-            </h1>
-            <p className="text-sm text-muted-foreground">{t.restaurants.subtitle}</p>
-          </div>
-          <div className="flex items-center gap-2 self-start sm:self-auto">
-            <NimbusTourToolbarAnchor
-              tourTarget={NIMBUS_TOUR_TARGET.RESTAURANTS_FILTERS}
-              visible={!loading && places.length > 0}
-            >
-              <RestaurantsFilters
-                places={places}
-                visitFilter={visitFilter}
-                venueFilter={venueFilter}
-                onVisitChange={setVisitFilter}
-                onVenueChange={setVenueFilter}
-              />
-            </NimbusTourToolbarAnchor>
-            <div data-nimbus-tour={NIMBUS_TOUR_TARGET.RESTAURANTS_ADD}>
-              <RestaurantFormDialog onSuccess={onPlacesChanged} />
-            </div>
-          </div>
-        </div>
+        <ModulePageHeader
+          title={t.restaurants.title}
+          subtitle={t.restaurants.subtitle}
+          moduleId={APP_MODULE.RESTAURANTS}
+          breadcrumb={t.restaurants.title}
+          tourTarget={NIMBUS_TOUR_TARGET.RESTAURANTS_HEADER}
+          actions={
+            <>
+              <NimbusTourToolbarAnchor
+                tourTarget={NIMBUS_TOUR_TARGET.RESTAURANTS_FILTERS}
+                visible={!loading && places.length > 0}
+              >
+                <RestaurantsFilters
+                  places={places}
+                  visitFilter={visitFilter}
+                  venueFilter={venueFilter}
+                  onVisitChange={setVisitFilter}
+                  onVenueChange={setVenueFilter}
+                />
+              </NimbusTourToolbarAnchor>
+              <div data-nimbus-tour={NIMBUS_TOUR_TARGET.RESTAURANTS_ADD}>
+                <RestaurantFormDialog onSuccess={onPlacesChanged} />
+              </div>
+            </>
+          }
+        />
 
         {familyId ? <FamilyRealtimeHint /> : null}
 

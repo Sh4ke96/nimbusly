@@ -101,6 +101,12 @@ const INTRO_TOUR: NimbusTourStep[] = [
     prepare: NIMBUS_TOUR_PREPARE.DASHBOARD_MODULES,
   },
   {
+    id: "mobile-modules",
+    route: "/dashboard",
+    target: NIMBUS_TOUR_TARGET.MOBILE_MODULES_NAV,
+    copyKey: "intro.mobileModules",
+  },
+  {
     id: "global-search",
     route: "/dashboard",
     target: NIMBUS_TOUR_TARGET.GLOBAL_SEARCH_TRIGGER,

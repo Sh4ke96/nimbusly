@@ -516,7 +516,8 @@ export async function deleteBudgetExpense(
     .from("budget_expenses")
     .delete()
     .eq("id", id)
-    .eq("budget_id", budgetId);
+    .eq("budget_id", budgetId)
+    .eq("created_by", user.id);
 
   if (error) return { error: t.budget.errorGeneric };
 
@@ -628,7 +629,8 @@ export async function updateBudgetExpense(
       updated_at: new Date().toISOString(),
     })
     .eq("id", id)
-    .eq("budget_id", budgetId);
+    .eq("budget_id", budgetId)
+    .eq("created_by", user.id);
 
   if (error) return { error: t.budget.errorGeneric };
 

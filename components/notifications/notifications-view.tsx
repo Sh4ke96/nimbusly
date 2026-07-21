@@ -4,8 +4,7 @@ import Link from "next/link";
 import { Fragment, useActionState, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Bell, CheckCheck, Inbox, type LucideIcon } from "lucide-react";
-import { ModulePageShell } from "@/components/app/module-page-shell";
-import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
+import { ModulePageHeader, ModulePageShell } from "@/components/app/module-page-shell";
 import { NotificationListItem } from "@/components/notifications/notification-list-item";
 import { NotificationsPagination } from "@/components/notifications/notifications-pagination";
 import { SettingsTabHeader } from "@/components/profile/settings/settings-tab-header";
@@ -69,8 +68,12 @@ function parsePage(value: string | null): number {
 
 function emptyMessageForFilter(
   filter: NotificationFilterTab,
+  moduleId: NotificationModuleId | null,
   t: ReturnType<typeof useT>
 ): string {
+  if (moduleId !== null) {
+    return t.notifications.emptyFiltered;
+  }
   if (filter === NOTIFICATION_FILTER_TAB.UNREAD) {
     return t.notifications.emptyUnread;
   }
@@ -182,6 +185,7 @@ export function NotificationsView() {
   }
 
   const visiblePageItems = pageItems.filter((item) => !dismissedIds.includes(item.id));
+  const hasActiveModuleFilter = moduleId !== null;
 
   function renderFilterTabTriggers(mobile: boolean) {
     return filterTabs.map((tab, index) => (
@@ -260,7 +264,11 @@ export function NotificationsView() {
         ) : visiblePageItems.length === 0 ? (
           <ModuleEmptyState
             icon={Inbox}
-            message={emptyMessageForFilter(filter, t)}
+            message={emptyMessageForFilter(filter, moduleId, t)}
+            actionLabel={hasActiveModuleFilter ? t.common.clearFilters : undefined}
+            onAction={
+              hasActiveModuleFilter ? () => handleModuleChange("all") : undefined
+            }
           />
         ) : (
           <>
@@ -295,32 +303,27 @@ export function NotificationsView() {
   return (
     <ModulePageShell width="full">
         <div className="space-y-5 px-4 sm:space-y-6 sm:px-0">
-          <AccountBreadcrumbs current={t.notifications.title} />
-
-          <div
-            className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
-            data-nimbus-tour={NIMBUS_TOUR_TARGET.NOTIFICATIONS_HEADER}
+          <ModulePageHeader
+            title={t.notifications.title}
+            subtitle={t.notifications.subtitle}
+            breadcrumb={t.notifications.title}
+            tourTarget={NIMBUS_TOUR_TARGET.NOTIFICATIONS_HEADER}
+            actions={
+              unreadCount > 0 ? (
+                <form action={markAllAction}>
+                  <Button type="submit" variant="outline">
+                    {t.notifications.markAllRead}
+                  </Button>
+                </form>
+              ) : undefined
+            }
+          />
+          <Link
+            href={settingsTabHref(SETTINGS_TAB.NOTIFICATIONS)}
+            className="text-xs font-medium text-primary hover:underline"
           >
-            <div className="space-y-1">
-              <h1 className="font-heading font-bold text-2xl tracking-tight">
-                {t.notifications.title}
-              </h1>
-              <p className="text-sm text-muted-foreground">{t.notifications.subtitle}</p>
-              <Link
-                href={settingsTabHref(SETTINGS_TAB.NOTIFICATIONS)}
-                className="text-xs font-medium text-primary hover:underline"
-              >
-                {t.notifications.settingsLink}
-              </Link>
-            </div>
-            {unreadCount > 0 && (
-              <form action={markAllAction}>
-                <Button type="submit" variant="outline">
-                  {t.notifications.markAllRead}
-                </Button>
-              </form>
-            )}
-          </div>
+            {t.notifications.settingsLink}
+          </Link>
         </div>
 
         <Card className="gap-0 rounded-none border-x-0 py-0 shadow-sm overflow-hidden max-md:ring-0 sm:border-x">

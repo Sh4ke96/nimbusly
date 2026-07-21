@@ -1785,6 +1785,7 @@ export const pl: Dict = {
     title: "Powiadomienia",
     subtitle: "Aktywność w rodzinie i przypomnienia.",
     empty: "Brak powiadomień.",
+    emptyFiltered: "Brak powiadomień dla wybranego modułu.",
     emptyUnread: "Brak nieprzeczytanych powiadomień.",
     emptyRead: "Brak przeczytanych powiadomień.",
     loading: "Ładowanie…",

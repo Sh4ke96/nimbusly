@@ -5,8 +5,8 @@ import { useActionState, useCallback, useMemo, useState } from "react";
 import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
-import { ModulePageShell } from "@/components/app/module-page-shell";
-import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
+import { ModulePageHeader, ModulePageShell } from "@/components/app/module-page-shell";
+import { APP_MODULE } from "@/lib/constants/app-modules";
 import { ScheduleCalendar } from "@/components/schedule/schedule-calendar";
 import { ScheduleEditDialog } from "@/components/schedule/schedule-edit-dialog";
 import { ScheduleFormDialog } from "@/components/schedule/schedule-form-dialog";
@@ -150,34 +150,33 @@ export function ScheduleView() {
   return (
     <>
       <ModulePageShell width="full">
-        <div className="no-print">
-          <AccountBreadcrumbs current={t.schedule.title} />
-        </div>
-
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between no-print">
-          <div className="space-y-1" data-nimbus-tour={NIMBUS_TOUR_TARGET.SCHEDULE_HEADER}>
-            <h1 className="font-heading font-bold text-2xl tracking-tight">{t.schedule.title}</h1>
-            <p className="text-sm text-muted-foreground">{t.schedule.subtitle}</p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <div data-nimbus-tour={NIMBUS_TOUR_TARGET.SCHEDULE_PRINT}>
-              <Button type="button" variant="outline" onClick={handlePrint}>
-                <Printer className="size-4" />
-                {t.schedule.printBtn}
-              </Button>
-            </div>
-            <div data-nimbus-tour={NIMBUS_TOUR_TARGET.SCHEDULE_ADD}>
-              <ScheduleFormDialog
-                entries={entries}
-                onSuccess={onScheduleChanged}
-                open={formOpen}
-                onOpenChange={handleFormOpenChange}
-                initialDate={formInitialDate}
-                onTriggerClick={() => setFormInitialDate(undefined)}
-              />
-            </div>
-          </div>
-        </div>
+        <ModulePageHeader
+          title={t.schedule.title}
+          subtitle={t.schedule.subtitle}
+          moduleId={APP_MODULE.CALENDAR}
+          breadcrumb={t.schedule.title}
+          tourTarget={NIMBUS_TOUR_TARGET.SCHEDULE_HEADER}
+          actions={
+            <>
+              <div data-nimbus-tour={NIMBUS_TOUR_TARGET.SCHEDULE_PRINT}>
+                <Button type="button" variant="outline" onClick={handlePrint}>
+                  <Printer className="size-4" />
+                  {t.schedule.printBtn}
+                </Button>
+              </div>
+              <div data-nimbus-tour={NIMBUS_TOUR_TARGET.SCHEDULE_ADD}>
+                <ScheduleFormDialog
+                  entries={entries}
+                  onSuccess={onScheduleChanged}
+                  open={formOpen}
+                  onOpenChange={handleFormOpenChange}
+                  initialDate={formInitialDate}
+                  onTriggerClick={() => setFormInitialDate(undefined)}
+                />
+              </div>
+            </>
+          }
+        />
 
         {familyId ? <FamilyRealtimeHint /> : null}
 

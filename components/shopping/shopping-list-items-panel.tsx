@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useMemo } from "react";
+import { ListPlus } from "lucide-react";
 import dynamic from "next/dynamic";
 import { ShoppingListAddItem } from "@/components/shopping/shopping-list-add-item";
 import { ShoppingListAddItemDialog } from "@/components/shopping/shopping-list-add-item-dialog";
 import { ShoppingListToggleAll } from "@/components/shopping/shopping-list-toggle-all";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
+import { ModuleEmptyState } from "@/components/ui/module-empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useT } from "@/lib/lang-context";
 import {
@@ -120,9 +122,7 @@ export function ShoppingListItemsPanel({
         ) : null}
 
         {items.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-10 border border-dashed border-border bg-card shadow-sm">
-            {t.shoppingLists.emptyItems}
-          </p>
+          <ModuleEmptyState icon={ListPlus} message={t.shoppingLists.emptyItems} />
         ) : (
           <>
             <div className="flex justify-end">

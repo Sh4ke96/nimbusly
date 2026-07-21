@@ -328,6 +328,7 @@ export type Database = {
           invited_by: string
           status: string
           token: string
+          joined_at: string | null
         }
         Insert: {
           created_at?: string
@@ -338,6 +339,7 @@ export type Database = {
           invited_by: string
           status?: string
           token?: string
+          joined_at?: string | null
         }
         Update: {
           created_at?: string
@@ -348,6 +350,7 @@ export type Database = {
           invited_by?: string
           status?: string
           token?: string
+          joined_at?: string | null
         }
         Relationships: [
           {
@@ -1214,6 +1217,24 @@ export type Database = {
       get_family_invite_code: {
         Args: Record<PropertyKey, never>
         Returns: string
+      }
+      onboard_with_invite_code: {
+        Args: {
+          p_avatar_color: string
+          p_code: string
+          p_first_name: string
+          p_last_name: string
+        }
+        Returns: undefined
+      }
+      onboard_with_invitation_token: {
+        Args: {
+          p_avatar_color: string
+          p_first_name: string
+          p_last_name: string
+          p_token: string
+        }
+        Returns: undefined
       }
       create_family_notifications: {
         Args: {

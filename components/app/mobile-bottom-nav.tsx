@@ -13,6 +13,7 @@ import {
 } from "@/lib/constants/mobile-nav";
 import { isMobileNavActive } from "@/lib/mobile-nav/is-nav-active";
 import { NOTIFICATION_FILTER_TAB } from "@/lib/constants/notifications";
+import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus-tour";
 import { useT } from "@/lib/lang-context";
 import { MobileModulesSheet } from "@/components/app/mobile-modules-sheet";
 import { formatMessage } from "@/lib/i18n/format";
@@ -149,6 +150,7 @@ export function MobileBottomNav() {
           aria-current={active ? "page" : undefined}
           aria-label={labels[id]}
           aria-expanded={modulesSheetOpen}
+          data-nimbus-tour={NIMBUS_TOUR_TARGET.MOBILE_MODULES_NAV}
           onClick={() => setModulesSheetOpen(true)}
         >
           <span className="app-mobile-bottom-nav-icon relative">

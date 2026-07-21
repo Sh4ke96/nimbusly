@@ -6,6 +6,7 @@ import type { TodayItem } from "@/lib/dashboard/today";
 import { TODAY_KIND_ICON } from "@/lib/dashboard/today";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/lib/lang-context";
+import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus-tour";
 
 interface DashboardTodayBannerProps {
   items: TodayItem[];
@@ -18,7 +19,7 @@ export function DashboardTodayBanner({ items }: DashboardTodayBannerProps) {
     return (
       <section
         className="border border-dashed border-border bg-muted/20 px-4 py-4 space-y-2"
-        data-nimbus-tour="dashboard-today"
+        data-nimbus-tour={NIMBUS_TOUR_TARGET.DASHBOARD_TODAY}
       >
         <div className="flex items-center justify-between gap-3">
           <h2 className="font-heading text-sm font-semibold tracking-tight text-foreground">
@@ -36,7 +37,7 @@ export function DashboardTodayBanner({ items }: DashboardTodayBannerProps) {
   return (
     <section
       className="border border-primary/25 bg-primary/5 px-4 py-4 space-y-3"
-      data-nimbus-tour="dashboard-today"
+      data-nimbus-tour={NIMBUS_TOUR_TARGET.DASHBOARD_TODAY}
     >
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">

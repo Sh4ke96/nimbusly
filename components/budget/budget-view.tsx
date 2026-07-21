@@ -8,8 +8,8 @@ import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
 import { useResolvedItemSelection } from "@/lib/hooks/use-resolved-item-selection";
 import { ModuleSectionHeading } from "@/components/ui/module-section-heading";
 import { Eye, EyeOff, BarChart3, Download, Printer, Scale, TrendingDown, TrendingUp, Wallet } from "lucide-react";
-import { ModulePageShell } from "@/components/app/module-page-shell";
-import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
+import { ModulePageHeader, ModulePageShell } from "@/components/app/module-page-shell";
+import { APP_MODULE } from "@/lib/constants/app-modules";
 import { BudgetCard } from "@/components/budget/budget-card";
 import { BudgetFilters } from "@/components/budget/budget-filters";
 import { BudgetChartsLazy } from "@/components/budget/budget-charts-lazy";
@@ -323,24 +323,23 @@ export function BudgetView() {
   return (
     <>
       <ModulePageShell width="wide">
-        <AccountBreadcrumbs current={t.budget.title} />
-
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between no-print">
-          <div className="min-w-0 space-y-1" data-nimbus-tour={NIMBUS_TOUR_TARGET.BUDGET_HEADER}>
-            <h1 className="font-heading font-bold text-xl tracking-tight sm:text-2xl">
-              {t.budget.title}
-            </h1>
-            <p className="text-sm text-muted-foreground">{t.budget.subtitle}</p>
-          </div>
-          <div className="w-full sm:w-auto" data-nimbus-tour={NIMBUS_TOUR_TARGET.BUDGET_ADD}>
-            <BudgetFormDialog
-              onSuccess={onDataChanged}
-              triggerClassName="w-full sm:w-auto"
-              open={formOpen}
-              onOpenChange={setFormOpen}
-            />
-          </div>
-        </div>
+        <ModulePageHeader
+          title={t.budget.title}
+          subtitle={t.budget.subtitle}
+          moduleId={APP_MODULE.BUDGET}
+          breadcrumb={t.budget.title}
+          tourTarget={NIMBUS_TOUR_TARGET.BUDGET_HEADER}
+          actions={
+            <div data-nimbus-tour={NIMBUS_TOUR_TARGET.BUDGET_ADD}>
+              <BudgetFormDialog
+                onSuccess={onDataChanged}
+                triggerClassName="w-full sm:w-auto"
+                open={formOpen}
+                onOpenChange={setFormOpen}
+              />
+            </div>
+          }
+        />
 
         {familyId ? <FamilyRealtimeHint /> : null}
 
@@ -359,20 +358,12 @@ export function BudgetView() {
             onAction={() => setFormOpen(true)}
           />
         ) : visibleBudgets.length === 0 ? (
-          <div className="space-y-3 text-center py-16 border border-dashed border-border">
-            <p className="text-sm text-muted-foreground">{t.budget.emptyHidden}</p>
-            {hiddenBudgetCount > 0 && (
-              <Button
-                type="button"
-                variant="outline"
-                className="cursor-pointer"
-                onClick={() => setShowHiddenBudgets(true)}
-              >
-                <Eye className="size-4" />
-                {t.budget.showHiddenBtn}
-              </Button>
-            )}
-          </div>
+          <ModuleEmptyState
+            icon={Eye}
+            message={t.budget.emptyHidden}
+            actionLabel={hiddenBudgetCount > 0 ? t.budget.showHiddenBtn : undefined}
+            onAction={hiddenBudgetCount > 0 ? () => setShowHiddenBudgets(true) : undefined}
+          />
         ) : (
           <div className="grid min-w-0 gap-4 sm:gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
             <section className="min-w-0 space-y-3 no-print" data-nimbus-tour={NIMBUS_TOUR_TARGET.BUDGET_LISTS}>

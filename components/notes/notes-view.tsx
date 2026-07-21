@@ -5,8 +5,8 @@ import { StickyNote } from "lucide-react";
 import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
-import { ModulePageShell } from "@/components/app/module-page-shell";
-import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
+import { ModulePageHeader, ModulePageShell } from "@/components/app/module-page-shell";
+import { APP_MODULE } from "@/lib/constants/app-modules";
 import { NoteEditDialog } from "@/components/notes/note-edit-dialog";
 import { NoteFormDialog } from "@/components/notes/note-form-dialog";
 import { NoteCategoryFormDialog } from "@/components/notes/note-category-form-dialog";
@@ -89,40 +89,41 @@ export function NotesView() {
   return (
     <>
       <ModulePageShell>
-        <AccountBreadcrumbs current={t.notes.title} />
-
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="space-y-1" data-nimbus-tour={NIMBUS_TOUR_TARGET.NOTES_HEADER}>
-            <h1 className="font-heading font-bold text-2xl tracking-tight">{t.notes.title}</h1>
-            <p className="text-sm text-muted-foreground">{t.notes.subtitle}</p>
-          </div>
-          <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
-            <NimbusTourToolbarAnchor
-              tourTarget={NIMBUS_TOUR_TARGET.NOTES_FILTERS}
-              visible={!loading && (notes.length > 0 || categories.length > 0)}
-            >
-              <NotesFilters
-                notes={notes}
-                categories={categories}
-                value={filterKey}
-                onChange={setFilterKey}
-              />
-            </NimbusTourToolbarAnchor>
-            <div data-nimbus-tour={NIMBUS_TOUR_TARGET.NOTES_CATEGORY}>
-              <NoteCategoryFormDialog onSuccess={onNotesChanged} />
-            </div>
-            <div data-nimbus-tour={NIMBUS_TOUR_TARGET.NOTES_ADD}>
-              <NoteFormDialog
-                categories={categories}
-                profile={profile}
-                members={members}
-                onSuccess={onNotesChanged}
-                open={formOpen}
-                onOpenChange={setFormOpen}
-              />
-            </div>
-          </div>
-        </div>
+        <ModulePageHeader
+          title={t.notes.title}
+          subtitle={t.notes.subtitle}
+          moduleId={APP_MODULE.NOTES}
+          breadcrumb={t.notes.title}
+          tourTarget={NIMBUS_TOUR_TARGET.NOTES_HEADER}
+          actions={
+            <>
+              <NimbusTourToolbarAnchor
+                tourTarget={NIMBUS_TOUR_TARGET.NOTES_FILTERS}
+                visible={!loading && (notes.length > 0 || categories.length > 0)}
+              >
+                <NotesFilters
+                  notes={notes}
+                  categories={categories}
+                  value={filterKey}
+                  onChange={setFilterKey}
+                />
+              </NimbusTourToolbarAnchor>
+              <div data-nimbus-tour={NIMBUS_TOUR_TARGET.NOTES_CATEGORY}>
+                <NoteCategoryFormDialog onSuccess={onNotesChanged} />
+              </div>
+              <div data-nimbus-tour={NIMBUS_TOUR_TARGET.NOTES_ADD}>
+                <NoteFormDialog
+                  categories={categories}
+                  profile={profile}
+                  members={members}
+                  onSuccess={onNotesChanged}
+                  open={formOpen}
+                  onOpenChange={setFormOpen}
+                />
+              </div>
+            </>
+          }
+        />
 
         {familyId ? <FamilyRealtimeHint /> : null}
 
@@ -145,8 +146,20 @@ export function NotesView() {
           <ModuleEmptyState
             icon={StickyNote}
             message={hasActiveFilter ? t.notes.emptyFiltered : t.notes.empty}
-            actionLabel={notes.length === 0 ? t.notes.addBtn : undefined}
-            onAction={notes.length === 0 ? () => setFormOpen(true) : undefined}
+            actionLabel={
+              hasActiveFilter
+                ? t.common.clearFilters
+                : notes.length === 0
+                  ? t.notes.addBtn
+                  : undefined
+            }
+            onAction={
+              hasActiveFilter
+                ? () => setFilterKey(NOTE_FILTER_ALL)
+                : notes.length === 0
+                  ? () => setFormOpen(true)
+                  : undefined
+            }
           />
         ) : (
           <div className="grid gap-4 sm:grid-cols-2" data-nimbus-tour={NIMBUS_TOUR_TARGET.NOTES_LIST}>

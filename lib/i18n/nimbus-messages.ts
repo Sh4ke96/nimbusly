@@ -41,6 +41,10 @@ const introPl = {
     "Wszystkie moduły",
     "Stąd wejdziesz w każdy moduł: budżet, prezenty, zwierzęta, notatki i resztę narzędzi domowych."
   ),
+  mobileModules: step(
+    "Moduły na telefonie",
+    "Na mobile otwórz listę modułów przyciskiem Moduły w dolnym pasku - bez przełączania widoku na dashboardzie."
+  ),
   globalSearch: step(
     "Wyszukiwarka globalna",
     "Skrót Ctrl+K (Cmd+K na Macu) otwiera wyszukiwarkę - moduły, notatki, listy i inne dane w jednym miejscu."
@@ -87,6 +91,10 @@ const introEn = {
   dashboardModules: step(
     "All modules",
     "Open every module from here: budget, gifts, pets, notes, and the rest of your toolkit."
+  ),
+  mobileModules: step(
+    "Modules on mobile",
+    "On mobile, tap Modules in the bottom bar to open the sheet - no extra dashboard view switch."
   ),
   globalSearch: step(
     "Global search",

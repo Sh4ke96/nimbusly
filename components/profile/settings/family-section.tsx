@@ -204,7 +204,7 @@ export function FamilySection() {
             </p>
           </div>
 
-          {displayCode ? (
+          {isOwner && displayCode ? (
             <div className="flex items-center gap-2">
               <code className="flex-1 rounded-none border border-border bg-background px-3 py-2 font-mono text-sm tracking-widest">
                 {displayCode}
@@ -214,11 +214,11 @@ export function FamilySection() {
                 {copied ? t.account.familyInviteCopied : t.account.familyInviteCopy}
               </Button>
             </div>
-          ) : (
+          ) : isOwner ? (
             <p className="text-sm text-muted-foreground">
               {needsInviteCode ? t.account.familyInviteLoading : t.account.familyInviteUnavailable}
             </p>
-          )}
+          ) : null}
 
           {isOwner && (
             <form action={inviteAction} className="space-y-3 border-t border-border pt-4">

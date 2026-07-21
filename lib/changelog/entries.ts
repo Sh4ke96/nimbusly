@@ -11,6 +11,29 @@ export { CHANGELOG_ENTRY_TYPE, type ChangelogEntry };
  */
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "0.14.0",
+    date: "2026-07-21",
+    type: CHANGELOG_ENTRY_TYPE.MINOR,
+    title: {
+      pl: "Bezpieczeństwo onboardingu i spójność modułów",
+      en: "Onboarding security and module consistency",
+    },
+    changes: {
+      pl: [
+        "Atomowe RPC onboardingu (kod zaproszenia i token e-mail) oraz migracja 053",
+        "Kod zaproszenia rodziny tylko dla właściciela; push wymaga HTTPS w produkcji",
+        "ModulePageHeader we wszystkich modułach, wspólne karty modułów i empty states",
+        "Nimbus: tour mobile modułów, ścieżka /family, stałe cele tour",
+      ],
+      en: [
+        "Atomic onboarding RPCs (invite code and email token) plus migration 053",
+        "Family invite code owner-only; push subscriptions require HTTPS in production",
+        "ModulePageHeader across modules, shared module cards and empty states",
+        "Nimbus: mobile modules tour step, /family path tour, tour target constants",
+      ],
+    },
+  },
+  {
     version: "0.13.1",
     date: "2026-07-21",
     type: CHANGELOG_ENTRY_TYPE.FIX,

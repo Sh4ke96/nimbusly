@@ -5,8 +5,8 @@ import { Gift } from "lucide-react";
 import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
-import { ModulePageShell } from "@/components/app/module-page-shell";
-import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
+import { ModulePageHeader, ModulePageShell } from "@/components/app/module-page-shell";
+import { APP_MODULE } from "@/lib/constants/app-modules";
 import { GiftEditDialog } from "@/components/gifts/gift-edit-dialog";
 import { GiftFormDialog } from "@/components/gifts/gift-form-dialog";
 import { GiftsFilters } from "@/components/gifts/gifts-filters";
@@ -78,34 +78,35 @@ export function GiftsView() {
   return (
     <>
       <ModulePageShell>
-        <AccountBreadcrumbs current={t.gifts.title} />
-
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="space-y-1" data-nimbus-tour={NIMBUS_TOUR_TARGET.GIFTS_HEADER}>
-            <h1 className="font-heading font-bold text-2xl tracking-tight">{t.gifts.title}</h1>
-            <p className="text-sm text-muted-foreground">{t.gifts.subtitle}</p>
-          </div>
-          <div className="flex items-center gap-2 self-start sm:self-auto">
-            <NimbusTourToolbarAnchor
-              tourTarget={NIMBUS_TOUR_TARGET.GIFTS_FILTERS}
-              visible={!loading && ideas.length > 0}
-            >
-              <GiftsFilters
-                ideas={ideas}
-                members={members}
-                value={filterKey}
-                onChange={setFilterKey}
-              />
-            </NimbusTourToolbarAnchor>
-            <div data-nimbus-tour={NIMBUS_TOUR_TARGET.GIFTS_ADD}>
-              <GiftFormDialog
-                onSuccess={onGiftsChanged}
-                open={formOpen}
-                onOpenChange={setFormOpen}
-              />
-            </div>
-          </div>
-        </div>
+        <ModulePageHeader
+          title={t.gifts.title}
+          subtitle={t.gifts.subtitle}
+          moduleId={APP_MODULE.GIFTS}
+          breadcrumb={t.gifts.title}
+          tourTarget={NIMBUS_TOUR_TARGET.GIFTS_HEADER}
+          actions={
+            <>
+              <NimbusTourToolbarAnchor
+                tourTarget={NIMBUS_TOUR_TARGET.GIFTS_FILTERS}
+                visible={!loading && ideas.length > 0}
+              >
+                <GiftsFilters
+                  ideas={ideas}
+                  members={members}
+                  value={filterKey}
+                  onChange={setFilterKey}
+                />
+              </NimbusTourToolbarAnchor>
+              <div data-nimbus-tour={NIMBUS_TOUR_TARGET.GIFTS_ADD}>
+                <GiftFormDialog
+                  onSuccess={onGiftsChanged}
+                  open={formOpen}
+                  onOpenChange={setFormOpen}
+                />
+              </div>
+            </>
+          }
+        />
 
         {familyId ? <FamilyRealtimeHint /> : null}
 
@@ -126,8 +127,20 @@ export function GiftsView() {
                   ? t.gifts.emptyFiltered
                   : t.gifts.empty
             }
-            actionLabel={ideas.length === 0 ? t.gifts.addBtn : undefined}
-            onAction={ideas.length === 0 ? () => setFormOpen(true) : undefined}
+            actionLabel={
+              hasActiveFilter
+                ? t.common.clearFilters
+                : ideas.length === 0
+                  ? t.gifts.addBtn
+                  : undefined
+            }
+            onAction={
+              hasActiveFilter
+                ? () => setFilterKey(GIFT_FILTER_ALL)
+                : ideas.length === 0
+                  ? () => setFormOpen(true)
+                  : undefined
+            }
           />
         ) : (
           <div className="grid gap-4 sm:grid-cols-2" data-nimbus-tour={NIMBUS_TOUR_TARGET.GIFTS_LIST}>

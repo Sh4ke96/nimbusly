@@ -27,6 +27,9 @@ export const NIMBUS_TOUR_TARGET = {
   DASHBOARD_OVERVIEW: "dashboard-overview",
   DASHBOARD_LAYOUT_EDIT: "dashboard-layout-edit",
   DASHBOARD_MODULES: "dashboard-modules",
+  MOBILE_MODULES_SHEET: "mobile-modules-sheet",
+  MOBILE_MODULES_NAV: "mobile-modules-nav",
+  DASHBOARD_TODAY: "dashboard-today",
   GLOBAL_SEARCH_TRIGGER: "global-search-trigger",
   SETTINGS_NAV: "settings-nav",
   SETTINGS_PROFILE: "settings-profile",
@@ -126,6 +129,7 @@ export const NIMBUS_PATH_TOUR: Record<string, NimbusTourId> = {
   "/chores": NIMBUS_TOUR_ID.CHORES,
   "/notes": NIMBUS_TOUR_ID.NOTES,
   "/notifications": NIMBUS_TOUR_ID.NOTIFICATIONS,
+  "/family": NIMBUS_TOUR_ID.FAMILY,
 };
 
 export function getModuleTourIdForPath(pathname: string): NimbusTourId | null {

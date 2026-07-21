@@ -5,8 +5,8 @@ import { Cross } from "lucide-react";
 import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
-import { ModulePageShell } from "@/components/app/module-page-shell";
-import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
+import { ModulePageHeader, ModulePageShell } from "@/components/app/module-page-shell";
+import { APP_MODULE } from "@/lib/constants/app-modules";
 import { MedicineCabinetFilters } from "@/components/medicine-cabinet/medicine-cabinet-filters";
 import { MedicineEditDialog } from "@/components/medicine-cabinet/medicine-edit-dialog";
 import { MedicineFormDialog } from "@/components/medicine-cabinet/medicine-form-dialog";
@@ -79,35 +79,34 @@ export function MedicineView() {
   return (
     <>
       <ModulePageShell>
-        <AccountBreadcrumbs current={t.medicineCabinet.title} />
-
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="space-y-1" data-nimbus-tour={NIMBUS_TOUR_TARGET.MEDICINE_HEADER}>
-            <h1 className="font-heading font-bold text-2xl tracking-tight">
-              {t.medicineCabinet.title}
-            </h1>
-            <p className="text-sm text-muted-foreground">{t.medicineCabinet.subtitle}</p>
-          </div>
-          <div className="flex items-center gap-2 self-start sm:self-auto">
-            <NimbusTourToolbarAnchor
-              tourTarget={NIMBUS_TOUR_TARGET.MEDICINE_FILTERS}
-              visible={!loading && items.length > 0}
-            >
-              <MedicineCabinetFilters
-                items={items}
-                value={filterKey}
-                onChange={setFilterKey}
-              />
-            </NimbusTourToolbarAnchor>
-            <div data-nimbus-tour={NIMBUS_TOUR_TARGET.MEDICINE_ADD}>
-              <MedicineFormDialog
-                onSuccess={onItemsChanged}
-                open={formOpen}
-                onOpenChange={setFormOpen}
-              />
-            </div>
-          </div>
-        </div>
+        <ModulePageHeader
+          title={t.medicineCabinet.title}
+          subtitle={t.medicineCabinet.subtitle}
+          moduleId={APP_MODULE.MEDICINE_CABINET}
+          breadcrumb={t.medicineCabinet.title}
+          tourTarget={NIMBUS_TOUR_TARGET.MEDICINE_HEADER}
+          actions={
+            <>
+              <NimbusTourToolbarAnchor
+                tourTarget={NIMBUS_TOUR_TARGET.MEDICINE_FILTERS}
+                visible={!loading && items.length > 0}
+              >
+                <MedicineCabinetFilters
+                  items={items}
+                  value={filterKey}
+                  onChange={setFilterKey}
+                />
+              </NimbusTourToolbarAnchor>
+              <div data-nimbus-tour={NIMBUS_TOUR_TARGET.MEDICINE_ADD}>
+                <MedicineFormDialog
+                  onSuccess={onItemsChanged}
+                  open={formOpen}
+                  onOpenChange={setFormOpen}
+                />
+              </div>
+            </>
+          }
+        />
 
         {familyId ? <FamilyRealtimeHint /> : null}
 
@@ -128,8 +127,20 @@ export function MedicineView() {
                   ? t.medicineCabinet.emptyFiltered
                   : t.medicineCabinet.empty
             }
-            actionLabel={items.length === 0 ? t.medicineCabinet.addBtn : undefined}
-            onAction={items.length === 0 ? () => setFormOpen(true) : undefined}
+            actionLabel={
+              hasActiveFilter
+                ? t.common.clearFilters
+                : items.length === 0
+                  ? t.medicineCabinet.addBtn
+                  : undefined
+            }
+            onAction={
+              hasActiveFilter
+                ? () => setFilterKey(MEDICINE_FILTER_ALL)
+                : items.length === 0
+                  ? () => setFormOpen(true)
+                  : undefined
+            }
           />
         ) : (
           <div className="grid gap-4 sm:grid-cols-2" data-nimbus-tour={NIMBUS_TOUR_TARGET.MEDICINE_LIST}>

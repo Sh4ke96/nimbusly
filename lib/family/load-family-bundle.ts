@@ -13,10 +13,10 @@ export async function loadFamilyBundle(
   members: FamilyMember[];
   invitations: FamilyInvitation[];
 }> {
-  const [{ data: family }, { data: members }] = await Promise.all([
+  const [{ data: familyRow }, { data: members }] = await Promise.all([
     supabase
       .from("families")
-      .select("id, name, created_by, invite_code")
+      .select("id, name, created_by")
       .eq("id", familyId)
       .maybeSingle(),
     supabase
@@ -24,6 +24,24 @@ export async function loadFamilyBundle(
       .select("id, first_name, last_name, avatar_color, family_role")
       .eq("family_id", familyId),
   ]);
+
+  let family: Family | null = null;
+
+  if (familyRow) {
+    let inviteCode = "";
+
+    if (familyRow.created_by === userId) {
+      const { data: code } = await supabase.rpc("get_family_invite_code");
+      inviteCode = (code as string | null) ?? "";
+    }
+
+    family = {
+      id: familyRow.id,
+      name: familyRow.name,
+      created_by: familyRow.created_by,
+      invite_code: inviteCode,
+    };
+  }
 
   let invitations: FamilyInvitation[] = [];
   if (isFamilyAccount && family?.created_by === userId) {
@@ -37,7 +55,7 @@ export async function loadFamilyBundle(
   }
 
   return {
-    family: family ?? null,
+    family,
     members: (members ?? []).map(mapFamilyMemberRow),
     invitations,
   };

@@ -5,8 +5,8 @@ import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
 import { Pencil, Trash2, PawPrint } from "lucide-react";
-import { ModulePageShell } from "@/components/app/module-page-shell";
-import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
+import { ModulePageHeader, ModulePageShell } from "@/components/app/module-page-shell";
+import { APP_MODULE } from "@/lib/constants/app-modules";
 import { PetCareEditDialog } from "@/components/pets/pet-care-edit-dialog";
 import { PetCareFormDialog } from "@/components/pets/pet-care-form-dialog";
 import { PetCareItemCard } from "@/components/pets/pet-care-item-card";
@@ -112,46 +112,45 @@ export function PetsView() {
   return (
     <>
       <ModulePageShell>
-        <AccountBreadcrumbs current={t.pets.title} />
-
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="space-y-1" data-nimbus-tour={NIMBUS_TOUR_TARGET.PETS_HEADER}>
-            <h1 className="font-heading font-bold text-2xl tracking-tight">
-              {t.pets.title}
-            </h1>
-            <p className="text-sm text-muted-foreground">{t.pets.subtitle}</p>
-          </div>
-          <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
-            <NimbusTourToolbarAnchor
-              tourTarget={NIMBUS_TOUR_TARGET.PETS_FILTERS}
-              visible={!loading && careItems.length > 0}
-            >
-              <PetsFilters
-                pets={pets}
-                items={careItems}
-                petFilter={petFilter}
-                typeFilter={typeFilter}
-                onPetChange={setPetFilter}
-                onTypeChange={setTypeFilter}
-              />
-            </NimbusTourToolbarAnchor>
-            <div data-nimbus-tour={NIMBUS_TOUR_TARGET.PETS_ADD}>
-              <PetFormDialog
-                onSuccess={onDataChanged}
-                open={petFormOpen}
-                onOpenChange={setPetFormOpen}
-              />
-            </div>
-            <div data-nimbus-tour={NIMBUS_TOUR_TARGET.PETS_CARE}>
-              <PetCareFormDialog
-                pets={pets}
-                onSuccess={onDataChanged}
-                open={careFormOpen}
-                onOpenChange={setCareFormOpen}
-              />
-            </div>
-          </div>
-        </div>
+        <ModulePageHeader
+          title={t.pets.title}
+          subtitle={t.pets.subtitle}
+          moduleId={APP_MODULE.PETS}
+          breadcrumb={t.pets.title}
+          tourTarget={NIMBUS_TOUR_TARGET.PETS_HEADER}
+          actions={
+            <>
+              <NimbusTourToolbarAnchor
+                tourTarget={NIMBUS_TOUR_TARGET.PETS_FILTERS}
+                visible={!loading && careItems.length > 0}
+              >
+                <PetsFilters
+                  pets={pets}
+                  items={careItems}
+                  petFilter={petFilter}
+                  typeFilter={typeFilter}
+                  onPetChange={setPetFilter}
+                  onTypeChange={setTypeFilter}
+                />
+              </NimbusTourToolbarAnchor>
+              <div data-nimbus-tour={NIMBUS_TOUR_TARGET.PETS_ADD}>
+                <PetFormDialog
+                  onSuccess={onDataChanged}
+                  open={petFormOpen}
+                  onOpenChange={setPetFormOpen}
+                />
+              </div>
+              <div data-nimbus-tour={NIMBUS_TOUR_TARGET.PETS_CARE}>
+                <PetCareFormDialog
+                  pets={pets}
+                  onSuccess={onDataChanged}
+                  open={careFormOpen}
+                  onOpenChange={setCareFormOpen}
+                />
+              </div>
+            </>
+          }
+        />
 
         {familyId ? <FamilyRealtimeHint /> : null}
 
@@ -227,8 +226,23 @@ export function PetsView() {
                   ? t.pets.emptyFiltered
                   : t.pets.empty
             }
-            actionLabel={careItems.length === 0 ? t.pets.addCareBtn : undefined}
-            onAction={careItems.length === 0 ? () => setCareFormOpen(true) : undefined}
+            actionLabel={
+              hasActiveFilter
+                ? t.common.clearFilters
+                : careItems.length === 0
+                  ? t.pets.addCareBtn
+                  : undefined
+            }
+            onAction={
+              hasActiveFilter
+                ? () => {
+                    setPetFilter(PET_FILTER_ALL);
+                    setTypeFilter(PET_FILTER_ALL);
+                  }
+                : careItems.length === 0
+                  ? () => setCareFormOpen(true)
+                  : undefined
+            }
           />
         ) : (
           <div className="grid gap-4 sm:grid-cols-2" data-nimbus-tour={NIMBUS_TOUR_TARGET.PETS_LIST}>

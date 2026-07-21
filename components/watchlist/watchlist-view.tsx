@@ -5,8 +5,8 @@ import { Clapperboard } from "lucide-react";
 import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
-import { ModulePageShell } from "@/components/app/module-page-shell";
-import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
+import { ModulePageHeader, ModulePageShell } from "@/components/app/module-page-shell";
+import { APP_MODULE } from "@/lib/constants/app-modules";
 import { WatchlistEditDialog } from "@/components/watchlist/watchlist-edit-dialog";
 import { WatchlistFilters } from "@/components/watchlist/watchlist-filters";
 import { WatchlistFormDialog } from "@/components/watchlist/watchlist-form-dialog";
@@ -86,39 +86,38 @@ export function WatchlistView() {
   return (
     <>
       <ModulePageShell>
-        <AccountBreadcrumbs current={t.watchlist.title} />
-
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="space-y-1" data-nimbus-tour={NIMBUS_TOUR_TARGET.WATCHLIST_HEADER}>
-            <h1 className="font-heading font-bold text-2xl tracking-tight">
-              {t.watchlist.title}
-            </h1>
-            <p className="text-sm text-muted-foreground">{t.watchlist.subtitle}</p>
-          </div>
-          <div className="flex items-center gap-2 self-start sm:self-auto">
-            <NimbusTourToolbarAnchor
-              tourTarget={NIMBUS_TOUR_TARGET.WATCHLIST_FILTERS}
-              visible={!loading && items.length > 0}
-            >
-              <WatchlistFilters
-                items={items}
-                statusFilter={statusFilter}
-                mediaFilter={mediaFilter}
-                platformFilter={platformFilter}
-                onStatusChange={setStatusFilter}
-                onMediaChange={setMediaFilter}
-                onPlatformChange={setPlatformFilter}
-              />
-            </NimbusTourToolbarAnchor>
-            <div data-nimbus-tour={NIMBUS_TOUR_TARGET.WATCHLIST_ADD}>
-              <WatchlistFormDialog
-                onSuccess={onItemsChanged}
-                open={formOpen}
-                onOpenChange={setFormOpen}
-              />
-            </div>
-          </div>
-        </div>
+        <ModulePageHeader
+          title={t.watchlist.title}
+          subtitle={t.watchlist.subtitle}
+          moduleId={APP_MODULE.WATCHLIST}
+          breadcrumb={t.watchlist.title}
+          tourTarget={NIMBUS_TOUR_TARGET.WATCHLIST_HEADER}
+          actions={
+            <>
+              <NimbusTourToolbarAnchor
+                tourTarget={NIMBUS_TOUR_TARGET.WATCHLIST_FILTERS}
+                visible={!loading && items.length > 0}
+              >
+                <WatchlistFilters
+                  items={items}
+                  statusFilter={statusFilter}
+                  mediaFilter={mediaFilter}
+                  platformFilter={platformFilter}
+                  onStatusChange={setStatusFilter}
+                  onMediaChange={setMediaFilter}
+                  onPlatformChange={setPlatformFilter}
+                />
+              </NimbusTourToolbarAnchor>
+              <div data-nimbus-tour={NIMBUS_TOUR_TARGET.WATCHLIST_ADD}>
+                <WatchlistFormDialog
+                  onSuccess={onItemsChanged}
+                  open={formOpen}
+                  onOpenChange={setFormOpen}
+                />
+              </div>
+            </>
+          }
+        />
 
         {familyId ? <FamilyRealtimeHint /> : null}
 
@@ -139,8 +138,24 @@ export function WatchlistView() {
                   ? t.watchlist.emptyFiltered
                   : t.watchlist.empty
             }
-            actionLabel={items.length === 0 ? t.watchlist.addBtn : undefined}
-            onAction={items.length === 0 ? () => setFormOpen(true) : undefined}
+            actionLabel={
+              hasActiveFilter
+                ? t.common.clearFilters
+                : items.length === 0
+                  ? t.watchlist.addBtn
+                  : undefined
+            }
+            onAction={
+              hasActiveFilter
+                ? () => {
+                    setStatusFilter(WATCHLIST_FILTER_ALL);
+                    setMediaFilter(WATCHLIST_FILTER_ALL);
+                    setPlatformFilter(WATCHLIST_FILTER_ALL);
+                  }
+                : items.length === 0
+                  ? () => setFormOpen(true)
+                  : undefined
+            }
           />
         ) : (
           <div className="grid gap-4 sm:grid-cols-2" data-nimbus-tour={NIMBUS_TOUR_TARGET.WATCHLIST_LIST}>

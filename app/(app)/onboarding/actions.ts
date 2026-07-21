@@ -12,7 +12,6 @@ import { isAvatarColor } from "@/lib/avatar-colors";
 import { INVITE_TOKEN_COOKIE, INVITE_CODE_COOKIE } from "@/lib/family/constants";
 import { isValidInviteCodeFormat, normalizeInviteCode } from "@/lib/family/invite";
 import { parseOnboardingFromForm } from "@/lib/profile/form";
-import { familyInsertPayload } from "@/lib/supabase/row-mappers";
 import { FAMILY_SETUP_INTENT } from "@/lib/constants/account";
 
 export type OnboardingState = { error: string } | null;
@@ -95,17 +94,16 @@ export async function completeOnboarding(
         return { error: t.onboarding.errorGeneric };
       }
     } else {
-      const { data: family, error: familyError } = await supabase
-        .from("families")
-        .insert(familyInsertPayload({ name: familyName, created_by: user.id }))
-        .select("id")
-        .single();
+      const { data: createdFamilyId, error: familyError } = await supabase.rpc(
+        "create_family_and_join",
+        { p_family_name: familyName }
+      );
 
-      if (familyError || !family) {
+      if (familyError || !createdFamilyId) {
         return { error: t.onboarding.errorGeneric };
       }
 
-      familyId = family.id;
+      familyId = createdFamilyId as string;
     }
 
     profileError = (
@@ -124,44 +122,28 @@ export async function completeOnboarding(
     const code = inviteCode || codeFromCookie;
 
     if (token) {
-      const { data: familyId, error: acceptError } = await supabase.rpc(
-        "accept_family_invitation",
-        { p_token: token }
-      );
-
-      if (acceptError || !familyId) {
-        return { error: t.onboarding.errorInviteTokenInvalid };
-      }
-
-      const { error: joinError } = await supabase.rpc("join_family_after_invitation", {
-        p_family_id: familyId,
-      });
-
-      if (joinError) {
-        return { error: t.onboarding.errorInviteTokenInvalid };
-      }
+      profileError = (
+        await supabase.rpc("onboard_with_invitation_token", {
+          p_token: token,
+          p_first_name: firstName,
+          p_last_name: lastName,
+          p_avatar_color: avatarColor,
+        })
+      ).error;
     } else {
       if (!code || !isValidInviteCodeFormat(code)) {
         return { error: t.onboarding.errorInviteCodeInvalid };
       }
 
-      const { data: familyId, error: joinError } = await supabase.rpc(
-        "join_family_with_invite_code",
-        { p_code: normalizeInviteCode(code) }
-      );
-
-      if (joinError || !familyId) {
-        return { error: t.onboarding.errorInviteCodeNotFound };
-      }
+      profileError = (
+        await supabase.rpc("onboard_with_invite_code", {
+          p_code: normalizeInviteCode(code),
+          p_first_name: firstName,
+          p_last_name: lastName,
+          p_avatar_color: avatarColor,
+        })
+      ).error;
     }
-
-    profileError = (
-      await supabase.rpc("finalize_onboarding_profile", {
-        p_first_name: firstName,
-        p_last_name: lastName,
-        p_avatar_color: avatarColor,
-      })
-    ).error;
   } else {
     profileError = (
       await supabase.rpc("complete_solo_onboarding", {

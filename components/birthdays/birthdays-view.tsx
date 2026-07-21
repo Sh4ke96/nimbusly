@@ -4,8 +4,8 @@ import { useActionState, useCallback, useState } from "react";
 import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
-import { ModulePageShell } from "@/components/app/module-page-shell";
-import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
+import { ModulePageHeader, ModulePageShell } from "@/components/app/module-page-shell";
+import { APP_MODULE } from "@/lib/constants/app-modules";
 import { BirthdayCalendar } from "@/components/birthdays/birthday-calendar";
 import { BirthdayEditDialog } from "@/components/birthdays/birthday-edit-dialog";
 import { BirthdayFormDialog } from "@/components/birthdays/birthday-form-dialog";
@@ -117,23 +117,24 @@ export function BirthdaysView() {
   return (
     <>
       <ModulePageShell width="full">
-        <AccountBreadcrumbs current={t.birthdays.title} />
-
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="space-y-1" data-nimbus-tour={NIMBUS_TOUR_TARGET.BIRTHDAYS_HEADER}>
-            <h1 className="font-heading font-bold text-2xl tracking-tight">{t.birthdays.title}</h1>
-            <p className="text-sm text-muted-foreground">{t.birthdays.subtitle}</p>
-          </div>
-          <div data-nimbus-tour={NIMBUS_TOUR_TARGET.BIRTHDAYS_ADD}>
-            <BirthdayFormDialog
-              onSuccess={onBirthdayChanged}
-              open={formOpen}
-              onOpenChange={handleFormOpenChange}
-              initialDate={formInitialDate}
-              onTriggerClick={() => setFormInitialDate(undefined)}
-            />
-          </div>
-        </div>
+        <ModulePageHeader
+          title={t.birthdays.title}
+          subtitle={t.birthdays.subtitle}
+          moduleId={APP_MODULE.BIRTHDAYS}
+          breadcrumb={t.birthdays.title}
+          tourTarget={NIMBUS_TOUR_TARGET.BIRTHDAYS_HEADER}
+          actions={
+            <div data-nimbus-tour={NIMBUS_TOUR_TARGET.BIRTHDAYS_ADD}>
+              <BirthdayFormDialog
+                onSuccess={onBirthdayChanged}
+                open={formOpen}
+                onOpenChange={handleFormOpenChange}
+                initialDate={formInitialDate}
+                onTriggerClick={() => setFormInitialDate(undefined)}
+              />
+            </div>
+          }
+        />
 
         {familyId ? <FamilyRealtimeHint /> : null}
 

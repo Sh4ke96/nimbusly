@@ -1497,6 +1497,7 @@ export type Dict = {
     title: string;
     subtitle: string;
     empty: string;
+    emptyFiltered: string;
     emptyUnread: string;
     emptyRead: string;
     loading: string;
