@@ -1,6 +1,8 @@
 "use server";
 
+import { getServerT } from "@/lib/i18n/server";
 import { ensureModulePreferencesForUser } from "@/lib/notifications/module-preferences/load-module-preferences";
+import { isValidPushSubscriptionInput } from "@/lib/push/validate-subscription";
 import { requireUser } from "@/lib/server-actions/require-user";
 
 export type PushActionState = {
@@ -17,8 +19,13 @@ export async function savePushSubscription(
   subscription: PushSubscriptionInput,
   userAgent?: string | null
 ): Promise<PushActionState> {
+  const t = await getServerT();
   const { supabase, user } = await requireUser();
-  if (!user) return { error: "unauthorized" };
+  if (!user) return { error: t.account.errorUnauthorized };
+
+  if (!isValidPushSubscriptionInput(subscription)) {
+    return { error: t.pwa.pushError };
+  }
 
   const now = new Date().toISOString();
   const { error } = await supabase.from("push_subscriptions").upsert(
@@ -33,14 +40,15 @@ export async function savePushSubscription(
     { onConflict: "user_id,endpoint" }
   );
 
-  if (error) return { error: error.message };
+  if (error) return { error: t.pwa.pushError };
   return { success: "saved" };
 }
 
 /** After browser subscribe: enable global + per-module push so alerts actually reach the device. */
 export async function enablePushAfterBrowserSubscription(): Promise<PushActionState> {
+  const t = await getServerT();
   const { supabase, user } = await requireUser();
-  if (!user) return { error: "unauthorized" };
+  if (!user) return { error: t.account.errorUnauthorized };
 
   const now = new Date().toISOString();
 
@@ -52,7 +60,7 @@ export async function enablePushAfterBrowserSubscription(): Promise<PushActionSt
     })
     .eq("id", user.id);
 
-  if (profileError) return { error: profileError.message };
+  if (profileError) return { error: t.pwa.pushError };
 
   await ensureModulePreferencesForUser(supabase, user.id);
 
@@ -61,8 +69,9 @@ export async function enablePushAfterBrowserSubscription(): Promise<PushActionSt
 
 /** After browser unsubscribe: turn off global push flag (module prefs stay as user set them). */
 export async function disablePushAfterBrowserUnsubscribe(): Promise<PushActionState> {
+  const t = await getServerT();
   const { supabase, user } = await requireUser();
-  if (!user) return { error: "unauthorized" };
+  if (!user) return { error: t.account.errorUnauthorized };
 
   const now = new Date().toISOString();
   const { error: profileError } = await supabase
@@ -73,13 +82,14 @@ export async function disablePushAfterBrowserUnsubscribe(): Promise<PushActionSt
     })
     .eq("id", user.id);
 
-  if (profileError) return { error: profileError.message };
+  if (profileError) return { error: t.pwa.pushError };
   return { success: "disabled" };
 }
 
 export async function removePushSubscription(endpoint?: string): Promise<PushActionState> {
+  const t = await getServerT();
   const { supabase, user } = await requireUser();
-  if (!user) return { error: "unauthorized" };
+  if (!user) return { error: t.account.errorUnauthorized };
 
   let query = supabase.from("push_subscriptions").delete().eq("user_id", user.id);
   if (endpoint) {
@@ -87,6 +97,6 @@ export async function removePushSubscription(endpoint?: string): Promise<PushAct
   }
 
   const { error } = await query;
-  if (error) return { error: error.message };
+  if (error) return { error: t.pwa.pushError };
   return { success: "removed" };
 }

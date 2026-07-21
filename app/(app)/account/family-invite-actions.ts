@@ -2,7 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { getServerLang, getServerT } from "@/lib/i18n/server";
-import { ACCOUNT_MODE, FAMILY_ROLE } from "@/lib/constants/account";
+import { ACCOUNT_MODE } from "@/lib/constants/account";
 import { INVITATION_STATUS } from "@/lib/constants/family-invitation";
 import { FAMILY_ACCESS_ERROR } from "@/lib/constants/server-error";
 import { getDisplayName } from "@/lib/profile";
@@ -205,28 +205,12 @@ export async function joinFamilyWithInviteCode(
     return { error: t.onboarding.errorInviteCodeInvalid };
   }
 
-  const { data, error } = await supabase.rpc("lookup_family_by_invite_code", {
+  const { data: familyId, error: joinError } = await supabase.rpc("join_family_with_invite_code", {
     p_code: normalizeInviteCode(inviteCode),
   });
 
-  if (error || !data?.length) {
+  if (joinError || !familyId) {
     return { error: t.onboarding.errorInviteCodeNotFound };
-  }
-
-  const familyId = data[0].id as string;
-
-  const { error: updateError } = await supabase
-    .from("profiles")
-    .update({
-      account_mode: ACCOUNT_MODE.FAMILY,
-      family_id: familyId,
-      family_role: FAMILY_ROLE.MEMBER,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", user.id);
-
-  if (updateError) {
-    return { error: t.account.errorGeneric };
   }
 
   return { success: t.account.joinFamilySuccess };

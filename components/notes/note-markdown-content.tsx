@@ -3,6 +3,7 @@
 import ReactMarkdown from "react-markdown";
 import { NOTE_CONTENT_FORMAT } from "@/lib/constants/notes";
 import type { NoteContentFormat } from "@/lib/constants/notes";
+import { sanitizeMarkdownLinkUrl } from "@/lib/notes/sanitize-markdown-link";
 import { cn } from "@/lib/utils";
 
 interface NoteMarkdownContentProps {
@@ -34,7 +35,23 @@ export function NoteMarkdownContent({
         className
       )}
     >
-      <ReactMarkdown>{content}</ReactMarkdown>
+      <ReactMarkdown
+        urlTransform={sanitizeMarkdownLinkUrl}
+        components={{
+          a: ({ href, children }) => (
+            <a
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary underline underline-offset-2"
+            >
+              {children}
+            </a>
+          ),
+        }}
+      >
+        {content}
+      </ReactMarkdown>
     </div>
   );
 }

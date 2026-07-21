@@ -33,16 +33,11 @@ async function fetchOnboardingCompleteFromDb(
 }
 
 async function resolveOnboardingComplete(
-  request: NextRequest,
+  _request: NextRequest,
   supabase: ReturnType<typeof createServerClient>,
   userId: string
 ): Promise<boolean> {
-  const cached = readOnboardingCompleteCookie(request)
-  if (cached !== null) {
-    return cached
-  }
-
-  return fetchOnboardingCompleteFromDb(supabase, userId)
+  return fetchOnboardingCompleteFromDb(supabase, userId);
 }
 
 function setOnboardingCookie(response: NextResponse, complete: boolean) {
@@ -93,7 +88,8 @@ export async function updateSession(request: NextRequest) {
   const isPublic =
     PUBLIC_STATIC_PATHS.has(pathname) ||
     isAuthPage ||
-    pathname.startsWith('/api/auth/')
+    pathname.startsWith('/api/auth/') ||
+    pathname.startsWith('/api/cron/')
 
   if (user) {
     const onboardingComplete = await resolveOnboardingComplete(request, supabase, user.id)

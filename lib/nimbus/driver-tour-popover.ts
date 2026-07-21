@@ -24,7 +24,12 @@ function createSummaryLists(t: Dict, copyKey: string): HTMLElement | null {
   for (const item of summary.learned) {
     const li = document.createElement("li");
     li.className = "flex gap-2 leading-snug";
-    li.innerHTML = `<span class="text-primary shrink-0">·</span><span>${item}</span>`;
+    const bullet = document.createElement("span");
+    bullet.className = "text-primary shrink-0";
+    bullet.textContent = "·";
+    const text = document.createElement("span");
+    text.textContent = item;
+    li.append(bullet, text);
     learnedList.appendChild(li);
   }
   learnedPanel.append(learnedTitle, learnedList);
@@ -40,7 +45,12 @@ function createSummaryLists(t: Dict, copyKey: string): HTMLElement | null {
   for (const item of summary.next) {
     const li = document.createElement("li");
     li.className = "flex gap-2 leading-snug";
-    li.innerHTML = `<span class="text-primary shrink-0">·</span><span>${item}</span>`;
+    const bullet = document.createElement("span");
+    bullet.className = "text-primary shrink-0";
+    bullet.textContent = "·";
+    const text = document.createElement("span");
+    text.textContent = item;
+    li.append(bullet, text);
     nextList.appendChild(li);
   }
   nextPanel.append(nextTitle, nextList);

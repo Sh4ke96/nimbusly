@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { isValidCronAuthorization } from "@/lib/auth/verify-cron-secret";
 import { dict } from "@/lib/i18n";
 import { LANG, type Lang } from "@/lib/constants/lang";
 import {
@@ -17,7 +18,7 @@ export async function GET(request: Request) {
   const secret = request.headers.get("authorization");
   const expected = process.env.CRON_SECRET;
 
-  if (!expected || secret !== `Bearer ${expected}`) {
+  if (!isValidCronAuthorization(secret, expected)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

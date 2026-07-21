@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { resolveSafeRedirectPath } from "@/lib/auth/safe-redirect-path";
 import { getPostAuthRedirectPath } from "@/lib/profile/server";
 
 export async function GET(request: Request) {
@@ -16,11 +17,8 @@ export async function GET(request: Request) {
         data: { user },
       } = await supabase.auth.getUser();
 
-      let destination = nextParam ?? "/onboarding";
-
-      if (user && !nextParam) {
-        destination = await getPostAuthRedirectPath(user.id);
-      }
+      const fallback = user ? await getPostAuthRedirectPath(user.id) : "/onboarding";
+      const destination = resolveSafeRedirectPath(nextParam, fallback);
 
       return NextResponse.redirect(`${origin}${destination}`);
     }

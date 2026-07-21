@@ -25,12 +25,10 @@ export type OnboardingState = { error: string } | null;
 
 async function resolveFamilyFromInviteToken(
   supabase: Awaited<ReturnType<typeof createClient>>,
-  userId: string,
   token: string
 ): Promise<string | null> {
   const { data, error } = await supabase.rpc("accept_family_invitation", {
     p_token: token,
-    p_user_id: userId,
   });
 
   if (error || !data) return null;
@@ -145,7 +143,7 @@ export async function completeOnboarding(
     const code = inviteCode || codeFromCookie;
 
     if (token) {
-      const joinedFamilyId = await resolveFamilyFromInviteToken(supabase, user.id, token);
+      const joinedFamilyId = await resolveFamilyFromInviteToken(supabase, token);
       if (!joinedFamilyId) {
         return { error: t.onboarding.errorInviteTokenInvalid };
       }
@@ -170,30 +168,16 @@ export async function completeOnboarding(
     familyRole = null;
   }
 
-  const profilePayload = {
-    first_name: firstName,
-    last_name: lastName,
-    avatar_color: avatarColor,
-    family_id: familyId,
-    family_role: familyRole,
-    account_mode: accountMode,
-    onboarding_completed: true,
-    updated_at: new Date().toISOString(),
-  };
-
-  const profileError = existingProfile
-    ? (
-        await supabase
-          .from("profiles")
-          .update(profilePayload)
-          .eq("id", user.id)
-      ).error
-    : (
-        await supabase.from("profiles").insert({
-          id: user.id,
-          ...profilePayload,
-        })
-      ).error;
+  const profileError = (
+    await supabase.rpc("complete_onboarding_profile", {
+      p_first_name: firstName,
+      p_last_name: lastName,
+      p_avatar_color: avatarColor,
+      p_family_id: familyId,
+      p_family_role: familyRole,
+      p_account_mode: accountMode,
+    })
+  ).error;
 
   if (profileError) {
     return { error: t.onboarding.errorGeneric };

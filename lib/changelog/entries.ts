@@ -11,6 +11,35 @@ export { CHANGELOG_ENTRY_TYPE, type ChangelogEntry };
  */
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "0.12.0",
+    date: "2026-07-21",
+    type: CHANGELOG_ENTRY_TYPE.MAJOR,
+    title: {
+      pl: "Utwardzenie bezpieczeństwa",
+      en: "Security hardening",
+    },
+    changes: {
+      pl: [
+        "Profile: blokada bezpośredniej zmiany roli, rodziny i onboardingu z klienta",
+        "Powiadomienia rodzinne tylko przez serwer (service role)",
+        "OAuth: walidacja parametru next (ochrona przed open redirect)",
+        "Zaproszenia: auth.uid() w accept, rate limit lookup kodu, join przez RPC",
+        "Middleware: cron bez redirectu logowania, onboarding zawsze z bazy",
+        "Notatki: sanityzacja linków markdown, storage dla załączników rodziny",
+        "Push: walidacja subskrypcji, cron z timing-safe compare",
+      ],
+      en: [
+        "Profiles: block direct client updates to role, family, and onboarding flags",
+        "Family notifications only via server (service role)",
+        "OAuth: validate next param (open redirect protection)",
+        "Invites: auth.uid() in accept, lookup rate limit, join via RPC",
+        "Middleware: cron routes skip login redirect, onboarding always from DB",
+        "Notes: markdown link sanitization, family attachment storage access",
+        "Push: subscription validation, timing-safe cron secret compare",
+      ],
+    },
+  },
+  {
     version: "0.11.9",
     date: "2026-07-21",
     type: CHANGELOG_ENTRY_TYPE.FIX,

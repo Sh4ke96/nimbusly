@@ -1175,8 +1175,19 @@ export type Database = {
     }
     Functions: {
       accept_family_invitation: {
-        Args: { p_token: string; p_user_id: string }
+        Args: { p_token: string }
         Returns: string
+      }
+      complete_onboarding_profile: {
+        Args: {
+          p_account_mode: string
+          p_avatar_color: string
+          p_family_id: string | null
+          p_family_role: string | null
+          p_first_name: string
+          p_last_name: string
+        }
+        Returns: undefined
       }
       create_family_notifications: {
         Args: {
@@ -1226,6 +1237,10 @@ export type Database = {
       update_family_member_role: {
         Args: { p_role: string; p_target_user_id: string }
         Returns: undefined
+      }
+      join_family_with_invite_code: {
+        Args: { p_code: string }
+        Returns: string
       }
       leave_family: {
         Args: Record<PropertyKey, never>

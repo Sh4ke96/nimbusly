@@ -7,7 +7,8 @@ import { loadRecipientModulePreferences } from "@/lib/notifications/module-prefe
 import { partitionRecipientsByChannel } from "@/lib/notifications/module-preferences/filter-recipients-by-channel";
 import { getNotificationModuleId } from "@/lib/notifications/module-route";
 import type { GroupedPushTitleLabel } from "@/lib/push/resolve-grouped-push";
-import { createClient } from "@/lib/supabase/server";
+import type { createClient } from "@/lib/supabase/server";
+import { createServiceRoleClient } from "@/lib/supabase/admin";
 import type { Json } from "@/lib/supabase/database.types";
 
 type NotifyModuleSubscribersParams = {
@@ -24,7 +25,7 @@ type NotifyModuleSubscribersParams = {
 };
 
 export async function notifyModuleSubscribers(
-  supabase: Awaited<ReturnType<typeof createClient>>,
+  _supabase: Awaited<ReturnType<typeof createClient>>,
   params: NotifyModuleSubscribersParams
 ): Promise<void> {
   const moduleId = params.moduleId ?? getNotificationModuleId(params.type);
@@ -40,7 +41,8 @@ export async function notifyModuleSubscribers(
   const { inAppIds, pushIds } = partitionRecipientsByChannel(recipientIds, preferences);
 
   if (inAppIds.length > 0) {
-    const { error } = await supabase.rpc("create_family_notifications", {
+    const admin = createServiceRoleClient();
+    const { error } = await admin.rpc("create_family_notifications", {
       p_recipient_ids: inAppIds,
       p_type: params.type,
       p_title: params.title,
