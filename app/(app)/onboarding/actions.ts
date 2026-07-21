@@ -13,39 +13,9 @@ import { INVITE_TOKEN_COOKIE, INVITE_CODE_COOKIE } from "@/lib/family/constants"
 import { isValidInviteCodeFormat, normalizeInviteCode } from "@/lib/family/invite";
 import { parseOnboardingFromForm } from "@/lib/profile/form";
 import { familyInsertPayload } from "@/lib/supabase/row-mappers";
-import {
-  ACCOUNT_MODE,
-  FAMILY_ROLE,
-  FAMILY_SETUP_INTENT,
-  type AccountMode,
-  type FamilyRole,
-} from "@/lib/constants/account";
+import { FAMILY_SETUP_INTENT } from "@/lib/constants/account";
 
 export type OnboardingState = { error: string } | null;
-
-async function resolveFamilyFromInviteToken(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  token: string
-): Promise<string | null> {
-  const { data, error } = await supabase.rpc("accept_family_invitation", {
-    p_token: token,
-  });
-
-  if (error || !data) return null;
-  return data as string;
-}
-
-async function resolveFamilyFromInviteCode(
-  supabase: Awaited<ReturnType<typeof createClient>>,
-  code: string
-): Promise<string | null> {
-  const { data, error } = await supabase.rpc("lookup_family_by_invite_code", {
-    p_code: normalizeInviteCode(code),
-  });
-
-  if (error || !data?.length) return null;
-  return data[0].id as string;
-}
 
 export async function completeOnboarding(
   _prev: OnboardingState,
@@ -97,18 +67,22 @@ export async function completeOnboarding(
     return { error: t.onboarding.errorGeneric };
   }
 
-  let accountMode: AccountMode =
-    familyIntent === FAMILY_SETUP_INTENT.SOLO ? ACCOUNT_MODE.SOLO : ACCOUNT_MODE.FAMILY;
-  let familyId: string | null = existingProfile?.family_id ?? null;
-  let familyRole: FamilyRole | null =
-    familyIntent === FAMILY_SETUP_INTENT.SOLO
-      ? null
-      : ((existingProfile?.family_role ?? null) as FamilyRole | null);
+  let profileError: { message: string } | null = null;
 
-  if (familyIntent === FAMILY_SETUP_INTENT.CREATE) {
+  if (familyIntent === FAMILY_SETUP_INTENT.SOLO) {
+    profileError = (
+      await supabase.rpc("complete_solo_onboarding", {
+        p_first_name: firstName,
+        p_last_name: lastName,
+        p_avatar_color: avatarColor,
+      })
+    ).error;
+  } else if (familyIntent === FAMILY_SETUP_INTENT.CREATE) {
     if (!familyName) {
       return { error: t.onboarding.errorFamilyName };
     }
+
+    let familyId = existingProfile?.family_id ?? null;
 
     if (familyId) {
       const { error: familyError } = await supabase
@@ -134,7 +108,14 @@ export async function completeOnboarding(
       familyId = family.id;
     }
 
-    familyRole = FAMILY_ROLE.ADMIN;
+    profileError = (
+      await supabase.rpc("complete_founder_onboarding", {
+        p_first_name: firstName,
+        p_last_name: lastName,
+        p_avatar_color: avatarColor,
+        p_family_id: familyId,
+      })
+    ).error;
   } else if (familyIntent === FAMILY_SETUP_INTENT.JOIN) {
     const cookieStore = await cookies();
     const tokenFromCookie = cookieStore.get(INVITE_TOKEN_COOKIE)?.value ?? "";
@@ -143,41 +124,53 @@ export async function completeOnboarding(
     const code = inviteCode || codeFromCookie;
 
     if (token) {
-      const joinedFamilyId = await resolveFamilyFromInviteToken(supabase, token);
-      if (!joinedFamilyId) {
+      const { data: familyId, error: acceptError } = await supabase.rpc(
+        "accept_family_invitation",
+        { p_token: token }
+      );
+
+      if (acceptError || !familyId) {
         return { error: t.onboarding.errorInviteTokenInvalid };
       }
-      familyId = joinedFamilyId;
+
+      const { error: joinError } = await supabase.rpc("join_family_after_invitation", {
+        p_family_id: familyId,
+      });
+
+      if (joinError) {
+        return { error: t.onboarding.errorInviteTokenInvalid };
+      }
     } else {
       if (!code || !isValidInviteCodeFormat(code)) {
         return { error: t.onboarding.errorInviteCodeInvalid };
       }
 
-      const joinedFamilyId = await resolveFamilyFromInviteCode(supabase, code);
-      if (!joinedFamilyId) {
+      const { data: familyId, error: joinError } = await supabase.rpc(
+        "join_family_with_invite_code",
+        { p_code: normalizeInviteCode(code) }
+      );
+
+      if (joinError || !familyId) {
         return { error: t.onboarding.errorInviteCodeNotFound };
       }
-      familyId = joinedFamilyId;
     }
 
-    accountMode = ACCOUNT_MODE.FAMILY;
-    familyRole = FAMILY_ROLE.MEMBER;
+    profileError = (
+      await supabase.rpc("finalize_onboarding_profile", {
+        p_first_name: firstName,
+        p_last_name: lastName,
+        p_avatar_color: avatarColor,
+      })
+    ).error;
   } else {
-    familyId = null;
-    accountMode = ACCOUNT_MODE.SOLO;
-    familyRole = null;
+    profileError = (
+      await supabase.rpc("complete_solo_onboarding", {
+        p_first_name: firstName,
+        p_last_name: lastName,
+        p_avatar_color: avatarColor,
+      })
+    ).error;
   }
-
-  const profileError = (
-    await supabase.rpc("complete_onboarding_profile", {
-      p_first_name: firstName,
-      p_last_name: lastName,
-      p_avatar_color: avatarColor,
-      p_family_id: familyId,
-      p_family_role: familyRole,
-      p_account_mode: accountMode,
-    })
-  ).error;
 
   if (profileError) {
     return { error: t.onboarding.errorGeneric };

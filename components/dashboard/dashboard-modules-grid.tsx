@@ -3,6 +3,8 @@
 import { ArrowRight } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { AppModuleId } from "@/lib/constants/app-modules";
+import { getAppModuleOverviewMeta } from "@/lib/constants/app-modules";
+import { overviewAccentStyles } from "@/components/dashboard/sortable-overview-card";
 import { cn } from "@/lib/utils";
 
 export interface DashboardModuleItem {
@@ -20,19 +22,25 @@ interface DashboardModulesGridProps {
 export function DashboardModulesGrid({ modules }: DashboardModulesGridProps) {
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {modules.map((module) => (
+      {modules.map((module) => {
+        const accent = getAppModuleOverviewMeta(module.key).overviewAccent;
+        const accentStyles = overviewAccentStyles[accent];
+
+        return (
         <a
           key={module.key}
           href={module.href}
           className={cn(
             "group flex items-center gap-4 rounded-none border border-border/80 bg-card/90 p-5 shadow-sm backdrop-blur-sm",
-            "transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+            "transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md",
+            accentStyles.ring
           )}
         >
           <span
             className={cn(
               "inline-flex size-11 shrink-0 items-center justify-center rounded-none transition-transform duration-200",
-              "bg-primary/10 text-primary group-hover:scale-110 group-hover:-rotate-6"
+              "group-hover:scale-110 group-hover:-rotate-6",
+              accentStyles.icon
             )}
           >
             <module.Icon className="size-5" />
@@ -43,7 +51,8 @@ export function DashboardModulesGrid({ modules }: DashboardModulesGridProps) {
           </div>
           <ArrowRight className="size-4 shrink-0 text-muted-foreground/40 transition-all group-hover:translate-x-0.5 group-hover:text-primary" />
         </a>
-      ))}
+        );
+      })}
     </div>
   );
 }

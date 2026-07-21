@@ -4,8 +4,7 @@ import { useActionState, useCallback, useState } from "react";
 import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
-import { AppHeader } from "@/components/app/app-header";
-import { AppPage } from "@/components/app/app-page";
+import { ModulePageShell } from "@/components/app/module-page-shell";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { BirthdayCalendar } from "@/components/birthdays/birthday-calendar";
 import { BirthdayEditDialog } from "@/components/birthdays/birthday-edit-dialog";
@@ -116,10 +115,8 @@ export function BirthdaysView() {
   };
 
   return (
-    <div className="flex flex-col md:min-h-screen">
-      <AppHeader />
-
-      <AppPage width="full">
+    <>
+      <ModulePageShell width="full">
         <AccountBreadcrumbs current={t.birthdays.title} />
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -193,7 +190,7 @@ export function BirthdaysView() {
           </Card>
         </div>
         )}
-      </AppPage>
+      </ModulePageShell>
 
       <BirthdayEditDialog
         entry={editingEntry}
@@ -201,6 +198,6 @@ export function BirthdaysView() {
         onOpenChange={setEditOpen}
         onSuccess={onBirthdayChanged}
       />
-    </div>
+    </>
   );
 }

@@ -8,8 +8,7 @@ import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
 import { useResolvedItemSelection } from "@/lib/hooks/use-resolved-item-selection";
 import { ModuleSectionHeading } from "@/components/ui/module-section-heading";
 import { Eye, EyeOff, BarChart3, Download, Printer, Scale, TrendingDown, TrendingUp, Wallet } from "lucide-react";
-import { AppHeader } from "@/components/app/app-header";
-import { AppPage } from "@/components/app/app-page";
+import { ModulePageShell } from "@/components/app/module-page-shell";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { BudgetCard } from "@/components/budget/budget-card";
 import { BudgetFilters } from "@/components/budget/budget-filters";
@@ -322,10 +321,8 @@ export function BudgetView() {
   }
 
   return (
-    <div className="flex flex-col md:min-h-screen">
-      <AppHeader />
-
-      <AppPage width="wide">
+    <>
+      <ModulePageShell width="wide">
         <AccountBreadcrumbs current={t.budget.title} />
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between no-print">
@@ -604,7 +601,7 @@ export function BudgetView() {
             </section>
           </div>
         )}
-      </AppPage>
+      </ModulePageShell>
 
       <BudgetEditDialog
         budget={editingBudget}
@@ -613,6 +610,6 @@ export function BudgetView() {
         onOpenChange={setEditOpen}
         onSuccess={onDataChanged}
       />
-    </div>
+    </>
   );
 }

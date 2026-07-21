@@ -5,8 +5,7 @@ import { Clapperboard } from "lucide-react";
 import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
-import { AppHeader } from "@/components/app/app-header";
-import { AppPage } from "@/components/app/app-page";
+import { ModulePageShell } from "@/components/app/module-page-shell";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { WatchlistEditDialog } from "@/components/watchlist/watchlist-edit-dialog";
 import { WatchlistFilters } from "@/components/watchlist/watchlist-filters";
@@ -85,10 +84,8 @@ export function WatchlistView() {
     platformFilter !== WATCHLIST_FILTER_ALL;
 
   return (
-    <div className="flex flex-col md:min-h-screen">
-      <AppHeader />
-
-      <AppPage width="default">
+    <>
+      <ModulePageShell>
         <AccountBreadcrumbs current={t.watchlist.title} />
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -160,7 +157,7 @@ export function WatchlistView() {
             ))}
           </div>
         )}
-      </AppPage>
+      </ModulePageShell>
 
       <WatchlistEditDialog
         item={editingItem}
@@ -168,6 +165,6 @@ export function WatchlistView() {
         onOpenChange={setEditOpen}
         onSuccess={onItemsChanged}
       />
-    </div>
+    </>
   );
 }

@@ -167,6 +167,12 @@ export async function ensureFamilyInviteCode(): Promise<string | null> {
 
   if (!profile?.family_id || profile.account_mode !== ACCOUNT_MODE.FAMILY) return null;
 
+  const { data: existing, error: readError } = await supabase.rpc("get_family_invite_code");
+
+  if (!readError && existing) {
+    return existing as string;
+  }
+
   const { data, error } = await supabase.rpc("ensure_family_invite_code", {
     p_family_id: profile.family_id,
   });

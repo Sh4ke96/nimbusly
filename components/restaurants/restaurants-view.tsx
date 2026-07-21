@@ -4,8 +4,8 @@ import { useMemo, useState, useCallback } from "react";
 import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
-import { AppHeader } from "@/components/app/app-header";
-import { AppPage } from "@/components/app/app-page";
+import { UtensilsCrossed } from "lucide-react";
+import { ModulePageShell } from "@/components/app/module-page-shell";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { RestaurantEditDialog } from "@/components/restaurants/restaurant-edit-dialog";
 import { RestaurantFormDialog } from "@/components/restaurants/restaurant-form-dialog";
@@ -13,6 +13,7 @@ import { RestaurantsFilters } from "@/components/restaurants/restaurants-filters
 import { RestaurantPlaceCard } from "@/components/restaurants/restaurant-place-card";
 import { NimbusTourToolbarAnchor } from "@/components/nimbus/nimbus-tour-toolbar-anchor";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
+import { ModuleEmptyState } from "@/components/ui/module-empty-state";
 import { FamilyRealtimeHint } from "@/components/ui/family-realtime-hint";
 import { Skeleton } from "@/components/ui/skeleton";
 import { RESTAURANT_FILTER_ALL } from "@/lib/constants/restaurants";
@@ -79,10 +80,8 @@ export function RestaurantsView() {
     visitFilter !== RESTAURANT_FILTER_ALL || venueFilter !== RESTAURANT_FILTER_ALL;
 
   return (
-    <div className="flex flex-col md:min-h-screen">
-      <AppHeader />
-
-      <AppPage width="default">
+    <>
+      <ModulePageShell>
         <AccountBreadcrumbs current={t.restaurants.title} />
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -121,13 +120,25 @@ export function RestaurantsView() {
             <Skeleton className="h-64 w-full rounded-none sm:col-span-2" />
           </div>
         ) : filteredPlaces.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-16 border border-dashed border-border">
-            {places.length === 0
-              ? t.restaurants.empty
-              : hasActiveFilter
-                ? t.restaurants.emptyFiltered
-                : t.restaurants.empty}
-          </p>
+          <ModuleEmptyState
+            icon={UtensilsCrossed}
+            message={
+              places.length === 0
+                ? t.restaurants.empty
+                : hasActiveFilter
+                  ? t.restaurants.emptyFiltered
+                  : t.restaurants.empty
+            }
+            actionLabel={hasActiveFilter ? t.common.clearFilters : undefined}
+            onAction={
+              hasActiveFilter
+                ? () => {
+                    setVisitFilter(RESTAURANT_FILTER_ALL);
+                    setVenueFilter(RESTAURANT_FILTER_ALL);
+                  }
+                : undefined
+            }
+          />
         ) : (
           <div className="grid gap-4 sm:grid-cols-2" data-nimbus-tour={NIMBUS_TOUR_TARGET.RESTAURANTS_LIST}>
             {filteredPlaces.map((place) => (
@@ -143,7 +154,7 @@ export function RestaurantsView() {
             ))}
           </div>
         )}
-      </AppPage>
+      </ModulePageShell>
 
       <RestaurantEditDialog
         place={editingPlace}
@@ -151,6 +162,6 @@ export function RestaurantsView() {
         onOpenChange={setEditOpen}
         onSuccess={onPlacesChanged}
       />
-    </div>
+    </>
   );
 }

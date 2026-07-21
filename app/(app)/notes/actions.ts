@@ -24,6 +24,7 @@ import type { AccountActionState } from "@/app/(app)/account/actions";
 import { requireUser, getProfileFamilyContext } from "@/lib/server-actions/require-user";
 import { notifyFamilyMembers } from "@/lib/server-actions/notify-family";
 import { uploadNoteAttachmentFile } from "@/lib/notes/server/upload-note-attachment-file";
+import { sanitizeNoteMarkdownContent } from "@/lib/notes/sanitize-markdown-content";
 
 async function resolveVisibleMemberIds(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -181,13 +182,15 @@ export async function createNote(
     visibleToMemberIds = resolved;
   }
 
+  const sanitizedContent = sanitizeNoteMarkdownContent(content, contentFormat);
+
   const { data: note, error } = await supabase
     .from("notes")
     .insert({
       family_id: familyId,
       category_id: categoryId,
       title: title.trim(),
-      content,
+      content: sanitizedContent,
       content_format: contentFormat,
       is_pinned: isPinned,
       visible_to_member_ids: visibleToMemberIds,
@@ -224,7 +227,7 @@ export async function createNote(
 
   if (familyId) {
     const actorName = profile ? getDisplayName(profile) : user.email ?? "Nimbusly";
-    const bodyDetail = formatNoteNotificationDetail(title.trim(), content, t.notes);
+    const bodyDetail = formatNoteNotificationDetail(title.trim(), sanitizedContent, t.notes);
 
     try {
       await notifyFamilyMembers(supabase, {
@@ -310,11 +313,13 @@ export async function updateNote(
         .is("family_id", null)
         .eq("created_by", user.id);
 
+  const sanitizedContent = sanitizeNoteMarkdownContent(content, contentFormat);
+
   const { error } = await supabase
     .from("notes")
     .update({
       title: title.trim(),
-      content,
+      content: sanitizedContent,
       category_id: categoryId,
       content_format: contentFormat,
       is_pinned: isPinned,
@@ -330,7 +335,7 @@ export async function updateNote(
     existing,
     {
       title: title.trim(),
-      content,
+      content: sanitizedContent,
       category_id: categoryId,
       visible_to_member_ids: visibleToMemberIds,
     },

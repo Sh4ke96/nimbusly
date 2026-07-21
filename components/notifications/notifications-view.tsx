@@ -4,8 +4,7 @@ import Link from "next/link";
 import { Fragment, useActionState, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Bell, CheckCheck, Inbox, type LucideIcon } from "lucide-react";
-import { AppHeader } from "@/components/app/app-header";
-import { AppPage } from "@/components/app/app-page";
+import { ModulePageShell } from "@/components/app/module-page-shell";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { NotificationListItem } from "@/components/notifications/notification-list-item";
 import { NotificationsPagination } from "@/components/notifications/notifications-pagination";
@@ -13,6 +12,7 @@ import { SettingsTabHeader } from "@/components/profile/settings/settings-tab-he
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ModuleFetchError } from "@/components/ui/module-fetch-error";
+import { ModuleEmptyState } from "@/components/ui/module-empty-state";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -258,9 +258,10 @@ export function NotificationsView() {
             <Skeleton className="h-16 w-full rounded-none" />
           </div>
         ) : visiblePageItems.length === 0 ? (
-          <p className="py-8 text-center text-sm text-muted-foreground max-md:px-4 md:px-0">
-            {emptyMessageForFilter(filter, t)}
-          </p>
+          <ModuleEmptyState
+            icon={Inbox}
+            message={emptyMessageForFilter(filter, t)}
+          />
         ) : (
           <>
             <ul className="w-full divide-y divide-border rounded-none border border-border max-md:border-x-0">
@@ -292,10 +293,7 @@ export function NotificationsView() {
   }
 
   return (
-    <div className="flex flex-col md:min-h-screen">
-      <AppHeader />
-
-      <AppPage width="full" className="w-full max-md:max-w-none max-md:px-0">
+    <ModulePageShell width="full">
         <div className="space-y-5 px-4 sm:space-y-6 sm:px-0">
           <AccountBreadcrumbs current={t.notifications.title} />
 
@@ -366,7 +364,6 @@ export function NotificationsView() {
             )}
           </CardContent>
         </Card>
-      </AppPage>
-    </div>
+    </ModulePageShell>
   );
 }

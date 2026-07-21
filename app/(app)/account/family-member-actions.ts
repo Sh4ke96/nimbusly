@@ -4,7 +4,6 @@ import { createClient } from "@/lib/supabase/server";
 import { getServerT } from "@/lib/i18n/server";
 import { ACCOUNT_MODE, FAMILY_ROLE, type FamilyRole } from "@/lib/constants/account";
 import { FAMILY_ACCESS_ERROR } from "@/lib/constants/server-error";
-import { familyInsertPayload } from "@/lib/supabase/row-mappers";
 import { isFamilyAdmin } from "@/lib/profile/family-roles";
 import { parseFamilyMemberIdFromForm, parseFamilyMemberRoleFromForm } from "@/lib/family/form";
 import { mapFamilyRpcError } from "@/lib/family/rpc-errors";
@@ -75,25 +74,9 @@ export async function createFamily(
     return { error: t.account.errorGeneric };
   }
 
-  const { data: family, error: familyError } = await supabase
-    .from("families")
-    .insert(familyInsertPayload({ name: familyName, created_by: user.id }))
-    .select("id")
-    .single();
-
-  if (familyError || !family) {
-    return { error: t.account.errorGeneric };
-  }
-
-  const { error } = await supabase
-    .from("profiles")
-    .update({
-      account_mode: ACCOUNT_MODE.FAMILY,
-      family_id: family.id,
-      family_role: FAMILY_ROLE.ADMIN,
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", user.id);
+  const { error } = await supabase.rpc("create_family_and_join", {
+    p_family_name: familyName,
+  });
 
   if (error) return { error: t.account.errorGeneric };
 

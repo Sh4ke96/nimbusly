@@ -783,6 +783,7 @@ export const pl: Dict = {
     giftsEmpty: "Brak pomysłów na prezenty",
     birthdaysEmpty: "Brak nadchodzących urodzin",
     scheduleThisMonth: "{count} wpisów w tym miesiącu",
+    familyCalendarThisMonth: "{count} wydarzeń w tym miesiącu",
     scheduleEmpty: "Brak wpisów w tym miesiącu",
     familyMembers: "{count} członków rodziny",
     familySolo: "Konto osobiste",

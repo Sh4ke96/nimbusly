@@ -25,18 +25,17 @@ describe("Mobile navigation", () => {
     cy.login(testUser.email, testUser.password);
   });
 
-  it("pokazuje dolną nawigację i przełącza widok modułów przez URL", () => {
+  it("pokazuje dolną nawigację i otwiera sheet modułów", () => {
     cy.visit("/dashboard");
     cy.get(`nav[aria-label="${t.mobileNav.ariaLabel}"]`).should("be.visible");
-    cy.contains("a", t.mobileNav.modules).click();
-    cy.url().should("include", "view=modules");
-    cy.contains("a", t.mobileNav.modules).should("have.attr", "aria-current", "page");
+    cy.contains("button", t.mobileNav.modules).click();
+    cy.contains('[data-slot="sheet-title"]', t.mobileNav.modules).should("be.visible");
   });
 
   it("otwiera moduły przez deep link ?view=modules", () => {
     cy.visit("/dashboard?view=modules");
-    cy.contains("a", t.mobileNav.modules).should("have.attr", "aria-current", "page");
-    cy.contains("p", t.dashboard.moduleLabels[0]).should("be.visible");
+    cy.url().should("not.include", "view=modules");
+    cy.contains('[data-slot="sheet-title"]', t.mobileNav.modules).should("be.visible");
   });
 
   it("synchronizuje zakładki desktop z parametrem view", () => {

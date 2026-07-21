@@ -1178,16 +1178,42 @@ export type Database = {
         Args: { p_token: string }
         Returns: string
       }
-      complete_onboarding_profile: {
+      complete_solo_onboarding: {
         Args: {
-          p_account_mode: string
           p_avatar_color: string
-          p_family_id: string | null
-          p_family_role: string | null
           p_first_name: string
           p_last_name: string
         }
         Returns: undefined
+      }
+      complete_founder_onboarding: {
+        Args: {
+          p_avatar_color: string
+          p_family_id: string
+          p_first_name: string
+          p_last_name: string
+        }
+        Returns: undefined
+      }
+      join_family_after_invitation: {
+        Args: { p_family_id: string }
+        Returns: undefined
+      }
+      finalize_onboarding_profile: {
+        Args: {
+          p_avatar_color: string
+          p_first_name: string
+          p_last_name: string
+        }
+        Returns: undefined
+      }
+      create_family_and_join: {
+        Args: { p_family_name: string }
+        Returns: string
+      }
+      get_family_invite_code: {
+        Args: Record<PropertyKey, never>
+        Returns: string
       }
       create_family_notifications: {
         Args: {

@@ -5,8 +5,7 @@ import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
 import { Pencil, Trash2, PawPrint } from "lucide-react";
-import { AppHeader } from "@/components/app/app-header";
-import { AppPage } from "@/components/app/app-page";
+import { ModulePageShell } from "@/components/app/module-page-shell";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { PetCareEditDialog } from "@/components/pets/pet-care-edit-dialog";
 import { PetCareFormDialog } from "@/components/pets/pet-care-form-dialog";
@@ -111,10 +110,8 @@ export function PetsView() {
   }
 
   return (
-    <div className="flex flex-col md:min-h-screen">
-      <AppHeader />
-
-      <AppPage width="default">
+    <>
+      <ModulePageShell>
         <AccountBreadcrumbs current={t.pets.title} />
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -249,7 +246,7 @@ export function PetsView() {
             ))}
           </div>
         )}
-      </AppPage>
+      </ModulePageShell>
 
       <PetEditDialog
         pet={editingPet}
@@ -264,6 +261,6 @@ export function PetsView() {
         onOpenChange={setCareEditOpen}
         onSuccess={onDataChanged}
       />
-    </div>
+    </>
   );
 }

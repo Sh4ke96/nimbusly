@@ -5,6 +5,7 @@ import { DashboardOverview } from "@/components/dashboard/dashboard-overview";
 import { DashboardViewTabs } from "@/components/dashboard/dashboard-view-tabs";
 import { DASHBOARD_VIEW, type DashboardView } from "@/lib/constants/dashboard";
 import { NIMBUS_DASHBOARD_VIEW_EVENT, NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus";
+import { MOBILE_MODULES_SHEET_OPEN_EVENT } from "@/lib/constants/mobile-nav";
 import { buildDashboardHref } from "@/lib/dashboard/view-href";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect } from "react";
@@ -49,16 +50,23 @@ export function DashboardHome({
     return () => window.removeEventListener(NIMBUS_DASHBOARD_VIEW_EVENT, onDashboardView);
   }, [applyView]);
 
+  useEffect(() => {
+    if (view !== DASHBOARD_VIEW.MODULES) return;
+    if (!window.matchMedia("(max-width: 767px)").matches) return;
+    window.dispatchEvent(new Event(MOBILE_MODULES_SHEET_OPEN_EVENT));
+    applyView(DASHBOARD_VIEW.SUMMARY);
+  }, [view, applyView]);
+
   return (
     <div className="space-y-6">
-      <div data-nimbus-tour={NIMBUS_TOUR_TARGET.DASHBOARD_VIEW_TABS}>
+      <div className="hidden md:block" data-nimbus-tour={NIMBUS_TOUR_TARGET.DASHBOARD_VIEW_TABS}>
         <DashboardViewTabs value={view} onChange={applyView} />
       </div>
 
       {view === DASHBOARD_VIEW.SUMMARY ? (
         <DashboardOverview />
       ) : (
-        <div data-nimbus-tour={NIMBUS_TOUR_TARGET.DASHBOARD_MODULES}>
+        <div className="hidden md:block" data-nimbus-tour={NIMBUS_TOUR_TARGET.DASHBOARD_MODULES}>
           <DashboardModulesGrid modules={modules} />
         </div>
       )}

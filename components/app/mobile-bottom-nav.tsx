@@ -1,17 +1,20 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Bell, LayoutGrid, LayoutDashboard, Settings } from "lucide-react";
 import { NimbusIcon } from "@/components/nimbus/nimbus-icon";
 import {
   MOBILE_NAV_HREF,
   MOBILE_NAV_ITEM,
+  MOBILE_MODULES_SHEET_OPEN_EVENT,
   type MobileNavItem,
 } from "@/lib/constants/mobile-nav";
 import { isMobileNavActive } from "@/lib/mobile-nav/is-nav-active";
 import { NOTIFICATION_FILTER_TAB } from "@/lib/constants/notifications";
 import { useT } from "@/lib/lang-context";
+import { MobileModulesSheet } from "@/components/app/mobile-modules-sheet";
 import { formatMessage } from "@/lib/i18n/format";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { useNimbusStore } from "@/lib/stores/nimbus-store";
@@ -53,6 +56,16 @@ export function MobileBottomNav() {
   const setMenuOpen = useNimbusStore((s) => s.setMenuOpen);
   const dismissHint = useNimbusStore((s) => s.dismissHint);
   const unreadCount = useNotificationsStore((s) => s.unreadCount);
+  const [modulesSheetOpen, setModulesSheetOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    function openModulesSheet() {
+      setModulesSheetOpen(true);
+    }
+
+    window.addEventListener(MOBILE_MODULES_SHEET_OPEN_EVENT, openModulesSheet);
+    return () => window.removeEventListener(MOBILE_MODULES_SHEET_OPEN_EVENT, openModulesSheet);
+  }, []);
 
   const showNimbus =
     loaded &&
@@ -119,7 +132,40 @@ export function MobileBottomNav() {
     return labels[id];
   }
 
+  function renderModulesNavItem() {
+    const active =
+      modulesSheetOpen || isMobileNavActive(pathname, search, MOBILE_NAV_ITEM.MODULES);
+    const Icon = NAV_ICONS[MOBILE_NAV_ITEM.MODULES];
+    const id = MOBILE_NAV_ITEM.MODULES;
+
+    return (
+      <li key={id} className="app-mobile-bottom-nav-item">
+        <button
+          type="button"
+          className={cn(
+            NAV_CELL_CLASS,
+            active ? "text-primary" : "text-muted-foreground active:text-foreground"
+          )}
+          aria-current={active ? "page" : undefined}
+          aria-label={labels[id]}
+          aria-expanded={modulesSheetOpen}
+          onClick={() => setModulesSheetOpen(true)}
+        >
+          <span className="app-mobile-bottom-nav-icon relative">
+            <Icon className="size-5" aria-hidden />
+          </span>
+          <span className="w-full truncate sm:hidden">{shortLabels[id]}</span>
+          <span className="hidden w-full truncate sm:inline">{labels[id]}</span>
+        </button>
+      </li>
+    );
+  }
+
   function renderNavLink(id: MobileNavItem) {
+    if (id === MOBILE_NAV_ITEM.MODULES) {
+      return renderModulesNavItem();
+    }
+
     const Icon = NAV_ICONS[id];
     const active = isMobileNavActive(pathname, search, id);
 
@@ -182,7 +228,8 @@ export function MobileBottomNav() {
   }
 
   return (
-    <nav className={APP_MOBILE_BOTTOM_NAV_CLASS} aria-label={t.mobileNav.ariaLabel}>
+    <>
+      <nav className={APP_MOBILE_BOTTOM_NAV_CLASS} aria-label={t.mobileNav.ariaLabel}>
       <ul
         className={cn(
           "app-mobile-bottom-nav-items",
@@ -194,5 +241,7 @@ export function MobileBottomNav() {
         )}
       </ul>
     </nav>
+    <MobileModulesSheet open={modulesSheetOpen} onOpenChange={setModulesSheetOpen} />
+    </>
   );
 }

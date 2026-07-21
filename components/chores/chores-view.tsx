@@ -5,8 +5,7 @@ import { LayoutGrid, List, ListChecks } from "lucide-react";
 import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
-import { AppHeader } from "@/components/app/app-header";
-import { AppPage } from "@/components/app/app-page";
+import { ModulePageShell } from "@/components/app/module-page-shell";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { ChoreEditDialog } from "@/components/chores/chore-edit-dialog";
 import { ChoreFormDialog } from "@/components/chores/chore-form-dialog";
@@ -121,10 +120,8 @@ export function ChoresView() {
     (isFamily && assigneeFilter !== CHORE_FILTER_ALL);
 
   return (
-    <div className="flex flex-col md:min-h-screen">
-      <AppHeader />
-
-      <AppPage width="default">
+    <>
+      <ModulePageShell>
         <AccountBreadcrumbs current={t.chores.title} />
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -252,7 +249,7 @@ export function ChoresView() {
             ))}
           </div>
         )}
-      </AppPage>
+      </ModulePageShell>
 
       <ChoreEditDialog
         task={editingTask}
@@ -260,6 +257,6 @@ export function ChoresView() {
         onOpenChange={setEditOpen}
         onSuccess={onTasksChanged}
       />
-    </div>
+    </>
   );
 }

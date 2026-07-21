@@ -11,6 +11,54 @@ export { CHANGELOG_ENTRY_TYPE, type ChangelogEntry };
  */
 export const CHANGELOG_ENTRIES: ChangelogEntry[] = [
   {
+    version: "0.13.1",
+    date: "2026-07-21",
+    type: CHANGELOG_ENTRY_TYPE.FIX,
+    title: {
+      pl: "Moduły na mobile bez duplikatu",
+      en: "No duplicate modules on mobile",
+    },
+    changes: {
+      pl: [
+        "Siatka modułów na dashboardzie tylko na desktopie; na mobile wyłącznie dolny sheet",
+        "Deep link ?view=modules na mobile otwiera sheet zamiast drugiej listy",
+      ],
+      en: [
+        "Dashboard module grid on desktop only; mobile uses the bottom sheet",
+        "Deep link ?view=modules on mobile opens the sheet instead of a second list",
+      ],
+    },
+  },
+  {
+    version: "0.13.0",
+    date: "2026-07-21",
+    type: CHANGELOG_ENTRY_TYPE.MINOR,
+    title: {
+      pl: "Bezpieczeństwo onboarding + spójny UX modułów",
+      en: "Onboarding security and unified module UX",
+    },
+    changes: {
+      pl: [
+        "Onboarding: bezpieczne RPC (solo, founder, join, finalize) zamiast complete_onboarding_profile",
+        "create_family_and_join, get_family_invite_code, rate limit join, wydatki budżetu tylko dla autora",
+        "Notatki: sanityzacja markdown przy zapisie; dashboard: błędy zapytań zamiast pustych danych",
+        "ModulePageShell we wszystkich modułach; akcenty modułów w siatce i nagłówkach",
+        "Karta kalendarza rodziny na dashboardzie; dolny sheet modułów na mobile",
+        "ModuleEmptyState w restauracjach i powiadomieniach; usunięty martwy QuickAddFab",
+        "Kalendarz: rounded-none na wpisach; jeden empty state w kalendarzu rodziny",
+      ],
+      en: [
+        "Onboarding: secure RPCs (solo, founder, join, finalize) replacing complete_onboarding_profile",
+        "create_family_and_join, get_family_invite_code, join rate limit, budget expenses owner-only edits",
+        "Notes: markdown sanitization on save; dashboard: surface query errors instead of silent empty data",
+        "ModulePageShell across modules; module accents in grid and headers",
+        "Family calendar overview card; mobile modules bottom sheet",
+        "ModuleEmptyState in restaurants and notifications; removed dead QuickAddFab",
+        "Calendar: rounded-none entry buttons; single empty state on family calendar",
+      ],
+    },
+  },
+  {
     version: "0.12.0",
     date: "2026-07-21",
     type: CHANGELOG_ENTRY_TYPE.MAJOR,

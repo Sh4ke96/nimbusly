@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { AppHeader } from "@/components/app/app-header";
-import { AppPage } from "@/components/app/app-page";
+import { ModulePageShell } from "@/components/app/module-page-shell";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { FamilySection } from "@/components/profile/settings/family-section";
 import { AccountSection } from "@/components/profile/settings/account-section";
@@ -19,9 +18,7 @@ export function FamilyView() {
   const showFamily = profile?.account_mode === ACCOUNT_MODE.FAMILY && !!profile.family_id;
 
   return (
-    <div className="flex flex-col md:min-h-screen">
-      <AppHeader />
-      <AppPage width="default">
+    <ModulePageShell>
         <AccountBreadcrumbs current={t.family.pageTitle} />
 
         <div className="space-y-2" data-nimbus-tour={NIMBUS_TOUR_TARGET.FAMILY_MEMBERS}>
@@ -46,7 +43,6 @@ export function FamilyView() {
             )}
           </CardContent>
         </Card>
-      </AppPage>
-    </div>
+    </ModulePageShell>
   );
 }

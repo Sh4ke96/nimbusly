@@ -4,6 +4,7 @@ import {
   BarChart3,
   Cake,
   CalendarDays,
+  CalendarRange,
   Clapperboard,
   Cross,
   UtensilsCrossed,
@@ -55,6 +56,7 @@ import type { PetCarePreviewRow } from "@/lib/pets/dashboard";
 import type { ChoreTask } from "@/lib/chores/types";
 import { formatPetDueCountdown } from "@/lib/pets/due";
 import type { ScheduleEntry } from "@/lib/schedule/types";
+import type { FamilyCalendarEvent } from "@/lib/calendar/family-calendar";
 import type { OverviewAccent } from "@/lib/constants/overview-accent";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -154,6 +156,8 @@ export interface OverviewCardBodiesProps {
   upcomingBirthdays: BirthdayEntry[];
   monthScheduleEntries: ScheduleEntry[];
   scheduleByType: [string, number][];
+  monthFamilyCalendarEvents: FamilyCalendarEvent[];
+  previewFamilyCalendarEvents: FamilyCalendarEvent[];
 }
 
 export function OverviewCardBody({
@@ -194,6 +198,8 @@ export function OverviewCardBody({
   upcomingBirthdays,
   monthScheduleEntries,
   scheduleByType,
+  monthFamilyCalendarEvents,
+  previewFamilyCalendarEvents,
 }: OverviewCardBodiesProps) {
   if (cardError) {
     return (
@@ -684,6 +690,37 @@ export function OverviewCardBody({
               </li>
             );
             })}
+          </ul>
+        </div>
+      );
+    }
+
+    case DASHBOARD_OVERVIEW_CARD.FAMILY_CALENDAR: {
+      const accent = overviewAccent(cardId);
+      const accentStyles = overviewAccentStyles[accent];
+      return monthFamilyCalendarEvents.length === 0 ? (
+        <EmptyHint icon={CalendarRange} text={t.familyCalendar.empty} />
+      ) : (
+        <div className="space-y-3">
+          <BigStat
+            value={monthFamilyCalendarEvents.length}
+            label={formatMessage(t.dashboard.familyCalendarThisMonth, {
+              count: String(monthFamilyCalendarEvents.length),
+            })}
+            accent={accent}
+          />
+          <ul className="space-y-1.5">
+            {previewFamilyCalendarEvents.map((event) => (
+              <li
+                key={event.id}
+                className="flex items-center justify-between gap-2 border border-border bg-muted/20 px-2.5 py-2 text-sm"
+              >
+                <span className="min-w-0 truncate font-medium">{event.label}</span>
+                <span className={cn("shrink-0 text-[10px] font-semibold uppercase", accentStyles.badge)}>
+                  {event.dateKey.slice(8, 10)}.{event.dateKey.slice(5, 7)}
+                </span>
+              </li>
+            ))}
           </ul>
         </div>
       );

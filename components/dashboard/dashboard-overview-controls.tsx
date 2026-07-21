@@ -21,6 +21,7 @@ function getOverviewCardLabel(
     notes: string;
     birthdays: string;
     calendar: string;
+    familyCalendar: string;
     family: string;
   }
 ): string {
@@ -47,6 +48,8 @@ function getOverviewCardLabel(
       return labels.birthdays;
     case DASHBOARD_OVERVIEW_CARD.CALENDAR:
       return labels.calendar;
+    case DASHBOARD_OVERVIEW_CARD.FAMILY_CALENDAR:
+      return labels.familyCalendar;
     case DASHBOARD_OVERVIEW_CARD.FAMILY:
       return labels.family;
   }

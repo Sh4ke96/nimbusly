@@ -5,8 +5,7 @@ import { Cross } from "lucide-react";
 import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
-import { AppHeader } from "@/components/app/app-header";
-import { AppPage } from "@/components/app/app-page";
+import { ModulePageShell } from "@/components/app/module-page-shell";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { MedicineCabinetFilters } from "@/components/medicine-cabinet/medicine-cabinet-filters";
 import { MedicineEditDialog } from "@/components/medicine-cabinet/medicine-edit-dialog";
@@ -78,10 +77,8 @@ export function MedicineView() {
   const hasActiveFilter = countActiveFilters([filterKey], MEDICINE_FILTER_ALL) > 0;
 
   return (
-    <div className="flex flex-col md:min-h-screen">
-      <AppHeader />
-
-      <AppPage width="default">
+    <>
+      <ModulePageShell>
         <AccountBreadcrumbs current={t.medicineCabinet.title} />
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -149,7 +146,7 @@ export function MedicineView() {
             ))}
           </div>
         )}
-      </AppPage>
+      </ModulePageShell>
 
       <MedicineEditDialog
         item={editingItem}
@@ -157,6 +154,6 @@ export function MedicineView() {
         onOpenChange={setEditOpen}
         onSuccess={onItemsChanged}
       />
-    </div>
+    </>
   );
 }

@@ -39,6 +39,7 @@ import type { DashboardOverviewCardId } from "@/lib/constants/dashboard-overview
 import { DASHBOARD_OVERVIEW_CARD } from "@/lib/constants/dashboard-overview";
 import { NIMBUS_TOUR_TARGET } from "@/lib/constants/nimbus";
 import { scheduleEntryOverlapsMonth } from "@/lib/schedule/types";
+import { buildFamilyCalendarEvents } from "@/lib/calendar/family-calendar";
 import {
   parseDashboardOverviewLayout,
   serializeDashboardOverviewLayout,
@@ -355,6 +356,11 @@ export function DashboardOverview() {
       [DASHBOARD_OVERVIEW_CARD.CHORES]: () => void fetchChores(),
       [DASHBOARD_OVERVIEW_CARD.NOTES]: () => void fetchNotes(),
       [DASHBOARD_OVERVIEW_CARD.CALENDAR]: () => void fetchSchedule(),
+      [DASHBOARD_OVERVIEW_CARD.FAMILY_CALENDAR]: () => {
+        void fetchBirthdays();
+        void fetchSchedule();
+        void fetchChores();
+      },
       [DASHBOARD_OVERVIEW_CARD.BIRTHDAYS]: () => void fetchBirthdays(),
     };
 
@@ -421,6 +427,23 @@ export function DashboardOverview() {
     }
     return [...counts.entries()].sort((a, b) => b[1] - a[1]);
   }, [monthScheduleEntries]);
+
+  const monthFamilyCalendarEvents = useMemo(
+    () =>
+      buildFamilyCalendarEvents({
+        year: scheduleYear,
+        month: scheduleMonth,
+        birthdays,
+        scheduleEntries,
+        choreTasks,
+      }),
+    [scheduleYear, scheduleMonth, birthdays, scheduleEntries, choreTasks]
+  );
+
+  const previewFamilyCalendarEvents = useMemo(
+    () => monthFamilyCalendarEvents.slice(0, 3),
+    [monthFamilyCalendarEvents]
+  );
 
   const upcomingBirthdays = useMemo(
     () => sortBirthdaysByUpcoming(birthdays).slice(0, 3),
@@ -565,6 +588,8 @@ export function DashboardOverview() {
       [DASHBOARD_OVERVIEW_CARD.NOTES]: notesError,
       [DASHBOARD_OVERVIEW_CARD.BIRTHDAYS]: birthdaysError,
       [DASHBOARD_OVERVIEW_CARD.CALENDAR]: scheduleError,
+      [DASHBOARD_OVERVIEW_CARD.FAMILY_CALENDAR]:
+        birthdaysError || scheduleError || choresError,
       [DASHBOARD_OVERVIEW_CARD.FAMILY]: false,
     }),
     [
@@ -595,6 +620,11 @@ export function DashboardOverview() {
       [DASHBOARD_OVERVIEW_CARD.NOTES]: () => void fetchNotes(true),
       [DASHBOARD_OVERVIEW_CARD.BIRTHDAYS]: () => void fetchBirthdays(true),
       [DASHBOARD_OVERVIEW_CARD.CALENDAR]: () => void fetchSchedule(true),
+      [DASHBOARD_OVERVIEW_CARD.FAMILY_CALENDAR]: () => {
+        void fetchBirthdays(true);
+        void fetchSchedule(true);
+        void fetchChores(true);
+      },
       [DASHBOARD_OVERVIEW_CARD.FAMILY]: () => { },
     }),
     [
@@ -625,6 +655,10 @@ export function DashboardOverview() {
       [DASHBOARD_OVERVIEW_CARD.NOTES]: !notesLoaded && notesLoading,
       [DASHBOARD_OVERVIEW_CARD.BIRTHDAYS]: !birthdaysLoaded && birthdaysLoading,
       [DASHBOARD_OVERVIEW_CARD.CALENDAR]: !scheduleLoaded && scheduleLoading,
+      [DASHBOARD_OVERVIEW_CARD.FAMILY_CALENDAR]:
+        (!birthdaysLoaded && birthdaysLoading) ||
+        (!scheduleLoaded && scheduleLoading) ||
+        (!choresLoaded && choresLoading),
       [DASHBOARD_OVERVIEW_CARD.FAMILY]: false,
     }),
     [
@@ -689,6 +723,8 @@ export function DashboardOverview() {
       upcomingBirthdays,
       monthScheduleEntries,
       scheduleByType,
+      monthFamilyCalendarEvents,
+      previewFamilyCalendarEvents,
     }),
     [
       t,
@@ -725,6 +761,8 @@ export function DashboardOverview() {
       upcomingBirthdays,
       monthScheduleEntries,
       scheduleByType,
+      monthFamilyCalendarEvents,
+      previewFamilyCalendarEvents,
     ]
   );
 

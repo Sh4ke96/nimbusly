@@ -5,8 +5,7 @@ import { useActionState, useCallback, useMemo, useState } from "react";
 import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
-import { AppHeader } from "@/components/app/app-header";
-import { AppPage } from "@/components/app/app-page";
+import { ModulePageShell } from "@/components/app/module-page-shell";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { ScheduleCalendar } from "@/components/schedule/schedule-calendar";
 import { ScheduleEditDialog } from "@/components/schedule/schedule-edit-dialog";
@@ -149,12 +148,8 @@ export function ScheduleView() {
   });
 
   return (
-    <div className="flex flex-col md:min-h-screen">
-      <div className="no-print">
-        <AppHeader />
-      </div>
-
-      <AppPage width="full">
+    <>
+      <ModulePageShell width="full">
         <div className="no-print">
           <AccountBreadcrumbs current={t.schedule.title} />
         </div>
@@ -320,7 +315,7 @@ export function ScheduleView() {
           </Card>
         </div>
         )}
-      </AppPage>
+      </ModulePageShell>
 
       <ScheduleEditDialog
         entry={editingEntry}
@@ -329,6 +324,6 @@ export function ScheduleView() {
         onOpenChange={setEditOpen}
         onSuccess={onScheduleChanged}
       />
-    </div>
+    </>
   );
 }

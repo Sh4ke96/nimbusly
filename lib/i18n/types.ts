@@ -539,6 +539,7 @@ export type Dict = {
     giftsEmpty: string;
     birthdaysEmpty: string;
     scheduleThisMonth: string;
+    familyCalendarThisMonth: string;
     scheduleEmpty: string;
     familyMembers: string;
     familySolo: string;

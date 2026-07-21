@@ -5,8 +5,7 @@ import { StickyNote } from "lucide-react";
 import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { useScopedRealtime } from "@/lib/hooks/use-scoped-realtime";
-import { AppHeader } from "@/components/app/app-header";
-import { AppPage } from "@/components/app/app-page";
+import { ModulePageShell } from "@/components/app/module-page-shell";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { NoteEditDialog } from "@/components/notes/note-edit-dialog";
 import { NoteFormDialog } from "@/components/notes/note-form-dialog";
@@ -88,10 +87,8 @@ export function NotesView() {
   const hasActiveFilter = countActiveFilters([filterKey], NOTE_FILTER_ALL) > 0;
 
   return (
-    <div className="flex flex-col md:min-h-screen">
-      <AppHeader />
-
-      <AppPage width="default">
+    <>
+      <ModulePageShell>
         <AccountBreadcrumbs current={t.notes.title} />
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -169,7 +166,7 @@ export function NotesView() {
             ))}
           </div>
         )}
-      </AppPage>
+      </ModulePageShell>
 
       <NoteEditDialog
         note={editingNote}
@@ -180,6 +177,6 @@ export function NotesView() {
         onOpenChange={setEditOpen}
         onSuccess={onNotesChanged}
       />
-    </div>
+    </>
   );
 }

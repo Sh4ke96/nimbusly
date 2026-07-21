@@ -6,9 +6,7 @@ import { useStoreBootstrap } from "@/lib/hooks/use-store-bootstrap";
 import { useModuleRefresh } from "@/lib/hooks/use-module-refresh";
 import { useResolvedItemSelection } from "@/lib/hooks/use-resolved-item-selection";
 import { useLgViewport } from "@/lib/hooks/use-lg-viewport";
-import { AppHeader } from "@/components/app/app-header";
-import { AppPage } from "@/components/app/app-page";
-import { AppViewShell } from "@/components/app/app-view-shell";
+import { ModulePageShell } from "@/components/app/module-page-shell";
 import { AccountBreadcrumbs } from "@/components/app/account-breadcrumbs";
 import { ShoppingListCard } from "@/components/shopping/shopping-list-card";
 import { ShoppingListEditDialog } from "@/components/shopping/shopping-list-edit-dialog";
@@ -144,10 +142,8 @@ export function ShoppingListsView() {
   }
 
   return (
-    <AppViewShell>
-      <AppHeader />
-
-      <AppPage width="wide">
+    <>
+      <ModulePageShell width="wide">
         <AccountBreadcrumbs current={t.shoppingLists.title} />
 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -234,7 +230,7 @@ export function ShoppingListsView() {
             </section>
           </div>
         )}
-      </AppPage>
+      </ModulePageShell>
 
       <ShoppingListMobileSheet
         list={activeList}
@@ -253,6 +249,6 @@ export function ShoppingListsView() {
         onOpenChange={setEditOpen}
         onSuccess={onListsChanged}
       />
-    </AppViewShell>
+    </>
   );
 }

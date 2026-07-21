@@ -1,5 +1,6 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { ACCOUNT_MODE } from "@/lib/constants/account";
 import type { Profile } from "@/lib/profile";
@@ -9,6 +10,14 @@ export async function requireUser() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+  return { supabase, user };
+}
+
+export async function requireAuthenticatedUser() {
+  const { supabase, user } = await requireUser();
+  if (!user) {
+    redirect("/login");
+  }
   return { supabase, user };
 }
 

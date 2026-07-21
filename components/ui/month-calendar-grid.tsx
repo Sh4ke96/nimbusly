@@ -14,7 +14,7 @@ import { useT } from "@/lib/lang-context";
 import { cn } from "@/lib/utils";
 
 export const MONTH_CALENDAR_ENTRY_BUTTON_CLASS = cn(
-  "block w-full min-w-0 cursor-pointer rounded-sm px-2 py-1.5 text-left",
+  "block w-full min-w-0 cursor-pointer rounded-none px-2 py-1.5 text-left",
   "text-[11px] font-medium md:text-[11px]",
   "max-md:rounded-none max-md:px-3 max-md:py-2.5 max-md:text-sm max-md:font-semibold"
 );

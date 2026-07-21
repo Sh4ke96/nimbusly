@@ -9,6 +9,7 @@ import { sortShoppingListItems, type ShoppingListItem } from "@/lib/shopping-lis
 import type { AppNotification } from "@/lib/notifications/types";
 import { getAuthProfile } from "@/lib/profile/server";
 import { createClient } from "@/lib/supabase/server";
+import { assertDashboardQueryOk } from "@/lib/dashboard/assert-query-ok";
 
 function mapExpenseAmounts(rows: BudgetExpense[]): BudgetExpense[] {
   return rows.map((row) => ({
@@ -106,6 +107,23 @@ export async function loadDashboardSnapshot(): Promise<DashboardSnapshot | null>
       .eq("user_id", user.id)
       .is("read_at", null),
   ]);
+
+  assertDashboardQueryOk("budgets", budgetsResult);
+  assertDashboardQueryOk("shopping_lists", shoppingResult);
+  assertDashboardQueryOk("shopping_list_categories", shoppingCategoriesResult);
+  assertDashboardQueryOk("gift_ideas", giftsResult);
+  assertDashboardQueryOk("medicine_items", medicineResult);
+  assertDashboardQueryOk("watchlist_items", watchlistResult);
+  assertDashboardQueryOk("restaurant_places", restaurantsResult);
+  assertDashboardQueryOk("pets", petsResult);
+  assertDashboardQueryOk("pet_care_items", careResult);
+  assertDashboardQueryOk("chores", choresResult);
+  assertDashboardQueryOk("notes", notesResult);
+  assertDashboardQueryOk("note_categories", noteCategoriesResult);
+  assertDashboardQueryOk("schedule_entries", scheduleResult);
+  assertDashboardQueryOk("birthday_entries", birthdaysResult);
+  assertDashboardQueryOk("notifications", notificationsResult);
+  assertDashboardQueryOk("notifications_unread", unreadCountResult);
 
   const budgets = mapBudgets((budgetsResult.data ?? []) as Budget[]);
   const budgetIds = budgets.map((budget) => budget.id);

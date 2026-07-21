@@ -13,3 +13,5 @@ export const MOBILE_NAV_HREF = {
   [MOBILE_NAV_ITEM.NOTIFICATIONS]: "/notifications",
   [MOBILE_NAV_ITEM.SETTINGS]: "/profile/settings",
 } as const satisfies Record<MobileNavItem, string>;
+
+export const MOBILE_MODULES_SHEET_OPEN_EVENT = "nimbus:open-mobile-modules";

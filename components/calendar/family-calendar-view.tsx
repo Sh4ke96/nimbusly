@@ -195,75 +195,73 @@ export function FamilyCalendarView() {
       {events.length === 0 ? (
         <ModuleEmptyState icon={CalendarRange} message={t.familyCalendar.empty} />
       ) : (
-        <FamilyCalendarDayList
-          year={year}
-          month={month}
-          day={selectedDay}
-          events={selectedDayEvents}
-          weekdaysFull={weekdaysFull}
-        />
-      )}
-
-      <div className="hidden md:block">
-        {events.length === 0 ? (
-          <ModuleEmptyState icon={CalendarRange} message={t.familyCalendar.empty} />
-        ) : (
-          <MonthCalendarGrid
-            cells={cells}
-            weekdays={weekdays}
-            monthNames={monthNames}
-            dayDataAttribute="family-calendar-day"
-            renderDayContent={({ day }) => {
-              if (!day) return null;
-              const dayEvents = eventsByDay.get(day) ?? [];
-              return (
-                <ul className="space-y-1">
-                  {dayEvents.map((event) => {
-                    const ScheduleIcon =
-                      event.kind === FAMILY_CALENDAR_EVENT_KIND.SCHEDULE &&
-                      event.scheduleEntryType
-                        ? getScheduleEntryIcon(event.scheduleEntryType)
-                        : null;
-                    const scheduleTypeLabel =
-                      event.kind === FAMILY_CALENDAR_EVENT_KIND.SCHEDULE &&
-                      event.scheduleEntryType
-                        ? getScheduleTypeLabel(event.scheduleEntryType, t.schedule.typeLabels)
-                        : null;
-
-                    return (
-                      <li key={event.id}>
-                        <Link
-                          href={event.href}
-                          className={cn(
-                            MONTH_CALENDAR_ENTRY_BUTTON_CLASS,
-                            "border pointer-events-auto flex items-start gap-2",
-                            event.kind === FAMILY_CALENDAR_EVENT_KIND.SCHEDULE &&
-                              event.scheduleEntryType
-                              ? "border-sky-500/25 bg-sky-500/10"
-                              : eventKindStyles[event.kind]
-                          )}
-                        >
-                          {ScheduleIcon ? (
-                            <ScheduleIcon className="mt-0.5 size-3.5 shrink-0" aria-hidden />
-                          ) : null}
-                          <span className="min-w-0">
-                            {scheduleTypeLabel ? (
-                              <span className="block text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
-                                {scheduleTypeLabel}
-                              </span>
-                            ) : null}
-                            <span className="line-clamp-2">{event.label}</span>
-                          </span>
-                        </Link>
-                      </li>
-                    );
-                  })}
-                </ul>
-              );
-            }}
+        <>
+          <FamilyCalendarDayList
+            year={year}
+            month={month}
+            day={selectedDay}
+            events={selectedDayEvents}
+            weekdaysFull={weekdaysFull}
           />
-        )}
-      </div>
+
+          <div className="hidden md:block">
+            <MonthCalendarGrid
+              cells={cells}
+              weekdays={weekdays}
+              monthNames={monthNames}
+              dayDataAttribute="family-calendar-day"
+              renderDayContent={({ day }) => {
+                if (!day) return null;
+                const dayEvents = eventsByDay.get(day) ?? [];
+                return (
+                  <ul className="space-y-1">
+                    {dayEvents.map((event) => {
+                      const ScheduleIcon =
+                        event.kind === FAMILY_CALENDAR_EVENT_KIND.SCHEDULE &&
+                        event.scheduleEntryType
+                          ? getScheduleEntryIcon(event.scheduleEntryType)
+                          : null;
+                      const scheduleTypeLabel =
+                        event.kind === FAMILY_CALENDAR_EVENT_KIND.SCHEDULE &&
+                        event.scheduleEntryType
+                          ? getScheduleTypeLabel(event.scheduleEntryType, t.schedule.typeLabels)
+                          : null;
+
+                      return (
+                        <li key={event.id}>
+                          <Link
+                            href={event.href}
+                            className={cn(
+                              MONTH_CALENDAR_ENTRY_BUTTON_CLASS,
+                              "border pointer-events-auto flex items-start gap-2",
+                              event.kind === FAMILY_CALENDAR_EVENT_KIND.SCHEDULE &&
+                                event.scheduleEntryType
+                                ? "border-sky-500/25 bg-sky-500/10"
+                                : eventKindStyles[event.kind]
+                            )}
+                          >
+                            {ScheduleIcon ? (
+                              <ScheduleIcon className="mt-0.5 size-3.5 shrink-0" aria-hidden />
+                            ) : null}
+                            <span className="min-w-0">
+                              {scheduleTypeLabel ? (
+                                <span className="block text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                                  {scheduleTypeLabel}
+                                </span>
+                              ) : null}
+                              <span className="line-clamp-2">{event.label}</span>
+                            </span>
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                );
+              }}
+            />
+          </div>
+        </>
+      )}
     </div>
   );
 }
